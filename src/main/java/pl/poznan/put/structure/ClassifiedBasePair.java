@@ -4,6 +4,8 @@ import pl.poznan.put.notations.LeontisWesthof;
 import pl.poznan.put.notations.Saenger;
 
 public class ClassifiedBasePair extends BasePair {
+    private static final long serialVersionUID = -6590368481589627182L;
+
     private Saenger saenger;
     private LeontisWesthof leontisWesthof;
 
@@ -32,11 +34,8 @@ public class ClassifiedBasePair extends BasePair {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result =
-                prime
-                        * result
-                        + ((leontisWesthof == null) ? 0
-                                : leontisWesthof.hashCode());
+        result = prime * result
+                + ((leontisWesthof == null) ? 0 : leontisWesthof.hashCode());
         result = prime * result + ((saenger == null) ? 0 : saenger.hashCode());
         return result;
     }

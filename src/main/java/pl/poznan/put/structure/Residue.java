@@ -6,6 +6,8 @@ import org.biojava.bio.structure.Group;
 import org.biojava.bio.structure.ResidueNumber;
 
 public class Residue implements Comparable<Residue>, Serializable {
+    private static final long serialVersionUID = -3434793294284494678L;
+
     private final char chain;
     private final String residueName;
     private final int residueNumber;
@@ -122,9 +124,8 @@ public class Residue implements Comparable<Residue>, Serializable {
         result = prime * result + chain;
         result = prime * result + insertionCode;
         result = prime * result + (isMissing ? 1231 : 1237);
-        result =
-                prime * result
-                        + ((residueName == null) ? 0 : residueName.hashCode());
+        result = prime * result
+                + ((residueName == null) ? 0 : residueName.hashCode());
         result = prime * result + residueNameOneLetter;
         result = prime * result + residueNumber;
         return result;

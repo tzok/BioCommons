@@ -1,5 +1,5 @@
 eclipse.preferences.version=1
-extraProperties=sonar.jdbc.password\=sonar\r\nsonar.jdbc.username\=sonar\r\nsonar.jdbc.url\=jdbc\:mysql\://localhost\:3306/sonar?useUnicode\=true&characterEncoding\=utf8\r\nsonar.host.url\=http\://lab-rna-4.cs.put.poznan.pl\:9000
+extraProperties=
 projectKey=pl.poznan.put\:BioCommons
 serverUrl=http\://lab-rna-4.cs.put.poznan.pl\:9000
 version=2

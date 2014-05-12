@@ -1,4 +1,4 @@
-package pl.poznan.put.nucleotide;
+package pl.poznan.put.nucleic;
 
 public enum NucleotideType {
     ADENINE('A', "ADE", "A"), GUANINE('G', "GUA", "G"),

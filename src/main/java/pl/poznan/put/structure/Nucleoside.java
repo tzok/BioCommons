@@ -1,6 +1,8 @@
 package pl.poznan.put.structure;
 
 public class Nucleoside extends Residue {
+    private static final long serialVersionUID = -943641369052306989L;
+
     private boolean isC2;
     private boolean isC6;
     private boolean isN1;

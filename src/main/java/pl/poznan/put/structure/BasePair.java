@@ -5,6 +5,8 @@ import java.io.Serializable;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class BasePair implements Serializable {
+    private static final long serialVersionUID = 2202206332317872401L;
+
     protected Pair<Residue, Residue> pair;
 
     public BasePair(Residue left, Residue right) {

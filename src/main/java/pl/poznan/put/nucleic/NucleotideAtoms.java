@@ -1,4 +1,4 @@
-package pl.poznan.put.nucleotide;
+package pl.poznan.put.nucleic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.biojava.bio.structure.Group;
 
+import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.helper.Helper;
 
 public class NucleotideAtoms {
