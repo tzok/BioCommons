@@ -31,7 +31,7 @@ public enum NucleotideType {
         oneLetter = Character.toUpperCase(oneLetter);
 
         for (NucleotideType nucleotide : NucleotideType.values()) {
-            if (nucleotide.oneLetter == Character.toUpperCase(oneLetter)) {
+            if (nucleotide.oneLetter == oneLetter) {
                 return nucleotide;
             }
         }
