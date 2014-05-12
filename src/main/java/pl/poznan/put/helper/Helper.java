@@ -1,47 +1,41 @@
 package pl.poznan.put.helper;
 
-import java.util.List;
-
 import org.biojava.bio.structure.Atom;
+import org.biojava.bio.structure.Chain;
 import org.biojava.bio.structure.Group;
 
 import pl.poznan.put.atoms.AtomName;
-import pl.poznan.put.nucleic.BackboneAtoms;
+import pl.poznan.put.common.ChainType;
+import pl.poznan.put.common.ResidueType;
 
 public class Helper {
-    private static final int MINIMUM_MATCHING_ATOMS_REQUIRED = 3;
-
     private Helper() {
     }
 
-    public static Atom findAtom(Group residue, AtomName atomType) {
+    public static Atom findAtom(Group residue, AtomName atomName) {
         for (Atom atom : residue.getAtoms()) {
-            if (atomType.matchesName(atom.getFullName())) {
+            if (atomName.matchesName(atom.getFullName())) {
                 return atom;
             }
         }
         return null;
     }
 
-    public static boolean isNucleic(Group residue) {
-        List<AtomName> backboneAtoms = BackboneAtoms.getAtoms();
-        int counter = 0;
+    public static String getSequence(Chain chain) {
+        StringBuilder builder = new StringBuilder();
+        ChainType chainType = ChainType.detect(chain);
 
-        for (Atom atom : residue.getAtoms()) {
-            String pdbName = atom.getName().trim();
+        for (Group residue : chain.getAtomGroups()) {
+            ResidueType type = ResidueType.fromString(chainType,
+                    residue.getPDBName());
 
-            for (AtomName backboneAtom : backboneAtoms) {
-                if (backboneAtom.matchesName(pdbName)) {
-                    counter++;
-                    break;
-                }
+            if (type == ResidueType.UNKNOWN) {
+                type = ResidueType.detect(residue);
             }
 
-            if (counter >= Helper.MINIMUM_MATCHING_ATOMS_REQUIRED) {
-                return true;
-            }
+            builder.append(type.getOneLetter());
         }
 
-        return false;
+        return builder.toString();
     }
 }
