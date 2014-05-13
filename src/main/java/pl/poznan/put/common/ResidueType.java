@@ -1,48 +1,55 @@
 package pl.poznan.put.common;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.biojava.bio.structure.Group;
 
 import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.helper.Helper;
+import pl.poznan.put.nucleic.RNAChiChooser;
 import pl.poznan.put.nucleic.RNAResidueAtoms;
+import pl.poznan.put.protein.ProteinChiChooser;
 import pl.poznan.put.protein.ProteinResidueAtoms;
 
 public enum ResidueType {
-    UNKNOWN(ChainType.UNKNOWN, 'X', "UNK"),
-    ADENINE(ChainType.RNA, 'A', "ADE", "A"),
-    GUANINE(ChainType.RNA, 'G', "GUA", "G"),
-    CYTOSINE(ChainType.RNA, 'C', "CYT", "C"),
-    URACIL(ChainType.RNA, 'U', "URA", "URI", "U"),
-    THYMINE(ChainType.RNA, 'T', "THY", "T"),
-    ALANINE(ChainType.PROTEIN, 'A', "ALA"),
-    ARGININE(ChainType.PROTEIN, 'R', "ARG"),
-    ASPARAGINE(ChainType.PROTEIN, 'N', "ASN"),
-    ASPARTIC_ACID(ChainType.PROTEIN, 'D', "ASP"),
-    CYSTEINE(ChainType.PROTEIN, 'C', "CYS"),
-    GLUTAMINE(ChainType.PROTEIN, 'Q', "GLN"),
-    GLUTAMIC_ACID(ChainType.PROTEIN, 'E', "GLU"),
-    GLYCINE(ChainType.PROTEIN, 'G', "GLY"),
-    HISTIDINE(ChainType.PROTEIN, 'H', "HIS", "HSD", "HSE", "HSP"),
-    ISOLEUCINE(ChainType.PROTEIN, 'I', "ILE"),
-    LEUCINE(ChainType.PROTEIN, 'L', "LEU"),
-    LYSINE(ChainType.PROTEIN, 'K', "LYS"),
-    METHIONINE(ChainType.PROTEIN, 'M', "MET"),
-    PHENYLALANINE(ChainType.PROTEIN, 'F', "PHE"),
-    PROLINE(ChainType.PROTEIN, 'P', "PRO"),
-    SERINE(ChainType.PROTEIN, 'S', "SER"),
-    THREONINE(ChainType.PROTEIN, 'T', "THR"),
-    TRYPTOPHAN(ChainType.PROTEIN, 'W', "TRP"),
-    TYROSINE(ChainType.PROTEIN, 'Y', "TYR"),
-    VALINE(ChainType.PROTEIN, 'V', "VAL");
+    UNKNOWN(MoleculeType.UNKNOWN, 'X', "UNK"),
+    ADENINE(MoleculeType.RNA, 'A', "ADE", "A"),
+    GUANINE(MoleculeType.RNA, 'G', "GUA", "G"),
+    CYTOSINE(MoleculeType.RNA, 'C', "CYT", "C"),
+    URACIL(MoleculeType.RNA, 'U', "URA", "URI", "U"),
+    THYMINE(MoleculeType.RNA, 'T', "THY", "T"),
+    ALANINE(MoleculeType.PROTEIN, 'A', "ALA"),
+    ARGININE(MoleculeType.PROTEIN, 'R', "ARG"),
+    ASPARAGINE(MoleculeType.PROTEIN, 'N', "ASN"),
+    ASPARTIC_ACID(MoleculeType.PROTEIN, 'D', "ASP"),
+    CYSTEINE(MoleculeType.PROTEIN, 'C', "CYS"),
+    GLUTAMINE(MoleculeType.PROTEIN, 'Q', "GLN"),
+    GLUTAMIC_ACID(MoleculeType.PROTEIN, 'E', "GLU"),
+    GLYCINE(MoleculeType.PROTEIN, 'G', "GLY"),
+    HISTIDINE(MoleculeType.PROTEIN, 'H', "HIS", "HSD", "HSE", "HSP"),
+    ISOLEUCINE(MoleculeType.PROTEIN, 'I', "ILE"),
+    LEUCINE(MoleculeType.PROTEIN, 'L', "LEU"),
+    LYSINE(MoleculeType.PROTEIN, 'K', "LYS"),
+    METHIONINE(MoleculeType.PROTEIN, 'M', "MET"),
+    PHENYLALANINE(MoleculeType.PROTEIN, 'F', "PHE"),
+    PROLINE(MoleculeType.PROTEIN, 'P', "PRO"),
+    SERINE(MoleculeType.PROTEIN, 'S', "SER"),
+    THREONINE(MoleculeType.PROTEIN, 'T', "THR"),
+    TRYPTOPHAN(MoleculeType.PROTEIN, 'W', "TRP"),
+    TYROSINE(MoleculeType.PROTEIN, 'Y', "TYR"),
+    VALINE(MoleculeType.PROTEIN, 'V', "VAL");
 
-    private final ChainType chainType;
+    private static final ChiTorsionAngleChooser RNA_CHOOSER = new RNAChiChooser();
+    private static final ChiTorsionAngleChooser PROTEIN_CHOOSER = new ProteinChiChooser();
+
+    private final MoleculeType chainType;
     private final char oneLetter;
     private final String[] names;
     private final List<AtomName> residueAtoms;
 
-    private ResidueType(ChainType chainType, char oneLetter, String... names) {
+    private ResidueType(MoleculeType chainType, char oneLetter, String... names) {
         this.chainType = chainType;
         this.oneLetter = oneLetter;
         this.names = names;
@@ -61,7 +68,7 @@ public enum ResidueType {
         }
     }
 
-    public ChainType getChainType() {
+    public MoleculeType getChainType() {
         return chainType;
     }
 
@@ -77,7 +84,24 @@ public enum ResidueType {
         return residueAtoms;
     }
 
-    public static ResidueType fromString(ChainType chainType, String pdbName) {
+    public List<TorsionAngle> getTorsionAngles() {
+        if (chainType == MoleculeType.UNKNOWN) {
+            return null;
+        }
+
+        ChiTorsionAngleChooser chooser = chainType == MoleculeType.RNA ? RNA_CHOOSER
+                : PROTEIN_CHOOSER;
+
+        List<TorsionAngle> result = new ArrayList<TorsionAngle>();
+        result.addAll(chainType.getMainTorsionAngles());
+        TorsionAngle[] chiAngles = chooser.getChiAngles(this);
+        if (chiAngles != null) {
+            result.addAll(Arrays.asList(chiAngles));
+        }
+        return result;
+    }
+
+    public static ResidueType fromString(MoleculeType chainType, String pdbName) {
         pdbName = pdbName.trim();
 
         for (ResidueType type : ResidueType.values()) {
@@ -93,7 +117,8 @@ public enum ResidueType {
         return ResidueType.UNKNOWN;
     }
 
-    public static ResidueType fromOneLetter(ChainType chainType, char oneLetter) {
+    public static ResidueType fromOneLetter(MoleculeType chainType,
+            char oneLetter) {
         oneLetter = Character.toUpperCase(oneLetter);
 
         for (ResidueType type : ResidueType.values()) {

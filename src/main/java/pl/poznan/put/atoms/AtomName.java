@@ -79,6 +79,10 @@ public enum AtomName {
         return type;
     }
 
+    public String getName() {
+        return names.get(0);
+    }
+
     public boolean matchesName(String pdbName) {
         return names.contains(pdbName.trim());
     }
