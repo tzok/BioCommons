@@ -4,9 +4,10 @@ import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.helper.UniTypeQuadruplet;
 
 public class TorsionAngleImpl implements TorsionAngle {
-    protected UniTypeQuadruplet<AtomName> atoms;
-    protected UniTypeQuadruplet<Integer> residueRule;
-    protected String displayName;
+    protected final UniTypeQuadruplet<AtomName> atoms;
+    protected final UniTypeQuadruplet<Integer> residueRule;
+    protected final String displayName;
+    private final String name;
 
     public TorsionAngleImpl(AtomName a1, AtomName a2, AtomName a3, AtomName a4,
             int r1, int r2, int r3, int r4, String name, String unicodeName) {
@@ -14,6 +15,7 @@ public class TorsionAngleImpl implements TorsionAngle {
         this.residueRule = new UniTypeQuadruplet<Integer>(r1, r2, r3, r4);
         this.displayName = unicodeName + " (" + name + ") " + a1.getName()
                 + "-" + a2.getName() + "-" + a3.getName() + "-" + a4.getName();
+        this.name = name;
     }
 
     @Override
@@ -29,5 +31,10 @@ public class TorsionAngleImpl implements TorsionAngle {
     @Override
     public String getDisplayName() {
         return displayName;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

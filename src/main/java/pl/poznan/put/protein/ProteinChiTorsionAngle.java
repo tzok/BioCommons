@@ -1,0 +1,85 @@
+package pl.poznan.put.protein;
+
+import pl.poznan.put.atoms.AtomName;
+import pl.poznan.put.common.TorsionAngle;
+import pl.poznan.put.helper.Constants;
+import pl.poznan.put.helper.UniTypeQuadruplet;
+
+public enum ProteinChiTorsionAngle implements TorsionAngle {
+    ARG_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    ARG_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    ARG_CHI3(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.NE, 0, 0, 0, 0, "CHI3", Constants.UNICODE_CHI3),
+    ARG_CHI4(AtomName.CG, AtomName.CD, AtomName.NE, AtomName.CZ, 0, 0, 0, 0, "CHI4", Constants.UNICODE_CHI4),
+    ARG_CHI5(AtomName.CD, AtomName.NE, AtomName.CZ, AtomName.NH1, 0, 0, 0, 0, "CHI5", Constants.UNICODE_CHI5),
+    ASN_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    ASN_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.OD1, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    ASP_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    ASP_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.OD1, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    CYS_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.SG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    GLU_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    GLU_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    GLU_CHI3(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.OE1, 0, 0, 0, 0, "CHI3", Constants.UNICODE_CHI3),
+    GLN_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    GLN_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    GLN_CHI3(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.OE1, 0, 0, 0, 0, "CHI3", Constants.UNICODE_CHI3),
+    HIS_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    HIS_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.ND1, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    ILE_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG1, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    ILE_CHI2(AtomName.CA, AtomName.CB, AtomName.CG1, AtomName.CD1, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    LEU_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    LEU_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    LYS_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    LYS_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    LYS_CHI3(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.CE, 0, 0, 0, 0, "CHI3", Constants.UNICODE_CHI3),
+    LYS_CHI4(AtomName.CG, AtomName.CD, AtomName.CE, AtomName.NZ, 0, 0, 0, 0, "CHI4", Constants.UNICODE_CHI4),
+    MET_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    MET_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.SD, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    MET_CHI3(AtomName.CB, AtomName.CG, AtomName.SD, AtomName.CE, 0, 0, 0, 0, "CHI3", Constants.UNICODE_CHI3),
+    PHE_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    PHE_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    PRO_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    PRO_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    SER_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.OG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    THR_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.OG1, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    TRP_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    TRP_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    TYR_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
+    TYR_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
+    VAL_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG1, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1);
+
+    private final UniTypeQuadruplet<AtomName> atoms;
+    private final UniTypeQuadruplet<Integer> residueRule;
+    private final String name;
+    private final String displayName;
+
+    private ProteinChiTorsionAngle(AtomName a1, AtomName a2, AtomName a3,
+            AtomName a4, int r1, int r2, int r3, int r4, String name,
+            String unicodeName) {
+        this.atoms = new UniTypeQuadruplet<AtomName>(a1, a2, a3, a4);
+        this.residueRule = new UniTypeQuadruplet<Integer>(r1, r2, r3, r4);
+        this.name = name;
+        this.displayName = unicodeName + " (" + name.toLowerCase() + ") "
+                + a1.getName() + "-" + a2.getName() + "-" + a3.getName() + "-"
+                + a4.getName();
+    }
+
+    @Override
+    public UniTypeQuadruplet<AtomName> getAtoms() {
+        return atoms;
+    }
+
+    @Override
+    public UniTypeQuadruplet<Integer> getResidueRule() {
+        return residueRule;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+}

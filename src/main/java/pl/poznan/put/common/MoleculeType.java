@@ -11,29 +11,24 @@ import pl.poznan.put.helper.Helper;
 import pl.poznan.put.nucleic.RNABackboneAtoms;
 import pl.poznan.put.nucleic.RNABondRule;
 import pl.poznan.put.nucleic.RNATorsionAngle;
-import pl.poznan.put.nucleic.RNAChiChooser;
 import pl.poznan.put.protein.ProteinBackboneAtoms;
 import pl.poznan.put.protein.ProteinBondRule;
-import pl.poznan.put.protein.ProteinChiChooser;
 import pl.poznan.put.protein.ProteinTorsionAngle;
 
 public enum MoleculeType {
-    RNA(RNABackboneAtoms.getAtoms(), new RNABondRule(), RNATorsionAngle.values(), new RNAChiChooser()),
-    PROTEIN(ProteinBackboneAtoms.getAtoms(), new ProteinBondRule(), ProteinTorsionAngle.values(), new ProteinChiChooser()),
-    UNKNOWN(null, null, null, null);
+    RNA(RNABackboneAtoms.getAtoms(), new RNABondRule(), RNATorsionAngle.values()),
+    PROTEIN(ProteinBackboneAtoms.getAtoms(), new ProteinBondRule(), ProteinTorsionAngle.values()),
+    UNKNOWN(null, null, null);
 
     private final List<AtomName> backboneAtoms;
     private final ResidueBondRule bondRule;
     private final TorsionAngle[] torsionAngles;
-    private final ChiTorsionAngleChooser chiChooser;
 
     private MoleculeType(List<AtomName> backboneAtoms,
-            ResidueBondRule bondRule, TorsionAngle[] torsionAngles,
-            ChiTorsionAngleChooser chiChooser) {
+            ResidueBondRule bondRule, TorsionAngle[] torsionAngles) {
         this.backboneAtoms = backboneAtoms;
         this.bondRule = bondRule;
         this.torsionAngles = torsionAngles;
-        this.chiChooser = chiChooser;
     }
 
     public List<AtomName> getBackboneAtoms() {
@@ -44,12 +39,8 @@ public enum MoleculeType {
         return bondRule.areConnected(g1, g2);
     }
 
-    public List<TorsionAngle> getMainTorsionAngles() {
+    public List<TorsionAngle> getBackboneTorsionAngles() {
         return Arrays.asList(torsionAngles);
-    }
-
-    public List<TorsionAngle> getChiTorsionAngles(ResidueType residueType) {
-        return Arrays.asList(chiChooser.getChiAngles(residueType));
     }
 
     public static MoleculeType detect(Chain chain) {
