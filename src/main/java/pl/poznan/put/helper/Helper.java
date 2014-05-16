@@ -2,10 +2,12 @@ package pl.poznan.put.helper;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.biojava.bio.structure.Atom;
 import org.biojava.bio.structure.Chain;
 import org.biojava.bio.structure.Group;
+import org.biojava.bio.structure.Structure;
 
 import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.common.MoleculeType;
@@ -22,6 +24,29 @@ public class Helper {
             }
         }
         return null;
+    }
+
+    public static List<Atom> findAllAtoms(Chain chain, AtomName atomName) {
+        List<Atom> result = new ArrayList<Atom>();
+
+        for (Group group : chain.getAtomGroups()) {
+            Atom atom = Helper.findAtom(group, atomName);
+            if (atom != null) {
+                result.add(atom);
+            }
+        }
+
+        return result;
+    }
+
+    public static List<Atom> findAllAtoms(Structure structure, AtomName atomName) {
+        List<Atom> result = new ArrayList<Atom>();
+
+        for (Chain chain : structure.getChains()) {
+            result.addAll(Helper.findAllAtoms(chain, atomName));
+        }
+
+        return result;
     }
 
     public static String getSequence(Chain chain) {
