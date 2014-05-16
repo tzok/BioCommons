@@ -9,13 +9,13 @@ import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.atoms.AtomType;
 import pl.poznan.put.atoms.Bonds;
 import pl.poznan.put.common.ResidueBondRule;
-import pl.poznan.put.helper.Helper;
+import pl.poznan.put.helper.StructureHelper;
 
 public class ProteinBondRule implements ResidueBondRule {
     @Override
     public boolean areConnected(Group r1, Group r2) {
-        Atom c = Helper.findAtom(r1, AtomName.C);
-        Atom n = Helper.findAtom(r2, AtomName.N);
+        Atom c = StructureHelper.findAtom(r1, AtomName.C);
+        Atom n = StructureHelper.findAtom(r2, AtomName.N);
 
         try {
             if (c != null && n != null) {

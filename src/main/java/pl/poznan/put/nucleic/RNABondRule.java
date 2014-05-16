@@ -9,13 +9,13 @@ import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.atoms.AtomType;
 import pl.poznan.put.atoms.Bonds;
 import pl.poznan.put.common.ResidueBondRule;
-import pl.poznan.put.helper.Helper;
+import pl.poznan.put.helper.StructureHelper;
 
 public class RNABondRule implements ResidueBondRule {
     @Override
     public boolean areConnected(Group r1, Group r2) {
-        Atom o3p = Helper.findAtom(r1, AtomName.O3p);
-        Atom p = Helper.findAtom(r2, AtomName.P);
+        Atom o3p = StructureHelper.findAtom(r1, AtomName.O3p);
+        Atom p = StructureHelper.findAtom(r2, AtomName.P);
 
         try {
             if (o3p != null && p != null) {

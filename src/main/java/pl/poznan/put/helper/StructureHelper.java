@@ -13,10 +13,7 @@ import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.common.ResidueType;
 
-public class Helper {
-    private Helper() {
-    }
-
+public class StructureHelper {
     public static Atom findAtom(Group residue, AtomName atomName) {
         for (Atom atom : residue.getAtoms()) {
             if (atomName.matchesName(atom.getFullName())) {
@@ -30,7 +27,7 @@ public class Helper {
         List<Atom> result = new ArrayList<Atom>();
 
         for (Group group : chain.getAtomGroups()) {
-            Atom atom = Helper.findAtom(group, atomName);
+            Atom atom = StructureHelper.findAtom(group, atomName);
             if (atom != null) {
                 result.add(atom);
             }
@@ -43,7 +40,7 @@ public class Helper {
         List<Atom> result = new ArrayList<Atom>();
 
         for (Chain chain : structure.getChains()) {
-            result.addAll(Helper.findAllAtoms(chain, atomName));
+            result.addAll(StructureHelper.findAllAtoms(chain, atomName));
         }
 
         return result;
@@ -80,5 +77,8 @@ public class Helper {
         }
 
         group.setAtoms(new ArrayList<Atom>(atoms));
+    }
+
+    private StructureHelper() {
     }
 }

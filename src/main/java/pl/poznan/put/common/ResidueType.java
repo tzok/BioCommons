@@ -7,7 +7,7 @@ import java.util.List;
 import org.biojava.bio.structure.Group;
 
 import pl.poznan.put.atoms.AtomName;
-import pl.poznan.put.helper.Helper;
+import pl.poznan.put.helper.StructureHelper;
 import pl.poznan.put.nucleic.RNAChiTorsionAngle;
 import pl.poznan.put.nucleic.RNAResidueAtoms;
 import pl.poznan.put.protein.ProteinChiTorsionAngle;
@@ -129,7 +129,7 @@ public enum ResidueType {
 
             if (listing != null) {
                 for (AtomName atomType : listing) {
-                    if (Helper.findAtom(residue, atomType) != null) {
+                    if (StructureHelper.findAtom(residue, atomType) != null) {
                         score++;
                     }
                 }
