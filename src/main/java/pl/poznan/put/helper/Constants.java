@@ -32,6 +32,7 @@ public final class Constants {
     public static final String UNICODE_CHI5 = "\u03C75";
     public static final String UNICODE_CALPHA = "C\u03B1";
     public static final String UNICODE_DEGREE = "\u00B0";
+    public static final String UNICODE_ANGSTROM = "\u00C5";
     public static final String UNICODE_PI = "\u03C0";
 
     public static final List<Color> COLORS = new ArrayList<Color>();
