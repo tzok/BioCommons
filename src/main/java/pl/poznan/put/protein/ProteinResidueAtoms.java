@@ -277,7 +277,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HG21);
         atoms.add(AtomName.HG22);
         atoms.add(AtomName.HG23);
-        ProteinResidueAtoms.MAP.put(ResidueType.THREONINE, atoms);
+        ProteinResidueAtoms.MAP.put(ResidueType.VALINE, atoms);
     }
 
     public static List<AtomName> getAtoms(ResidueType residueType) {
