@@ -23,10 +23,10 @@ public enum MoleculeType {
     private final List<AtomName> backboneAtoms;
     private final AtomName mainAtom;
     private final ResidueBondRule bondRule;
-    private final TorsionAngle[] torsionAngles;
+    private final AtomsBasedTorsionAngle[] torsionAngles;
 
     private MoleculeType(List<AtomName> backboneAtoms, AtomName mainAtom,
-            ResidueBondRule bondRule, TorsionAngle[] torsionAngles) {
+            ResidueBondRule bondRule, AtomsBasedTorsionAngle[] torsionAngles) {
         this.backboneAtoms = backboneAtoms;
         this.mainAtom = mainAtom;
         this.bondRule = bondRule;
@@ -45,7 +45,7 @@ public enum MoleculeType {
         return bondRule.areConnected(g1, g2);
     }
 
-    public List<TorsionAngle> getBackboneTorsionAngles() {
+    public List<AtomsBasedTorsionAngle> getBackboneTorsionAngles() {
         return Arrays.asList(torsionAngles);
     }
 

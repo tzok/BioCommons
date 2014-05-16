@@ -1,11 +1,11 @@
 package pl.poznan.put.protein;
 
 import pl.poznan.put.atoms.AtomName;
-import pl.poznan.put.common.TorsionAngle;
+import pl.poznan.put.common.AtomsBasedTorsionAngle;
 import pl.poznan.put.helper.Constants;
 import pl.poznan.put.helper.UniTypeQuadruplet;
 
-public enum ProteinTorsionAngle implements TorsionAngle {
+public enum ProteinTorsionAngle implements AtomsBasedTorsionAngle {
     PHI(AtomName.C, AtomName.N, AtomName.CA, AtomName.C, 0, 1, 1, 1, Constants.UNICODE_PHI),
     PSI(AtomName.N, AtomName.CA, AtomName.C, AtomName.N, 0, 0, 0, 1, Constants.UNICODE_PSI),
     OMEGA(AtomName.CA, AtomName.C, AtomName.N, AtomName.CA, 0, 0, 1, 1, Constants.UNICODE_OMEGA),

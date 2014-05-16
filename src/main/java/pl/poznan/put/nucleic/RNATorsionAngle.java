@@ -1,11 +1,11 @@
 package pl.poznan.put.nucleic;
 
 import pl.poznan.put.atoms.AtomName;
-import pl.poznan.put.common.TorsionAngle;
+import pl.poznan.put.common.AtomsBasedTorsionAngle;
 import pl.poznan.put.helper.Constants;
 import pl.poznan.put.helper.UniTypeQuadruplet;
 
-public enum RNATorsionAngle implements TorsionAngle {
+public enum RNATorsionAngle implements AtomsBasedTorsionAngle {
     ALPHA(AtomName.O3p, AtomName.P, AtomName.O5p, AtomName.C5p, -1, 0, 0, 0, Constants.UNICODE_ALPHA),
     BETA(AtomName.P, AtomName.O5p, AtomName.C5p, AtomName.C4p, 0, 0, 0, 0, Constants.UNICODE_BETA),
     GAMMA(AtomName.O5p, AtomName.C5p, AtomName.C4p, AtomName.C3p, 0, 0, 0, 0, Constants.UNICODE_GAMMA),

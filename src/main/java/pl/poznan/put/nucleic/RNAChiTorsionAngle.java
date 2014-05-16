@@ -1,11 +1,11 @@
 package pl.poznan.put.nucleic;
 
 import pl.poznan.put.atoms.AtomName;
-import pl.poznan.put.common.TorsionAngle;
+import pl.poznan.put.common.AtomsBasedTorsionAngle;
 import pl.poznan.put.helper.Constants;
 import pl.poznan.put.helper.UniTypeQuadruplet;
 
-public enum RNAChiTorsionAngle implements TorsionAngle {
+public enum RNAChiTorsionAngle implements AtomsBasedTorsionAngle {
     PURINE(AtomName.O4p, AtomName.C1p, AtomName.N9, AtomName.C4, 0, 0, 0, 0, "CHI", Constants.UNICODE_CHI),
     PYRIMIDINE(AtomName.O4p, AtomName.C1p, AtomName.N1, AtomName.C2, 0, 0, 0, 0, "CHI", Constants.UNICODE_CHI);
 

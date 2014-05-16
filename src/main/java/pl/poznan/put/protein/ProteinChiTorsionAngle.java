@@ -1,11 +1,11 @@
 package pl.poznan.put.protein;
 
 import pl.poznan.put.atoms.AtomName;
-import pl.poznan.put.common.TorsionAngle;
+import pl.poznan.put.common.AtomsBasedTorsionAngle;
 import pl.poznan.put.helper.Constants;
 import pl.poznan.put.helper.UniTypeQuadruplet;
 
-public enum ProteinChiTorsionAngle implements TorsionAngle {
+public enum ProteinChiTorsionAngle implements AtomsBasedTorsionAngle {
     ARG_CHI1(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG, 0, 0, 0, 0, "CHI1", Constants.UNICODE_CHI1),
     ARG_CHI2(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD, 0, 0, 0, 0, "CHI2", Constants.UNICODE_CHI2),
     ARG_CHI3(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.NE, 0, 0, 0, 0, "CHI3", Constants.UNICODE_CHI3),

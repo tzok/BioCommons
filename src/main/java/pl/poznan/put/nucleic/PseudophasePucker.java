@@ -1,21 +1,9 @@
 package pl.poznan.put.nucleic;
 
-import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.common.TorsionAngle;
 import pl.poznan.put.common.TorsionAngleValue;
-import pl.poznan.put.helper.UniTypeQuadruplet;
 
 public class PseudophasePucker implements TorsionAngle {
-    @Override
-    public UniTypeQuadruplet<AtomName> getAtoms() {
-        return null;
-    }
-
-    @Override
-    public UniTypeQuadruplet<Integer> getResidueRule() {
-        return null;
-    }
-
     @Override
     public String getDisplayName() {
         return "P";
