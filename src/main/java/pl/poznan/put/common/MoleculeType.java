@@ -16,23 +16,29 @@ import pl.poznan.put.protein.ProteinBondRule;
 import pl.poznan.put.protein.ProteinTorsionAngle;
 
 public enum MoleculeType {
-    RNA(RNABackboneAtoms.getAtoms(), new RNABondRule(), RNATorsionAngle.values()),
-    PROTEIN(ProteinBackboneAtoms.getAtoms(), new ProteinBondRule(), ProteinTorsionAngle.values()),
-    UNKNOWN(null, null, null);
+    RNA(RNABackboneAtoms.getAtoms(), AtomName.P, new RNABondRule(), RNATorsionAngle.values()),
+    PROTEIN(ProteinBackboneAtoms.getAtoms(), AtomName.CA, new ProteinBondRule(), ProteinTorsionAngle.values()),
+    UNKNOWN(null, null, null, null);
 
     private final List<AtomName> backboneAtoms;
+    private final AtomName mainAtom;
     private final ResidueBondRule bondRule;
     private final TorsionAngle[] torsionAngles;
 
-    private MoleculeType(List<AtomName> backboneAtoms,
+    private MoleculeType(List<AtomName> backboneAtoms, AtomName mainAtom,
             ResidueBondRule bondRule, TorsionAngle[] torsionAngles) {
         this.backboneAtoms = backboneAtoms;
+        this.mainAtom = mainAtom;
         this.bondRule = bondRule;
         this.torsionAngles = torsionAngles;
     }
 
     public List<AtomName> getBackboneAtoms() {
         return backboneAtoms;
+    }
+
+    public AtomName getMainAtom() {
+        return mainAtom;
     }
 
     public boolean areConnected(Group g1, Group g2) {
