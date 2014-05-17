@@ -34,6 +34,10 @@ public class CompactFragment {
         residues.add(residue);
     }
 
+    public Group getResidue(int index) {
+        return residues.get(index);
+    }
+
     public List<ResidueTorsionAngles> getTorsionAngles() {
         if (torsionAngles.size() != residues.size()) {
             calculateTorsionAngles();

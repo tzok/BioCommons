@@ -89,6 +89,10 @@ public enum ResidueType {
         return result;
     }
 
+    public List<AtomsBasedTorsionAngle> getChiTorsionAngles() {
+        return Arrays.asList(chiAngles);
+    }
+
     public static ResidueType fromString(MoleculeType chainType, String pdbName) {
         pdbName = pdbName.trim();
 
