@@ -128,11 +128,15 @@ public class CompactFragment {
         return new TorsionAngleValue(angle, value);
     }
 
+    public String getName() {
+        return parent.getName() + " " + chainType;
+    }
+
     @Override
     public String toString() {
         Residue first = Residue.fromGroup(residues.get(0));
         Residue last = Residue.fromGroup(residues.get(residues.size() - 1));
-        return parent.getName() + " " + chainType + " " + first + " - " + last
-                + " (count: " + residues.size() + ")";
+        return getName() + " " + first + " - " + last + " (count: "
+                + residues.size() + ")";
     }
 }
