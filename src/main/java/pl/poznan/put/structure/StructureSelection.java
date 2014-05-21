@@ -3,6 +3,7 @@ package pl.poznan.put.structure;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.biojava.bio.structure.Group;
 
 import pl.poznan.put.common.MoleculeType;
@@ -19,6 +20,10 @@ public class StructureSelection {
 
     public String getName() {
         return name;
+    }
+
+    public List<Group> getResidues() {
+        return residues;
     }
 
     public int getSize() {
@@ -58,6 +63,44 @@ public class StructureSelection {
 
         result.add(current);
         return result;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (name == null ? 0 : name.hashCode());
+        result = prime * result + (residues == null ? 0 : residues.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        StructureSelection other = (StructureSelection) obj;
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (residues == null) {
+            if (other.residues != null) {
+                return false;
+            }
+        } else if (!CollectionUtils.isEqualCollection(residues, other.residues)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package pl.poznan.put.helper;
 
+import java.util.List;
+
 import org.biojava.bio.structure.Atom;
 
 /**
@@ -111,6 +113,20 @@ public final class TorsionAnglesHelper {
         double diff = Math.abs(a1Mod - a2Mod);
         diff = Math.min(diff, full - diff);
         return diff;
+    }
+
+    public static double calculateMean(List<Double> values) {
+        if (values.size() == 0) {
+            return Double.NaN;
+        }
+
+        double sines = 0.0;
+        double cosines = 0.0;
+        for (double v : values) {
+            sines += Math.sin(v);
+            cosines += Math.cos(v);
+        }
+        return Math.atan2(sines / values.size(), cosines / values.size());
     }
 
     private TorsionAnglesHelper() {

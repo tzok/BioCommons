@@ -20,15 +20,27 @@ public class StructureSelectionFactory {
         return new StructureSelection(name, residues);
     }
 
+    public static TypedStructureSelection create(String name, Chain chain) {
+        List<Group> residues = StructureSelectionFactory.getAllResidues(chain);
+        return new TypedStructureSelection(name, residues,
+                MoleculeType.detect(chain));
+    }
+
     private static List<Group> getAllResidues(List<Chain> chains) {
         List<Group> residues = new ArrayList<Group>();
-
         for (Chain chain : chains) {
-            for (Group group : chain.getAtomGroups()) {
-                StructureHelper.mergeAltLocs(group);
-                if (MoleculeType.detect(group) != MoleculeType.UNKNOWN) {
-                    residues.add(group);
-                }
+            residues.addAll(StructureSelectionFactory.getAllResidues(chain));
+        }
+        return residues;
+    }
+
+    private static List<Group> getAllResidues(Chain chain) {
+        List<Group> residues = new ArrayList<Group>();
+
+        for (Group group : chain.getAtomGroups()) {
+            StructureHelper.mergeAltLocs(group);
+            if (MoleculeType.detect(group) != MoleculeType.UNKNOWN) {
+                residues.add(group);
             }
         }
 
