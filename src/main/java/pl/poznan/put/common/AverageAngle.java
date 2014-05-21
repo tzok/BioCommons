@@ -8,7 +8,7 @@ import pl.poznan.put.helper.TorsionAnglesHelper;
 public class AverageAngle implements TorsionAngle {
     public static TorsionAngleValue calculate(MoleculeType moleculeType,
             List<TorsionAngleValue> values) {
-        List<Double> angles = new ArrayList<>();
+        List<Double> angles = new ArrayList<Double>();
 
         for (TorsionAngleValue tav : values) {
             angles.add(tav.getValue());

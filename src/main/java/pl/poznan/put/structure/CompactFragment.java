@@ -17,12 +17,14 @@ import pl.poznan.put.helper.TorsionAnglesHelper;
 import pl.poznan.put.helper.UniTypeQuadruplet;
 
 public class CompactFragment {
+    private final StructureSelection parent;
     private final MoleculeType chainType;
     private final List<Group> residues = new ArrayList<Group>();
     private final List<ResidueTorsionAngles> torsionAngles = new ArrayList<ResidueTorsionAngles>();
 
-    public CompactFragment(MoleculeType chainType) {
+    public CompactFragment(StructureSelection parent, MoleculeType chainType) {
         super();
+        this.parent = parent;
         this.chainType = chainType;
     }
 
@@ -52,7 +54,8 @@ public class CompactFragment {
 
     public static CompactFragment shift(CompactFragment origin, int bestShift,
             int size) {
-        CompactFragment fragment = new CompactFragment(origin.chainType);
+        CompactFragment fragment = new CompactFragment(origin.parent,
+                origin.chainType);
 
         for (int i = bestShift; i < bestShift + size; i++) {
             fragment.addResidue(origin.residues.get(i));
@@ -129,7 +132,7 @@ public class CompactFragment {
     public String toString() {
         Residue first = Residue.fromGroup(residues.get(0));
         Residue last = Residue.fromGroup(residues.get(residues.size() - 1));
-        return chainType + " " + first + " - " + last + " (count: "
-                + residues.size() + ")";
+        return parent.getName() + " " + chainType + " " + first + " - " + last
+                + " (count: " + residues.size() + ")";
     }
 }

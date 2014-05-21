@@ -20,10 +20,9 @@ public class StructureSelectionFactory {
         return new StructureSelection(name, residues);
     }
 
-    public static TypedStructureSelection create(String name, Chain chain) {
+    public static StructureSelection create(String name, Chain chain) {
         List<Group> residues = StructureSelectionFactory.getAllResidues(chain);
-        return new TypedStructureSelection(name, residues,
-                MoleculeType.detect(chain));
+        return new StructureSelection(name, residues);
     }
 
     private static List<Group> getAllResidues(List<Chain> chains) {

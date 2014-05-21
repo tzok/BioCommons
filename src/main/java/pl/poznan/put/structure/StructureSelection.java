@@ -42,7 +42,7 @@ public class StructureSelection {
         }
 
         Group first = residues.get(0);
-        CompactFragment current = new CompactFragment(
+        CompactFragment current = new CompactFragment(this,
                 MoleculeType.detect(first));
         current.addResidue(first);
 
@@ -56,7 +56,7 @@ public class StructureSelection {
                 current.addResidue(r2);
             } else {
                 result.add(current);
-                current = new CompactFragment(c2);
+                current = new CompactFragment(this, c2);
                 current.addResidue(r2);
             }
         }
