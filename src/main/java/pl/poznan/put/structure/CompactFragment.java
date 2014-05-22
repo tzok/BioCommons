@@ -36,20 +36,31 @@ public class CompactFragment {
         residues.add(residue);
     }
 
-    public Group getResidue(int index) {
+    public Group getGroup(int index) {
         return residues.get(index);
+    }
+
+    public Residue getResidue(int index) {
+        return Residue.fromGroup(residues.get(index));
     }
 
     public List<ResidueTorsionAngles> getTorsionAngles() {
         if (torsionAngles.size() != residues.size()) {
             calculateTorsionAngles();
         }
-
         return torsionAngles;
     }
 
     public int getSize() {
         return residues.size();
+    }
+
+    public Sequence getSequence() {
+        Sequence sequence = new Sequence();
+        for (Group group : residues) {
+            sequence.addResidue(Residue.fromGroup(group));
+        }
+        return sequence;
     }
 
     public static CompactFragment shift(CompactFragment origin, int bestShift,
@@ -128,8 +139,12 @@ public class CompactFragment {
         return new TorsionAngleValue(angle, value);
     }
 
+    public String getParentName() {
+        return parent.getName();
+    }
+
     public String getName() {
-        return parent.getName() + " " + chainType;
+        return getParentName() + " " + chainType;
     }
 
     @Override

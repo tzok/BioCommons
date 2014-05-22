@@ -1,5 +1,7 @@
 package pl.poznan.put.structure;
 
+import pl.poznan.put.common.ResidueType;
+
 public class Nucleoside extends Residue {
     private static final long serialVersionUID = -943641369052306989L;
 
@@ -7,9 +9,10 @@ public class Nucleoside extends Residue {
     private boolean isC6;
     private boolean isN1;
 
-    public Nucleoside(char chain, String residueName, int residueNumber,
-            char insertionCode, boolean isMissing) {
-        super(chain, residueName, residueNumber, insertionCode, isMissing);
+    public Nucleoside(ResidueType residueType, char chain, String residueName,
+            int residueNumber, char insertionCode, boolean isMissing) {
+        super(residueType, chain, residueName, residueNumber, insertionCode,
+                isMissing);
     }
 
     public boolean isC2() {

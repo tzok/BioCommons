@@ -15,11 +15,11 @@ import pl.poznan.put.protein.ProteinResidueAtoms;
 
 public enum ResidueType {
     UNKNOWN(MoleculeType.UNKNOWN, null, 'X', "UNK"),
-    ADENINE(MoleculeType.RNA, new AtomsBasedTorsionAngle[] { RNAChiTorsionAngle.PURINE }, 'A', "ADE", "A"),
-    GUANINE(MoleculeType.RNA, new AtomsBasedTorsionAngle[] { RNAChiTorsionAngle.PURINE }, 'G', "GUA", "G"),
-    CYTOSINE(MoleculeType.RNA, new AtomsBasedTorsionAngle[] { RNAChiTorsionAngle.PYRIMIDINE }, 'C', "CYT", "C"),
-    URACIL(MoleculeType.RNA, new AtomsBasedTorsionAngle[] { RNAChiTorsionAngle.PYRIMIDINE }, 'U', "URA", "URI", "U"),
-    THYMINE(MoleculeType.RNA, new AtomsBasedTorsionAngle[] { RNAChiTorsionAngle.PYRIMIDINE }, 'T', "THY", "T"),
+    ADENINE(MoleculeType.RNA, new AtomsBasedTorsionAngle[] { RNAChiTorsionAngle.PURINE }, 'A', "A", "ADE"),
+    GUANINE(MoleculeType.RNA, new AtomsBasedTorsionAngle[] { RNAChiTorsionAngle.PURINE }, 'G', "G", "GUA"),
+    CYTOSINE(MoleculeType.RNA, new AtomsBasedTorsionAngle[] { RNAChiTorsionAngle.PYRIMIDINE }, 'C', "C", "CYT"),
+    URACIL(MoleculeType.RNA, new AtomsBasedTorsionAngle[] { RNAChiTorsionAngle.PYRIMIDINE }, 'U', "U", "URA", "URI"),
+    THYMINE(MoleculeType.RNA, new AtomsBasedTorsionAngle[] { RNAChiTorsionAngle.PYRIMIDINE }, 'T', "T", "THY"),
     ALANINE(MoleculeType.PROTEIN, new AtomsBasedTorsionAngle[] {}, 'A', "ALA"),
     ARGININE(MoleculeType.PROTEIN, new AtomsBasedTorsionAngle[] { ProteinChiTorsionAngle.ARG_CHI1, ProteinChiTorsionAngle.ARG_CHI2, ProteinChiTorsionAngle.ARG_CHI3, ProteinChiTorsionAngle.ARG_CHI4, ProteinChiTorsionAngle.ARG_CHI5 }, 'R', "ARG"),
     ASPARAGINE(MoleculeType.PROTEIN, new AtomsBasedTorsionAngle[] { ProteinChiTorsionAngle.ASN_CHI1, ProteinChiTorsionAngle.ASN_CHI2 }, 'N', "ASN"),

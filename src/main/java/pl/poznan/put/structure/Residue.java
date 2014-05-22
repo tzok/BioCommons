@@ -5,9 +5,13 @@ import java.io.Serializable;
 import org.biojava.bio.structure.Group;
 import org.biojava.bio.structure.ResidueNumber;
 
+import pl.poznan.put.common.MoleculeType;
+import pl.poznan.put.common.ResidueType;
+
 public class Residue implements Comparable<Residue>, Serializable {
     private static final long serialVersionUID = -3434793294284494678L;
 
+    private final ResidueType residueType;
     private final char chain;
     private final String residueName;
     private final int residueNumber;
@@ -29,20 +33,33 @@ public class Residue implements Comparable<Residue>, Serializable {
             insertionCode = resn.getInsCode();
         }
 
-        return new Residue(chain, residueName, residueNumber, insertionCode,
-                false);
+        MoleculeType moleculeType = MoleculeType.detect(group);
+        ResidueType residueType = ResidueType.fromString(moleculeType,
+                residueName);
+
+        if (residueType == ResidueType.UNKNOWN) {
+            residueType = ResidueType.detect(group);
+        }
+
+        return new Residue(residueType, chain, residueName, residueNumber,
+                insertionCode, false);
     }
 
-    public Residue(char chain, String residueName, int residueNumber,
-            char insertionCode, boolean isMissing) {
+    public Residue(ResidueType residueType, char chain, String residueName,
+            int residueNumber, char insertionCode, boolean isMissing) {
         super();
+        this.residueType = residueType;
         this.chain = chain;
         this.residueName = residueName;
         this.residueNumber = residueNumber;
         this.insertionCode = insertionCode;
         this.isMissing = isMissing;
 
-        residueNameOneLetter = residueName.charAt(residueName.length() - 1);
+        residueNameOneLetter = residueType.getOneLetter();
+    }
+
+    public ResidueType getResidueType() {
+        return residueType;
     }
 
     public char getChain() {
