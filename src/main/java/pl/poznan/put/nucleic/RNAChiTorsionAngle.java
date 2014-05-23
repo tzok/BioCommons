@@ -1,12 +1,12 @@
 package pl.poznan.put.nucleic;
 
 import pl.poznan.put.atoms.AtomName;
-import pl.poznan.put.common.AtomsBasedTorsionAngle;
-import pl.poznan.put.common.ChiTorsionAngle;
-import pl.poznan.put.common.ChiTorsionAngleType;
 import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.helper.Constants;
 import pl.poznan.put.helper.UniTypeQuadruplet;
+import pl.poznan.put.torsion.AtomsBasedTorsionAngle;
+import pl.poznan.put.torsion.ChiTorsionAngle;
+import pl.poznan.put.torsion.ChiTorsionAngleType;
 
 public enum RNAChiTorsionAngle implements AtomsBasedTorsionAngle,
         ChiTorsionAngle {
@@ -49,6 +49,11 @@ public enum RNAChiTorsionAngle implements AtomsBasedTorsionAngle,
     @Override
     public String getDisplayName() {
         return displayName;
+    }
+
+    @Override
+    public String getExportName() {
+        return name;
     }
 
     @Override

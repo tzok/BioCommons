@@ -9,30 +9,40 @@ import org.biojava.bio.structure.Group;
 import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.common.ResidueType;
-import pl.poznan.put.common.AtomsBasedTorsionAngle;
-import pl.poznan.put.common.TorsionAngle;
-import pl.poznan.put.common.TorsionAngleValue;
 import pl.poznan.put.helper.StructureHelper;
 import pl.poznan.put.helper.TorsionAnglesHelper;
 import pl.poznan.put.helper.UniTypeQuadruplet;
+import pl.poznan.put.torsion.AngleValue;
+import pl.poznan.put.torsion.AtomsBasedTorsionAngle;
+import pl.poznan.put.torsion.TorsionAngle;
 
 public class CompactFragment {
+    public static CompactFragment shift(CompactFragment origin, int shift,
+            int size) {
+        CompactFragment fragment = new CompactFragment(origin.parent,
+                origin.moleculeType);
+        for (int i = shift; i < shift + size; i++) {
+            fragment.addGroup(origin.residues.get(i));
+        }
+        return fragment;
+    }
+
     private final StructureSelection parent;
-    private final MoleculeType chainType;
+    private final MoleculeType moleculeType;
     private final List<Group> residues = new ArrayList<Group>();
     private final List<ResidueTorsionAngles> torsionAngles = new ArrayList<ResidueTorsionAngles>();
 
-    public CompactFragment(StructureSelection parent, MoleculeType chainType) {
+    public CompactFragment(StructureSelection parent, MoleculeType moleculeType) {
         super();
         this.parent = parent;
-        this.chainType = chainType;
+        this.moleculeType = moleculeType;
     }
 
-    public MoleculeType getChainType() {
-        return chainType;
+    public MoleculeType getMoleculeType() {
+        return moleculeType;
     }
 
-    public void addResidue(Group residue) {
+    public void addGroup(Group residue) {
         residues.add(residue);
     }
 
@@ -42,13 +52,6 @@ public class CompactFragment {
 
     public Residue getResidue(int index) {
         return Residue.fromGroup(residues.get(index));
-    }
-
-    public List<ResidueTorsionAngles> getTorsionAngles() {
-        if (torsionAngles.size() != residues.size()) {
-            calculateTorsionAngles();
-        }
-        return torsionAngles;
     }
 
     public int getSize() {
@@ -63,29 +66,41 @@ public class CompactFragment {
         return sequence;
     }
 
-    public static CompactFragment shift(CompactFragment origin, int bestShift,
-            int size) {
-        CompactFragment fragment = new CompactFragment(origin.parent,
-                origin.chainType);
+    public String getParentName() {
+        return parent.getName();
+    }
 
-        for (int i = bestShift; i < bestShift + size; i++) {
-            fragment.addResidue(origin.residues.get(i));
+    public String getName() {
+        return getParentName() + " " + moleculeType;
+    }
+
+    @Override
+    public String toString() {
+        Residue first = Residue.fromGroup(residues.get(0));
+        Residue last = Residue.fromGroup(residues.get(residues.size() - 1));
+        return getName() + " " + first + " - " + last + " (count: "
+                + residues.size() + ")";
+    }
+
+    // FIXME
+    public List<ResidueTorsionAngles> getTorsionAngles() {
+        if (torsionAngles.size() != residues.size()) {
+            calculateTorsionAngles();
         }
-
-        return fragment;
+        return torsionAngles;
     }
 
     private void calculateTorsionAngles() {
         for (int i = 0; i < residues.size(); i++) {
             Group group = residues.get(i);
-            ResidueType residueType = ResidueType.fromString(chainType,
+            ResidueType residueType = ResidueType.fromString(moleculeType,
                     group.getPDBName());
 
             if (residueType == ResidueType.UNKNOWN) {
                 residueType = ResidueType.detect(group);
             }
 
-            List<TorsionAngleValue> values = new ArrayList<TorsionAngleValue>();
+            List<AngleValue> values = new ArrayList<AngleValue>();
 
             if (residueType != ResidueType.UNKNOWN) {
                 for (TorsionAngle angle : residueType.getTorsionAngles()) {
@@ -102,27 +117,26 @@ public class CompactFragment {
         }
     }
 
-    private TorsionAngleValue calculateTorsionAngle(
-            AtomsBasedTorsionAngle angle, int i) {
+    private AngleValue calculateTorsionAngle(AtomsBasedTorsionAngle angle, int i) {
         UniTypeQuadruplet<Integer> residueRule = angle.getResidueRule();
         int a = i + residueRule.a;
         if (a < 0 || a >= residues.size()) {
-            return TorsionAngleValue.invalidInstance(angle);
+            return AngleValue.invalidInstance(angle);
         }
 
         int b = i + residueRule.b;
         if (b < 0 || b >= residues.size()) {
-            return TorsionAngleValue.invalidInstance(angle);
+            return AngleValue.invalidInstance(angle);
         }
 
         int c = i + residueRule.c;
         if (c < 0 || c >= residues.size()) {
-            return TorsionAngleValue.invalidInstance(angle);
+            return AngleValue.invalidInstance(angle);
         }
 
         int d = i + residueRule.d;
         if (d < 0 || d >= residues.size()) {
-            return TorsionAngleValue.invalidInstance(angle);
+            return AngleValue.invalidInstance(angle);
         }
 
         UniTypeQuadruplet<AtomName> atomNames = angle.getAtoms();
@@ -132,26 +146,10 @@ public class CompactFragment {
         Atom ad = StructureHelper.findAtom(residues.get(d), atomNames.d);
 
         if (aa == null || ab == null || ac == null || ad == null) {
-            return TorsionAngleValue.invalidInstance(angle);
+            return AngleValue.invalidInstance(angle);
         }
 
         double value = TorsionAnglesHelper.calculateTorsion(aa, ab, ac, ad);
-        return new TorsionAngleValue(angle, value);
-    }
-
-    public String getParentName() {
-        return parent.getName();
-    }
-
-    public String getName() {
-        return getParentName() + " " + chainType;
-    }
-
-    @Override
-    public String toString() {
-        Residue first = Residue.fromGroup(residues.get(0));
-        Residue last = Residue.fromGroup(residues.get(residues.size() - 1));
-        return getName() + " " + first + " - " + last + " (count: "
-                + residues.size() + ")";
+        return new AngleValue(angle, value);
     }
 }

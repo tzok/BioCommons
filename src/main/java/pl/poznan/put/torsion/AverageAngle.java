@@ -1,20 +1,19 @@
-package pl.poznan.put.common;
+package pl.poznan.put.torsion;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.helper.TorsionAnglesHelper;
 
 public class AverageAngle implements TorsionAngle {
-    public static TorsionAngleValue calculate(MoleculeType moleculeType,
-            List<TorsionAngleValue> values) {
+    public static AngleValue calculate(MoleculeType moleculeType,
+            List<AngleValue> angleValues) {
         List<Double> angles = new ArrayList<Double>();
-
-        for (TorsionAngleValue tav : values) {
-            angles.add(tav.getValue());
+        for (AngleValue angleValue : angleValues) {
+            angles.add(angleValue.getValue());
         }
-
-        return new TorsionAngleValue(AverageAngle.getInstance(moleculeType),
+        return new AngleValue(AverageAngle.getInstance(moleculeType),
                 TorsionAnglesHelper.calculateMean(angles));
     }
 
@@ -44,13 +43,13 @@ public class AverageAngle implements TorsionAngle {
     }
 
     @Override
-    public MoleculeType getMoleculeType() {
-        return moleculeType;
+    public String getExportName() {
+        return "Average";
     }
 
     @Override
-    public String toString() {
-        return "Average";
+    public MoleculeType getMoleculeType() {
+        return moleculeType;
     }
 
     private AverageAngle(MoleculeType moleculeType) {

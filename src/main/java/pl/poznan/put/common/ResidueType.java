@@ -12,6 +12,7 @@ import pl.poznan.put.nucleic.RNAChiTorsionAngle;
 import pl.poznan.put.nucleic.RNAResidueAtoms;
 import pl.poznan.put.protein.ProteinChiTorsionAngle;
 import pl.poznan.put.protein.ProteinResidueAtoms;
+import pl.poznan.put.torsion.AtomsBasedTorsionAngle;
 
 public enum ResidueType {
     UNKNOWN(MoleculeType.UNKNOWN, null, 'X', "UNK"),
@@ -66,7 +67,7 @@ public enum ResidueType {
         return names;
     }
 
-    public List<AtomName> getResidueAtoms() {
+    public AtomName[] getResidueAtoms() {
         switch (chainType) {
         case PROTEIN:
             return ProteinResidueAtoms.getAtoms(this);
@@ -74,23 +75,23 @@ public enum ResidueType {
             return RNAResidueAtoms.getAtoms(this);
         case UNKNOWN:
         default:
-            return null;
+            return new AtomName[0];
         }
     }
 
-    public List<AtomsBasedTorsionAngle> getTorsionAngles() {
+    public AtomsBasedTorsionAngle[] getTorsionAngles() {
         if (this == UNKNOWN) {
-            return null;
+            return new AtomsBasedTorsionAngle[0];
         }
 
         List<AtomsBasedTorsionAngle> result = new ArrayList<AtomsBasedTorsionAngle>();
-        result.addAll(chainType.getBackboneTorsionAngles());
+        result.addAll(Arrays.asList(chainType.getBackboneTorsionAngles()));
         result.addAll(Arrays.asList(chiAngles));
-        return result;
+        return result.toArray(new AtomsBasedTorsionAngle[result.size()]);
     }
 
-    public List<AtomsBasedTorsionAngle> getChiTorsionAngles() {
-        return Arrays.asList(chiAngles);
+    public AtomsBasedTorsionAngle[] getChiTorsionAngles() {
+        return chiAngles;
     }
 
     public static ResidueType fromString(MoleculeType chainType, String pdbName) {
@@ -129,19 +130,16 @@ public enum ResidueType {
 
         for (ResidueType type : ResidueType.values()) {
             int score = 0;
-            List<AtomName> listing = type.getResidueAtoms();
 
-            if (listing != null) {
-                for (AtomName atomType : listing) {
-                    if (StructureHelper.findAtom(residue, atomType) != null) {
-                        score++;
-                    }
+            for (AtomName atomType : type.getResidueAtoms()) {
+                if (StructureHelper.findAtom(residue, atomType) != null) {
+                    score++;
                 }
+            }
 
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestType = type;
-                }
+            if (score > bestScore) {
+                bestScore = score;
+                bestType = type;
             }
         }
 

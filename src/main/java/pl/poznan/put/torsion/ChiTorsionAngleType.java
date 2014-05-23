@@ -1,8 +1,9 @@
-package pl.poznan.put.common;
+package pl.poznan.put.torsion;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.helper.Constants;
 
 public enum ChiTorsionAngleType implements TorsionAngle {
@@ -13,17 +14,15 @@ public enum ChiTorsionAngleType implements TorsionAngle {
     CHI4(MoleculeType.PROTEIN, Constants.UNICODE_CHI4),
     CHI5(MoleculeType.PROTEIN, Constants.UNICODE_CHI5);
 
-    public static List<ChiTorsionAngleType> getChiTorsionAngles(
+    public static ChiTorsionAngleType[] getChiTorsionAngles(
             MoleculeType moleculeType) {
         List<ChiTorsionAngleType> result = new ArrayList<ChiTorsionAngleType>();
-
         for (ChiTorsionAngleType type : ChiTorsionAngleType.values()) {
             if (type.getMoleculeType() == moleculeType) {
                 result.add(type);
             }
         }
-
-        return result;
+        return result.toArray(new ChiTorsionAngleType[result.size()]);
     }
 
     private final String displayName;
@@ -37,6 +36,11 @@ public enum ChiTorsionAngleType implements TorsionAngle {
     @Override
     public String getDisplayName() {
         return displayName;
+    }
+
+    @Override
+    public String getExportName() {
+        return name();
     }
 
     @Override

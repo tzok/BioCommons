@@ -280,12 +280,14 @@ public class ProteinResidueAtoms {
         ProteinResidueAtoms.MAP.put(ResidueType.VALINE, atoms);
     }
 
-    public static List<AtomName> getAtoms(ResidueType residueType) {
-        if (residueType == null || !ProteinResidueAtoms.MAP.containsKey(residueType)) {
-            return null;
+    public static AtomName[] getAtoms(ResidueType residueType) {
+        if (residueType == null
+                || !ProteinResidueAtoms.MAP.containsKey(residueType)) {
+            return new AtomName[0];
         }
 
-        return ProteinResidueAtoms.MAP.get(residueType);
+        List<AtomName> list = ProteinResidueAtoms.MAP.get(residueType);
+        return list.toArray(new AtomName[list.size()]);
 
     }
 

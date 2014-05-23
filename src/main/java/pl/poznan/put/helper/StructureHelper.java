@@ -1,6 +1,7 @@
 package pl.poznan.put.helper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class StructureHelper {
         return null;
     }
 
-    public static List<Atom> findAllAtoms(Chain chain, AtomName atomName) {
+    public static Atom[] findAllAtoms(Chain chain, AtomName atomName) {
         List<Atom> result = new ArrayList<Atom>();
 
         for (Group group : chain.getAtomGroups()) {
@@ -33,17 +34,16 @@ public class StructureHelper {
             }
         }
 
-        return result;
+        return result.toArray(new Atom[result.size()]);
     }
 
-    public static List<Atom> findAllAtoms(Structure structure, AtomName atomName) {
+    public static Atom[] findAllAtoms(Structure structure, AtomName atomName) {
         List<Atom> result = new ArrayList<Atom>();
-
         for (Chain chain : structure.getChains()) {
-            result.addAll(StructureHelper.findAllAtoms(chain, atomName));
+            Atom[] atomsChain = StructureHelper.findAllAtoms(chain, atomName);
+            result.addAll(Arrays.asList(atomsChain));
         }
-
-        return result;
+        return result.toArray(new Atom[result.size()]);
     }
 
     public static String getSequence(Chain chain) {

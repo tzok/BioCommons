@@ -17,8 +17,8 @@ public class ProteinBackboneAtoms {
         ProteinBackboneAtoms.ATOMS.add(AtomName.O);
     }
 
-    public static List<AtomName> getAtoms() {
-        return ProteinBackboneAtoms.ATOMS;
+    public static AtomName[] getAtoms() {
+        return ProteinBackboneAtoms.ATOMS.toArray(new AtomName[ProteinBackboneAtoms.ATOMS.size()]);
     }
 
     private ProteinBackboneAtoms() {

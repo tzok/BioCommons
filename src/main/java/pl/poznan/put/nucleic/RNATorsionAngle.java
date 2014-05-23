@@ -1,10 +1,10 @@
 package pl.poznan.put.nucleic;
 
 import pl.poznan.put.atoms.AtomName;
-import pl.poznan.put.common.AtomsBasedTorsionAngle;
 import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.helper.Constants;
 import pl.poznan.put.helper.UniTypeQuadruplet;
+import pl.poznan.put.torsion.AtomsBasedTorsionAngle;
 
 public enum RNATorsionAngle implements AtomsBasedTorsionAngle {
     ALPHA(AtomName.O3p, AtomName.P, AtomName.O5p, AtomName.C5p, -1, 0, 0, 0, Constants.UNICODE_ALPHA),
@@ -49,6 +49,11 @@ public enum RNATorsionAngle implements AtomsBasedTorsionAngle {
     @Override
     public String getDisplayName() {
         return displayName;
+    }
+
+    @Override
+    public String getExportName() {
+        return name();
     }
 
     @Override

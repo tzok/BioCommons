@@ -1,12 +1,12 @@
 package pl.poznan.put.protein;
 
 import pl.poznan.put.atoms.AtomName;
-import pl.poznan.put.common.AtomsBasedTorsionAngle;
-import pl.poznan.put.common.ChiTorsionAngle;
-import pl.poznan.put.common.ChiTorsionAngleType;
 import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.helper.Constants;
 import pl.poznan.put.helper.UniTypeQuadruplet;
+import pl.poznan.put.torsion.AtomsBasedTorsionAngle;
+import pl.poznan.put.torsion.ChiTorsionAngle;
+import pl.poznan.put.torsion.ChiTorsionAngleType;
 
 public enum ProteinChiTorsionAngle implements AtomsBasedTorsionAngle,
         ChiTorsionAngle {
@@ -90,12 +90,12 @@ public enum ProteinChiTorsionAngle implements AtomsBasedTorsionAngle,
     }
 
     @Override
-    public MoleculeType getMoleculeType() {
-        return MoleculeType.PROTEIN;
+    public String getExportName() {
+        return name;
     }
 
     @Override
-    public String toString() {
-        return name;
+    public MoleculeType getMoleculeType() {
+        return MoleculeType.PROTEIN;
     }
 }

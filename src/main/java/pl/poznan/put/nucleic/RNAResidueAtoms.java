@@ -94,13 +94,14 @@ public class RNAResidueAtoms {
         RNAResidueAtoms.MAP.put(ResidueType.URACIL, atoms);
     }
 
-    public static List<AtomName> getAtoms(ResidueType residueType) {
+    public static AtomName[] getAtoms(ResidueType residueType) {
         if (residueType == null
                 || !RNAResidueAtoms.MAP.containsKey(residueType)) {
-            return null;
+            return new AtomName[0];
         }
 
-        return RNAResidueAtoms.MAP.get(residueType);
+        List<AtomName> list = RNAResidueAtoms.MAP.get(residueType);
+        return list.toArray(new AtomName[list.size()]);
     }
 
     private RNAResidueAtoms() {

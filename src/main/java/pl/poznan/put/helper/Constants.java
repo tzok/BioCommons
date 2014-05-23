@@ -45,14 +45,6 @@ public final class Constants {
         }
     }
 
-    public static List<RGB> colorsAsRGB() {
-        List<RGB> result = new ArrayList<RGB>();
-        for (Color c : Constants.COLORS) {
-            result.add(RGB.newInstance(c.getRGBColorComponents(null)));
-        }
-        return result;
-    }
-
     private Constants() {
     }
 }

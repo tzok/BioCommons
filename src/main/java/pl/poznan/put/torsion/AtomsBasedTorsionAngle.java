@@ -1,4 +1,4 @@
-package pl.poznan.put.common;
+package pl.poznan.put.torsion;
 
 import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.helper.UniTypeQuadruplet;

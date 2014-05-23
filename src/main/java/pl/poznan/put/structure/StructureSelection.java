@@ -22,29 +22,21 @@ public class StructureSelection {
         return name;
     }
 
-    public List<Group> getResidues() {
-        return residues;
-    }
-
     public int getSize() {
         return residues.size();
     }
 
-    public void computeTorsionAngles() {
-        getCompactFragments();
-    }
-
-    public List<CompactFragment> getCompactFragments() {
+    public CompactFragment[] getCompactFragments() {
         List<CompactFragment> result = new ArrayList<CompactFragment>();
 
         if (residues.size() == 0) {
-            return result;
+            return new CompactFragment[0];
         }
 
         Group first = residues.get(0);
         CompactFragment current = new CompactFragment(this,
                 MoleculeType.detect(first));
-        current.addResidue(first);
+        current.addGroup(first);
 
         for (int i = 0; i < residues.size() - 1; i++) {
             Group r1 = residues.get(i);
@@ -53,16 +45,16 @@ public class StructureSelection {
             MoleculeType c2 = MoleculeType.detect(r2);
 
             if (c1 == c2 && c1.areConnected(r1, r2)) {
-                current.addResidue(r2);
+                current.addGroup(r2);
             } else {
                 result.add(current);
                 current = new CompactFragment(this, c2);
-                current.addResidue(r2);
+                current.addGroup(r2);
             }
         }
 
         result.add(current);
-        return result;
+        return result.toArray(new CompactFragment[result.size()]);
     }
 
     @Override

@@ -30,8 +30,8 @@ public class RNABackboneAtoms {
         RNABackboneAtoms.ATOMS.add(AtomName.O3p);
     }
 
-    public static List<AtomName> getAtoms() {
-        return RNABackboneAtoms.ATOMS;
+    public static AtomName[] getAtoms() {
+        return RNABackboneAtoms.ATOMS.toArray(new AtomName[RNABackboneAtoms.ATOMS.size()]);
     }
 
     private RNABackboneAtoms() {

@@ -5,20 +5,20 @@ import java.util.List;
 
 import org.biojava.bio.structure.Group;
 
-import pl.poznan.put.common.ChiTorsionAngle;
-import pl.poznan.put.common.ChiTorsionAngleType;
 import pl.poznan.put.common.ResidueType;
-import pl.poznan.put.common.TorsionAngle;
-import pl.poznan.put.common.TorsionAngleValue;
+import pl.poznan.put.torsion.AngleValue;
+import pl.poznan.put.torsion.ChiTorsionAngle;
+import pl.poznan.put.torsion.ChiTorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngle;
 
 public class ResidueTorsionAngles {
     private final CompactFragment fragment;
     private final Group group;
     private final ResidueType residueType;
-    private final List<TorsionAngleValue> angles;
+    private final List<AngleValue> angles;
 
     public ResidueTorsionAngles(CompactFragment fragment, Group group,
-            ResidueType residueType, List<TorsionAngleValue> angles) {
+            ResidueType residueType, List<AngleValue> angles) {
         this.fragment = fragment;
         this.group = group;
         this.residueType = residueType;
@@ -37,39 +37,37 @@ public class ResidueTorsionAngles {
         return residueType;
     }
 
-    public List<TorsionAngleValue> getChiAngleValues() {
-        List<TorsionAngleValue> result = new ArrayList<TorsionAngleValue>();
+    public int getSize() {
+        return angles.size();
+    }
 
+    public AngleValue[] getChiAngleValues() {
+        List<AngleValue> result = new ArrayList<AngleValue>();
         for (TorsionAngle torsionAngle : residueType.getChiTorsionAngles()) {
             result.add(getAngleValue(torsionAngle));
         }
-
-        return result;
+        return result.toArray(new AngleValue[result.size()]);
     }
 
-    public TorsionAngleValue getAngleValue(TorsionAngle torsionAngle) {
-        for (TorsionAngleValue torsionAngleValue : angles) {
-            if (torsionAngleValue.getTorsionAngle().equals(torsionAngle)) {
+    public AngleValue getAngleValue(TorsionAngle torsionAngle) {
+        for (AngleValue torsionAngleValue : angles) {
+            if (torsionAngleValue.getAngle().equals(torsionAngle)) {
                 return torsionAngleValue;
             }
         }
-        return TorsionAngleValue.invalidInstance(torsionAngle);
+        return AngleValue.invalidInstance(torsionAngle);
     }
 
-    public TorsionAngleValue getChiAngleValue(ChiTorsionAngleType angleType) {
-        for (TorsionAngleValue torsionAngleValue : angles) {
-            TorsionAngle torsionAngle = torsionAngleValue.getTorsionAngle();
+    public AngleValue getChiAngleValue(ChiTorsionAngleType angleType) {
+        for (AngleValue torsionAngleValue : angles) {
+            TorsionAngle torsionAngle = torsionAngleValue.getAngle();
 
             if (torsionAngle instanceof ChiTorsionAngle
                     && ((ChiTorsionAngle) torsionAngle).getType() == angleType) {
                 return torsionAngleValue;
             }
         }
-        return TorsionAngleValue.invalidInstance(angleType);
-    }
-
-    public int getSize() {
-        return angles.size();
+        return AngleValue.invalidInstance(angleType);
     }
 
     @Override
@@ -77,9 +75,9 @@ public class ResidueTorsionAngles {
         StringBuilder builder = new StringBuilder();
         builder.append(Residue.fromGroup(group));
 
-        for (TorsionAngleValue tav : angles) {
+        for (AngleValue tav : angles) {
             builder.append('\t');
-            builder.append(tav.getTorsionAngle());
+            builder.append(tav.getAngle());
             builder.append('\t');
             builder.append(Math.toDegrees(tav.getValue()));
         }

@@ -18,20 +18,16 @@ public class Sequence {
         residues.add(residue);
     }
 
-    public List<Residue> getResidues() {
-        return residues;
+    public Residue getResidue(int index) {
+        return residues.get(index);
     }
 
-    public int getLength() {
-        return builder.length();
+    public int getSize() {
+        return residues.size();
     }
 
     @Override
     public String toString() {
         return builder.toString();
-    }
-
-    public String substring(int start, int end) {
-        return builder.substring(start, end);
     }
 }
