@@ -16,7 +16,7 @@ import pl.poznan.put.torsion.AtomsBasedTorsionAngle;
 public enum MoleculeType {
     RNA(RNABackboneAtoms.getAtoms(), AtomName.P, new RNABondRule(), RNATorsionAngle.values()),
     PROTEIN(ProteinBackboneAtoms.getAtoms(), AtomName.CA, new ProteinBondRule(), ProteinTorsionAngle.values()),
-    UNKNOWN(null, null, null, null);
+    UNKNOWN(new AtomName[0], null, null, new AtomsBasedTorsionAngle[0]);
 
     private final AtomName[] backboneAtoms;
     private final AtomName mainAtom;
