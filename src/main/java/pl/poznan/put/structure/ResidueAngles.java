@@ -1,6 +1,5 @@
 package pl.poznan.put.structure;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.biojava.bio.structure.Group;
@@ -11,13 +10,13 @@ import pl.poznan.put.torsion.ChiTorsionAngle;
 import pl.poznan.put.torsion.ChiTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngle;
 
-public class ResidueTorsionAngles {
+public class ResidueAngles {
     private final CompactFragment fragment;
     private final Group group;
     private final ResidueType residueType;
     private final List<AngleValue> angles;
 
-    public ResidueTorsionAngles(CompactFragment fragment, Group group,
+    public ResidueAngles(CompactFragment fragment, Group group,
             ResidueType residueType, List<AngleValue> angles) {
         this.fragment = fragment;
         this.group = group;
@@ -41,33 +40,23 @@ public class ResidueTorsionAngles {
         return angles.size();
     }
 
-    public AngleValue[] getChiAngleValues() {
-        List<AngleValue> result = new ArrayList<AngleValue>();
-        for (TorsionAngle torsionAngle : residueType.getChiTorsionAngles()) {
-            result.add(getAngleValue(torsionAngle));
-        }
-        return result.toArray(new AngleValue[result.size()]);
-    }
-
     public AngleValue getAngleValue(TorsionAngle torsionAngle) {
-        for (AngleValue torsionAngleValue : angles) {
-            if (torsionAngleValue.getAngle().equals(torsionAngle)) {
-                return torsionAngleValue;
+        for (AngleValue angleValue : angles) {
+            TorsionAngle angle = angleValue.getAngle();
+
+            if (torsionAngle instanceof ChiTorsionAngleType) {
+                ChiTorsionAngleType type = (ChiTorsionAngleType) torsionAngle;
+
+                if (angle instanceof ChiTorsionAngle
+                        && ((ChiTorsionAngle) angle).getType() == type) {
+                    return angleValue;
+                }
+            } else if (angle.equals(torsionAngle)) {
+                return angleValue;
             }
         }
-        return AngleValue.invalidInstance(torsionAngle);
-    }
 
-    public AngleValue getChiAngleValue(ChiTorsionAngleType angleType) {
-        for (AngleValue torsionAngleValue : angles) {
-            TorsionAngle torsionAngle = torsionAngleValue.getAngle();
-
-            if (torsionAngle instanceof ChiTorsionAngle
-                    && ((ChiTorsionAngle) torsionAngle).getType() == angleType) {
-                return torsionAngleValue;
-            }
-        }
-        return AngleValue.invalidInstance(angleType);
+        return AngleValue.getInvalidInstance(torsionAngle);
     }
 
     @Override

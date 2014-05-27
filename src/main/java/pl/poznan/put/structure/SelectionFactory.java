@@ -10,25 +10,25 @@ import org.biojava.bio.structure.Structure;
 import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.helper.StructureHelper;
 
-public class StructureSelectionFactory {
+public class SelectionFactory {
     public static StructureSelection create(String name, Structure structure) {
-        return StructureSelectionFactory.create(name, structure.getChains());
+        return SelectionFactory.create(name, structure.getChains());
     }
 
     public static StructureSelection create(String name, List<Chain> chains) {
-        List<Group> residues = StructureSelectionFactory.getAllResidues(chains);
+        List<Group> residues = SelectionFactory.getAllResidues(chains);
         return new StructureSelection(name, residues);
     }
 
     public static StructureSelection create(String name, Chain chain) {
-        List<Group> residues = StructureSelectionFactory.getAllResidues(chain);
+        List<Group> residues = SelectionFactory.getAllResidues(chain);
         return new StructureSelection(name, residues);
     }
 
     private static List<Group> getAllResidues(List<Chain> chains) {
         List<Group> residues = new ArrayList<Group>();
         for (Chain chain : chains) {
-            residues.addAll(StructureSelectionFactory.getAllResidues(chain));
+            residues.addAll(SelectionFactory.getAllResidues(chain));
         }
         return residues;
     }
@@ -46,6 +46,6 @@ public class StructureSelectionFactory {
         return residues;
     }
 
-    private StructureSelectionFactory() {
+    private SelectionFactory() {
     }
 }

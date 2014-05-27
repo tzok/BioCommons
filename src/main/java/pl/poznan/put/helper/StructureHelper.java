@@ -11,8 +11,6 @@ import org.biojava.bio.structure.Group;
 import org.biojava.bio.structure.Structure;
 
 import pl.poznan.put.atoms.AtomName;
-import pl.poznan.put.common.MoleculeType;
-import pl.poznan.put.common.ResidueType;
 
 public class StructureHelper {
     public static Atom findAtom(Group residue, AtomName atomName) {
@@ -44,24 +42,6 @@ public class StructureHelper {
             result.addAll(Arrays.asList(atomsChain));
         }
         return result.toArray(new Atom[result.size()]);
-    }
-
-    public static String getSequence(Chain chain) {
-        StringBuilder builder = new StringBuilder();
-        MoleculeType chainType = MoleculeType.detect(chain);
-
-        for (Group residue : chain.getAtomGroups()) {
-            ResidueType type = ResidueType.fromString(chainType,
-                    residue.getPDBName());
-
-            if (type == ResidueType.UNKNOWN) {
-                type = ResidueType.detect(residue);
-            }
-
-            builder.append(type.getOneLetter());
-        }
-
-        return builder.toString();
     }
 
     public static void mergeAltLocs(Group group) {

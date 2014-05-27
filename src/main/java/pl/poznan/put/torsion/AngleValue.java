@@ -5,12 +5,12 @@ import pl.poznan.put.helper.CommonNumberFormat;
 import pl.poznan.put.helper.FractionAngleFormat;
 
 public class AngleValue implements DisplayableExportable {
-    private final TorsionAngle angle;
-    private final double value;
-
-    public static AngleValue invalidInstance(TorsionAngle angle) {
+    public static AngleValue getInvalidInstance(TorsionAngle angle) {
         return new AngleValue(angle, Double.NaN);
     }
+
+    private final TorsionAngle angle;
+    private final double value;
 
     public AngleValue(TorsionAngle angle, double value) {
         super();

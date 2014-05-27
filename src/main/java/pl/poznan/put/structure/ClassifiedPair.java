@@ -3,13 +3,13 @@ package pl.poznan.put.structure;
 import pl.poznan.put.notations.LeontisWesthof;
 import pl.poznan.put.notations.Saenger;
 
-public class ClassifiedBasePair extends BasePair {
+public class ClassifiedPair extends BasePair {
     private static final long serialVersionUID = -6590368481589627182L;
 
     private Saenger saenger;
     private LeontisWesthof leontisWesthof;
 
-    public ClassifiedBasePair(Residue left, Residue right, Saenger saenger,
+    public ClassifiedPair(Residue left, Residue right, Saenger saenger,
             LeontisWesthof leontisWesthof) {
         super(left, right);
         this.saenger = saenger;
@@ -51,7 +51,7 @@ public class ClassifiedBasePair extends BasePair {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        ClassifiedBasePair other = (ClassifiedBasePair) obj;
+        ClassifiedPair other = (ClassifiedPair) obj;
         if (leontisWesthof != other.leontisWesthof) {
             return false;
         }

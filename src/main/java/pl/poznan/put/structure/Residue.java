@@ -11,17 +11,6 @@ import pl.poznan.put.common.ResidueType;
 public class Residue implements Comparable<Residue>, Serializable {
     private static final long serialVersionUID = -3434793294284494678L;
 
-    private final ResidueType residueType;
-    private final char chain;
-    private final String residueName;
-    private final int residueNumber;
-    private final char insertionCode;
-    private final boolean isMissing;
-
-    // by default this equals to the last letter of the residue name
-    // if a MODRES is found in PDB, this should be set by a setter method
-    private char residueNameOneLetter;
-
     public static Residue fromGroup(Group group) {
         ResidueNumber resn = group.getResidueNumber();
 
@@ -44,6 +33,17 @@ public class Residue implements Comparable<Residue>, Serializable {
         return new Residue(residueType, chain, residueName, residueNumber,
                 insertionCode, false);
     }
+
+    private final ResidueType residueType;
+    private final char chain;
+    private final String residueName;
+    private final int residueNumber;
+    private final char insertionCode;
+    private final boolean isMissing;
+
+    // by default this equals to the last letter of the residue name
+    // if a MODRES is found in PDB, this should be set by a setter method
+    private char residueNameOneLetter;
 
     public Residue(ResidueType residueType, char chain, String residueName,
             int residueNumber, char insertionCode, boolean isMissing) {

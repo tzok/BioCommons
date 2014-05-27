@@ -17,8 +17,8 @@ import pl.poznan.put.torsion.AtomsBasedTorsionAngle;
 import pl.poznan.put.torsion.TorsionAngle;
 
 public class CompactFragment {
-    public static CompactFragment shift(CompactFragment origin, int shift,
-            int size) {
+    public static CompactFragment createShifted(CompactFragment origin,
+            int shift, int size) {
         CompactFragment fragment = new CompactFragment(origin.parent,
                 origin.moleculeType);
         for (int i = shift; i < shift + size; i++) {
@@ -30,7 +30,8 @@ public class CompactFragment {
     private final StructureSelection parent;
     private final MoleculeType moleculeType;
     private final List<Group> residues = new ArrayList<Group>();
-    private final List<ResidueTorsionAngles> torsionAngles = new ArrayList<ResidueTorsionAngles>();
+    private final List<ResidueAngles> torsionAngles = new ArrayList<ResidueAngles>();
+    private FragmentAngles fragmentAngles;
 
     public CompactFragment(StructureSelection parent, MoleculeType moleculeType) {
         super();
@@ -58,14 +59,6 @@ public class CompactFragment {
         return residues.size();
     }
 
-    public Sequence getSequence() {
-        Sequence sequence = new Sequence();
-        for (Group group : residues) {
-            sequence.addResidue(Residue.fromGroup(group));
-        }
-        return sequence;
-    }
-
     public String getParentName() {
         return parent.getName();
     }
@@ -83,11 +76,11 @@ public class CompactFragment {
     }
 
     // FIXME
-    public List<ResidueTorsionAngles> getTorsionAngles() {
-        if (torsionAngles.size() != residues.size()) {
+    public FragmentAngles getFragmentAngles() {
+        if (fragmentAngles == null) {
             calculateTorsionAngles();
         }
-        return torsionAngles;
+        return fragmentAngles;
     }
 
     private void calculateTorsionAngles() {
@@ -111,32 +104,34 @@ public class CompactFragment {
                 }
             }
 
-            ResidueTorsionAngles result = new ResidueTorsionAngles(this, group,
-                    residueType, values);
+            ResidueAngles result = new ResidueAngles(this, group, residueType,
+                    values);
             torsionAngles.add(result);
         }
+
+        fragmentAngles = new FragmentAngles(torsionAngles);
     }
 
     private AngleValue calculateTorsionAngle(AtomsBasedTorsionAngle angle, int i) {
         UniTypeQuadruplet<Integer> residueRule = angle.getResidueRule();
         int a = i + residueRule.a;
         if (a < 0 || a >= residues.size()) {
-            return AngleValue.invalidInstance(angle);
+            return AngleValue.getInvalidInstance(angle);
         }
 
         int b = i + residueRule.b;
         if (b < 0 || b >= residues.size()) {
-            return AngleValue.invalidInstance(angle);
+            return AngleValue.getInvalidInstance(angle);
         }
 
         int c = i + residueRule.c;
         if (c < 0 || c >= residues.size()) {
-            return AngleValue.invalidInstance(angle);
+            return AngleValue.getInvalidInstance(angle);
         }
 
         int d = i + residueRule.d;
         if (d < 0 || d >= residues.size()) {
-            return AngleValue.invalidInstance(angle);
+            return AngleValue.getInvalidInstance(angle);
         }
 
         UniTypeQuadruplet<AtomName> atomNames = angle.getAtoms();
@@ -146,7 +141,7 @@ public class CompactFragment {
         Atom ad = StructureHelper.findAtom(residues.get(d), atomNames.d);
 
         if (aa == null || ab == null || ac == null || ad == null) {
-            return AngleValue.invalidInstance(angle);
+            return AngleValue.getInvalidInstance(angle);
         }
 
         double value = TorsionAnglesHelper.calculateTorsion(aa, ab, ac, ad);
