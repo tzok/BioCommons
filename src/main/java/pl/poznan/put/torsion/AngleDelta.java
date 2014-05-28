@@ -104,9 +104,8 @@ public class AngleDelta {
 
     @Override
     public String toString() {
-        return "TorsionAngleDelta [torsionAngleValueLeft=" + targetValue
-                + ", torsionAngleValueRight=" + modelValue + ", state=" + state
-                + ", delta=" + delta + "]";
+        return "AngleDelta [state=" + state + ", targetValue=" + targetValue
+                + ", modelValue=" + modelValue + ", delta=" + delta + "]";
     }
 
     /**
