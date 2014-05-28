@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.biojava.bio.structure.Atom;
+import org.biojava.bio.structure.Chain;
+import org.biojava.bio.structure.ChainImpl;
 import org.biojava.bio.structure.Group;
+import org.biojava.bio.structure.Structure;
+import org.biojava.bio.structure.StructureImpl;
 
 import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.common.MoleculeType;
@@ -65,6 +69,13 @@ public class CompactFragment {
 
     public String getName() {
         return getParentName() + " " + moleculeType;
+    }
+
+    public String toPDB() {
+        Chain chain = new ChainImpl();
+        chain.setAtomGroups(residues);
+        Structure structure = new StructureImpl(chain);
+        return structure.toPDB();
     }
 
     @Override
