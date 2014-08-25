@@ -84,7 +84,7 @@ public enum ResidueType {
             return new AtomsBasedTorsionAngle[0];
         }
 
-        List<AtomsBasedTorsionAngle> result = new ArrayList<AtomsBasedTorsionAngle>();
+        List<AtomsBasedTorsionAngle> result = new ArrayList<>();
         result.addAll(Arrays.asList(chainType.getBackboneTorsionAngles()));
         result.addAll(Arrays.asList(chiAngles));
         return result.toArray(new AtomsBasedTorsionAngle[result.size()]);

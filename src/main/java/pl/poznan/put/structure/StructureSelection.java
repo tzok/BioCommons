@@ -27,7 +27,7 @@ public class StructureSelection {
     }
 
     public CompactFragment[] getCompactFragments() {
-        List<CompactFragment> result = new ArrayList<CompactFragment>();
+        List<CompactFragment> result = new ArrayList<>();
 
         if (residues.size() == 0) {
             return new CompactFragment[0];

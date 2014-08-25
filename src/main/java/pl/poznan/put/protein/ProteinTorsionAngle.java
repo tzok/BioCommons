@@ -18,8 +18,8 @@ public enum ProteinTorsionAngle implements AtomsBasedTorsionAngle {
 
     private ProteinTorsionAngle(AtomName a1, AtomName a2, AtomName a3,
             AtomName a4, int r1, int r2, int r3, int r4, String unicodeName) {
-        this.atoms = new UniTypeQuadruplet<AtomName>(a1, a2, a3, a4);
-        this.residueRule = new UniTypeQuadruplet<Integer>(r1, r2, r3, r4);
+        this.atoms = new UniTypeQuadruplet<>(a1, a2, a3, a4);
+        this.residueRule = new UniTypeQuadruplet<>(r1, r2, r3, r4);
         this.displayName = unicodeName + " (" + name().toLowerCase() + ") "
                 + a1.getName() + "-" + a2.getName() + "-" + a3.getName() + "-"
                 + a4.getName();

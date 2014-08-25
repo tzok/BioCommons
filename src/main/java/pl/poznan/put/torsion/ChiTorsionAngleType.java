@@ -16,7 +16,7 @@ public enum ChiTorsionAngleType implements TorsionAngle {
 
     public static ChiTorsionAngleType[] getChiTorsionAngles(
             MoleculeType moleculeType) {
-        List<ChiTorsionAngleType> result = new ArrayList<ChiTorsionAngleType>();
+        List<ChiTorsionAngleType> result = new ArrayList<>();
         for (ChiTorsionAngleType type : ChiTorsionAngleType.values()) {
             if (type.getMoleculeType() == moleculeType) {
                 result.add(type);

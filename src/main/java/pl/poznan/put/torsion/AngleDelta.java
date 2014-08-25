@@ -54,9 +54,9 @@ public class AngleDelta {
 
     public static AngleDelta calculateAverage(MoleculeType moleculeType,
             List<AngleDelta> angleDeltas) {
-        List<AngleValue> targetValues = new ArrayList<AngleValue>();
-        List<AngleValue> modelValues = new ArrayList<AngleValue>();
-        List<Double> deltas = new ArrayList<Double>();
+        List<AngleValue> targetValues = new ArrayList<>();
+        List<AngleValue> modelValues = new ArrayList<>();
+        List<Double> deltas = new ArrayList<>();
 
         for (AngleDelta tad : angleDeltas) {
             TorsionAngle torsionAngle = tad.getTorsionAngle();

@@ -9,17 +9,17 @@ import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.common.ResidueType;
 
 public class ProteinResidueAtoms {
-    private static final Map<ResidueType, List<AtomName>> MAP = new HashMap<ResidueType, List<AtomName>>();
+    private static final Map<ResidueType, List<AtomName>> MAP = new HashMap<>();
 
     static {
-        List<AtomName> atoms = new ArrayList<AtomName>();
+        List<AtomName> atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
         atoms.add(AtomName.HB3);
         ProteinResidueAtoms.MAP.put(ResidueType.ALANINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -40,7 +40,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HH22);
         ProteinResidueAtoms.MAP.put(ResidueType.ARGININE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -51,7 +51,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HD22);
         ProteinResidueAtoms.MAP.put(ResidueType.ASPARAGINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -60,7 +60,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.OD2);
         ProteinResidueAtoms.MAP.put(ResidueType.ASPARTIC_ACID, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -68,7 +68,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HG1);
         ProteinResidueAtoms.MAP.put(ResidueType.CYSTEINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -82,7 +82,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HE22);
         ProteinResidueAtoms.MAP.put(ResidueType.GLUTAMINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -94,12 +94,12 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.OE2);
         ProteinResidueAtoms.MAP.put(ResidueType.GLUTAMIC_ACID, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.HA1);
         atoms.add(AtomName.HA2);
         ProteinResidueAtoms.MAP.put(ResidueType.GLYCINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -114,7 +114,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HD2);
         ProteinResidueAtoms.MAP.put(ResidueType.HISTIDINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB);
         atoms.add(AtomName.CG2);
@@ -130,7 +130,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HD3);
         ProteinResidueAtoms.MAP.put(ResidueType.ISOLEUCINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -146,7 +146,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HD23);
         ProteinResidueAtoms.MAP.put(ResidueType.LEUCINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -165,7 +165,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HZ3);
         ProteinResidueAtoms.MAP.put(ResidueType.LYSINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -179,7 +179,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HE3);
         ProteinResidueAtoms.MAP.put(ResidueType.METHIONINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -196,7 +196,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HE2);
         ProteinResidueAtoms.MAP.put(ResidueType.PHENYLALANINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -208,7 +208,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HG2);
         ProteinResidueAtoms.MAP.put(ResidueType.PROLINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -216,7 +216,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HG1);
         ProteinResidueAtoms.MAP.put(ResidueType.SERINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB);
         atoms.add(AtomName.OG1);
@@ -227,7 +227,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HG23);
         ProteinResidueAtoms.MAP.put(ResidueType.THREONINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -248,7 +248,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HH2);
         ProteinResidueAtoms.MAP.put(ResidueType.TRYPTOPHAN, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB1);
         atoms.add(AtomName.HB2);
@@ -266,7 +266,7 @@ public class ProteinResidueAtoms {
         atoms.add(AtomName.HE2);
         ProteinResidueAtoms.MAP.put(ResidueType.TYROSINE, atoms);
 
-        atoms = new ArrayList<AtomName>();
+        atoms = new ArrayList<>();
         atoms.add(AtomName.CB);
         atoms.add(AtomName.HB);
         atoms.add(AtomName.CG1);
