@@ -48,6 +48,11 @@ public class AverageAngle implements TorsionAngle {
     }
 
     @Override
+    public String toString() {
+        return "Average";
+    }
+
+    @Override
     public MoleculeType getMoleculeType() {
         return moleculeType;
     }

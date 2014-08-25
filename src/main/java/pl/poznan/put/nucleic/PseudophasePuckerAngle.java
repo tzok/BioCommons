@@ -41,6 +41,11 @@ public class PseudophasePuckerAngle implements TorsionAngle {
     }
 
     @Override
+    public String toString() {
+        return "P";
+    }
+
+    @Override
     public MoleculeType getMoleculeType() {
         return MoleculeType.RNA;
     }
