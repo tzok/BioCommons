@@ -2,16 +2,16 @@ package pl.poznan.put.nucleic;
 
 import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.common.MoleculeType;
-import pl.poznan.put.helper.Constants;
-import pl.poznan.put.helper.UniTypeQuadruplet;
+import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.torsion.AtomsBasedTorsionAngle;
 import pl.poznan.put.torsion.ChiTorsionAngle;
 import pl.poznan.put.torsion.ChiTorsionAngleType;
+import pl.poznan.put.types.UniTypeQuadruplet;
 
 public enum RNAChiTorsionAngle implements AtomsBasedTorsionAngle,
         ChiTorsionAngle {
-    PURINE(ChiTorsionAngleType.CHI, AtomName.O4p, AtomName.C1p, AtomName.N9, AtomName.C4, 0, 0, 0, 0, "CHI", Constants.UNICODE_CHI),
-    PYRIMIDINE(ChiTorsionAngleType.CHI, AtomName.O4p, AtomName.C1p, AtomName.N1, AtomName.C2, 0, 0, 0, 0, "CHI", Constants.UNICODE_CHI);
+    PURINE(ChiTorsionAngleType.CHI, AtomName.O4p, AtomName.C1p, AtomName.N9, AtomName.C4, 0, 0, 0, 0, "CHI", Unicode.CHI),
+    PYRIMIDINE(ChiTorsionAngleType.CHI, AtomName.O4p, AtomName.C1p, AtomName.N1, AtomName.C2, 0, 0, 0, 0, "CHI", Unicode.CHI);
 
     private final ChiTorsionAngleType type;
     private final UniTypeQuadruplet<AtomName> atoms;

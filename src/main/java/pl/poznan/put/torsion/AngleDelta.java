@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.poznan.put.common.MoleculeType;
-import pl.poznan.put.helper.CommonNumberFormat;
-import pl.poznan.put.helper.Constants;
+import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.helper.TorsionAnglesHelper;
+import pl.poznan.put.utility.CommonNumberFormat;
 
 public class AngleDelta {
     public enum State {
@@ -143,7 +143,7 @@ public class AngleDelta {
         if (state == State.BOTH_INVALID) {
             result = "";
         } else if (state == State.BOTH_VALID) {
-            result += Constants.UNICODE_DEGREE;
+            result += Unicode.DEGREE;
         }
 
         return result;

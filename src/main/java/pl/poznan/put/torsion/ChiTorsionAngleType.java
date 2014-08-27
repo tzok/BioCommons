@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.poznan.put.common.MoleculeType;
-import pl.poznan.put.helper.Constants;
+import pl.poznan.put.constant.Unicode;
 
 public enum ChiTorsionAngleType implements TorsionAngle {
-    CHI(MoleculeType.RNA, Constants.UNICODE_CHI),
-    CHI1(MoleculeType.PROTEIN, Constants.UNICODE_CHI1),
-    CHI2(MoleculeType.PROTEIN, Constants.UNICODE_CHI2),
-    CHI3(MoleculeType.PROTEIN, Constants.UNICODE_CHI3),
-    CHI4(MoleculeType.PROTEIN, Constants.UNICODE_CHI4),
-    CHI5(MoleculeType.PROTEIN, Constants.UNICODE_CHI5);
+    CHI(MoleculeType.RNA, Unicode.CHI),
+    CHI1(MoleculeType.PROTEIN, Unicode.CHI1),
+    CHI2(MoleculeType.PROTEIN, Unicode.CHI2),
+    CHI3(MoleculeType.PROTEIN, Unicode.CHI3),
+    CHI4(MoleculeType.PROTEIN, Unicode.CHI4),
+    CHI5(MoleculeType.PROTEIN, Unicode.CHI5);
 
     public static ChiTorsionAngleType[] getChiTorsionAngles(
             MoleculeType moleculeType) {

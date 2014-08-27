@@ -15,10 +15,10 @@ import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.common.ResidueType;
 import pl.poznan.put.helper.StructureHelper;
 import pl.poznan.put.helper.TorsionAnglesHelper;
-import pl.poznan.put.helper.UniTypeQuadruplet;
 import pl.poznan.put.torsion.AngleValue;
 import pl.poznan.put.torsion.AtomsBasedTorsionAngle;
 import pl.poznan.put.torsion.TorsionAngle;
+import pl.poznan.put.types.UniTypeQuadruplet;
 
 public class CompactFragment {
     public static CompactFragment createShifted(CompactFragment origin,

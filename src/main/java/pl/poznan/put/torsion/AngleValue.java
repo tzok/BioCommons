@@ -1,8 +1,8 @@
 package pl.poznan.put.torsion;
 
-import pl.poznan.put.common.DisplayableExportable;
-import pl.poznan.put.helper.CommonNumberFormat;
-import pl.poznan.put.helper.FractionAngleFormat;
+import pl.poznan.put.interfaces.DisplayableExportable;
+import pl.poznan.put.utility.CommonNumberFormat;
+import pl.poznan.put.utility.FractionAngleFormat;
 
 public class AngleValue implements DisplayableExportable {
     public static AngleValue getInvalidInstance(TorsionAngle angle) {

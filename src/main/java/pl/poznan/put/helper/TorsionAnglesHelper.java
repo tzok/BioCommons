@@ -2,7 +2,11 @@ package pl.poznan.put.helper;
 
 import java.util.List;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.apache.commons.math3.util.FastMath;
 import org.biojava.bio.structure.Atom;
+
+import pl.poznan.put.types.UniTypeQuadruplet;
 
 /**
  * A class to calculate and manage dihedral angles for given BioJava structure.
@@ -58,17 +62,18 @@ public final class TorsionAnglesHelper {
             return Double.NaN;
         }
 
-        Vector3D d1 = new Vector3D(a1, a2);
-        Vector3D d2 = new Vector3D(a2, a3);
-        Vector3D d3 = new Vector3D(a3, a4);
+        Vector3D d1 = atomDistance(a1, a2);
+        Vector3D d2 = atomDistance(a2, a3);
+        Vector3D d3 = atomDistance(a3, a4);
 
-        Vector3D u1 = d1.cross(d2);
-        Vector3D u2 = d2.cross(d3);
+        Vector3D u1 = d1.crossProduct(d2);
+        Vector3D u2 = d2.crossProduct(d3);
 
-        double ctor = u1.dot(u2) / Math.sqrt(u1.dot(u1) * u2.dot(u2));
+        double ctor = u1.dotProduct(u2)
+                / FastMath.sqrt(u1.dotProduct(u1) * u2.dotProduct(u2));
         ctor = ctor < -1 ? -1 : ctor > 1 ? 1 : ctor;
         double torp = Math.acos(ctor);
-        if (u1.dot(u2.cross(d2)) < 0) {
+        if (u1.dotProduct(u2.crossProduct(d2)) < 0) {
             torp = -torp;
         }
         return torp;
@@ -92,14 +97,14 @@ public final class TorsionAnglesHelper {
             return Double.NaN;
         }
 
-        Vector3D v1 = new Vector3D(a1, a2);
-        Vector3D v2 = new Vector3D(a2, a3);
-        Vector3D v3 = new Vector3D(a3, a4);
+        Vector3D v1 = atomDistance(a1, a2);
+        Vector3D v2 = atomDistance(a2, a3);
+        Vector3D v3 = atomDistance(a3, a4);
 
-        Vector3D tmp1 = v1.cross(v2);
-        Vector3D tmp2 = v2.cross(v3);
-        Vector3D tmp3 = v1.scale(v2.length());
-        return Math.atan2(tmp3.dot(tmp2), tmp1.dot(tmp2));
+        Vector3D tmp1 = v1.crossProduct(v2);
+        Vector3D tmp2 = v2.crossProduct(v3);
+        Vector3D tmp3 = v1.scalarMultiply(v2.getNorm());
+        return FastMath.atan2(tmp3.dotProduct(tmp2), tmp1.dotProduct(tmp2));
     }
 
     public static double subtractTorsions(double a1, double a2) {
@@ -127,6 +132,12 @@ public final class TorsionAnglesHelper {
             cosines += Math.cos(v);
         }
         return Math.atan2(sines / values.size(), cosines / values.size());
+    }
+
+    private static Vector3D atomDistance(Atom a, Atom b) {
+        Vector3D va = new Vector3D(a.getCoords());
+        Vector3D vb = new Vector3D(b.getCoords());
+        return va.subtract(vb);
     }
 
     private TorsionAnglesHelper() {

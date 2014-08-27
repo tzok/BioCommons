@@ -2,15 +2,15 @@ package pl.poznan.put.protein;
 
 import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.common.MoleculeType;
-import pl.poznan.put.helper.Constants;
-import pl.poznan.put.helper.UniTypeQuadruplet;
+import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.torsion.AtomsBasedTorsionAngle;
+import pl.poznan.put.types.UniTypeQuadruplet;
 
 public enum ProteinTorsionAngle implements AtomsBasedTorsionAngle {
-    PHI(AtomName.C, AtomName.N, AtomName.CA, AtomName.C, 0, 1, 1, 1, Constants.UNICODE_PHI),
-    PSI(AtomName.N, AtomName.CA, AtomName.C, AtomName.N, 0, 0, 0, 1, Constants.UNICODE_PSI),
-    OMEGA(AtomName.CA, AtomName.C, AtomName.N, AtomName.CA, 0, 0, 1, 1, Constants.UNICODE_OMEGA),
-    CALPHA(AtomName.CA, AtomName.CA, AtomName.CA, AtomName.CA, 0, 1, 2, 3, Constants.UNICODE_CALPHA);
+    PHI(AtomName.C, AtomName.N, AtomName.CA, AtomName.C, 0, 1, 1, 1, Unicode.PHI),
+    PSI(AtomName.N, AtomName.CA, AtomName.C, AtomName.N, 0, 0, 0, 1, Unicode.PSI),
+    OMEGA(AtomName.CA, AtomName.C, AtomName.N, AtomName.CA, 0, 0, 1, 1, Unicode.OMEGA),
+    CALPHA(AtomName.CA, AtomName.CA, AtomName.CA, AtomName.CA, 0, 1, 2, 3, Unicode.CALPHA);
 
     private final UniTypeQuadruplet<AtomName> atoms;
     private final UniTypeQuadruplet<Integer> residueRule;
