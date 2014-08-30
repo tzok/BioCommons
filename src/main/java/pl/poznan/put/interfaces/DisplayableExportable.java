@@ -1,7 +1,9 @@
 package pl.poznan.put.interfaces;
 
 public interface DisplayableExportable {
-    String getDisplayName();
+    String getLongDisplayName();
+
+    String getShortDisplayName();
 
     String getExportName();
 }
