@@ -25,15 +25,17 @@ public enum RNATorsionAngle implements AtomsBasedTorsionAngle {
 
     private final UniTypeQuadruplet<AtomName> atoms;
     private final UniTypeQuadruplet<Integer> residueRule;
-    private final String displayName;
+    private final String longDisplayName;
+    private final String shortDisplayName;
 
     private RNATorsionAngle(AtomName a1, AtomName a2, AtomName a3, AtomName a4,
             int r1, int r2, int r3, int r4, String unicodeName) {
         this.atoms = new UniTypeQuadruplet<>(a1, a2, a3, a4);
         this.residueRule = new UniTypeQuadruplet<>(r1, r2, r3, r4);
-        this.displayName = unicodeName + " (" + name().toLowerCase() + ") "
+        this.longDisplayName = unicodeName + " (" + name().toLowerCase() + ") "
                 + a1.getName() + "-" + a2.getName() + "-" + a3.getName() + "-"
                 + a4.getName();
+        this.shortDisplayName = unicodeName;
     }
 
     @Override
@@ -47,8 +49,13 @@ public enum RNATorsionAngle implements AtomsBasedTorsionAngle {
     }
 
     @Override
-    public String getDisplayName() {
-        return displayName;
+    public String getLongDisplayName() {
+        return longDisplayName;
+    }
+
+    @Override
+    public String getShortDisplayName() {
+        return shortDisplayName;
     }
 
     @Override

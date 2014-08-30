@@ -31,14 +31,25 @@ public class AngleValue implements DisplayableExportable {
     }
 
     @Override
-    public String getDisplayName() {
-        return angle.getDisplayName() + " "
+    public String getLongDisplayName() {
+        return angle.getLongDisplayName() + " "
                 + FractionAngleFormat.formatDouble(value);
+    }
+
+    @Override
+    public String getShortDisplayName() {
+        return angle.getShortDisplayName() + " "
+                + CommonNumberFormat.formatAngle(value);
     }
 
     @Override
     public String getExportName() {
         return angle.getExportName() + " "
                 + CommonNumberFormat.formatDouble(value);
+    }
+
+    @Override
+    public String toString() {
+        return getLongDisplayName();
     }
 }

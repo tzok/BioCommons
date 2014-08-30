@@ -31,7 +31,12 @@ public class PseudophasePuckerAngle implements TorsionAngle {
     }
 
     @Override
-    public String getDisplayName() {
+    public String getLongDisplayName() {
+        return "P";
+    }
+
+    @Override
+    public String getShortDisplayName() {
         return "P";
     }
 

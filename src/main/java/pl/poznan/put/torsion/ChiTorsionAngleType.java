@@ -25,17 +25,24 @@ public enum ChiTorsionAngleType implements TorsionAngle {
         return result.toArray(new ChiTorsionAngleType[result.size()]);
     }
 
-    private final String displayName;
     private final MoleculeType moleculeType;
+    private final String longDisplayName;
+    private final String shortDisplayName;
 
-    private ChiTorsionAngleType(MoleculeType moleculeType, String displayName) {
+    private ChiTorsionAngleType(MoleculeType moleculeType, String unicodeName) {
         this.moleculeType = moleculeType;
-        this.displayName = displayName + " (" + name().toLowerCase() + ")";
+        this.longDisplayName = unicodeName + " (" + name().toLowerCase() + ")";
+        this.shortDisplayName = unicodeName;
     }
 
     @Override
-    public String getDisplayName() {
-        return displayName;
+    public String getLongDisplayName() {
+        return longDisplayName;
+    }
+
+    @Override
+    public String getShortDisplayName() {
+        return shortDisplayName;
     }
 
     @Override

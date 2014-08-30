@@ -1,8 +1,5 @@
 package pl.poznan.put.torsion;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.helper.TorsionAnglesHelper;
@@ -14,6 +11,7 @@ public class AngleDelta {
         BOTH_VALID, DIFFERENT_CHI;
     }
 
+    private final TorsionAngle torsionAngle;
     private final AngleValue targetValue;
     private final AngleValue modelValue;
     private final State state;
@@ -52,41 +50,11 @@ public class AngleDelta {
         return AngleDelta.calculate(target, model);
     }
 
-    public static AngleDelta calculateAverage(MoleculeType moleculeType,
-            List<AngleDelta> angleDeltas) {
-        List<AngleValue> targetValues = new ArrayList<>();
-        List<AngleValue> modelValues = new ArrayList<>();
-        List<Double> deltas = new ArrayList<>();
-
-        for (AngleDelta tad : angleDeltas) {
-            TorsionAngle torsionAngle = tad.getTorsionAngle();
-            if (torsionAngle.getMoleculeType() != moleculeType) {
-                continue;
-            }
-
-            if (tad.state == State.BOTH_VALID) {
-                targetValues.add(tad.targetValue);
-                modelValues.add(tad.modelValue);
-                deltas.add(tad.delta);
-            } else if (tad.state == State.TORSION_TARGET_INVALID) {
-                modelValues.add(tad.modelValue);
-            } else if (tad.state == State.TORSION_MODEL_INVALID) {
-                targetValues.add(tad.targetValue);
-            }
-        }
-
-        double mcq = TorsionAnglesHelper.calculateMean(deltas);
-        return new AngleDelta(
-                AverageAngle.calculate(moleculeType, targetValues),
-                AverageAngle.calculate(moleculeType, modelValues),
-                Double.isNaN(mcq) ? State.BOTH_INVALID : State.BOTH_VALID, mcq);
-    }
-
     public AngleValue getTargetValue() {
         return targetValue;
     }
 
-    public AngleValue getmodelValue() {
+    public AngleValue getModelValue() {
         return modelValue;
     }
 
@@ -99,7 +67,7 @@ public class AngleDelta {
     }
 
     public TorsionAngle getTorsionAngle() {
-        return targetValue.getAngle();
+        return torsionAngle;
     }
 
     @Override
@@ -149,11 +117,23 @@ public class AngleDelta {
         return result;
     }
 
-    private AngleDelta(AngleValue torsion1, AngleValue torsion2, State state,
+    AngleDelta(TorsionAngle torsionAngle, AngleValue targetValue,
+            AngleValue modelValue, State state, double delta) {
+        super();
+        this.torsionAngle = torsionAngle;
+        this.targetValue = targetValue;
+        this.modelValue = modelValue;
+        this.state = state;
+        this.delta = delta;
+    }
+
+    AngleDelta(AngleValue targetValue, AngleValue modelValue, State state,
             double delta) {
         super();
-        this.targetValue = torsion1;
-        this.modelValue = torsion2;
+        assert targetValue.getAngle().equals(modelValue.getAngle());
+        this.torsionAngle = targetValue.getAngle();
+        this.targetValue = targetValue;
+        this.modelValue = modelValue;
         this.state = state;
         this.delta = delta;
     }
