@@ -6,8 +6,6 @@ import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 
-import pl.poznan.put.constant.Unicode;
-
 /**
  * A NumberFormat extension and a suitable static method to format numbers
  * leaving at most three digits in the fractional part.
@@ -27,11 +25,6 @@ public class CommonNumberFormat extends NumberFormat {
      */
     public static String formatDouble(double value) {
         return CommonNumberFormat.INSTANCE.numberFormat.format(value);
-    }
-
-    public static String formatAngle(double angrad) {
-        return Long.toString(Math.round(Math.toDegrees(angrad)))
-                + Unicode.DEGREE;
     }
 
     private final NumberFormat numberFormat;

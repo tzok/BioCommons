@@ -8,15 +8,24 @@ import org.apache.commons.math3.fraction.ProperFractionFormat;
 
 import pl.poznan.put.constant.Unicode;
 
-public class FractionAngleFormat extends NumberFormat {
-    private static final FractionAngleFormat INSTANCE = new FractionAngleFormat();
+public class AngleFormat extends NumberFormat {
+    private static final AngleFormat INSTANCE = new AngleFormat();
 
-    public static FractionAngleFormat createInstance() {
-        return FractionAngleFormat.INSTANCE;
+    public static AngleFormat createInstance() {
+        return AngleFormat.INSTANCE;
     }
 
-    public static String formatDouble(double value) {
-        return FractionAngleFormat.INSTANCE.format(value);
+    public static String formatDisplayLong(double radians) {
+        return AngleFormat.INSTANCE.format(radians);
+    }
+
+    public static String formatDisplayShort(double radians) {
+        return CommonNumberFormat.formatDouble(Math.toDegrees(radians))
+                + Unicode.DEGREE;
+    }
+
+    public static String formatExport(double radians) {
+        return Double.toString(Math.toDegrees(radians));
     }
 
     private final ProperFractionFormat fractionFormat = new ProperFractionFormat();
@@ -53,6 +62,6 @@ public class FractionAngleFormat extends NumberFormat {
         return fractionFormat.parse(source, parsePosition);
     }
 
-    private FractionAngleFormat() {
+    private AngleFormat() {
     }
 }
