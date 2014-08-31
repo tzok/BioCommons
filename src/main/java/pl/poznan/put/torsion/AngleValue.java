@@ -1,8 +1,7 @@
 package pl.poznan.put.torsion;
 
 import pl.poznan.put.interfaces.DisplayableExportable;
-import pl.poznan.put.utility.CommonNumberFormat;
-import pl.poznan.put.utility.FractionAngleFormat;
+import pl.poznan.put.utility.AngleFormat;
 
 public class AngleValue implements DisplayableExportable {
     public static AngleValue getInvalidInstance(TorsionAngle angle) {
@@ -33,19 +32,18 @@ public class AngleValue implements DisplayableExportable {
     @Override
     public String getLongDisplayName() {
         return angle.getLongDisplayName() + " "
-                + FractionAngleFormat.formatDouble(value);
+                + AngleFormat.formatDisplayLong(value);
     }
 
     @Override
     public String getShortDisplayName() {
         return angle.getShortDisplayName() + " "
-                + CommonNumberFormat.formatAngle(value);
+                + AngleFormat.formatDisplayShort(value);
     }
 
     @Override
     public String getExportName() {
-        return angle.getExportName() + " "
-                + CommonNumberFormat.formatDouble(value);
+        return angle.getExportName() + " " + AngleFormat.formatExport(value);
     }
 
     @Override

@@ -1,9 +1,8 @@
 package pl.poznan.put.torsion;
 
 import pl.poznan.put.common.MoleculeType;
-import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.helper.TorsionAnglesHelper;
-import pl.poznan.put.utility.CommonNumberFormat;
+import pl.poznan.put.utility.AngleFormat;
 
 public class AngleDelta {
     public enum State {
@@ -84,11 +83,25 @@ public class AngleDelta {
      *         external tools.
      */
     public String toExportString() {
+        return toString(false);
+    }
+
+    /**
+     * Represent object as a String which will be displayed to user in the GUI.
+     * 
+     * @return String representation of object to be shown in the GUI.
+     */
+    public String toDisplayString() {
+        return toString(true);
+    }
+
+    public String toString(boolean isDisplayable) {
         switch (state) {
         case BOTH_INVALID:
-            return null;
+            return isDisplayable ? "" : null;
         case BOTH_VALID:
-            return CommonNumberFormat.formatDouble(Math.toDegrees(delta));
+            return isDisplayable ? AngleFormat.formatDisplayShort(delta)
+                    : AngleFormat.formatExport(delta);
         case TORSION_TARGET_INVALID:
             return "Missing atoms in target";
         case TORSION_MODEL_INVALID:
@@ -98,23 +111,6 @@ public class AngleDelta {
         default:
             return "Error";
         }
-    }
-
-    /**
-     * Represent object as a String which will be displayed to user in the GUI.
-     * 
-     * @return String representation of object to be shown in the GUI.
-     */
-    public String toDisplayString() {
-        String result = toExportString();
-
-        if (state == State.BOTH_INVALID) {
-            result = "";
-        } else if (state == State.BOTH_VALID) {
-            result += Unicode.DEGREE;
-        }
-
-        return result;
     }
 
     AngleDelta(TorsionAngle torsionAngle, AngleValue targetValue,
