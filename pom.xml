@@ -32,6 +32,12 @@
 			<artifactId>batik-svggen</artifactId>
 			<version>1.7</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.jumpmind.symmetric</groupId>
+			<artifactId>symmetric-csv</artifactId>
+			<version>3.5.19</version>
+		</dependency>
 	</dependencies>
 
 	<build>
