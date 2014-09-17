@@ -25,7 +25,7 @@ public class PseudophasePuckerAngle implements TorsionAngle {
     }
 
     public static TorsionAngle[] requiredAngles() {
-        return new TorsionAngle[] { RNATorsionAngle.TAU0, RNATorsionAngle.TAU1, RNATorsionAngle.TAU2, RNATorsionAngle.TAU3, RNATorsionAngle.TAU3 };
+        return new TorsionAngle[] { RNATorsionAngle.TAU0, RNATorsionAngle.TAU1, RNATorsionAngle.TAU2, RNATorsionAngle.TAU3, RNATorsionAngle.TAU4 };
     }
 
     private static final PseudophasePuckerAngle INSTANCE = new PseudophasePuckerAngle();
