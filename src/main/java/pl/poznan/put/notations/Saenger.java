@@ -16,6 +16,10 @@ public enum Saenger {
         return s == XIX || s == XX || s == XXVIII;
     }
 
+    public boolean isCanonical() {
+        return Saenger.isCanonical(this);
+    }
+
     @Override
     public String toString() {
         if (this == UNKNOWN) {

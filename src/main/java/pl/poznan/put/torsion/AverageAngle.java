@@ -22,7 +22,7 @@ public class AverageAngle implements TorsionAngle {
         switch (moleculeType) {
         case PROTEIN:
             if (AverageAngle.PROTEIN_INSTANCE_ALL == null) {
-                List<TorsionAngle> angles = new ArrayList<>();
+                List<TorsionAngle> angles = new ArrayList<TorsionAngle>();
                 angles.addAll(Arrays.asList(ProteinTorsionAngle.values()));
                 angles.addAll(Arrays.asList(ChiTorsionAngleType.getChiTorsionAngles(MoleculeType.PROTEIN)));
                 AverageAngle.PROTEIN_INSTANCE_ALL = new AverageAngle(angles,
@@ -31,7 +31,7 @@ public class AverageAngle implements TorsionAngle {
             return AverageAngle.PROTEIN_INSTANCE_ALL;
         case RNA:
             if (AverageAngle.RNA_INSTANCE_ALL == null) {
-                List<TorsionAngle> angles = new ArrayList<>();
+                List<TorsionAngle> angles = new ArrayList<TorsionAngle>();
                 angles.addAll(Arrays.asList(RNATorsionAngle.values()));
                 angles.addAll(Arrays.asList(ChiTorsionAngleType.getChiTorsionAngles(MoleculeType.RNA)));
                 angles.add(PseudophasePuckerAngle.getInstance());
@@ -49,7 +49,7 @@ public class AverageAngle implements TorsionAngle {
         switch (moleculeType) {
         case PROTEIN:
             if (AverageAngle.PROTEIN_INSTANCE_MAIN == null) {
-                List<TorsionAngle> angles = new ArrayList<>();
+                List<TorsionAngle> angles = new ArrayList<TorsionAngle>();
                 angles.add(ProteinTorsionAngle.PHI);
                 angles.add(ProteinTorsionAngle.PSI);
                 angles.add(ProteinTorsionAngle.OMEGA);
@@ -58,7 +58,7 @@ public class AverageAngle implements TorsionAngle {
             return AverageAngle.PROTEIN_INSTANCE_MAIN;
         case RNA:
             if (AverageAngle.RNA_INSTANCE_MAIN == null) {
-                List<TorsionAngle> angles = new ArrayList<>();
+                List<TorsionAngle> angles = new ArrayList<TorsionAngle>();
                 angles.add(RNATorsionAngle.ALPHA);
                 angles.add(RNATorsionAngle.BETA);
                 angles.add(RNATorsionAngle.GAMMA);
@@ -108,7 +108,7 @@ public class AverageAngle implements TorsionAngle {
         }
 
         moleculeType = AverageAngle.commonMoleculeType(angles);
-        consideredAngles = new ArrayList<>(angles);
+        consideredAngles = new ArrayList<TorsionAngle>(angles);
 
         StringBuilder display = new StringBuilder("MCQ(");
         StringBuilder export = new StringBuilder("MCQ_");
@@ -134,14 +134,14 @@ public class AverageAngle implements TorsionAngle {
         super();
 
         moleculeType = AverageAngle.commonMoleculeType(angles);
-        consideredAngles = new ArrayList<>(angles);
+        consideredAngles = new ArrayList<TorsionAngle>(angles);
         this.displayName = displayName;
         this.exportName = exportName;
     }
 
     public AngleValue calculateValue(List<AngleValue> angleValues) {
-        List<TorsionAngle> angles = new ArrayList<>();
-        List<Double> values = new ArrayList<>();
+        List<TorsionAngle> angles = new ArrayList<TorsionAngle>();
+        List<Double> values = new ArrayList<Double>();
 
         for (AngleValue angleValue : angleValues) {
             TorsionAngle angle = angleValue.getAngle();
@@ -162,9 +162,9 @@ public class AverageAngle implements TorsionAngle {
     }
 
     public AngleDelta calculateDelta(List<AngleDelta> angleDeltas) {
-        List<AngleValue> targetValues = new ArrayList<>();
-        List<AngleValue> modelValues = new ArrayList<>();
-        List<Double> deltas = new ArrayList<>();
+        List<AngleValue> targetValues = new ArrayList<AngleValue>();
+        List<AngleValue> modelValues = new ArrayList<AngleValue>();
+        List<Double> deltas = new ArrayList<Double>();
 
         for (AngleDelta tad : angleDeltas) {
             TorsionAngle torsionAngle = tad.getTorsionAngle();

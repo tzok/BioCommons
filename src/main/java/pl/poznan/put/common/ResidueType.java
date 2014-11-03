@@ -84,7 +84,7 @@ public enum ResidueType {
             return new AtomsBasedTorsionAngle[0];
         }
 
-        List<AtomsBasedTorsionAngle> result = new ArrayList<>();
+        List<AtomsBasedTorsionAngle> result = new ArrayList<AtomsBasedTorsionAngle>();
         result.addAll(Arrays.asList(chainType.getBackboneTorsionAngles()));
         result.addAll(Arrays.asList(chiAngles));
         return result.toArray(new AtomsBasedTorsionAngle[result.size()]);
@@ -94,13 +94,14 @@ public enum ResidueType {
         return chiAngles;
     }
 
-    public static ResidueType fromString(MoleculeType chainType, String pdbName) {
-        pdbName = pdbName.trim();
+    public static ResidueType
+            fromString(MoleculeType chainType, String pdbName) {
+        String trimmed = pdbName.trim();
 
         for (ResidueType type : ResidueType.values()) {
             if (chainType == type.getChainType()) {
                 for (String name : type.getNames()) {
-                    if (name.compareToIgnoreCase(pdbName) == 0) {
+                    if (name.compareToIgnoreCase(trimmed) == 0) {
                         return type;
                     }
                 }
@@ -112,11 +113,10 @@ public enum ResidueType {
 
     public static ResidueType fromOneLetter(MoleculeType chainType,
             char oneLetter) {
-        oneLetter = Character.toUpperCase(oneLetter);
+        char upper = Character.toUpperCase(oneLetter);
 
         for (ResidueType type : ResidueType.values()) {
-            if (chainType == type.getChainType()
-                    && oneLetter == type.getOneLetter()) {
+            if (chainType == type.getChainType() && upper == type.getOneLetter()) {
                 return type;
             }
         }

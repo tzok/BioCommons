@@ -1,5 +1,6 @@
 package pl.poznan.put.structure;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.biojava.bio.structure.Group;
@@ -10,14 +11,13 @@ import pl.poznan.put.torsion.ChiTorsionAngle;
 import pl.poznan.put.torsion.ChiTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngle;
 
-public class ResidueAngles {
+public class ResidueAngles implements Iterable<AngleValue> {
     private final CompactFragment fragment;
     private final Group group;
     private final ResidueType residueType;
     private final List<AngleValue> angles;
 
-    public ResidueAngles(CompactFragment fragment, Group group,
-            ResidueType residueType, List<AngleValue> angles) {
+    public ResidueAngles(CompactFragment fragment, Group group, ResidueType residueType, List<AngleValue> angles) {
         this.fragment = fragment;
         this.group = group;
         this.residueType = residueType;
@@ -47,8 +47,7 @@ public class ResidueAngles {
             if (torsionAngle instanceof ChiTorsionAngleType) {
                 ChiTorsionAngleType type = (ChiTorsionAngleType) torsionAngle;
 
-                if (angle instanceof ChiTorsionAngle
-                        && ((ChiTorsionAngle) angle).getType() == type) {
+                if (angle instanceof ChiTorsionAngle && ((ChiTorsionAngle) angle).getType() == type) {
                     return angleValue;
                 }
             } else if (angle.equals(torsionAngle)) {
@@ -72,5 +71,10 @@ public class ResidueAngles {
         }
 
         return builder.toString();
+    }
+
+    @Override
+    public Iterator<AngleValue> iterator() {
+        return angles.iterator();
     }
 }

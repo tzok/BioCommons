@@ -23,15 +23,13 @@ public class Residue implements Comparable<Residue>, Serializable {
         }
 
         MoleculeType moleculeType = MoleculeType.detect(group);
-        ResidueType residueType = ResidueType.fromString(moleculeType,
-                residueName);
+        ResidueType residueType = ResidueType.fromString(moleculeType, residueName);
 
         if (residueType == ResidueType.UNKNOWN) {
             residueType = ResidueType.detect(group);
         }
 
-        return new Residue(residueType, chain, residueName, residueNumber,
-                insertionCode, false);
+        return new Residue(residueType, chain, residueName, residueNumber, insertionCode, false);
     }
 
     private final ResidueType residueType;
@@ -45,8 +43,7 @@ public class Residue implements Comparable<Residue>, Serializable {
     // if a MODRES is found in PDB, this should be set by a setter method
     private char residueNameOneLetter;
 
-    public Residue(ResidueType residueType, char chain, String residueName,
-            int residueNumber, char insertionCode, boolean isMissing) {
+    public Residue(ResidueType residueType, char chain, String residueName, int residueNumber, char insertionCode, boolean isMissing) {
         super();
         this.residueType = residueType;
         this.chain = chain;
@@ -141,8 +138,7 @@ public class Residue implements Comparable<Residue>, Serializable {
         result = prime * result + chain;
         result = prime * result + insertionCode;
         result = prime * result + (isMissing ? 1231 : 1237);
-        result = prime * result
-                + ((residueName == null) ? 0 : residueName.hashCode());
+        result = prime * result + ((residueName == null) ? 0 : residueName.hashCode());
         result = prime * result + residueNameOneLetter;
         result = prime * result + residueNumber;
         return result;

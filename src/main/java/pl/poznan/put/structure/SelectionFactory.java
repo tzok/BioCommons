@@ -26,7 +26,7 @@ public class SelectionFactory {
     }
 
     private static List<Group> getAllResidues(List<Chain> chains) {
-        List<Group> residues = new ArrayList<>();
+        List<Group> residues = new ArrayList<Group>();
         for (Chain chain : chains) {
             residues.addAll(SelectionFactory.getAllResidues(chain));
         }
@@ -34,7 +34,7 @@ public class SelectionFactory {
     }
 
     private static List<Group> getAllResidues(Chain chain) {
-        List<Group> residues = new ArrayList<>();
+        List<Group> residues = new ArrayList<Group>();
 
         for (Group group : chain.getAtomGroups()) {
             StructureHelper.mergeAltLocs(group);

@@ -6,7 +6,7 @@ import java.util.List;
 import pl.poznan.put.atoms.AtomName;
 
 public class RNABackboneAtoms {
-    private static final List<AtomName> ATOMS = new ArrayList<>();
+    private static final List<AtomName> ATOMS = new ArrayList<AtomName>();
 
     static {
         RNABackboneAtoms.ATOMS.add(AtomName.P);

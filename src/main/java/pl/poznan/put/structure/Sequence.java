@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Sequence {
     private final StringBuilder builder = new StringBuilder();
-    private final List<Residue> residues = new ArrayList<>();
+    private final List<Residue> residues = new ArrayList<Residue>();
 
     public static Sequence fromCompactFragment(CompactFragment fragment) {
         Sequence sequence = new Sequence();

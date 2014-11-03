@@ -9,10 +9,10 @@ import pl.poznan.put.atoms.AtomName;
 import pl.poznan.put.common.ResidueType;
 
 public class RNAResidueAtoms {
-    private static final Map<ResidueType, List<AtomName>> MAP = new HashMap<>();
+    private static final Map<ResidueType, List<AtomName>> MAP = new HashMap<ResidueType, List<AtomName>>();
 
     static {
-        List<AtomName> atoms = new ArrayList<>();
+        List<AtomName> atoms = new ArrayList<AtomName>();
         atoms.add(AtomName.N9);
         atoms.add(AtomName.C4);
         atoms.add(AtomName.N2);
@@ -30,7 +30,7 @@ public class RNAResidueAtoms {
         atoms.add(AtomName.H8);
         RNAResidueAtoms.MAP.put(ResidueType.GUANINE, atoms);
 
-        atoms = new ArrayList<>();
+        atoms = new ArrayList<AtomName>();
         atoms.add(AtomName.N9);
         atoms.add(AtomName.C5);
         atoms.add(AtomName.N7);
@@ -47,7 +47,7 @@ public class RNAResidueAtoms {
         atoms.add(AtomName.H62);
         RNAResidueAtoms.MAP.put(ResidueType.ADENINE, atoms);
 
-        atoms = new ArrayList<>();
+        atoms = new ArrayList<AtomName>();
         atoms.add(AtomName.N1);
         atoms.add(AtomName.C6);
         atoms.add(AtomName.H6);
@@ -62,7 +62,7 @@ public class RNAResidueAtoms {
         atoms.add(AtomName.H42);
         RNAResidueAtoms.MAP.put(ResidueType.CYTOSINE, atoms);
 
-        atoms = new ArrayList<>();
+        atoms = new ArrayList<AtomName>();
         atoms.add(AtomName.N1);
         atoms.add(AtomName.C6);
         atoms.add(AtomName.H6);
@@ -79,7 +79,7 @@ public class RNAResidueAtoms {
         atoms.add(AtomName.H53);
         RNAResidueAtoms.MAP.put(ResidueType.THYMINE, atoms);
 
-        atoms = new ArrayList<>();
+        atoms = new ArrayList<AtomName>();
         atoms.add(AtomName.N1);
         atoms.add(AtomName.C6);
         atoms.add(AtomName.H6);

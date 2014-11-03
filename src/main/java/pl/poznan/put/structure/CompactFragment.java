@@ -33,8 +33,8 @@ public class CompactFragment {
 
     private final StructureSelection parent;
     private final MoleculeType moleculeType;
-    private final List<Group> residues = new ArrayList<>();
-    private final List<ResidueAngles> torsionAngles = new ArrayList<>();
+    private final List<Group> residues = new ArrayList<Group>();
+    private final List<ResidueAngles> torsionAngles = new ArrayList<ResidueAngles>();
     private FragmentAngles fragmentAngles;
 
     public CompactFragment(StructureSelection parent, MoleculeType moleculeType) {
@@ -104,7 +104,7 @@ public class CompactFragment {
                 residueType = ResidueType.detect(group);
             }
 
-            List<AngleValue> values = new ArrayList<>();
+            List<AngleValue> values = new ArrayList<AngleValue>();
 
             if (residueType != ResidueType.UNKNOWN) {
                 for (TorsionAngle angle : residueType.getTorsionAngles()) {
