@@ -34,6 +34,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-transcoder</artifactId>
+			<version>1.7</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.jumpmind.symmetric</groupId>
 			<artifactId>symmetric-csv</artifactId>
 			<version>3.5.19</version>
@@ -47,8 +53,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 		</plugins>

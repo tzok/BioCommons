@@ -57,15 +57,17 @@ public final class Colors {
     private static final float[] RED_HSB = Color.RGBtoHSB(170, 57, 57, null);
 
     public static Color interpolateColor(double value, double min, double max) {
-        if (value < min) {
-            value = min;
+        double v = value;
+
+        if (v < min) {
+            v = min;
         }
 
-        if (value > max) {
-            value = max;
+        if (v > max) {
+            v = max;
         }
 
-        double ratio = (value - min) / (max - min);
+        double ratio = (v - min) / (max - min);
         double h = ratio * (RED_HSB[0] - GREEN_HSB[0]) + GREEN_HSB[0];
         double s = ratio * (RED_HSB[1] - GREEN_HSB[1]) + GREEN_HSB[1];
         double b = ratio * (RED_HSB[2] - GREEN_HSB[2]) + GREEN_HSB[2];
