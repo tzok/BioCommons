@@ -88,6 +88,9 @@
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
+					<compilerArguments>
+						<bootclasspath>${env.JAVA6_HOME}/jre/lib/rt.jar</bootclasspath>
+					</compilerArguments>
 				</configuration>
 			</plugin>
 		</plugins>

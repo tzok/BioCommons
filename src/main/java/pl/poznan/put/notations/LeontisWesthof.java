@@ -89,11 +89,9 @@ public enum LeontisWesthof {
 
         StringBuilder builder = new StringBuilder();
         builder.append(cs[0] == 'C' ? "cis " : "trans ");
-        builder.append(cs[1] == 'W' ? "Watson-Crick" : cs[1] == 'H'
-                ? "Hoogsteen" : "Sugar Edge");
+        builder.append(cs[1] == 'W' ? "Watson-Crick" : cs[1] == 'H' ? "Hoogsteen" : "Sugar Edge");
         builder.append('/');
-        builder.append(cs[2] == 'W' ? "Watson-Crick" : cs[2] == 'H'
-                ? "Hoogsteen" : "Sugar Edge");
+        builder.append(cs[2] == 'W' ? "Watson-Crick" : cs[2] == 'H' ? "Hoogsteen" : "Sugar Edge");
         return builder.toString();
     }
 }
