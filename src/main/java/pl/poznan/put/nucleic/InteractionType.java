@@ -1,12 +1,14 @@
 package pl.poznan.put.nucleic;
 
-public class InteractionType {
+import java.io.Serializable;
+
+public class InteractionType implements Serializable {
     public static final InteractionType BASE_BASE = new InteractionType(NucleotideFragmentType.BASE, NucleotideFragmentType.BASE, true);
-    public static final InteractionType BASE_BASE_NONPAIRING = new InteractionType(NucleotideFragmentType.BASE, NucleotideFragmentType.BASE, false);
+    public static final InteractionType BASE_BASE_1H = new InteractionType(NucleotideFragmentType.BASE, NucleotideFragmentType.BASE, false, "base-base (1H)");
     public static final InteractionType BASE_PHOSPHATE = new InteractionType(NucleotideFragmentType.BASE, NucleotideFragmentType.PHOSPHATE, false);
     public static final InteractionType BASE_SUGAR = new InteractionType(NucleotideFragmentType.BASE, NucleotideFragmentType.SUGAR, false);
     public static final InteractionType SUGAR_SUGAR = new InteractionType(NucleotideFragmentType.SUGAR, NucleotideFragmentType.SUGAR, false);
-    public static final InteractionType STACKING = new InteractionType(BASE_BASE_NONPAIRING, "stacking");
+    public static final InteractionType STACKING = new InteractionType(NucleotideFragmentType.BASE, NucleotideFragmentType.BASE, false, "stacking");
 
     private final NucleotideFragmentType left;
     private final NucleotideFragmentType right;
@@ -18,14 +20,14 @@ public class InteractionType {
         this.left = left;
         this.right = right;
         this.isPairing = isPairing;
-        description = isPairing ? "pairing" : "non-pairing";
+        description = left.name().toLowerCase() + "-" + right.name().toLowerCase();
     }
 
-    private InteractionType(InteractionType existing, String description) {
+    public InteractionType(NucleotideFragmentType left, NucleotideFragmentType right, boolean isPairing, String description) {
         super();
-        this.left = existing.left;
-        this.right = existing.right;
-        this.isPairing = existing.isPairing;
+        this.left = left;
+        this.right = right;
+        this.isPairing = isPairing;
         this.description = description;
     }
 
@@ -43,7 +45,7 @@ public class InteractionType {
 
     @Override
     public String toString() {
-        return left + "-" + right + (isPairing ? "" : " (" + description + ")");
+        return description;
     }
 
     @Override
