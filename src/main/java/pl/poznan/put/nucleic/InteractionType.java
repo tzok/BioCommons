@@ -9,6 +9,7 @@ public class InteractionType implements Serializable, Comparable<InteractionType
     public static final InteractionType BASE_SUGAR = new InteractionType(NucleotideFragmentType.BASE, NucleotideFragmentType.SUGAR, false);
     public static final InteractionType SUGAR_SUGAR = new InteractionType(NucleotideFragmentType.SUGAR, NucleotideFragmentType.SUGAR, false);
     public static final InteractionType STACKING = new InteractionType(NucleotideFragmentType.BASE, NucleotideFragmentType.BASE, false, "stacking");
+    public static final InteractionType OTHER = new InteractionType(NucleotideFragmentType.UNKNOWN, NucleotideFragmentType.UNKNOWN, false, "other");
 
     private final NucleotideFragmentType left;
     private final NucleotideFragmentType right;
