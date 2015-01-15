@@ -4,24 +4,36 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 
+import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.bridge.GVTBuilder;
+import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.util.XMLResourceDescriptor;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.math3.stat.StatUtils;
 import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Node;
 import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGSVGElement;
 
 public class SVGHelper {
     private static class SVGNamespace implements NamespaceContext {
@@ -73,6 +85,19 @@ public class SVGHelper {
     }
 
     public static void export(SVGDocument svgDocument, OutputStream stream, Format format) throws IOException {
+        if (format == Format.EPS || format == Format.SVG) {
+            OutputStreamWriter writer = null;
+
+            try {
+                writer = new OutputStreamWriter(stream);
+                SVGHelper.export(svgDocument, writer, format);
+            } finally {
+                IOUtils.closeQuietly(writer);
+            }
+
+            return;
+        }
+
         try {
             TranscoderInput input = new TranscoderInput(svgDocument);
             TranscoderOutput output = new TranscoderOutput(stream);
@@ -81,6 +106,58 @@ public class SVGHelper {
         } catch (TranscoderException e) {
             throw new IOException("Failed to save SVG as image", e);
         }
+    }
+
+    private static void export(SVGDocument svgDocument, Writer writer, Format format) throws IOException {
+        try {
+            TranscoderInput input = new TranscoderInput(svgDocument);
+            TranscoderOutput output = new TranscoderOutput(writer);
+            Transcoder transcoder = format.getTranscoder();
+            transcoder.transcode(input, output);
+        } catch (TranscoderException e) {
+            throw new IOException("Failed to save SVG as image", e);
+        }
+    }
+
+    public static Rectangle2D calculateBoundingBox(SVGDocument doc) {
+        GVTBuilder builder = new GVTBuilder();
+        BridgeContext ctx = new BridgeContext(new UserAgentAdapter());
+        GraphicsNode gvtRoot = builder.build(ctx, doc);
+        return gvtRoot.getSensitiveBounds();
+    }
+
+    public static SVGDocument merge(List<SVGDocument> svgs) {
+        SVGDocument mergedSvg = svgs.get(0);
+        SVGSVGElement mergedRoot = mergedSvg.getRootElement();
+        double[] widths = new double[svgs.size()];
+        double[] heights = new double[svgs.size()];
+        double currentWidth = 0;
+
+        for (int i = 0; i < svgs.size(); i++) {
+            SVGDocument svg = svgs.get(i);
+
+            Rectangle2D box = SVGHelper.calculateBoundingBox(svg);
+            widths[i] = box.getWidth() + box.getX();
+            heights[i] = box.getHeight() + box.getY();
+
+            SVGSVGElement rootElement = svg.getRootElement();
+            rootElement.setAttribute("x", Double.toString(currentWidth));
+
+            currentWidth += widths[i];
+
+            if (i > 0) {
+                Node importedNode = mergedSvg.importNode(svg.getDocumentElement(), true);
+                mergedRoot.appendChild(importedNode);
+            }
+        }
+
+        double mergedWidth = StatUtils.sum(widths);
+        double mergedHeight = StatUtils.max(heights);
+        mergedRoot.setAttribute("width", Double.toString(mergedWidth));
+        mergedRoot.setAttribute("height", Double.toString(mergedHeight));
+        mergedRoot.setAttribute("viewBox", "0 0 " + mergedWidth + " " + mergedHeight);
+
+        return mergedSvg;
     }
 
     private SVGHelper() {
