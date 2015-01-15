@@ -12,6 +12,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -27,6 +29,7 @@ import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.TranscodingHints;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.stat.StatUtils;
@@ -84,13 +87,13 @@ public class SVGHelper {
         return SVGHelper.SVG_NAMESPACE;
     }
 
-    public static void export(SVGDocument svgDocument, OutputStream stream, Format format) throws IOException {
+    public static void export(SVGDocument svgDocument, OutputStream stream, Format format, Map<TranscodingHints.Key, Object> transcodingHints) throws IOException {
         if (format == Format.EPS || format == Format.SVG) {
             OutputStreamWriter writer = null;
 
             try {
                 writer = new OutputStreamWriter(stream);
-                SVGHelper.export(svgDocument, writer, format);
+                SVGHelper.export(svgDocument, writer, format, transcodingHints);
             } finally {
                 IOUtils.closeQuietly(writer);
             }
@@ -102,17 +105,31 @@ public class SVGHelper {
             TranscoderInput input = new TranscoderInput(svgDocument);
             TranscoderOutput output = new TranscoderOutput(stream);
             Transcoder transcoder = format.getTranscoder();
+
+            if (transcodingHints != null) {
+                for (Entry<TranscodingHints.Key, Object> entry : transcodingHints.entrySet()) {
+                    transcoder.addTranscodingHint(entry.getKey(), entry.getValue());
+                }
+            }
+
             transcoder.transcode(input, output);
         } catch (TranscoderException e) {
             throw new IOException("Failed to save SVG as image", e);
         }
     }
 
-    private static void export(SVGDocument svgDocument, Writer writer, Format format) throws IOException {
+    private static void export(SVGDocument svgDocument, Writer writer, Format format, Map<TranscodingHints.Key, Object> transcodingHints) throws IOException {
         try {
             TranscoderInput input = new TranscoderInput(svgDocument);
             TranscoderOutput output = new TranscoderOutput(writer);
             Transcoder transcoder = format.getTranscoder();
+
+            if (transcodingHints != null) {
+                for (Entry<TranscodingHints.Key, Object> entry : transcodingHints.entrySet()) {
+                    transcoder.addTranscodingHint(entry.getKey(), entry.getValue());
+                }
+            }
+
             transcoder.transcode(input, output);
         } catch (TranscoderException e) {
             throw new IOException("Failed to save SVG as image", e);
