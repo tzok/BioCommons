@@ -1,0 +1,23 @@
+# Dataset B.2 from "Statistical analysis of circular data" by Fisher, N.I.
+#
+# Data      Measurements of long-axis orientation of 133 feldspar laths in
+#           basalt.
+# Type      Axes.
+# Source    Smith, N.M. (1988) Reconstruction of the Tertiary drainage systems
+#           of the Inverell region. Unpublished B.Sc. (Hons.) thesis,
+#           Department of Geography, University of Sydney, Australia
+
+176     162     49      174     174     49      54      63      59      61
+66      104     97      58      121     5       178     3       168     0
+18      39      140     63      55      170     169     37      152     73
+53      176     72      170     113     56      87      161     164     21
+50      6       59      140     54      64      56      38      61      143
+51      144     148     44      60      98      86      145     38      168
+39      134     68      57      129     68      132     82      54      119
+131     50      93      160     127     124     65      108     52      61
+86      37      132     83      163     58      144     29      80      172
+144     138     10      45      137     11      145     103     69      124
+54      121     1       39      111     153     13      5       5       107
+104     39      133     36      63      4       21      51      30      52
+90      143     13      50      109     12      170     5       14      91
+132     12      1

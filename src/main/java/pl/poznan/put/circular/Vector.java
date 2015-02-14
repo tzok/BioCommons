@@ -2,7 +2,12 @@ package pl.poznan.put.circular;
 
 import pl.poznan.put.circular.exception.InvalidFormatException;
 
-public class Vector {
+/**
+ * A class of measurements where one can distinguisch a direction.
+ * 
+ * @author tzok
+ */
+public class Vector extends Circular {
     private static final int MINUTES_IN_DAY = 24 * 60;
 
     /**
@@ -32,27 +37,12 @@ public class Vector {
         }
     }
 
-    private final double radians;
-
     public Vector(double radians) {
-        super();
-        this.radians = radians;
-    }
-
-    public double getRadians() {
-        return radians;
-    }
-
-    public double getDegrees() {
-        return Math.toDegrees(radians);
-    }
-
-    public double getDegrees360() {
-        return (Math.toDegrees(radians) + 360.0) % 360.0;
+        super(radians);
     }
 
     @Override
-    public String toString() {
-        return String.valueOf(getRadians()) + " rad\t" + String.valueOf(getDegrees()) + " deg\t" + String.valueOf(getDegrees360()) + " deg";
+    public double getDegreesPositive() {
+        return (Math.toDegrees(radians) + 360.0) % 360.0;
     }
 }
