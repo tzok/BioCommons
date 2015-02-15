@@ -23,7 +23,8 @@ import org.w3c.dom.svg.SVGSVGElement;
 import pl.poznan.put.circular.Axis;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Vector;
-import pl.poznan.put.circular.exception.InvalidFormatException;
+import pl.poznan.put.circular.exception.InvalidCircularValueException;
+import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
 
@@ -89,15 +90,13 @@ public class RawDataPlot {
         Map<Integer, List<Circular>> observations = new TreeMap<>();
 
         for (Circular circular : data) {
-            double degrees = circular.getDegreesPositive();
+            double degrees = circular.getDegrees();
             int index = (int) degrees;
 
             if (!observations.containsKey(index)) {
                 observations.put(index, new ArrayList<Circular>());
             }
-
-            List<Circular> list = observations.get(index);
-            list.add(circular);
+            observations.get(index).add(circular);
         }
 
         double observationSize = 0.02 * radius;
@@ -185,7 +184,7 @@ public class RawDataPlot {
         }
     }
 
-    public static void main(String[] args) throws IOException, InvalidFormatException {
+    public static void main(String[] args) throws IOException, InvalidVectorFormatException, InvalidCircularValueException {
         /*
          * First example
          */

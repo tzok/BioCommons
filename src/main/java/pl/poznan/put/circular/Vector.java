@@ -1,9 +1,11 @@
 package pl.poznan.put.circular;
 
-import pl.poznan.put.circular.exception.InvalidFormatException;
+import pl.poznan.put.circular.exception.InvalidCircularValueException;
+import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 
 /**
- * A class of measurements where one can distinguisch a direction.
+ * A class of measurements where one can distinguish a direction (i.e. [0..360)
+ * degrees)
  * 
  * @author tzok
  */
@@ -17,14 +19,17 @@ public class Vector extends Circular {
      * @param hourMinute
      *            String in format HH.MM.
      * @return A vector representation of time on a circular clock.
-     * @throws InvalidFormatException
+     * @throws InvalidVectorFormatException
      *             If the input string has an invalid format.
+     * @throws InvalidCircularValueException
+     *             If the input string is parsed to a value outside the range
+     *             [0..360)
      */
-    public static Vector fromHourMinuteString(String hourMinute) throws InvalidFormatException {
+    public static Vector fromHourMinuteString(String hourMinute) throws InvalidVectorFormatException, InvalidCircularValueException {
         String[] split = hourMinute.split("\\.");
 
         if (split.length != 2) {
-            throw new InvalidFormatException("Required format is HH.MM eg. 02.40. The input given was: " + hourMinute);
+            throw new InvalidVectorFormatException("Required format is HH.MM eg. 02.40. The input given was: " + hourMinute);
         }
 
         try {
@@ -33,16 +38,15 @@ public class Vector extends Circular {
             minutes += hours * 60;
             return new Vector(2 * Math.PI * minutes / MINUTES_IN_DAY);
         } catch (NumberFormatException e) {
-            throw new InvalidFormatException("Required format is HH.MM eg. 02.40. The input given was: " + hourMinute, e);
+            throw new InvalidVectorFormatException("Required format is HH.MM eg. 02.40. The input given was: " + hourMinute, e);
         }
     }
 
-    public Vector(double radians) {
+    public Vector(double radians) throws InvalidCircularValueException {
         super(radians);
-    }
 
-    @Override
-    public double getDegreesPositive() {
-        return (Math.toDegrees(radians) + 360.0) % 360.0;
+        if (radians < 0 || radians >= 360.0) {
+            throw new InvalidCircularValueException("A vector value must be in range [0..360)");
+        }
     }
 }
