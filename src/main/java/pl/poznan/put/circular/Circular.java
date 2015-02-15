@@ -17,6 +17,30 @@ public abstract class Circular {
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits(radians);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Circular other = (Circular) obj;
+        if (Double.doubleToLongBits(radians) != Double.doubleToLongBits(other.radians))
+            return false;
+        return true;
+    }
+
+    @Override
     public String toString() {
         return String.valueOf(getRadians()) + " rad\t" + String.valueOf(getDegrees()) + " deg";
     }

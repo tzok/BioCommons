@@ -7,3 +7,5 @@ A library for the analysis of circular data
 [Plot for axes](examples/D02-raw-plot.png)
 
 [Linear histogram for vectors](examples/D01-linear-histogram.png)
+
+[Angular histogram for vectors](examples/D01-angular-histogram.png)

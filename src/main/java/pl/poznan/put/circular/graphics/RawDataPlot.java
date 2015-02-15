@@ -28,15 +28,15 @@ import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
 
-public class RawDataPlot {
-    private final Collection<Circular> data;
-    private final double diameter;
+public class RawDataPlot implements Drawable {
+    protected final Collection<Circular> data;
+    protected final double diameter;
     private final double majorTickSpread;
     private final double minorTickSpread;
 
-    private double centerX;
-    private double centerY;
-    private double radius;
+    protected double centerX;
+    protected double centerY;
+    protected double radius;
 
     public RawDataPlot(Collection<Circular> data, double diameter, double majorTickSpread, double minorTickSpread) {
         super();
@@ -73,9 +73,19 @@ public class RawDataPlot {
         radius = diameter / 2.0;
     }
 
-    public SVGDocument draw() {
+    @Override
+    public SVGDocument draw() throws InvalidCircularValueException {
         DOMImplementation domImplementation = SVGDOMImplementation.getDOMImplementation();
         SVGDocument document = (SVGDocument) domImplementation.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
+        SVGGraphics2D graphics = drawBareImage(document);
+        SVGSVGElement rootElement = document.getRootElement();
+        graphics.getRoot(rootElement);
+        Rectangle2D box = SVGHelper.calculateBoundingBox(document);
+        rootElement.setAttributeNS(SVGDOMImplementation.SVG_NAMESPACE_URI, "viewBox", box.getX() + " " + box.getY() + " " + box.getWidth() + " " + box.getHeight());
+        return document;
+    }
+
+    protected SVGGraphics2D drawBareImage(SVGDocument document) {
         SVGGraphics2D graphics = new SVGGraphics2D(document);
 
         // main circle
@@ -162,12 +172,7 @@ public class RawDataPlot {
                 }
             }
         }
-
-        SVGSVGElement rootElement = document.getRootElement();
-        graphics.getRoot(rootElement);
-        Rectangle2D box = SVGHelper.calculateBoundingBox(document);
-        rootElement.setAttributeNS(SVGDOMImplementation.SVG_NAMESPACE_URI, "viewBox", box.getX() + " " + box.getY() + " " + box.getWidth() + " " + box.getHeight());
-        return document;
+        return graphics;
     }
 
     private void drawTicks(SVGGraphics2D graphics, double tickSpread, double virtualRadius) {
