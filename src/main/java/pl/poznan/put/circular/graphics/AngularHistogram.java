@@ -1,5 +1,6 @@
 package pl.poznan.put.circular.graphics;
 
+import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,10 +18,12 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
 
+import pl.poznan.put.circular.Axis;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Constants;
 import pl.poznan.put.circular.Histogram;
 import pl.poznan.put.circular.Vector;
+import pl.poznan.put.circular.exception.InvalidCircularOperationException;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 import pl.poznan.put.utility.svg.Format;
@@ -28,23 +31,24 @@ import pl.poznan.put.utility.svg.SVGHelper;
 
 public class AngularHistogram extends RawDataPlot {
     private final double binRadians;
+    private double scalingFactor;
 
-    public AngularHistogram(Collection<Circular> data, double binRadians, double diameter, double majorTickSpread, double minorTickSpread) {
+    public AngularHistogram(Collection<Circular> data, double binRadians, double diameter, double majorTickSpread, double minorTickSpread) throws InvalidCircularOperationException {
         super(data, diameter, majorTickSpread, minorTickSpread);
         this.binRadians = binRadians;
     }
 
-    public AngularHistogram(Collection<Circular> data, double binRadians, double diameter) {
+    public AngularHistogram(Collection<Circular> data, double binRadians, double diameter) throws InvalidCircularOperationException {
         super(data, diameter);
         this.binRadians = binRadians;
     }
 
-    public AngularHistogram(Collection<Circular> data, double binRadians) {
+    public AngularHistogram(Collection<Circular> data, double binRadians) throws InvalidCircularOperationException {
         super(data);
         this.binRadians = binRadians;
     }
 
-    public AngularHistogram(Collection<Circular> data) {
+    public AngularHistogram(Collection<Circular> data) throws InvalidCircularOperationException {
         super(data);
         this.binRadians = Math.PI / 12;
     }
@@ -67,7 +71,7 @@ public class AngularHistogram extends RawDataPlot {
 
         // the 0.8 is here because up to 0.85 the majorTick can be drawn and we
         // do not want overlaps
-        double scalingFactor = 0.8 / Math.sqrt(maxFrequency);
+        scalingFactor = 0.8 / Math.sqrt(maxFrequency);
 
         for (double d = 0; Math.abs(d - 2 * Math.PI) > Constants.EPSILON; d += binRadians) {
             if (!histogram.containsBin(d)) {
@@ -75,17 +79,11 @@ public class AngularHistogram extends RawDataPlot {
             }
 
             double frequency = (double) histogram.getBin(d).size() / (double) data.size();
-            double sectorRadius = Math.sqrt(frequency) * radius * scalingFactor;
+            drawHistogramTriangle(graphics, d, frequency);
 
-            // angle as in XY coordinate system
-            double t = -(d + Math.PI * 3 / 2) % (2 * Math.PI);
-            double x1 = centerX + sectorRadius * Math.cos(t);
-            double y1 = centerY + sectorRadius * Math.sin(t);
-            t = -(d + binRadians + Math.PI * 3 / 2) % (2 * Math.PI);
-            double x2 = centerX + sectorRadius * Math.cos(t);
-            double y2 = centerY + sectorRadius * Math.sin(t);
-
-            graphics.drawPolygon(new int[] { (int) x1, (int) x2, (int) centerX }, new int[] { (int) (diameter - y1), (int) (diameter - y2), (int) (diameter - centerY) }, 3);
+            if (isAxes) {
+                drawHistogramTriangle(graphics, (d + Math.PI) % (2 * Math.PI), frequency);
+            }
         }
 
         SVGSVGElement rootElement = document.getRootElement();
@@ -95,7 +93,21 @@ public class AngularHistogram extends RawDataPlot {
         return document;
     }
 
-    public static void main(String[] args) throws IOException, InvalidVectorFormatException, InvalidCircularValueException {
+    private void drawHistogramTriangle(Graphics graphics, double circularValue, double frequency) {
+        double sectorRadius = Math.sqrt(frequency) * radius * scalingFactor;
+
+        // angle as in XY coordinate system
+        double t = -(circularValue + Math.PI * 3 / 2) % (2 * Math.PI);
+        double x1 = centerX + sectorRadius * Math.cos(t);
+        double y1 = centerY + sectorRadius * Math.sin(t);
+        t = -(circularValue + binRadians + Math.PI * 3 / 2) % (2 * Math.PI);
+        double x2 = centerX + sectorRadius * Math.cos(t);
+        double y2 = centerY + sectorRadius * Math.sin(t);
+
+        graphics.drawPolygon(new int[] { (int) x1, (int) x2, (int) centerX }, new int[] { (int) (diameter - y1), (int) (diameter - y2), (int) (diameter - centerY) }, 3);
+    }
+
+    public static void main(String[] args) throws IOException, InvalidVectorFormatException, InvalidCircularValueException, InvalidCircularOperationException {
         /*
          * First example
          */
@@ -120,5 +132,32 @@ public class AngularHistogram extends RawDataPlot {
         try (OutputStream stream = new FileOutputStream("/tmp/D01-angular-histogram.svg")) {
             SVGHelper.export(svgDocument, stream, Format.SVG, null);
         }
+
+        /*
+         * Second example
+         */
+        data = new ArrayList<>();
+        lines = FileUtils.readLines(new File("data/D02"), "UTF-8");
+
+        for (String line : lines) {
+            if (line.startsWith("#")) {
+                continue;
+            }
+
+            for (String token : StringUtils.split(line)) {
+                if (!StringUtils.isBlank(token)) {
+                    double degrees = Double.parseDouble(token);
+                    data.add(new Axis(Math.toRadians(degrees)));
+                }
+            }
+        }
+
+        plot = new AngularHistogram(data);
+        svgDocument = plot.draw();
+
+        try (OutputStream stream = new FileOutputStream("/tmp/D02-angular-histogram.svg")) {
+            SVGHelper.export(svgDocument, stream, Format.SVG, null);
+        }
+
     }
 }
