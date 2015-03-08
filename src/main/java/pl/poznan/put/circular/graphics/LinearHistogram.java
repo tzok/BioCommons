@@ -60,12 +60,7 @@ public class LinearHistogram implements Drawable {
         int i = 0;
 
         for (double d = 0; Math.abs(d - 2 * Math.PI) > Constants.EPSILON; d += binRadians, i += 1) {
-            if (!histogram.containsBin(d)) {
-                continue;
-            }
-
-            List<Circular> observations = histogram.getBin(d);
-            int frequency = observations.size();
+            int frequency = histogram.getBinSize(d);
             int height = frequency * drawingUnitSize;
             graphics.drawRect(i * drawingUnitSize, -height, drawingUnitSize, height);
 

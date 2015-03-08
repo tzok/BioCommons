@@ -23,6 +23,7 @@ import org.w3c.dom.svg.SVGSVGElement;
 import pl.poznan.put.circular.Axis;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Vector;
+import pl.poznan.put.circular.exception.InvalidCircularOperationException;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 import pl.poznan.put.utility.svg.Format;
@@ -31,6 +32,7 @@ import pl.poznan.put.utility.svg.SVGHelper;
 public class RawDataPlot implements Drawable {
     protected final Collection<Circular> data;
     protected final double diameter;
+    protected final boolean isAxes;
     private final double majorTickSpread;
     private final double minorTickSpread;
 
@@ -38,30 +40,48 @@ public class RawDataPlot implements Drawable {
     protected double centerY;
     protected double radius;
 
-    public RawDataPlot(Collection<Circular> data, double diameter, double majorTickSpread, double minorTickSpread) {
+    public RawDataPlot(Collection<Circular> data, double diameter, double majorTickSpread, double minorTickSpread) throws InvalidCircularOperationException {
         super();
         this.data = data;
         this.diameter = diameter;
         this.majorTickSpread = majorTickSpread;
         this.minorTickSpread = minorTickSpread;
+
+        if (data.size() == 0) {
+            throw new InvalidCircularOperationException("A dataset cannot be empty!");
+        }
+
+        this.isAxes = data.iterator().next() instanceof Axis;
         init();
     }
 
-    public RawDataPlot(Collection<Circular> data, double diameter) {
+    public RawDataPlot(Collection<Circular> data, double diameter) throws InvalidCircularOperationException {
         super();
         this.data = data;
         this.diameter = diameter;
         this.majorTickSpread = Math.PI / 2;
         this.minorTickSpread = Math.PI / 12;
+
+        if (data.size() == 0) {
+            throw new InvalidCircularOperationException("A dataset cannot be empty!");
+        }
+
+        this.isAxes = data.iterator().next() instanceof Axis;
         init();
     }
 
-    public RawDataPlot(Collection<Circular> data) {
+    public RawDataPlot(Collection<Circular> data) throws InvalidCircularOperationException {
         super();
         this.data = data;
         this.diameter = 1024;
         this.majorTickSpread = Math.PI / 2;
         this.minorTickSpread = Math.PI / 12;
+
+        if (data.size() == 0) {
+            throw new InvalidCircularOperationException("A dataset cannot be empty!");
+        }
+
+        this.isAxes = data.iterator().next() instanceof Axis;
         init();
     }
 
@@ -189,7 +209,7 @@ public class RawDataPlot implements Drawable {
         }
     }
 
-    public static void main(String[] args) throws IOException, InvalidVectorFormatException, InvalidCircularValueException {
+    public static void main(String[] args) throws IOException, InvalidVectorFormatException, InvalidCircularValueException, InvalidCircularOperationException {
         /*
          * First example
          */

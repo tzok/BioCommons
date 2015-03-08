@@ -2,56 +2,58 @@ package pl.poznan.put.circular;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 
 public class Histogram {
-    private final Map<Double, List<Circular>> binned = new TreeMap<>();
-    private final Map<Circular, Double> datumToBin = new HashMap<>();
+    public class Bin {
+        private final double radiansStart;
+        private final List<Circular> data;
 
-    @SuppressWarnings("unused")
-    private final Collection<Circular> data;
-    @SuppressWarnings("unused")
-    private final double binRadians;
+        public Bin(double radiansStart, List<Circular> data) {
+            super();
+            this.radiansStart = radiansStart;
+            this.data = data;
+        }
+    }
 
-    public Histogram(Collection<Circular> data, double binRadians) throws InvalidCircularValueException {
+    private final List<Bin> histogram = new ArrayList<>();
+
+    public Histogram(Collection<Circular> data, double binWidth) throws InvalidCircularValueException {
         super();
 
-        if (binRadians < 0 || binRadians >= Math.PI) {
+        if (binWidth < 0 || binWidth >= Math.PI) {
             throw new InvalidCircularValueException("A histogram bin size must be in range [0..180)");
         }
 
-        this.data = data;
-        this.binRadians = binRadians;
+        for (double radiansStart = 0; radiansStart < 2 * Math.PI; radiansStart += binWidth) {
+            List<Circular> binData = new ArrayList<>();
 
-        for (double d = 0; d < 2 * Math.PI; d += binRadians) {
             for (Circular circular : data) {
                 double radians = circular.getRadians();
 
-                if (radians >= d && radians < d + binRadians) {
-                    if (!binned.containsKey(d)) {
-                        binned.put(d, new ArrayList<Circular>());
-                    }
-                    binned.get(d).add(circular);
-                    datumToBin.put(circular, d);
+                if (radians >= radiansStart && radians < radiansStart + binWidth) {
+                    binData.add(circular);
                 }
             }
+
+            histogram.add(new Bin(radiansStart, binData));
         }
     }
 
-    public boolean containsBin(double radians) {
-        return binned.containsKey(radians);
+    public int getBinSize(double radiansStart) {
+        return getBin(radiansStart).size();
     }
 
-    public List<Circular> getBin(double radians) {
-        return binned.get(radians);
-    }
+    private Collection<Circular> getBin(double radiansStart) {
+        for (Bin bin : histogram) {
+            if (Math.abs(bin.radiansStart - radiansStart) < Constants.EPSILON) {
+                return bin.data;
+            }
+        }
 
-    public Double getContainingBin(Circular circular) {
-        return datumToBin.get(circular);
+        return Collections.emptyList();
     }
 }

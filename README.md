@@ -9,3 +9,5 @@ A library for the analysis of circular data
 [Linear histogram for vectors](examples/D01-linear-histogram.png)
 
 [Angular histogram for vectors](examples/D01-angular-histogram.png)
+
+[Angular histogram for axes](examples/D02-angular-histogram.png)
