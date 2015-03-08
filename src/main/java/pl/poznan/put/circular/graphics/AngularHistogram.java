@@ -1,7 +1,6 @@
 package pl.poznan.put.circular.graphics;
 
 import java.awt.Graphics;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,13 +9,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.batik.dom.svg.SVGDOMImplementation;
-import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.svg.SVGDocument;
-import org.w3c.dom.svg.SVGSVGElement;
 
 import pl.poznan.put.circular.Axis;
 import pl.poznan.put.circular.Circular;
@@ -54,10 +49,9 @@ public class AngularHistogram extends RawDataPlot {
     }
 
     @Override
-    public SVGDocument draw() throws InvalidCircularValueException {
-        DOMImplementation domImplementation = SVGDOMImplementation.getDOMImplementation();
-        SVGDocument document = (SVGDocument) domImplementation.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
-        SVGGraphics2D graphics = drawBareImage(document);
+    public void draw() throws InvalidCircularValueException {
+        super.draw();
+
         Histogram histogram = new Histogram(data, binRadians);
         double maxFrequency = Double.NEGATIVE_INFINITY;
 
@@ -72,18 +66,12 @@ public class AngularHistogram extends RawDataPlot {
 
         for (double d = 0; Math.abs(d - 2 * Math.PI) > Constants.EPSILON; d += binRadians) {
             double frequency = (double) histogram.getBinSize(d) / (double) data.size();
-            drawHistogramTriangle(graphics, d, frequency);
+            drawHistogramTriangle(svgGraphics, d, frequency);
 
             if (isAxes) {
-                drawHistogramTriangle(graphics, (d + Math.PI) % (2 * Math.PI), frequency);
+                drawHistogramTriangle(svgGraphics, (d + Math.PI) % (2 * Math.PI), frequency);
             }
         }
-
-        SVGSVGElement rootElement = document.getRootElement();
-        graphics.getRoot(rootElement);
-        Rectangle2D box = SVGHelper.calculateBoundingBox(document);
-        rootElement.setAttributeNS(SVGDOMImplementation.SVG_NAMESPACE_URI, "viewBox", box.getX() + " " + box.getY() + " " + box.getWidth() + " " + box.getHeight());
-        return document;
     }
 
     private void drawHistogramTriangle(Graphics graphics, double circularValue, double frequency) {
@@ -119,8 +107,9 @@ public class AngularHistogram extends RawDataPlot {
             }
         }
 
-        Drawable plot = new AngularHistogram(data);
-        SVGDocument svgDocument = plot.draw();
+        AbstractDrawable plot = new AngularHistogram(data);
+        plot.draw();
+        SVGDocument svgDocument = plot.finalizeDrawingAndGetSVG();
 
         try (OutputStream stream = new FileOutputStream("/tmp/D01-angular-histogram.svg")) {
             SVGHelper.export(svgDocument, stream, Format.SVG, null);
@@ -146,7 +135,8 @@ public class AngularHistogram extends RawDataPlot {
         }
 
         plot = new AngularHistogram(data);
-        svgDocument = plot.draw();
+        plot.draw();
+        svgDocument = plot.finalizeDrawingAndGetSVG();
 
         try (OutputStream stream = new FileOutputStream("/tmp/D02-angular-histogram.svg")) {
             SVGHelper.export(svgDocument, stream, Format.SVG, null);

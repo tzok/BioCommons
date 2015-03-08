@@ -1,6 +1,5 @@
 package pl.poznan.put.circular.graphics;
 
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,13 +11,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.svg.SVGDocument;
-import org.w3c.dom.svg.SVGSVGElement;
 
 import pl.poznan.put.circular.Axis;
 import pl.poznan.put.circular.Circular;
@@ -29,7 +25,7 @@ import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
 
-public class RawDataPlot implements Drawable {
+public class RawDataPlot extends AbstractDrawable {
     protected final Collection<Circular> data;
     protected final double diameter;
     protected final boolean isAxes;
@@ -94,27 +90,14 @@ public class RawDataPlot implements Drawable {
     }
 
     @Override
-    public SVGDocument draw() throws InvalidCircularValueException {
-        DOMImplementation domImplementation = SVGDOMImplementation.getDOMImplementation();
-        SVGDocument document = (SVGDocument) domImplementation.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
-        SVGGraphics2D graphics = drawBareImage(document);
-        SVGSVGElement rootElement = document.getRootElement();
-        graphics.getRoot(rootElement);
-        Rectangle2D box = SVGHelper.calculateBoundingBox(document);
-        rootElement.setAttributeNS(SVGDOMImplementation.SVG_NAMESPACE_URI, "viewBox", box.getX() + " " + box.getY() + " " + box.getWidth() + " " + box.getHeight());
-        return document;
-    }
-
-    protected SVGGraphics2D drawBareImage(SVGDocument document) {
-        SVGGraphics2D graphics = new SVGGraphics2D(document);
-
+    public void draw() throws InvalidCircularValueException {
         // main circle
-        graphics.drawOval(0, 0, (int) diameter, (int) diameter);
+        svgGraphics.drawOval(0, 0, (int) diameter, (int) diameter);
         // ticks
         double rminor = 0.95 * radius;
         double rmajor = 0.85 * radius;
-        drawTicks(graphics, minorTickSpread, rminor);
-        drawTicks(graphics, majorTickSpread, rmajor);
+        drawTicks(svgGraphics, minorTickSpread, rminor);
+        drawTicks(svgGraphics, majorTickSpread, rmajor);
 
         // observations for every degree on a circle (map key = 0..360)
         Map<Integer, List<Circular>> observations = new TreeMap<>();
@@ -179,20 +162,19 @@ public class RawDataPlot implements Drawable {
                     double x3 = centerX + virtualRadius * Math.cos(t);
                     double y3 = centerY + virtualRadius * Math.sin(t);
 
-                    graphics.drawPolygon(new int[] { (int) x1, (int) x2, (int) x3 }, new int[] { (int) (diameter - y1), (int) (diameter - y2), (int) (diameter - y3) }, 3);
+                    svgGraphics.drawPolygon(new int[] { (int) x1, (int) x2, (int) x3 }, new int[] { (int) (diameter - y1), (int) (diameter - y2), (int) (diameter - y3) }, 3);
                     i += 2;
                 } else if (circular instanceof Axis) {
                     xv -= observationSize / 2.0;
                     yv += observationSize / 2.0;
-                    graphics.drawOval((int) xv, (int) (diameter - yv), (int) observationSize, (int) observationSize);
+                    svgGraphics.drawOval((int) xv, (int) (diameter - yv), (int) observationSize, (int) observationSize);
                     xv = centerX + virtualRadius * Math.cos(t + Math.PI) - observationSize / 2.0;
                     yv = centerY + virtualRadius * Math.sin(t + Math.PI) + observationSize / 2.0;
-                    graphics.drawOval((int) xv, (int) (diameter - yv), (int) observationSize, (int) observationSize);
+                    svgGraphics.drawOval((int) xv, (int) (diameter - yv), (int) observationSize, (int) observationSize);
                     i += 1;
                 }
             }
         }
-        return graphics;
     }
 
     private void drawTicks(SVGGraphics2D graphics, double tickSpread, double virtualRadius) {
@@ -229,7 +211,8 @@ public class RawDataPlot implements Drawable {
         }
 
         RawDataPlot plot = new RawDataPlot(data);
-        SVGDocument svgDocument = plot.draw();
+        plot.draw();
+        SVGDocument svgDocument = plot.finalizeDrawingAndGetSVG();
 
         try (OutputStream stream = new FileOutputStream("/tmp/D01-plot.svg")) {
             SVGHelper.export(svgDocument, stream, Format.SVG, null);
@@ -255,7 +238,8 @@ public class RawDataPlot implements Drawable {
         }
 
         plot = new RawDataPlot(data);
-        svgDocument = plot.draw();
+        plot.draw();
+        svgDocument = plot.finalizeDrawingAndGetSVG();
 
         try (OutputStream stream = new FileOutputStream("/tmp/D02-plot.svg")) {
             SVGHelper.export(svgDocument, stream, Format.SVG, null);
