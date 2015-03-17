@@ -53,7 +53,7 @@ public class SVGHelper {
         @Override
         public String getNamespaceURI(String prefix) {
             if (prefix == null) {
-                throw new NullPointerException("Null prefix for namespace");
+                throw new IllegalArgumentException("Null prefix for namespace");
             } else if ("svg".equals(prefix)) {
                 return SVGDOMImplementation.SVG_NAMESPACE_URI;
             }

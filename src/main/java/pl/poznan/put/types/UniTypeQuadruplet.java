@@ -98,8 +98,7 @@ public class UniTypeQuadruplet<T> {
             break;
         }
 
-        throw new RuntimeException(
-                "UniTypeQuaduplet.get(index) was called with index < 0 or index > 3");
+        throw new IllegalArgumentException("UniTypeQuaduplet.get(index) was called with index < 0 or index > 3");
     }
 
     @Override
