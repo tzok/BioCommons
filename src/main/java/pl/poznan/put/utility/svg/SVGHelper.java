@@ -144,6 +144,10 @@ public class SVGHelper {
     }
 
     public static SVGDocument merge(List<SVGDocument> svgs) {
+        if (svgs.size() == 0) {
+            return SVGHelper.emptyDocument();
+        }
+
         SVGDocument mergedSvg = svgs.get(0);
         SVGSVGElement mergedRoot = mergedSvg.getRootElement();
         double[] widths = new double[svgs.size()];
