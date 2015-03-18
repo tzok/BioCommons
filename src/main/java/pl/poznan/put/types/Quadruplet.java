@@ -2,13 +2,13 @@ package pl.poznan.put.types;
 
 import java.util.List;
 
-public class UniTypeQuadruplet<T> {
+public class Quadruplet<T> {
     public final T a;
     public final T b;
     public final T c;
     public final T d;
 
-    public UniTypeQuadruplet(List<T> list) {
+    public Quadruplet(List<T> list) {
         super();
         assert list.size() == 4;
         a = list.get(0);
@@ -17,7 +17,7 @@ public class UniTypeQuadruplet<T> {
         d = list.get(3);
     }
 
-    public UniTypeQuadruplet(T a, T b, T c, T d) {
+    public Quadruplet(T a, T b, T c, T d) {
         super();
         this.a = a;
         this.b = b;
@@ -25,7 +25,7 @@ public class UniTypeQuadruplet<T> {
         this.d = d;
     }
 
-    public UniTypeQuadruplet(T[] array) {
+    public Quadruplet(T[] array) {
         super();
         assert array.length == 4;
         a = array[0];
@@ -50,7 +50,7 @@ public class UniTypeQuadruplet<T> {
         T b1 = b;
         T c1 = c;
         T d1 = d;
-        UniTypeQuadruplet other = (UniTypeQuadruplet) obj;
+        Quadruplet other = (Quadruplet) obj;
         if (a1 == null) {
             if (other.a != null) {
                 return false;
