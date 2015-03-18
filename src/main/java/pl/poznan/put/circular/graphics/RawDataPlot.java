@@ -18,7 +18,7 @@ import org.w3c.dom.svg.SVGDocument;
 
 import pl.poznan.put.circular.Axis;
 import pl.poznan.put.circular.Circular;
-import pl.poznan.put.circular.Vector;
+import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
@@ -131,7 +131,7 @@ public class RawDataPlot extends AbstractDrawable {
                 double xv = centerX + virtualRadius * Math.cos(t);
                 double yv = centerY + virtualRadius * Math.sin(t);
 
-                if (circular instanceof Vector) {
+                if (circular instanceof Angle) {
                     double x1, y1, x2, y2;
 
                     // special case is required for 90 and 270 degrees
@@ -205,7 +205,7 @@ public class RawDataPlot extends AbstractDrawable {
 
             for (String token : StringUtils.split(line)) {
                 if (!StringUtils.isBlank(token)) {
-                    data.add(Vector.fromHourMinuteString(token));
+                    data.add(Angle.fromHourMinuteString(token));
                 }
             }
         }

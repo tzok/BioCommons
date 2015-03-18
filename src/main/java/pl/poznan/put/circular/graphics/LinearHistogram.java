@@ -17,7 +17,7 @@ import org.w3c.dom.svg.SVGDocument;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Constants;
 import pl.poznan.put.circular.Histogram;
-import pl.poznan.put.circular.Vector;
+import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 import pl.poznan.put.utility.AngleFormat;
@@ -103,7 +103,7 @@ public class LinearHistogram extends AbstractDrawable {
 
             for (String token : StringUtils.split(line)) {
                 if (!StringUtils.isBlank(token)) {
-                    data.add(Vector.fromHourMinuteString(token));
+                    data.add(Angle.fromHourMinuteString(token));
                 }
             }
         }

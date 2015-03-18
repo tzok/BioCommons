@@ -1,18 +1,18 @@
 package pl.poznan.put.circular.samples;
 
-import pl.poznan.put.circular.Vector;
+import pl.poznan.put.circular.Angle;
 
 public class TrigonometricMoment {
-    private final Vector meanDirection;
+    private final Angle meanDirection;
     private final double meanResultantLength;
 
-    public TrigonometricMoment(Vector meanDirection, double meanResultantLength) {
+    public TrigonometricMoment(Angle meanDirection, double meanResultantLength) {
         super();
         this.meanDirection = meanDirection;
         this.meanResultantLength = meanResultantLength;
     }
 
-    public Vector getMeanDirection() {
+    public Angle getMeanDirection() {
         return meanDirection;
     }
 

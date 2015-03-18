@@ -17,7 +17,7 @@ import pl.poznan.put.circular.Axis;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Constants;
 import pl.poznan.put.circular.Histogram;
-import pl.poznan.put.circular.Vector;
+import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
@@ -102,7 +102,7 @@ public class AngularHistogram extends RawDataPlot {
 
             for (String token : StringUtils.split(line)) {
                 if (!StringUtils.isBlank(token)) {
-                    data.add(Vector.fromHourMinuteString(token));
+                    data.add(Angle.fromHourMinuteString(token));
                 }
             }
         }
