@@ -5,10 +5,10 @@ import java.util.List;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.common.ResidueComponent;
-import pl.poznan.put.common.ResidueInformationSupplier;
+import pl.poznan.put.common.ResidueInformationProvider;
 import pl.poznan.put.types.Quadruplet;
 
-public abstract class Base extends RNAResidueComponent implements ResidueInformationSupplier {
+public abstract class Base extends RNAResidueComponent implements ResidueInformationProvider {
     private final String longName;
     private final char oneLetterName;
     private final List<String> pdbNames;

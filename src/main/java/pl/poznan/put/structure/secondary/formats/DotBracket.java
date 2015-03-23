@@ -61,9 +61,9 @@ public class DotBracket implements Serializable {
     // FIXME
     protected final List<Strand> strands = new ArrayList<Strand>();
 
-    private final List<DotBracketSymbol> symbols = new ArrayList<DotBracketSymbol>();
-    private final String sequence;
-    private final String structure;
+    protected final List<DotBracketSymbol> symbols = new ArrayList<DotBracketSymbol>();
+    protected final String sequence;
+    protected final String structure;
 
     public DotBracket(String sequence, String structure) throws InvalidSecondaryStructureException {
         super();
@@ -105,6 +105,7 @@ public class DotBracket implements Serializable {
         parentheses.put('[', ']');
         parentheses.put('{', '}');
         parentheses.put('<', '>');
+
         for (char c : "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
             parentheses.put(c, Character.toLowerCase(c));
         }
@@ -218,25 +219,8 @@ public class DotBracket implements Serializable {
         return result;
     }
 
-    public Ct toCt() throws InvalidSecondaryStructureException {
-        List<Ct.Entry> entries = new ArrayList<Ct.Entry>();
-
-        for (Strand s : getStrands()) {
-            for (int i = 0, j = s.getFrom(); j < s.getTo(); i++, j++) {
-                DotBracketSymbol symbol = getSymbol(j);
-                DotBracketSymbol pair = symbol.getPair();
-
-                int index = symbol.getIndex() + 1;
-                int pairIndex = pair != null ? pair.getIndex() + 1 : 0;
-                int before = i;
-                int after = (i + 2) % (s.getTo() + 1);
-                int original = index;
-                char seq = symbol.getSequence();
-
-                entries.add(new Ct.Entry(index, pairIndex, before, after, original, seq));
-            }
-        }
-
-        return new Ct(entries);
+    @SuppressWarnings("static-method")
+    protected int getCtOriginalColumn(DotBracketSymbol symbol) {
+        return symbol.getIndex() + 1;
     }
 }

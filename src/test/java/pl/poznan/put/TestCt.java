@@ -279,7 +279,6 @@ public class TestCt {
     @SuppressWarnings("static-method")
     @Test
     public void fromDotBracket() throws InvalidSecondaryStructureException {
-        DotBracket db = DotBracket.fromString(TestDotBracket.FROM_2Z74);
-        db.toCt();
+        Ct.fromDotBracket(DotBracket.fromString(TestDotBracket.FROM_2Z74));
     }
 }

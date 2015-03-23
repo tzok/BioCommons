@@ -2,7 +2,7 @@ package pl.poznan.put.common;
 
 import java.util.List;
 
-public interface ResidueInformationSupplier extends AtomContainer {
+public interface ResidueInformationProvider extends AtomContainer {
     MoleculeType getMoleculeType();
 
     List<ResidueComponent> getAllMoleculeComponents();

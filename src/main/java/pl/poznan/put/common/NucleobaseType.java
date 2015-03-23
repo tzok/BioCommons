@@ -13,13 +13,13 @@ public enum NucleobaseType {
     URACIL(Uracil.getInstance()),
     THYMINE(Thymine.getInstance());
 
-    private final ResidueInformationSupplier nameSupplier;
+    private final ResidueInformationProvider provider;
 
-    private NucleobaseType(ResidueInformationSupplier nameSupplier) {
-        this.nameSupplier = nameSupplier;
+    private NucleobaseType(ResidueInformationProvider provider) {
+        this.provider = provider;
     }
 
-    public ResidueInformationSupplier getNameSupplier() {
-        return nameSupplier;
+    public ResidueInformationProvider getResidueInformationProvider() {
+        return provider;
     }
 }

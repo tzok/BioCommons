@@ -28,4 +28,46 @@ public abstract class ResidueComponent implements AtomContainer {
     public List<AtomName> getAtoms() {
         return atoms;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (atoms == null ? 0 : atoms.hashCode());
+        result = prime * result + (moleculeType == null ? 0 : moleculeType.hashCode());
+        result = prime * result + (residueComponentName == null ? 0 : residueComponentName.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ResidueComponent other = (ResidueComponent) obj;
+        if (atoms == null) {
+            if (other.atoms != null) {
+                return false;
+            }
+        } else if (!atoms.equals(other.atoms)) {
+            return false;
+        }
+        if (moleculeType != other.moleculeType) {
+            return false;
+        }
+        if (residueComponentName == null) {
+            if (other.residueComponentName != null) {
+                return false;
+            }
+        } else if (!residueComponentName.equals(other.residueComponentName)) {
+            return false;
+        }
+        return true;
+    }
 }

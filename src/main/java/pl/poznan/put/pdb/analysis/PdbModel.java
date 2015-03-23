@@ -162,4 +162,20 @@ public class PdbModel {
 
         return identifierToResidue.get(query);
     }
+
+    public String getSequence() {
+        StringBuilder builder = new StringBuilder();
+        for (PdbResidue residue : residues) {
+            builder.append(residue.getOneLetterName());
+        }
+        return builder.toString();
+    }
+
+    public String toPdbString() {
+        StringBuilder builder = new StringBuilder();
+        for (PdbAtomLine atom : atoms) {
+            builder.append(atom);
+        }
+        return builder.toString();
+    }
 }

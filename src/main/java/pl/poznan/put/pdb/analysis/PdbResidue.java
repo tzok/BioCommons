@@ -2,6 +2,7 @@ package pl.poznan.put.pdb.analysis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +18,7 @@ import pl.poznan.put.common.AminoAcidType;
 import pl.poznan.put.common.InvalidResidueInformationSupplier;
 import pl.poznan.put.common.NucleobaseType;
 import pl.poznan.put.common.ResidueComponent;
-import pl.poznan.put.common.ResidueInformationSupplier;
+import pl.poznan.put.common.ResidueInformationProvider;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbAtomLine;
 
@@ -25,7 +26,7 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdbResidue.class);
 
     private final List<AtomName> atomNames;
-    private final ResidueInformationSupplier nameSupplier;
+    private final ResidueInformationProvider nameSupplier;
 
     private final PdbResidueIdentifier identifier;
     private final String residueName;
@@ -60,20 +61,20 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
         return result;
     }
 
-    private ResidueInformationSupplier detectNameSupplier() {
-        List<ResidueInformationSupplier> candidates = new ArrayList<ResidueInformationSupplier>();
+    private ResidueInformationProvider detectNameSupplier() {
+        List<ResidueInformationProvider> candidates = new ArrayList<ResidueInformationProvider>();
 
         for (NucleobaseType nucleobase : NucleobaseType.values()) {
-            candidates.add(nucleobase.getNameSupplier());
+            candidates.add(nucleobase.getResidueInformationProvider());
         }
         for (AminoAcidType aminoacid : AminoAcidType.values()) {
             candidates.add(aminoacid.getNameSupplier());
         }
 
         int bestScore = Integer.MIN_VALUE;
-        ResidueInformationSupplier bestSupplier = null;
+        ResidueInformationProvider bestSupplier = null;
 
-        for (ResidueInformationSupplier supplier : candidates) {
+        for (ResidueInformationProvider supplier : candidates) {
             Set<AtomName> set = new HashSet<AtomName>(atomNames);
             set.retainAll(supplier.getAtoms());
             int score = set.size();
@@ -90,6 +91,10 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
 
         assert bestSupplier != null;
         return bestSupplier;
+    }
+
+    public List<PdbAtomLine> getAtoms() {
+        return Collections.unmodifiableList(atoms);
     }
 
     @Override
@@ -263,5 +268,15 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
         }
 
         return result;
+    }
+
+    public PdbAtomLine findAtom(AtomName atomName) {
+        for (PdbAtomLine atom : atoms) {
+            if (atom.detectAtomName() == atomName) {
+                return atom;
+            }
+        }
+
+        throw new IllegalArgumentException("Failed to find: " + atomName);
     }
 }

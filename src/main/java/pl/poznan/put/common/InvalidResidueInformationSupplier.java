@@ -5,7 +5,7 @@ import java.util.List;
 
 import pl.poznan.put.atom.AtomName;
 
-public class InvalidResidueInformationSupplier implements ResidueInformationSupplier {
+public class InvalidResidueInformationSupplier implements ResidueInformationProvider {
     private final String pdbName;
 
     public InvalidResidueInformationSupplier(String pdbName) {

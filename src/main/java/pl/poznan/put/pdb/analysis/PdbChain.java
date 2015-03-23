@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.util.Collections;
 import java.util.List;
 
 public class PdbChain implements Comparable<PdbChain> {
@@ -17,7 +18,7 @@ public class PdbChain implements Comparable<PdbChain> {
     }
 
     public List<PdbResidue> getResidues() {
-        return residues;
+        return Collections.unmodifiableList(residues);
     }
 
     @Override

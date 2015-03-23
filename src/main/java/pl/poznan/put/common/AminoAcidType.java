@@ -43,13 +43,13 @@ public enum AminoAcidType {
     TYROSINE(Tyrosine.getInstance()),
     VALINE(Valine.getInstance());
 
-    private final ResidueInformationSupplier nameSupplier;
+    private final ResidueInformationProvider nameSupplier;
 
-    private AminoAcidType(ResidueInformationSupplier nameSupplier) {
+    private AminoAcidType(ResidueInformationProvider nameSupplier) {
         this.nameSupplier = nameSupplier;
     }
 
-    public ResidueInformationSupplier getNameSupplier() {
+    public ResidueInformationProvider getNameSupplier() {
         return nameSupplier;
     }
 }

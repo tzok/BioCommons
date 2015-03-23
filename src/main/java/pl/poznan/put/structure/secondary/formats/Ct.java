@@ -90,6 +90,28 @@ public class Ct implements Serializable {
     private static final boolean FIX_LAST_ENTRY = true;
     private static boolean printComments = true;
 
+    public static Ct fromDotBracket(DotBracket dotBracket) throws InvalidSecondaryStructureException {
+        List<Ct.Entry> entries = new ArrayList<Ct.Entry>();
+
+        for (Strand s : dotBracket.getStrands()) {
+            for (int i = 0, j = s.getFrom(); j < s.getTo(); i++, j++) {
+                DotBracketSymbol symbol = dotBracket.getSymbol(j);
+                DotBracketSymbol pair = symbol.getPair();
+
+                int index = symbol.getIndex() + 1;
+                int pairIndex = pair != null ? pair.getIndex() + 1 : 0;
+                int before = i;
+                int after = (i + 2) % (s.getTo() + 1);
+                int original = dotBracket.getCtOriginalColumn(symbol);
+                char seq = symbol.getSequence();
+
+                entries.add(new Ct.Entry(index, pairIndex, before, after, original, seq));
+            }
+        }
+
+        return new Ct(entries);
+    }
+
     public static Ct fromString(String data) throws InvalidSecondaryStructureException {
         List<Entry> entries = new ArrayList<Entry>();
         boolean firstLine = true;

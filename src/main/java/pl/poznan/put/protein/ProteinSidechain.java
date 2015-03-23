@@ -7,11 +7,11 @@ import java.util.Map;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.common.MoleculeType;
-import pl.poznan.put.common.ResidueInformationSupplier;
+import pl.poznan.put.common.ResidueInformationProvider;
 import pl.poznan.put.common.ResidueComponent;
 import pl.poznan.put.types.Quadruplet;
 
-public abstract class ProteinSidechain extends ResidueComponent implements ResidueInformationSupplier {
+public abstract class ProteinSidechain extends ResidueComponent implements ResidueInformationProvider {
     protected final Map<ProteinChiType, Quadruplet<AtomName>> chiAtoms = new HashMap<ProteinChiType, Quadruplet<AtomName>>();
 
     private final String longName;
