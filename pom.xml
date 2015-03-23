@@ -12,6 +12,11 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<sonar.host.url>http://localhost:9000</sonar.host.url>
+		<sonar.jdbc.url>jdbc:mysql://localhost:3306/sonar</sonar.jdbc.url>
+		<sonar.jdbc.username>sonar</sonar.jdbc.username>
+		<sonar.jdbc.password>sonar</sonar.jdbc.password>
+		<sonar.jdbc.driver>com.mysql.jdbc.Driver</sonar.jdbc.driver>
 	</properties>
 
 	<repositories>
@@ -23,13 +28,6 @@
 	</repositories>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.7</version>
-			<!-- <scope>provided</scope> -->
-		</dependency>
-
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
@@ -45,14 +43,20 @@
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.3.2</version>
+			<artifactId>commons-collections4</artifactId>
+			<version>4.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-collections4</artifactId>
-			<version>4.0</version>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.3.2</version>
 		</dependency>
 
 		<dependency>
@@ -62,20 +66,29 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-svg-dom</artifactId>
-			<version>1.7</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.7</version>
+			<!-- <scope>provided</scope> -->
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-svggen</artifactId>
-			<version>1.7</version>
+			<groupId>pl.poznan.put</groupId>
+			<artifactId>circular</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+
 		<dependency>
 			<groupId>pl.poznan.put</groupId>
 			<artifactId>TzokCommons</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
