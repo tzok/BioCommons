@@ -20,8 +20,7 @@ public class AngleFormat extends NumberFormat {
     }
 
     public static String formatDisplayShort(double radians) {
-        return CommonNumberFormat.formatDouble(Math.toDegrees(radians))
-                + Unicode.DEGREE;
+        return CommonNumberFormat.formatDouble(Math.toDegrees(radians)) + Unicode.DEGREE;
     }
 
     public static String formatExport(double radians) {
@@ -31,8 +30,7 @@ public class AngleFormat extends NumberFormat {
     private final ProperFractionFormat fractionFormat = new ProperFractionFormat();
 
     @Override
-    public StringBuffer format(double number, StringBuffer toAppendTo,
-            FieldPosition pos) {
+    public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
         if (number == 0) {
             return toAppendTo.append("0");
         } else if (number == Math.PI) {
@@ -52,8 +50,7 @@ public class AngleFormat extends NumberFormat {
     }
 
     @Override
-    public StringBuffer format(long number, StringBuffer toAppendTo,
-            FieldPosition pos) {
+    public StringBuffer format(long number, StringBuffer toAppendTo, FieldPosition pos) {
         return fractionFormat.format(number, toAppendTo, pos);
     }
 

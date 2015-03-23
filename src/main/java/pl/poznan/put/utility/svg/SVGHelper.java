@@ -53,7 +53,7 @@ public class SVGHelper {
         @Override
         public String getNamespaceURI(String prefix) {
             if (prefix == null) {
-                throw new NullPointerException("Null prefix for namespace");
+                throw new IllegalArgumentException("Null prefix for namespace");
             } else if ("svg".equals(prefix)) {
                 return SVGDOMImplementation.SVG_NAMESPACE_URI;
             }
@@ -144,6 +144,10 @@ public class SVGHelper {
     }
 
     public static SVGDocument merge(List<SVGDocument> svgs) {
+        if (svgs.size() == 0) {
+            return SVGHelper.emptyDocument();
+        }
+
         SVGDocument mergedSvg = svgs.get(0);
         SVGSVGElement mergedRoot = mergedSvg.getRootElement();
         double[] widths = new double[svgs.size()];

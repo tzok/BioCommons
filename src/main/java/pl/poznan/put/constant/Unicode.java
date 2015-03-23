@@ -9,11 +9,11 @@ public class Unicode {
     public static final String ZETA = "\u03B6";
     public static final String CHI = "\u03C7";
     public static final String TAU = "\u03C4";
-    public static final String TAU0 = "\u03C40";
-    public static final String TAU1 = "\u03C41";
-    public static final String TAU2 = "\u03C42";
-    public static final String TAU3 = "\u03C43";
-    public static final String TAU4 = "\u03C44";
+    public static final String NU0 = "\u03C40";
+    public static final String NU1 = "\u03C41";
+    public static final String NU2 = "\u03C42";
+    public static final String NU3 = "\u03C43";
+    public static final String NU4 = "\u03C44";
     public static final String ETA = "\u03B7";
     public static final String ETA_PRIM = "\u03B7'";
     public static final String THETA = "\u03B8";
