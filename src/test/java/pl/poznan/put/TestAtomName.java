@@ -32,7 +32,7 @@ public class TestAtomName {
     public void testAtomName() {
         PdbParser parser = new PdbParser();
         for (String pdbContent : new String[] { pdb1EHZ, pdb2Z74 }) {
-            for (PdbModel model : parser.parse(pdb1EHZ)) {
+            for (PdbModel model : parser.parse(pdbContent)) {
                 for (PdbAtomLine atom : model.getAtoms()) {
                     AtomName atomName = atom.detectAtomName();
                     assertNotEquals("Unknown atom: " + atom.getAtomName(), AtomName.UNKNOWN, atomName);
