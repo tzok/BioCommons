@@ -3,6 +3,7 @@ package pl.poznan.put.structure.secondary.formats;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,22 @@ public class BpSeq implements Serializable {
             this.pair = pair;
             this.seq = seq;
             this.comment = comment;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public int getPair() {
+            return pair;
+        }
+
+        public char getSeq() {
+            return seq;
+        }
+
+        public String getComment() {
+            return comment;
         }
 
         @Override
@@ -147,6 +164,16 @@ public class BpSeq implements Serializable {
         return new BpSeq(entries);
     }
 
+    public static BpSeq fromCt(Ct ct) throws InvalidSecondaryStructureException {
+        List<BpSeq.Entry> bpseqEntries = new ArrayList<BpSeq.Entry>();
+
+        for (Ct.Entry e : ct.getEntries()) {
+            bpseqEntries.add(new BpSeq.Entry(e.getIndex(), e.getPair(), e.getSeq()));
+        }
+
+        return new BpSeq(bpseqEntries);
+    }
+
     public static BpSeq fromDotBracket(DotBracket db) throws InvalidSecondaryStructureException {
         List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
 
@@ -228,32 +255,10 @@ public class BpSeq implements Serializable {
         validate();
     }
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-
-        for (Entry e : entries) {
-            builder.append(e.toString());
-            builder.append('\n');
-        }
-
-        return builder.toString();
-    }
-
-    public Ct toCt() throws InvalidSecondaryStructureException {
-        List<Ct.Entry> ctEntries = new ArrayList<Ct.Entry>();
-
-        for (Entry entry : entries) {
-            ctEntries.add(new Ct.Entry(entry.index, entry.pair, entry.index - 1, (entry.index + 1) % entries.size(), entry.index, entry.seq, entry.comment));
-        }
-
-        return new Ct(ctEntries);
-    }
-
     /*
      * Check if all pairs match.
      */
-    public final void validate() throws InvalidSecondaryStructureException {
+    private final void validate() throws InvalidSecondaryStructureException {
         Map<Integer, Integer> map = new HashMap<Integer, Integer>();
 
         for (Entry e : entries) {
@@ -282,6 +287,22 @@ public class BpSeq implements Serializable {
                 }
             }
         }
+    }
+
+    public SortedSet<Entry> getEntries() {
+        return Collections.unmodifiableSortedSet(entries);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        for (Entry e : entries) {
+            builder.append(e.toString());
+            builder.append('\n');
+        }
+
+        return builder.toString();
     }
 
     public String getSequence() {

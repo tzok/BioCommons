@@ -7,52 +7,54 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.TreeBidiMap;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DotBracket implements Serializable {
     private static Logger logger = LoggerFactory.getLogger(DotBracket.class);
+    private static final Pattern DOTBRACKET_PATTERN = Pattern.compile(">(strand_)?(.+)\n([ACGUTRYNacgutryn]+)\n([-.()\\[\\]{}<>A-Za-z]+)");
 
     public static DotBracket fromString(String data) throws InvalidSecondaryStructureException {
         List<Pair<Integer, Integer>> pairBeginEnd = new ArrayList<Pair<Integer, Integer>>();
-        StringBuilder seqBuilder = new StringBuilder();
-        StringBuilder strBuilder = new StringBuilder();
-        String[] split = data.split("\n");
+        List<String> strandNames = new ArrayList<String>();
+        StringBuilder sequenceBuilder = new StringBuilder();
+        StringBuilder structureBuilder = new StringBuilder();
         int begin = 0;
         int end = 0;
-        int i = 0;
 
-        while (i < split.length) {
-            // skip empty and non-sequence lines in the beginning
-            if (StringUtils.isBlank(split[i]) || !split[i].matches("[ACGUTRYNacgutryn]+")) {
-                i++;
-                continue;
+        Matcher matcher = DotBracket.DOTBRACKET_PATTERN.matcher(data);
+
+        while (matcher.find()) {
+            String strandName = matcher.group(2);
+            String sequence = matcher.group(3);
+            String structure = matcher.group(4);
+
+            if (sequence.length() != structure.length()) {
+                throw new InvalidSecondaryStructureException("Invalid dot-bracket string:\n" + data);
             }
 
-            seqBuilder.append(split[i++]);
+            strandNames.add(strandName);
+            sequenceBuilder.append(sequence);
+            structureBuilder.append(structure);
 
-            if (!split[i].matches("[-.()\\[\\]{}<>A-Za-z]+")) {
-                throw new InvalidSecondaryStructureException("Not valid dot-bracket input:\n" + data);
-            }
-
-            strBuilder.append(split[i]);
-            assert seqBuilder.length() == strBuilder.length();
-
-            end += split[i++].length();
+            end += sequence.length();
             pairBeginEnd.add(Pair.of(begin, end));
             begin = end;
         }
 
-        DotBracket dotBracket = new DotBracket(seqBuilder.toString(), strBuilder.toString());
+        DotBracket dotBracket = new DotBracket(sequenceBuilder.toString(), structureBuilder.toString());
         dotBracket.strands.clear();
 
+        int index = 0;
         for (Pair<Integer, Integer> pair : pairBeginEnd) {
-            dotBracket.strands.add(new Strand(dotBracket, pair.toString(), pair.getLeft(), pair.getRight()));
+            dotBracket.strands.add(new Strand(dotBracket, strandNames.get(index), pair.getLeft(), pair.getRight()));
+            index += 1;
         }
 
         return dotBracket;
@@ -155,6 +157,15 @@ public class DotBracket implements Serializable {
         return ">strand\n" + sequence + "\n" + structure;
     }
 
+    public String toStringWithStrands() {
+        StringBuilder builder = new StringBuilder();
+        for (Strand strand : strands) {
+            builder.append(strand);
+            builder.append('\n');
+        }
+        return builder.toString();
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -221,17 +232,17 @@ public class DotBracket implements Serializable {
     public void splitStrands(Ct ct) {
         strands.clear();
 
-        List<Ct.Entry> entries = ct.getEntries();
         int start = 0;
+        int i = 0;
 
-        for (int i = 0; i < entries.size(); i++) {
-            Ct.Entry e = entries.get(i);
-
+        for (Ct.Entry e : ct.getEntries()) {
             if (e.getAfter() == 0) {
                 Strand strand = new Strand(this, "", start, i + 1);
                 strands.add(strand);
                 start = i + 1;
             }
+
+            i += 1;
         }
     }
 

@@ -6,11 +6,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class Ct implements Serializable {
-    public static class Entry implements Serializable {
+    public static class Entry implements Serializable, Comparable<Ct.Entry> {
         private final int index;
         private final int pair;
         private final int before;
@@ -41,27 +43,6 @@ public class Ct implements Serializable {
             this.comment = comment;
         }
 
-        @Override
-        public String toString() {
-            StringBuilder builder = new StringBuilder();
-            builder.append(index);
-            builder.append(' ');
-            builder.append(seq);
-            builder.append(' ');
-            builder.append(before);
-            builder.append(' ');
-            builder.append(after);
-            builder.append(' ');
-            builder.append(pair);
-            builder.append(' ');
-            builder.append(original);
-            if (Ct.printComments && !StringUtils.isBlank(comment)) {
-                builder.append(" # ");
-                builder.append(comment);
-            }
-            return builder.toString();
-        }
-
         public int getIndex() {
             return index;
         }
@@ -85,10 +66,105 @@ public class Ct implements Serializable {
         public char getSeq() {
             return seq;
         }
+
+        @Override
+        public int compareTo(Entry e) {
+            if (equals(e)) {
+                return 0;
+            }
+
+            if (index < e.index) {
+                return -1;
+            }
+            if (index > e.index) {
+                return 1;
+            }
+            return 0;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + after;
+            result = prime * result + before;
+            result = prime * result + ((comment == null) ? 0 : comment.hashCode());
+            result = prime * result + index;
+            result = prime * result + original;
+            result = prime * result + pair;
+            result = prime * result + seq;
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            Entry other = (Entry) obj;
+            if (after != other.after)
+                return false;
+            if (before != other.before)
+                return false;
+            if (comment == null) {
+                if (other.comment != null)
+                    return false;
+            } else if (!comment.equals(other.comment))
+                return false;
+            if (index != other.index)
+                return false;
+            if (original != other.original)
+                return false;
+            if (pair != other.pair)
+                return false;
+            if (seq != other.seq)
+                return false;
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append(index);
+            builder.append(' ');
+            builder.append(seq);
+            builder.append(' ');
+            builder.append(before);
+            builder.append(' ');
+            builder.append(after);
+            builder.append(' ');
+            builder.append(pair);
+            builder.append(' ');
+            builder.append(original);
+            if (Ct.printComments && !StringUtils.isBlank(comment)) {
+                builder.append(" # ");
+                builder.append(comment);
+            }
+            return builder.toString();
+        }
     }
 
     private static final boolean FIX_LAST_ENTRY = true;
     private static boolean printComments = true;
+
+    public static Ct fromBpSeq(BpSeq bpSeq) throws InvalidSecondaryStructureException {
+        List<Ct.Entry> ctEntries = new ArrayList<Ct.Entry>();
+        SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
+        int size = entries.size();
+
+        for (BpSeq.Entry entry : entries) {
+            int index = entry.getIndex();
+            int pair = entry.getPair();
+            char seq = entry.getSeq();
+            String comment = entry.getComment();
+            ctEntries.add(new Ct.Entry(index, pair, index - 1, (index + 1) % (size + 1), index, seq, comment));
+        }
+
+        return new Ct(ctEntries);
+    }
 
     public static Ct fromDotBracket(DotBracket dotBracket) throws InvalidSecondaryStructureException {
         List<Ct.Entry> entries = new ArrayList<Ct.Entry>();
@@ -171,39 +247,11 @@ public class Ct implements Serializable {
         Ct.printComments = printComments;
     }
 
+    private final SortedSet<Entry> entries;
+
     public Ct(List<Entry> entries) throws InvalidSecondaryStructureException {
-        this.entries = entries;
+        this.entries = new TreeSet<Entry>(entries);
         validate();
-    }
-
-    public BpSeq toBpSeq() throws InvalidSecondaryStructureException {
-        List<BpSeq.Entry> bpseqEntries = new ArrayList<BpSeq.Entry>();
-
-        for (Entry e : entries) {
-            bpseqEntries.add(new BpSeq.Entry(e.index, e.pair, e.seq));
-        }
-
-        return new BpSeq(bpseqEntries);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(entries.size());
-        builder.append('\n');
-
-        for (Entry e : entries) {
-            builder.append(e.toString());
-            builder.append('\n');
-        }
-
-        return builder.toString();
-    }
-
-    private final List<Entry> entries;
-
-    List<Entry> getEntries() {
-        return Collections.unmodifiableList(entries);
     }
 
     /*
@@ -268,7 +316,8 @@ public class Ct implements Serializable {
             prevEntry = e;
         }
 
-        Entry lastEntry = entries.get(entries.size() - 1);
+        Entry lastEntry = entries.last();
+
         if (lastEntry.after != 0) {
             if (Ct.FIX_LAST_ENTRY) {
                 entries.remove(lastEntry);
@@ -277,5 +326,23 @@ public class Ct implements Serializable {
                 throw new InvalidSecondaryStructureException("The field 'after' in the last entry is non-zero: " + lastEntry);
             }
         }
+    }
+
+    public SortedSet<Entry> getEntries() {
+        return Collections.unmodifiableSortedSet(entries);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(entries.size());
+        builder.append('\n');
+
+        for (Entry e : entries) {
+            builder.append(e.toString());
+            builder.append('\n');
+        }
+
+        return builder.toString();
     }
 }
