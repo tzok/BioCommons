@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 
@@ -29,7 +30,7 @@ public class TestAtomName {
     }
 
     @Test
-    public void testAtomName() {
+    public void testAtomName() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         for (String pdbContent : new String[] { pdb1EHZ, pdb2Z74 }) {
             for (PdbModel model : parser.parse(pdbContent)) {

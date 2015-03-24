@@ -19,6 +19,10 @@ public class DotBracketFromPdb extends DotBracket {
         splitStrands(model);
     }
 
+    public DotBracketFromPdb(DotBracket dotBracket, PdbModel model) throws InvalidSecondaryStructureException {
+        this(dotBracket.sequence, dotBracket.structure, model);
+    }
+
     private static String updateMissingIndices(String structure, PdbModel model) {
         List<PdbResidue> residues = model.getResidues();
         char[] dotBracket = structure.toCharArray();

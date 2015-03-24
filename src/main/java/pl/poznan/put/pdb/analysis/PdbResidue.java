@@ -21,6 +21,8 @@ import pl.poznan.put.common.ResidueComponent;
 import pl.poznan.put.common.ResidueInformationProvider;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.rna.base.Thymine;
+import pl.poznan.put.rna.base.Uracil;
 
 public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdbResidue.class);
@@ -41,11 +43,14 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
         this.residueName = residueName;
         this.modifiedResidueName = modifiedResidueName;
         this.atoms = atoms;
-        this.isModified = isModified;
         this.isMissing = isMissing;
 
         atomNames = detectAtomNames();
         nameSupplier = detectNameSupplier();
+
+        // if a residue is properly detected, then check also if all atoms are
+        // present
+        this.isModified = isModified | (wasSuccessfullyDetected() ? !hasAllAtoms() : false);
     }
 
     public PdbResidue(PdbResidueIdentifier identifier, String residueName, List<PdbAtomLine> atoms, boolean isModified, boolean isMissing) {
@@ -90,6 +95,13 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
         }
 
         assert bestSupplier != null;
+
+        if (bestSupplier instanceof Thymine && hasAtom(AtomName.O2p)) {
+            return Uracil.getInstance();
+        } else if (bestSupplier instanceof Uracil && !hasAtom(AtomName.O2p)) {
+            return Thymine.getInstance();
+        }
+
         return bestSupplier;
     }
 
@@ -130,7 +142,8 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
     }
 
     public char getOneLetterName() {
-        return nameSupplier.getOneLetterName();
+        char oneLetterName = nameSupplier.getOneLetterName();
+        return isModified ? Character.toLowerCase(oneLetterName) : oneLetterName;
     }
 
     public boolean isModified() {

@@ -27,7 +27,7 @@ public class PdbParser {
     private char currentChainIdentifier;
     private int currentModelNumber;
 
-    public synchronized List<PdbModel> parse(String pdbFileContent) {
+    public synchronized List<PdbModel> parse(String pdbFileContent) throws PdbParsingException {
         resetState();
 
         for (String line : pdbFileContent.split("\n")) {

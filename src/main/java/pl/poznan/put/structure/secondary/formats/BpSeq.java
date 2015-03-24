@@ -4,12 +4,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
+
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.structure.secondary.BasePair;
+import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 
 public class BpSeq implements Serializable {
     public static class Entry implements Comparable<Entry>, Serializable {
@@ -155,6 +162,61 @@ public class BpSeq implements Serializable {
         return new BpSeq(entries);
     }
 
+    public static BpSeq fromPdbModel(PdbModel model, List<ClassifiedBasePair> basePairs) throws InvalidSecondaryStructureException {
+        List<BasePair> allBasePairs = new ArrayList<BasePair>();
+        Map<BasePair, String> basePairToComment = new HashMap<BasePair, String>();
+
+        for (ClassifiedBasePair classifiedBasePair : basePairs) {
+            BasePair basePair = classifiedBasePair.getBasePair();
+            allBasePairs.add(basePair);
+
+            String comment = classifiedBasePair.isCanonical() ? "" : classifiedBasePair.generateComment();
+            basePairToComment.put(basePair, comment);
+            basePairToComment.put(basePair.invert(), comment);
+        }
+
+        List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
+        entries.addAll(BpSeq.generateEntriesForPaired(model, allBasePairs, basePairToComment));
+        entries.addAll(generateEntriesForUnpaired(model, allBasePairs));
+        return new BpSeq(entries);
+    }
+
+    private static List<BpSeq.Entry> generateEntriesForUnpaired(PdbModel model, List<BasePair> allBasePairs) {
+        List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
+        List<PdbResidue> residues = model.getResidues();
+        Set<PdbResidue> paired = new HashSet<PdbResidue>();
+
+        for (BasePair basePair : allBasePairs) {
+            paired.add(basePair.getLeft());
+            paired.add(basePair.getRight());
+        }
+
+        for (int i = 0; i < residues.size(); i++) {
+            PdbResidue residue = residues.get(i);
+            if (!paired.contains(residue)) {
+                entries.add(new BpSeq.Entry(i + 1, 0, residue.getOneLetterName()));
+            }
+        }
+
+        return entries;
+    }
+
+    private static List<BpSeq.Entry> generateEntriesForPaired(PdbModel model, Collection<BasePair> basePairs, Map<BasePair, String> basePairToComment) {
+        List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
+        List<PdbResidue> residues = model.getResidues();
+
+        for (BasePair basePair : basePairs) {
+            PdbResidue left = basePair.getLeft();
+            PdbResidue right = basePair.getRight();
+            int indexL = residues.indexOf(left);
+            int indexR = residues.indexOf(right);
+            entries.add(new Entry(indexL + 1, indexR + 1, left.getOneLetterName(), basePairToComment.get(basePair)));
+            entries.add(new Entry(indexR + 1, indexL + 1, right.getOneLetterName(), basePairToComment.get(basePair)));
+        }
+
+        return entries;
+    }
+
     public static void setPrintComments(boolean printComments) {
         BpSeq.printComments = printComments;
     }
@@ -206,7 +268,7 @@ public class BpSeq implements Serializable {
 
         for (Entry e : entries) {
             if (e.index - previous != 1) {
-                throw new InvalidSecondaryStructureException("Inconsistent numbering in BPSEQ format: previous=" + previous + ", current" + e.index);
+                throw new InvalidSecondaryStructureException("Inconsistent numbering in BPSEQ format: previous=" + previous + ", current=" + e.index);
             }
             previous = e.index;
 

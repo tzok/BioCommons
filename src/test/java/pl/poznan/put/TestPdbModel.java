@@ -10,10 +10,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.biojava.bio.structure.Structure;
+import org.biojava.bio.structure.io.PDBFileParser;
 import org.junit.Before;
 import org.junit.Test;
 
 import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
@@ -33,14 +37,14 @@ public class TestPdbModel {
     }
 
     @Test
-    public void testParsing() {
+    public void testParsing() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         assertEquals(1, models.size());
     }
 
     @Test
-    public void testResidueAnalysis() {
+    public void testResidueAnalysis() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
@@ -49,7 +53,7 @@ public class TestPdbModel {
     }
 
     @Test
-    public void testChainAnalysis() {
+    public void testChainAnalysis() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
@@ -58,7 +62,7 @@ public class TestPdbModel {
     }
 
     @Test
-    public void testModifiedResidue() {
+    public void testModifiedResidue() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
@@ -69,7 +73,7 @@ public class TestPdbModel {
     }
 
     @Test
-    public void testUnmodifiedResidue() {
+    public void testUnmodifiedResidue() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
@@ -80,7 +84,7 @@ public class TestPdbModel {
     }
 
     @Test
-    public void testO3PModificationDetection() {
+    public void testO3PModificationDetection() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
@@ -89,12 +93,12 @@ public class TestPdbModel {
         // for first residue expect a mismatch in atom count because it has an
         // unusual O3P terminal atom
         PdbResidue residue = residues.get(0);
-        assertEquals(false, residue.isModified());
+        assertEquals(true, residue.isModified());
         assertEquals(false, residue.hasAllAtoms());
     }
 
     @Test
-    public void testUridineModificationDetection() {
+    public void testUridineModificationDetection() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
@@ -115,13 +119,13 @@ public class TestPdbModel {
         residue = model.findResidue('A', 54, ' ');
         assertEquals("5MU", residue.getOriginalResidueName());
         assertEquals("U", residue.getModifiedResidueName());
-        assertEquals("T", residue.getDetectedResidueName());
+        assertEquals("U", residue.getDetectedResidueName());
         assertEquals(true, residue.isModified());
-        assertEquals(true, residue.hasAllAtoms());
+        assertEquals(false, residue.hasAllAtoms());
     }
 
     @Test
-    public void testPSUModificationDetection() {
+    public void testPSUModificationDetection() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
@@ -134,7 +138,7 @@ public class TestPdbModel {
     }
 
     @Test
-    public void testModificationDetection() {
+    public void testModificationDetection() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
@@ -145,7 +149,7 @@ public class TestPdbModel {
             }
 
             if (residue.hasAtom(AtomName.O3P)) {
-                assertEquals(false, residue.isModified());
+                assertEquals(true, residue.isModified());
                 assertEquals(false, residue.hasAllAtoms());
             } else if (residue.getOriginalResidueName().equals("H2U") || residue.getOriginalResidueName().equals("PSU")) {
                 assertEquals(true, residue.isModified());
@@ -153,9 +157,9 @@ public class TestPdbModel {
             } else if (residue.getOriginalResidueName().equals("5MU")) {
                 assertEquals("5MU", residue.getOriginalResidueName());
                 assertEquals("U", residue.getModifiedResidueName());
-                assertEquals("T", residue.getDetectedResidueName());
+                assertEquals("U", residue.getDetectedResidueName());
                 assertEquals(true, residue.isModified());
-                assertEquals(true, residue.hasAllAtoms());
+                assertEquals(false, residue.hasAllAtoms());
             } else {
                 assertEquals("Detected " + residue.getDetectedResidueName() + " for " + residue.getOriginalResidueName() + "/" + residue.getModifiedResidueName(), residue.getModifiedResidueName(), residue.getDetectedResidueName());
                 assertEquals(residue.isModified(), !residue.hasAllAtoms());
@@ -164,7 +168,7 @@ public class TestPdbModel {
     }
 
     @Test
-    public void testResidueInTerminatedChain() {
+    public void testResidueInTerminatedChain() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb2Z74);
         PdbModel model = models.get(0);
@@ -173,7 +177,7 @@ public class TestPdbModel {
     }
 
     @Test
-    public void testMissingResidues() {
+    public void testMissingResidues() throws PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb2Z74);
         PdbModel model = models.get(0);
@@ -181,5 +185,38 @@ public class TestPdbModel {
         assertEquals(true, residue.isMissing());
         residue = model.findResidue('B', 21, ' ');
         assertEquals(true, residue.isMissing());
+    }
+
+    @Test
+    public void testOutputParsable() throws PdbParsingException {
+        PdbParser parser = new PdbParser();
+        List<PdbModel> models = parser.parse(pdb1EHZ);
+        PdbModel model = models.get(0);
+        List<PdbModel> parsed = parser.parse(model.toPdbString());
+
+        assertEquals(1, models.size());
+        assertEquals(1, parsed.size());
+
+        assertEquals(1, models.get(0).getChains().size());
+        assertEquals(1, parsed.get(0).getChains().size());
+
+        assertEquals(76, models.get(0).getChains().get(0).getResidues().size());
+        assertEquals(76, parsed.get(0).getChains().get(0).getResidues().size());
+    }
+
+    @Test
+    public void testOutputParsableByBioJava() throws IOException, PdbParsingException {
+        PdbParser parser = new PdbParser();
+        List<PdbModel> models = parser.parse(pdb1EHZ);
+        PdbModel model = models.get(0);
+
+        PDBFileParser fileParser = new PDBFileParser();
+        Structure structure = fileParser.parsePDBFile(IOUtils.toInputStream(model.toPdbString()));
+
+        assertEquals(1, structure.getChains().size());
+        assertEquals(1, model.getChains().size());
+
+        assertEquals(76, structure.getChain(0).getAtomGroups().size());
+        assertEquals(76, model.getChains().get(0).getResidues().size());
     }
 }

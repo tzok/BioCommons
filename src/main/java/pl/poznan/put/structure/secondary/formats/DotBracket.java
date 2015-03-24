@@ -155,6 +155,44 @@ public class DotBracket implements Serializable {
         return ">strand\n" + sequence + "\n" + structure;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (sequence == null ? 0 : sequence.hashCode());
+        result = prime * result + (structure == null ? 0 : structure.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DotBracket other = (DotBracket) obj;
+        if (sequence == null) {
+            if (other.sequence != null) {
+                return false;
+            }
+        } else if (!sequence.equals(other.sequence)) {
+            return false;
+        }
+        if (structure == null) {
+            if (other.structure != null) {
+                return false;
+            }
+        } else if (!structure.equals(other.structure)) {
+            return false;
+        }
+        return true;
+    }
+
     public String getSequence() {
         return sequence;
     }

@@ -27,7 +27,8 @@ public class PdbAtomLine implements ChainNumberICode {
         79 - 80        LString(2)    charge       Charge  on the atom.
      */
     // @formatter:on
-    private static final String FORMAT = "ATOM  %5d %4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
+    private static final String FORMAT_ATOM_4_CHARACTER = "ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
+    private static final String FORMAT = "ATOM  %5d  %-3s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
 
     public static PdbAtomLine parse(String line) throws PdbParsingException {
         if (line.length() < 80) {
@@ -160,7 +161,8 @@ public class PdbAtomLine implements ChainNumberICode {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, PdbAtomLine.FORMAT, serialNumber, atomName, alternateLocation, residueName, chainIdentifier, residueNumber, insertionCode, x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
+        String format = atomName.length() == 4 ? PdbAtomLine.FORMAT_ATOM_4_CHARACTER : PdbAtomLine.FORMAT;
+        return String.format(Locale.US, format, serialNumber, atomName, alternateLocation, residueName, chainIdentifier, residueNumber, insertionCode, x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
     }
 
     @Override

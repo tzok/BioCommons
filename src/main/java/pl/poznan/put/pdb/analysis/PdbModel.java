@@ -12,6 +12,7 @@ import java.util.Set;
 
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbModresLine;
+import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark465Line;
 
 public class PdbModel {
@@ -25,7 +26,7 @@ public class PdbModel {
     private final int modelNumber;
     private final List<PdbAtomLine> atoms;
 
-    public PdbModel(int modelNumber, List<PdbAtomLine> atoms, List<PdbModresLine> modifiedResidues, List<PdbRemark465Line> missingResidues) {
+    public PdbModel(int modelNumber, List<PdbAtomLine> atoms, List<PdbModresLine> modifiedResidues, List<PdbRemark465Line> missingResidues) throws PdbParsingException {
         super();
         this.modelNumber = modelNumber;
         this.atoms = atoms;
@@ -45,7 +46,7 @@ public class PdbModel {
         }
     }
 
-    private void analyzeResidues(List<PdbRemark465Line> missingResidues) {
+    private void analyzeResidues(List<PdbRemark465Line> missingResidues) throws PdbParsingException {
         assert atoms.size() > 0;
 
         List<PdbAtomLine> residueAtoms = new ArrayList<PdbAtomLine>();
@@ -74,6 +75,10 @@ public class PdbModel {
                     break;
                 }
             }
+        }
+
+        if (residues.size() == 0) {
+            throw new PdbParsingException("Invalid PDB file. Failed to analyze any residue");
         }
     }
 
@@ -173,8 +178,11 @@ public class PdbModel {
 
     public String toPdbString() {
         StringBuilder builder = new StringBuilder();
-        for (PdbAtomLine atom : atoms) {
-            builder.append(atom);
+        for (PdbResidue residue : residues) {
+            for (PdbAtomLine atom : residue.getAtoms()) {
+                builder.append(atom);
+                builder.append('\n');
+            }
         }
         return builder.toString();
     }

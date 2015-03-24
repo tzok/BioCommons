@@ -12,12 +12,20 @@ public class TestPdbAtomLine {
     private final String validLine = "ATOM      1  OP3   G A   1      50.193  51.190  50.534  1.00 99.85           O  ";
     private final String tooShortLine = validLine.substring(0, validLine.length() - 10);
     private final String misalignedLine = StringUtils.normalizeSpace(validLine);
+    private final String validLineWithOneLetterAtom = "ATOM      2  P     G A   1      50.626  49.730  50.573  1.00100.19           P  ";
 
     @Test
     public void testParseToString() throws PdbParsingException {
         PdbAtomLine atomLine = PdbAtomLine.parse(validLine);
         String atomLineString = atomLine.toString();
         assertEquals(validLine, atomLineString);
+    }
+
+    @Test
+    public void testParseToStringOneLetterAtom() throws PdbParsingException {
+        PdbAtomLine atomLine = PdbAtomLine.parse(validLineWithOneLetterAtom);
+        String atomLineString = atomLine.toString();
+        assertEquals(validLineWithOneLetterAtom, atomLineString);
     }
 
     @Test(expected = PdbParsingException.class)
