@@ -6,10 +6,12 @@ import java.util.List;
 import pl.poznan.put.atom.AtomName;
 
 public class InvalidResidueInformationSupplier implements ResidueInformationProvider {
+    private final MoleculeType moleculeType;
     private final String pdbName;
 
-    public InvalidResidueInformationSupplier(String pdbName) {
+    public InvalidResidueInformationSupplier(MoleculeType moleculeType, String pdbName) {
         super();
+        this.moleculeType = moleculeType;
         this.pdbName = pdbName;
     }
 
@@ -20,7 +22,7 @@ public class InvalidResidueInformationSupplier implements ResidueInformationProv
 
     @Override
     public MoleculeType getMoleculeType() {
-        return MoleculeType.UNKNOWN;
+        return moleculeType;
     }
 
     @Override

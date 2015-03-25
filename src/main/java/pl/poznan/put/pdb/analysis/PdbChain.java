@@ -64,4 +64,12 @@ public class PdbChain implements Comparable<PdbChain> {
     public int compareTo(PdbChain o) {
         return identifier < o.identifier ? -1 : identifier == o.identifier ? 0 : 1;
     }
+
+    public String getSequence() {
+        StringBuilder builder = new StringBuilder();
+        for (PdbResidue residue : residues) {
+            builder.append(residue.getOneLetterName());
+        }
+        return builder.toString();
+    }
 }

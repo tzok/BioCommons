@@ -1,5 +1,6 @@
 package pl.poznan.put.common;
 
+import pl.poznan.put.protein.ProteinSidechain;
 import pl.poznan.put.protein.aminoacid.Alanine;
 import pl.poznan.put.protein.aminoacid.Arginine;
 import pl.poznan.put.protein.aminoacid.Asparagine;
@@ -43,13 +44,17 @@ public enum AminoAcidType {
     TYROSINE(Tyrosine.getInstance()),
     VALINE(Valine.getInstance());
 
-    private final ResidueInformationProvider nameSupplier;
+    private final ProteinSidechain nameProvider;
 
-    private AminoAcidType(ResidueInformationProvider nameSupplier) {
-        this.nameSupplier = nameSupplier;
+    private AminoAcidType(ProteinSidechain nameSupplier) {
+        this.nameProvider = nameSupplier;
     }
 
-    public ResidueInformationProvider getNameSupplier() {
-        return nameSupplier;
+    public ResidueInformationProvider getResidueInformationProvider() {
+        return nameProvider;
+    }
+
+    public ProteinSidechain getResidueComponent() {
+        return nameProvider;
     }
 }

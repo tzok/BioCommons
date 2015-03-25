@@ -173,7 +173,7 @@ public class TestPdbModel {
         List<PdbModel> models = parser.parse(pdb2Z74);
         PdbModel model = models.get(0);
         List<PdbChain> chains = model.getChains();
-        assertEquals("Found chains (expected [A, B, a]): " + Arrays.toString(chains.toArray(new PdbChain[chains.size()])), 3, chains.size());
+        assertEquals("Found chains (expected [A, B]): " + Arrays.toString(chains.toArray(new PdbChain[chains.size()])), 2, chains.size());
     }
 
     @Test
@@ -218,5 +218,26 @@ public class TestPdbModel {
 
         assertEquals(76, structure.getChain(0).getAtomGroups().size());
         assertEquals(76, model.getChains().get(0).getResidues().size());
+    }
+
+    @Test
+    public void testSequence() throws PdbParsingException {
+        PdbParser parser = new PdbParser();
+        List<PdbModel> models = parser.parse(pdb1EHZ);
+        PdbModel model = models.get(0);
+        String sequence = model.getSequence();
+        assertEquals("GCGGAUUUAGCUCAGUUGGGAGAGCGCCAGACUGAAGAUCUGGAGGUCCUGUGUUCGAUCCACAGAAUUCGCACCA", sequence.toUpperCase());
+
+        models = parser.parse(pdb2Z74);
+        model = models.get(0);
+        List<PdbChain> chains = model.getChains();
+        sequence = chains.get(0).getSequence();
+        assertEquals("AGCGCCUGGACUUAAAGCCAUUGCACU", sequence.toUpperCase());
+
+        sequence = chains.get(1).getSequence();
+        assertEquals("CCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA", sequence.toUpperCase());
+
+        sequence = model.getSequence();
+        assertEquals("AGCGCCUGGACUUAAAGCCAUUGCACUCCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA", sequence.toUpperCase());
     }
 }

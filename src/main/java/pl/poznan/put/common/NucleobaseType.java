@@ -1,5 +1,6 @@
 package pl.poznan.put.common;
 
+import pl.poznan.put.rna.Base;
 import pl.poznan.put.rna.base.Adenine;
 import pl.poznan.put.rna.base.Cytosine;
 import pl.poznan.put.rna.base.Guanine;
@@ -13,13 +14,17 @@ public enum NucleobaseType {
     URACIL(Uracil.getInstance()),
     THYMINE(Thymine.getInstance());
 
-    private final ResidueInformationProvider provider;
+    private final Base provider;
 
-    private NucleobaseType(ResidueInformationProvider provider) {
+    private NucleobaseType(Base provider) {
         this.provider = provider;
     }
 
     public ResidueInformationProvider getResidueInformationProvider() {
+        return provider;
+    }
+
+    public Base getResidueComponent() {
         return provider;
     }
 }

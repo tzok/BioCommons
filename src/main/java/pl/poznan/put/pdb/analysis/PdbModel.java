@@ -71,7 +71,7 @@ public class PdbModel {
 
             for (int i = 0; i < residues.size(); i++) {
                 if (residues.get(i).compareTo(residue) > 0) {
-                    residues.add(residue);
+                    residues.add(i, residue);
                     break;
                 }
             }
