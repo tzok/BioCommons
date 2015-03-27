@@ -18,6 +18,7 @@ import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class BpSeq implements Serializable {
     public static class Entry implements Comparable<Entry>, Serializable {

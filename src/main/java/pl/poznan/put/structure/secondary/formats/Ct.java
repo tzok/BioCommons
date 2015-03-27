@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class Ct implements Serializable {
     public static class Entry implements Serializable, Comparable<Ct.Entry> {
@@ -92,7 +93,7 @@ public class Ct implements Serializable {
             int result = 1;
             result = prime * result + after;
             result = prime * result + before;
-            result = prime * result + ((comment == null) ? 0 : comment.hashCode());
+            result = prime * result + (comment == null ? 0 : comment.hashCode());
             result = prime * result + index;
             result = prime * result + original;
             result = prime * result + pair;
@@ -102,30 +103,41 @@ public class Ct implements Serializable {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             Entry other = (Entry) obj;
-            if (after != other.after)
+            if (after != other.after) {
                 return false;
-            if (before != other.before)
+            }
+            if (before != other.before) {
                 return false;
+            }
             if (comment == null) {
-                if (other.comment != null)
+                if (other.comment != null) {
                     return false;
-            } else if (!comment.equals(other.comment))
+                }
+            } else if (!comment.equals(other.comment)) {
                 return false;
-            if (index != other.index)
+            }
+            if (index != other.index) {
                 return false;
-            if (original != other.original)
+            }
+            if (original != other.original) {
                 return false;
-            if (pair != other.pair)
+            }
+            if (pair != other.pair) {
                 return false;
-            if (seq != other.seq)
+            }
+            if (seq != other.seq) {
                 return false;
+            }
             return true;
         }
 
@@ -176,17 +188,17 @@ public class Ct implements Serializable {
                 try {
                     int lineCount = Integer.parseInt(split[0]);
                     if (lineCount < 0) {
-                        throw new InvalidSecondaryStructureException("Line does not conform to CT format: " + line);
+                        throw new InvalidSecondaryStructureException("Invalid CT format. Line count < 0 detected: " + line);
                     }
                 } catch (NumberFormatException e) {
-                    throw new InvalidSecondaryStructureException("Line does not conform to CT format: " + line, e);
+                    throw new InvalidSecondaryStructureException("Invalid CT format. Failed to parse line count: " + line, e);
                 }
                 firstLine = false;
                 continue;
             }
 
             if (split.length != 6) {
-                throw new InvalidSecondaryStructureException("Line does not conform to CT format: " + line);
+                throw new InvalidSecondaryStructureException("Invalid CT format. Six columns not found in line: " + line);
             }
 
             int index, pair, before, after, original;
@@ -200,7 +212,7 @@ public class Ct implements Serializable {
                 pair = Integer.valueOf(split[4]);
                 original = Integer.valueOf(split[5]);
             } catch (NumberFormatException e) {
-                throw new InvalidSecondaryStructureException("Line does not conform to CT format: " + line, e);
+                throw new InvalidSecondaryStructureException("Invalid CT format. Failed to parse column values: " + line, e);
             }
 
             entries.add(new Entry(index, pair, before, after, original, seq));

@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
  * @author tzok
  */
 public final class StructureManager {
+    private static final String ENCODING_UTF_8 = "UTF-8";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(StructureManager.class);
 
     private static final List<StructureInfo> STRUCTURES = new ArrayList<StructureInfo>();
@@ -163,7 +165,7 @@ public final class StructureManager {
             if (file.getName().endsWith(".gz")) {
                 BufferedReader reader = null;
                 try {
-                    reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(stream), "UTF-8"));
+                    reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(stream), StructureManager.ENCODING_UTF_8));
                     String line = reader.readLine();
                     return line != null && line.startsWith("data_");
                 } finally {
@@ -173,7 +175,7 @@ public final class StructureManager {
 
             BufferedReader reader = null;
             try {
-                reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+                reader = new BufferedReader(new InputStreamReader(stream, StructureManager.ENCODING_UTF_8));
                 String line = reader.readLine();
                 return line != null && line.startsWith("data_");
             } finally {
@@ -192,7 +194,7 @@ public final class StructureManager {
             if (file.getName().endsWith(".gz")) {
                 BufferedReader reader = null;
                 try {
-                    reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(stream), "UTF-8"));
+                    reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(stream), StructureManager.ENCODING_UTF_8));
                     String line;
                     while ((line = reader.readLine()) != null) {
                         if (line.startsWith("ATOM")) {
@@ -206,7 +208,7 @@ public final class StructureManager {
 
             BufferedReader reader = null;
             try {
-                reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+                reader = new BufferedReader(new InputStreamReader(stream, StructureManager.ENCODING_UTF_8));
                 String line;
                 while ((line = reader.readLine()) != null) {
                     if (line.startsWith("ATOM")) {

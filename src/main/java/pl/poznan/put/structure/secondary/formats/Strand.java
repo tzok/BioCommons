@@ -3,6 +3,8 @@ package pl.poznan.put.structure.secondary.formats;
 import java.io.Serializable;
 import java.util.List;
 
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
 public class Strand implements Serializable {
     private final DotBracket parent;
     private final String name;

@@ -16,6 +16,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
 public class DotBracket implements Serializable {
     private static Logger logger = LoggerFactory.getLogger(DotBracket.class);
     private static final Pattern DOTBRACKET_PATTERN = Pattern.compile(">(strand_)?(.+)\n([ACGUTRYNacgutryn]+)\n([-.()\\[\\]{}<>A-Za-z]+)");
@@ -87,10 +89,10 @@ public class DotBracket implements Serializable {
         char[] str = structure.toCharArray();
         assert seq.length == str.length;
 
-        DotBracketSymbol current = new DotBracketSymbol(this, seq[0], str[0], 0);
+        DotBracketSymbol current = new DotBracketSymbol(seq[0], str[0], 0);
 
         for (int i = 1; i < seq.length; i++) {
-            DotBracketSymbol next = new DotBracketSymbol(this, seq[i], str[i], i);
+            DotBracketSymbol next = new DotBracketSymbol(seq[i], str[i], i);
             current.setNext(next);
             next.setPrevious(current);
             symbols.add(current);

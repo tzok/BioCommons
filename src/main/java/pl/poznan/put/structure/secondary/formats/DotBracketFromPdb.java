@@ -7,6 +7,7 @@ import java.util.Map;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class DotBracketFromPdb extends DotBracket {
     private final Map<DotBracketSymbol, PdbResidue> symbolToResidue = new HashMap<DotBracketSymbol, PdbResidue>();

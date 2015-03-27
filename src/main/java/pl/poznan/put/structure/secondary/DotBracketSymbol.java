@@ -1,4 +1,4 @@
-package pl.poznan.put.structure.secondary.formats;
+package pl.poznan.put.structure.secondary;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,7 +29,6 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
         return DotBracketSymbol.isOpening(c) || DotBracketSymbol.isClosing(c);
     }
 
-    private final DotBracket parent;
     private final char sequence;
     private final char structure;
     private final int index;
@@ -38,16 +37,11 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
     private DotBracketSymbol pair;
     private boolean isNonCanonical = false;
 
-    protected DotBracketSymbol(DotBracket parent, char sequence, char structure, int index) {
+    public DotBracketSymbol(char sequence, char structure, int index) {
         super();
-        this.parent = parent;
         this.sequence = sequence;
         this.structure = structure;
         this.index = index;
-    }
-
-    public DotBracket getParent() {
-        return parent;
     }
 
     public char getSequence() {
@@ -66,7 +60,7 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
         return previous;
     }
 
-    protected void setPrevious(DotBracketSymbol previous) {
+    public void setPrevious(DotBracketSymbol previous) {
         this.previous = previous;
     }
 
@@ -82,7 +76,7 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
         return next;
     }
 
-    protected void setNext(DotBracketSymbol next) {
+    public void setNext(DotBracketSymbol next) {
         this.next = next;
     }
 
@@ -90,7 +84,7 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
         return pair;
     }
 
-    protected void setPair(DotBracketSymbol pair) {
+    public void setPair(DotBracketSymbol pair) {
         this.pair = pair;
     }
 

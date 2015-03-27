@@ -1,11 +1,7 @@
-package pl.poznan.put.common;
+package pl.poznan.put.rna.base;
 
+import pl.poznan.put.common.ResidueInformationProvider;
 import pl.poznan.put.rna.Base;
-import pl.poznan.put.rna.base.Adenine;
-import pl.poznan.put.rna.base.Cytosine;
-import pl.poznan.put.rna.base.Guanine;
-import pl.poznan.put.rna.base.Thymine;
-import pl.poznan.put.rna.base.Uracil;
 
 public enum NucleobaseType {
     ADENINE(Adenine.getInstance()),

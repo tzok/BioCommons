@@ -4,8 +4,6 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import pl.poznan.put.pdb.analysis.PdbResidueIdentifier;
-
 public class PdbRemark465Line extends PdbRemarkLine implements ChainNumberICode {
     // @formatter:off
     /*

@@ -18,11 +18,11 @@ import org.junit.Test;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.PdbResidueIdentifier;
 
 public class TestPdbModel {
     private String pdb1EHZ;

@@ -1,26 +1,7 @@
-package pl.poznan.put.common;
+package pl.poznan.put.protein.aminoacid;
 
+import pl.poznan.put.common.ResidueInformationProvider;
 import pl.poznan.put.protein.ProteinSidechain;
-import pl.poznan.put.protein.aminoacid.Alanine;
-import pl.poznan.put.protein.aminoacid.Arginine;
-import pl.poznan.put.protein.aminoacid.Asparagine;
-import pl.poznan.put.protein.aminoacid.AsparticAcid;
-import pl.poznan.put.protein.aminoacid.Cysteine;
-import pl.poznan.put.protein.aminoacid.GlutamicAcid;
-import pl.poznan.put.protein.aminoacid.Glutamine;
-import pl.poznan.put.protein.aminoacid.Glycine;
-import pl.poznan.put.protein.aminoacid.Histidine;
-import pl.poznan.put.protein.aminoacid.IsoLeucine;
-import pl.poznan.put.protein.aminoacid.Leucine;
-import pl.poznan.put.protein.aminoacid.Lysine;
-import pl.poznan.put.protein.aminoacid.Methionine;
-import pl.poznan.put.protein.aminoacid.Phenylalanine;
-import pl.poznan.put.protein.aminoacid.Proline;
-import pl.poznan.put.protein.aminoacid.Serine;
-import pl.poznan.put.protein.aminoacid.Threonine;
-import pl.poznan.put.protein.aminoacid.Tryptophan;
-import pl.poznan.put.protein.aminoacid.Tyrosine;
-import pl.poznan.put.protein.aminoacid.Valine;
 
 public enum AminoAcidType {
     ALANINE(Alanine.getInstance()),

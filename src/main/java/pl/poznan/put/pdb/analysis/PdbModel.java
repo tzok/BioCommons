@@ -14,6 +14,7 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark465Line;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 
 public class PdbModel {
     private final List<PdbChain> chains = new ArrayList<PdbChain>();

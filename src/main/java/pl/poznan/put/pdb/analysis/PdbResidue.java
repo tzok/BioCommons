@@ -15,14 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.common.AminoAcidType;
 import pl.poznan.put.common.InvalidResidueInformationSupplier;
 import pl.poznan.put.common.MoleculeType;
-import pl.poznan.put.common.NucleobaseType;
 import pl.poznan.put.common.ResidueComponent;
 import pl.poznan.put.common.ResidueInformationProvider;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.protein.aminoacid.AminoAcidType;
+import pl.poznan.put.rna.base.NucleobaseType;
 
 public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdbResidue.class);
@@ -171,7 +172,7 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
         return nameProvider.getMoleculeType();
     }
 
-    public boolean wasSuccessfullyDetected() {
+    public final boolean wasSuccessfullyDetected() {
         return !(nameProvider instanceof InvalidResidueInformationSupplier);
     }
 
@@ -267,7 +268,7 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
         return CollectionUtils.exists(atomNames, notIsHeavyPredicate);
     }
 
-    public boolean hasAllAtoms() {
+    public final boolean hasAllAtoms() {
         List<AtomName> actual = new ArrayList<AtomName>(atomNames);
         List<AtomName> expected = new ArrayList<AtomName>();
 

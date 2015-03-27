@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
 public class CombinedStrand {
     private final List<Strand> strands;
 

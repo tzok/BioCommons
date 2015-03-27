@@ -3,7 +3,6 @@ package pl.poznan.put.pdb;
 import java.util.Locale;
 
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.pdb.analysis.PdbResidueIdentifier;
 
 public class PdbAtomLine implements ChainNumberICode {
     // @formatter:off

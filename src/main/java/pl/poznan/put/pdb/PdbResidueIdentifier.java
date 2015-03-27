@@ -1,6 +1,5 @@
-package pl.poznan.put.pdb.analysis;
+package pl.poznan.put.pdb;
 
-import pl.poznan.put.pdb.ChainNumberICode;
 
 public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier> {
     public static PdbResidueIdentifier fromChainNumberICode(ChainNumberICode chainNumberICode) {
