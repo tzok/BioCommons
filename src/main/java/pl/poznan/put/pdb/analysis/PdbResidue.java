@@ -263,7 +263,7 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
         return atomNames.contains(atomName);
     }
 
-    public boolean hasHydrogen() {
+    public final boolean hasHydrogen() {
         Predicate<AtomName> notIsHeavyPredicate = PredicateUtils.notPredicate(PredicateUtils.invokerPredicate("isHeavy"));
         return CollectionUtils.exists(atomNames, notIsHeavyPredicate);
     }
