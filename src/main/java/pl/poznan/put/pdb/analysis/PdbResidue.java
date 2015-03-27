@@ -151,7 +151,7 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
         return modifiedResidueName;
     }
 
-    public String getDetectedResidueName() {
+    public final String getDetectedResidueName() {
         return nameProvider.getDefaultPdbName();
     }
 
