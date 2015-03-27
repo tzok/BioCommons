@@ -11,6 +11,10 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 
+import pl.poznan.put.pdb.analysis.PdbChain;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbResidue;
+
 public class Ct implements Serializable {
     public static class Entry implements Serializable, Comparable<Ct.Entry> {
         private final int index;
@@ -32,7 +36,7 @@ public class Ct implements Serializable {
             comment = "";
         }
 
-        Entry(int index, int pair, int before, int after, int original, char seq, String comment) {
+        public Entry(int index, int pair, int before, int after, int original, char seq, String comment) {
             super();
             this.index = index;
             this.pair = pair;
@@ -150,44 +154,6 @@ public class Ct implements Serializable {
     private static final boolean FIX_LAST_ENTRY = true;
     private static boolean printComments = true;
 
-    public static Ct fromBpSeq(BpSeq bpSeq) throws InvalidSecondaryStructureException {
-        List<Ct.Entry> ctEntries = new ArrayList<Ct.Entry>();
-        SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
-        int size = entries.size();
-
-        for (BpSeq.Entry entry : entries) {
-            int index = entry.getIndex();
-            int pair = entry.getPair();
-            char seq = entry.getSeq();
-            String comment = entry.getComment();
-            ctEntries.add(new Ct.Entry(index, pair, index - 1, (index + 1) % (size + 1), index, seq, comment));
-        }
-
-        return new Ct(ctEntries);
-    }
-
-    public static Ct fromDotBracket(DotBracket dotBracket) throws InvalidSecondaryStructureException {
-        List<Ct.Entry> entries = new ArrayList<Ct.Entry>();
-
-        for (Strand s : dotBracket.getStrands()) {
-            for (int i = 0, j = s.getFrom(); j < s.getTo(); i++, j++) {
-                DotBracketSymbol symbol = dotBracket.getSymbol(j);
-                DotBracketSymbol pair = symbol.getPair();
-
-                int index = symbol.getIndex() + 1;
-                int pairIndex = pair != null ? pair.getIndex() + 1 : 0;
-                int before = i;
-                int after = (i + 2) % (s.getTo() + 1);
-                int original = dotBracket.getCtOriginalColumn(symbol);
-                char seq = symbol.getSequence();
-
-                entries.add(new Ct.Entry(index, pairIndex, before, after, original, seq));
-            }
-        }
-
-        return new Ct(entries);
-    }
-
     public static Ct fromString(String data) throws InvalidSecondaryStructureException {
         List<Entry> entries = new ArrayList<Entry>();
         boolean firstLine = true;
@@ -241,6 +207,80 @@ public class Ct implements Serializable {
         }
 
         return new Ct(entries);
+    }
+
+    public static Ct fromBpSeq(BpSeq bpSeq) throws InvalidSecondaryStructureException {
+        List<Ct.Entry> ctEntries = new ArrayList<Ct.Entry>();
+        SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
+        int size = entries.size();
+
+        for (BpSeq.Entry entry : entries) {
+            int index = entry.getIndex();
+            int pair = entry.getPair();
+            char seq = entry.getSeq();
+            String comment = entry.getComment();
+            ctEntries.add(new Ct.Entry(index, pair, index - 1, (index + 1) % (size + 1), index, seq, comment));
+        }
+
+        return new Ct(ctEntries);
+    }
+
+    public static Ct fromBpSeqAndPdbModel(BpSeq bpSeq, PdbModel model) throws InvalidSecondaryStructureException {
+        List<Ct.Entry> ctEntries = new ArrayList<Ct.Entry>();
+        List<PdbResidue> residues = model.getResidues();
+        SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
+        int i = 0;
+
+        for (BpSeq.Entry entry : entries) {
+            PdbResidue residue = residues.get(i);
+            PdbChain chain = model.findChainContainingResidue(residue.getResidueIdentifier());
+            List<PdbResidue> chainResidues = chain.getResidues();
+
+            int index = entry.getIndex();
+            int pair = entry.getPair();
+            int before = chainResidues.indexOf(residue);
+            int after = (before + 2) % (chainResidues.size() + 1);
+            int original = residue.getResidueNumber();
+            char seq = entry.getSeq();
+            String comment = entry.getComment();
+            ctEntries.add(new Ct.Entry(index, pair, before, after, original, seq, comment));
+
+            i += 1;
+        }
+
+        return new Ct(ctEntries);
+    }
+
+    public static Ct fromDotBracket(DotBracket dotBracket) throws InvalidSecondaryStructureException {
+        List<Ct.Entry> entries = new ArrayList<Ct.Entry>();
+
+        for (Strand s : dotBracket.getStrands()) {
+            for (int i = 0, j = s.getFrom(); j < s.getTo(); i++, j++) {
+                DotBracketSymbol symbol = dotBracket.getSymbol(j);
+                DotBracketSymbol pair = symbol.getPair();
+
+                int index = symbol.getIndex() + 1;
+                int pairIndex = pair != null ? pair.getIndex() + 1 : 0;
+                int before = i;
+                int after = (i + 2) % (s.getTo() + 1);
+                int original = dotBracket.getCtOriginalColumn(symbol);
+                char seq = symbol.getSequence();
+
+                entries.add(new Ct.Entry(index, pairIndex, before, after, original, seq));
+            }
+        }
+
+        return new Ct(entries);
+    }
+
+    public int getStrandCount() {
+        int count = 0;
+        for (Ct.Entry entry : entries) {
+            if (entry.getAfter() == 0) {
+                count += 1;
+            }
+        }
+        return count;
     }
 
     public static void setPrintComments(boolean printComments) {

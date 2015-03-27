@@ -204,7 +204,7 @@ public class BpSeq implements Serializable {
 
         List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
         entries.addAll(BpSeq.generateEntriesForPaired(model, allBasePairs, basePairToComment));
-        entries.addAll(generateEntriesForUnpaired(model, allBasePairs));
+        entries.addAll(BpSeq.generateEntriesForUnpaired(model, allBasePairs));
         return new BpSeq(entries);
     }
 

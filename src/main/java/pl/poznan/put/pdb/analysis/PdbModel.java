@@ -22,6 +22,7 @@ public class PdbModel {
     private final Set<PdbResidueIdentifier> missingResiduesIdentifiers = new HashSet<PdbResidueIdentifier>();
     private final Map<PdbResidueIdentifier, PdbModresLine> identifierToModification = new HashMap<PdbResidueIdentifier, PdbModresLine>();
     private final Map<PdbResidueIdentifier, PdbResidue> identifierToResidue = new HashMap<PdbResidueIdentifier, PdbResidue>();
+    private final Map<PdbResidueIdentifier, PdbChain> identifierToChain = new HashMap<PdbResidueIdentifier, PdbChain>();
 
     private final int modelNumber;
     private final List<PdbAtomLine> atoms;
@@ -128,7 +129,12 @@ public class PdbModel {
         for (Entry<Character, List<PdbResidue>> entry : foundChains.entrySet()) {
             char chainIdentifier = entry.getKey();
             List<PdbResidue> chainResidues = entry.getValue();
-            chains.add(new PdbChain(chainIdentifier, chainResidues));
+            PdbChain chain = new PdbChain(chainIdentifier, chainResidues);
+            chains.add(chain);
+
+            for (PdbResidue residue : chainResidues) {
+                identifierToChain.put(residue.getResidueIdentifier(), chain);
+            }
         }
     }
 
@@ -166,6 +172,10 @@ public class PdbModel {
         }
 
         return identifierToResidue.get(query);
+    }
+
+    public PdbChain findChainContainingResidue(PdbResidueIdentifier residueIdentifier) {
+        return identifierToChain.get(residueIdentifier);
     }
 
     public String getSequence() {

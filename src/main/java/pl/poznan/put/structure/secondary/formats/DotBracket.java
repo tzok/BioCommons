@@ -226,7 +226,11 @@ public class DotBracket implements Serializable {
     }
 
     public List<Strand> getStrands() {
-        return strands;
+        return Collections.unmodifiableList(strands);
+    }
+
+    public int getStrandCount() {
+        return strands.size();
     }
 
     public void splitStrands(Ct ct) {
