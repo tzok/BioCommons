@@ -43,8 +43,8 @@ public class PdbRemark465Line extends PdbRemarkLine implements ChainNumberICode 
         "REMARK 465 RES C SSSEQI"
     };
     // @formatter:on
-
-    private static final String FORMAT = "REMARK 465   %1s %3s %c %5d%c                                                     ";
+    private static final String REMARK_FORMAT = "  %1s %3s %c %5d%c                                                     ";
+    private static final String FORMAT = "REMARK 465 " + PdbRemark465Line.REMARK_FORMAT;
 
     public static boolean isCommentLine(String line) {
         String lineTrimmed = StringUtils.normalizeSpace(line);
@@ -75,7 +75,7 @@ public class PdbRemark465Line extends PdbRemarkLine implements ChainNumberICode 
             char chainIdentifier = remarkContent.charAt(8);
             int residueNumber = Integer.parseInt(remarkContent.substring(10, 15).trim());
             char insertionCode = remarkContent.length() == 15 ? ' ' : remarkContent.charAt(15);
-            return new PdbRemark465Line(465, remarkContent, modelNumber, residueName, chainIdentifier, residueNumber, insertionCode);
+            return new PdbRemark465Line(modelNumber, residueName, chainIdentifier, residueNumber, insertionCode);
         } catch (NumberFormatException e) {
             throw new PdbParsingException("Failed to parse PDB REMARK 465 line", e);
         }
@@ -87,8 +87,9 @@ public class PdbRemark465Line extends PdbRemarkLine implements ChainNumberICode 
     private final int residueNumber;
     private final char insertionCode;
 
-    public PdbRemark465Line(int remarkNumber, String remarkContent, int modelNumber, String residueName, char chainIdentifier, int residueNumber, char insertionCode) {
-        super(remarkNumber, remarkContent);
+    public PdbRemark465Line(int modelNumber, String residueName,
+            char chainIdentifier, int residueNumber, char insertionCode) {
+        super(465, String.format(Locale.US, PdbRemark465Line.FORMAT, modelNumber == 0 ? " " : String.valueOf(modelNumber), residueName, chainIdentifier, residueNumber, insertionCode));
         this.modelNumber = modelNumber;
         this.residueName = residueName;
         this.chainIdentifier = chainIdentifier;

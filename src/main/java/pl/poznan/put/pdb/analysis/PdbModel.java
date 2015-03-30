@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbParsingException;
@@ -27,11 +28,15 @@ public class PdbModel {
 
     private final int modelNumber;
     private final List<PdbAtomLine> atoms;
+    private final List<PdbModresLine> modifiedResidues;
 
-    public PdbModel(int modelNumber, List<PdbAtomLine> atoms, List<PdbModresLine> modifiedResidues, List<PdbRemark465Line> missingResidues) throws PdbParsingException {
+    public PdbModel(int modelNumber, List<PdbAtomLine> atoms,
+            List<PdbModresLine> modifiedResidues,
+            List<PdbRemark465Line> missingResidues) throws PdbParsingException {
         super();
         this.modelNumber = modelNumber;
         this.atoms = atoms;
+        this.modifiedResidues = modifiedResidues;
 
         for (PdbRemark465Line missing : missingResidues) {
             missingResiduesIdentifiers.add(missing.getResidueIdentifier());
@@ -69,7 +74,8 @@ public class PdbModel {
         saveExistingResidueIfValid(residueAtoms, lastResidueIdentifier);
 
         for (PdbRemark465Line missingResidue : missingResidues) {
-            PdbResidue residue = new PdbResidue(PdbResidueIdentifier.fromChainNumberICode(missingResidue), missingResidue.getResidueName(), new ArrayList<PdbAtomLine>(), false, true);
+            List<PdbAtomLine> emptyAtomList = Collections.emptyList();
+            PdbResidue residue = new PdbResidue(PdbResidueIdentifier.fromChainNumberICode(missingResidue), missingResidue.getResidueName(), emptyAtomList, false, true);
 
             for (int i = 0; i < residues.size(); i++) {
                 if (residues.get(i).compareTo(residue) > 0) {
@@ -84,7 +90,8 @@ public class PdbModel {
         }
     }
 
-    private void saveExistingResidueIfValid(List<PdbAtomLine> residueAtoms, PdbResidueIdentifier residueIdentifier) {
+    private void saveExistingResidueIfValid(List<PdbAtomLine> residueAtoms,
+            PdbResidueIdentifier residueIdentifier) {
         assert !isMissing(residueIdentifier);
         assert residueAtoms.size() > 0;
 
@@ -163,7 +170,8 @@ public class PdbModel {
         return missingResiduesIdentifiers.contains(residueIdentifier);
     }
 
-    public PdbResidue findResidue(char chainIdentifier, int residueNumber, char insertionCode) {
+    public PdbResidue findResidue(char chainIdentifier, int residueNumber,
+            char insertionCode) {
         return findResidue(new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode));
     }
 
@@ -175,7 +183,8 @@ public class PdbModel {
         return identifierToResidue.get(query);
     }
 
-    public PdbChain findChainContainingResidue(PdbResidueIdentifier residueIdentifier) {
+    public PdbChain findChainContainingResidue(
+            PdbResidueIdentifier residueIdentifier) {
         return identifierToChain.get(residueIdentifier);
     }
 
@@ -196,5 +205,35 @@ public class PdbModel {
             }
         }
         return builder.toString();
+    }
+
+    public boolean containsAny(MoleculeType moleculeType) {
+        for (PdbChain chain : chains) {
+            if (chain.getMoleculeType() == moleculeType) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public PdbModel filteredNewInstance(MoleculeType moleculeType) throws PdbParsingException {
+        List<PdbAtomLine> filteredAtoms = new ArrayList<PdbAtomLine>();
+        List<PdbRemark465Line> filteredMissing = new ArrayList<PdbRemark465Line>();
+
+        for (PdbResidue residue : residues) {
+            if (residue.getMoleculeType() == moleculeType) {
+                if (!residue.isMissing()) {
+                    filteredAtoms.addAll(residue.getAtoms());
+                } else {
+                    String residueName = residue.getOriginalResidueName();
+                    char chainIdentifier = residue.getChainIdentifier();
+                    int residueNumber = residue.getResidueNumber();
+                    char insertionCode = residue.getInsertionCode();
+                    filteredMissing.add(new PdbRemark465Line(modelNumber, residueName, chainIdentifier, residueNumber, insertionCode));
+                }
+            }
+        }
+
+        return new PdbModel(modelNumber, filteredAtoms, modifiedResidues, filteredMissing);
     }
 }

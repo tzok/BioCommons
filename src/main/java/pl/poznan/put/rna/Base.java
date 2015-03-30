@@ -8,12 +8,13 @@ import pl.poznan.put.common.ResidueComponent;
 import pl.poznan.put.common.ResidueInformationProvider;
 import pl.poznan.put.types.Quadruplet;
 
-public abstract class Base extends RNAResidueComponent implements ResidueInformationProvider {
+public abstract class Base extends NucleicAcidResidueComponent implements ResidueInformationProvider {
     private final String longName;
     private final char oneLetterName;
     private final List<String> pdbNames;
 
-    protected Base(List<AtomName> atoms, String longName, char oneLetterName, String... pdbNames) {
+    protected Base(List<AtomName> atoms, String longName, char oneLetterName,
+            String... pdbNames) {
         super(RNAResidueComponentType.BASE, atoms);
         this.longName = longName;
         this.oneLetterName = oneLetterName;
@@ -22,7 +23,7 @@ public abstract class Base extends RNAResidueComponent implements ResidueInforma
 
     @Override
     public List<ResidueComponent> getAllMoleculeComponents() {
-        return Arrays.asList(new ResidueComponent[] { Phosphate.getInstance(), Sugar.getInstance(), this });
+        return Arrays.asList(new ResidueComponent[] { Phosphate.getInstance(), getDefaultSugarInstance(), this });
     }
 
     @Override
@@ -47,4 +48,6 @@ public abstract class Base extends RNAResidueComponent implements ResidueInforma
     }
 
     public abstract Quadruplet<AtomName> getChiAtoms();
+
+    public abstract Sugar getDefaultSugarInstance();
 }

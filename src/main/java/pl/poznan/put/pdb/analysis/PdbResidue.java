@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.atom.AtomType;
 import pl.poznan.put.common.InvalidResidueInformationSupplier;
 import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.common.ResidueComponent;
@@ -58,14 +59,14 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
         this.atoms = atoms;
         this.isMissing = isMissing;
 
-        atomNames = detectAtomNames();
+        this.atomNames = detectAtomNames();
 
         if (isMissing) {
-            nameProvider = detectResidueTypeFromResidueName();
+            this.nameProvider = detectResidueTypeFromResidueName();
             this.isModified = false;
         } else {
-            nameProvider = detectResidueType();
-            this.isModified = isModified | (wasSuccessfullyDetected() ? !hasAllAtoms() : false);
+            this.nameProvider = detectResidueType();
+            this.isModified = isModified || (wasSuccessfullyDetected() && !hasAllAtoms());
         }
     }
 
@@ -84,19 +85,39 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
     }
 
     private ResidueInformationProvider detectResidueType() {
+        ResidueInformationProvider provider = detectResidueTypeFromResidueName();
+        if (provider.getMoleculeType() != MoleculeType.UNKNOWN) {
+            return provider;
+        }
+        return detectResidueTypeFromAtoms();
+    }
+
+    private ResidueInformationProvider detectResidueTypeFromAtoms() {
+        boolean hasHydrogen = hasHydrogen();
+        Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils.invokerPredicate("isHeavy");
+        Set<AtomName> actual = new HashSet<AtomName>(atomNames);
+
+        if (!hasHydrogen) {
+            CollectionUtils.filter(actual, isHeavyAtomPredicate);
+        }
+
         double bestScore = Double.POSITIVE_INFINITY;
         ResidueInformationProvider bestProvider = null;
 
         for (ResidueInformationProvider provider : PdbResidue.RESIDUE_INFORMATION_PROVIDERS) {
-            List<ResidueComponent> components = provider.getAllMoleculeComponents();
-            Set<AtomName> nucleobaseAtomNames = new HashSet<AtomName>();
+            Set<AtomName> expected = new HashSet<AtomName>();
 
-            for (ResidueComponent component : components) {
-                nucleobaseAtomNames.addAll(component.getAtoms());
+            for (ResidueComponent component : provider.getAllMoleculeComponents()) {
+                for (AtomName atomName : component.getAtoms()) {
+                    if (!hasHydrogen && atomName.getType() == AtomType.H) {
+                        continue;
+                    }
+                    expected.add(atomName);
+                }
             }
 
-            Collection<AtomName> disjunction = CollectionUtils.disjunction(nucleobaseAtomNames, atomNames);
-            Collection<AtomName> union = CollectionUtils.union(nucleobaseAtomNames, atomNames);
+            Collection<AtomName> disjunction = CollectionUtils.disjunction(expected, atomNames);
+            Collection<AtomName> union = CollectionUtils.union(expected, atomNames);
             double score = (double) disjunction.size() / (double) union.size();
 
             if (score < bestScore) {
@@ -105,12 +126,11 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
             }
         }
 
-        // value 0.6 found empirically
-        // for A.YYG37 in 1EHZ, the score is 0.54
-        if (bestScore < 0.6) {
+        // value 0.5 found empirically
+        if (bestScore < 0.5) {
             return bestProvider;
         }
-        return detectResidueTypeFromResidueName();
+        return new InvalidResidueInformationSupplier(MoleculeType.UNKNOWN, residueName);
     }
 
     private ResidueInformationProvider detectResidueTypeFromResidueName() {
@@ -297,7 +317,7 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
                 PdbResidue.LOGGER.debug("Residue " + this + " (" + getDetectedResidueName() + ") contains additional atoms: " + Arrays.toString(actual.toArray(new AtomName[actual.size()])));
             }
             if (!expected.isEmpty()) {
-                PdbResidue.LOGGER.debug("Residue " + this + " (" + getDetectedResidueName() + ") was expected to have more: " + Arrays.toString(expected.toArray(new AtomName[expected.size()])));
+                PdbResidue.LOGGER.debug("Residue " + this + " (" + getDetectedResidueName() + ") has missing atoms: " + Arrays.toString(expected.toArray(new AtomName[expected.size()])));
             }
         }
 

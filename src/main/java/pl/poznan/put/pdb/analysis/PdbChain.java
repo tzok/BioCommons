@@ -3,14 +3,45 @@ package pl.poznan.put.pdb.analysis;
 import java.util.Collections;
 import java.util.List;
 
+import pl.poznan.put.common.MoleculeType;
+
 public class PdbChain implements Comparable<PdbChain> {
     private final char identifier;
     private final List<PdbResidue> residues;
+    private final MoleculeType moleculeType;
 
     public PdbChain(char identifier, List<PdbResidue> residues) {
         super();
         this.identifier = identifier;
         this.residues = residues;
+        this.moleculeType = PdbChain.assertMoleculeType(residues);
+    }
+
+    private static MoleculeType assertMoleculeType(List<PdbResidue> residues) {
+        int rnaCounter = 0;
+        int proteinCounter = 0;
+
+        for (PdbResidue residue : residues) {
+            switch (residue.getMoleculeType()) {
+            case PROTEIN:
+                proteinCounter += 1;
+                break;
+            case RNA:
+                rnaCounter += 1;
+                break;
+            case UNKNOWN:
+            default:
+                break;
+            }
+        }
+
+        if (rnaCounter > proteinCounter) {
+            assert proteinCounter == 0;
+            return MoleculeType.RNA;
+        }
+
+        assert rnaCounter == 0;
+        return MoleculeType.PROTEIN;
     }
 
     public char getIdentifier() {
@@ -71,5 +102,9 @@ public class PdbChain implements Comparable<PdbChain> {
             builder.append(residue.getOneLetterName());
         }
         return builder.toString();
+    }
+
+    public MoleculeType getMoleculeType() {
+        return moleculeType;
     }
 }
