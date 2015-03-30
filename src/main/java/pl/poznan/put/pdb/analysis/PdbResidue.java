@@ -31,10 +31,10 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
 
     static {
         for (NucleobaseType nucleobase : NucleobaseType.values()) {
-            RESIDUE_INFORMATION_PROVIDERS.add(nucleobase.getResidueInformationProvider());
+            PdbResidue.RESIDUE_INFORMATION_PROVIDERS.add(nucleobase.getResidueInformationProvider());
         }
         for (AminoAcidType aminoAcid : AminoAcidType.values()) {
-            RESIDUE_INFORMATION_PROVIDERS.add(aminoAcid.getResidueInformationProvider());
+            PdbResidue.RESIDUE_INFORMATION_PROVIDERS.add(aminoAcid.getResidueInformationProvider());
         }
     }
 
@@ -48,7 +48,9 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
     private final boolean isModified;
     private final boolean isMissing;
 
-    public PdbResidue(PdbResidueIdentifier identifier, String residueName, String modifiedResidueName, List<PdbAtomLine> atoms, boolean isModified, boolean isMissing) {
+    public PdbResidue(PdbResidueIdentifier identifier, String residueName,
+            String modifiedResidueName, List<PdbAtomLine> atoms,
+            boolean isModified, boolean isMissing) {
         super();
         this.identifier = identifier;
         this.residueName = residueName;
@@ -56,18 +58,19 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
         this.atoms = atoms;
         this.isMissing = isMissing;
 
-        this.atomNames = detectAtomNames();
+        atomNames = detectAtomNames();
 
         if (isMissing) {
-            this.nameProvider = detectResidueTypeFromResidueName();
+            nameProvider = detectResidueTypeFromResidueName();
             this.isModified = false;
         } else {
-            this.nameProvider = detectResidueType();
+            nameProvider = detectResidueType();
             this.isModified = isModified | (wasSuccessfullyDetected() ? !hasAllAtoms() : false);
         }
     }
 
-    public PdbResidue(PdbResidueIdentifier identifier, String residueName, List<PdbAtomLine> atoms, boolean isModified, boolean isMissing) {
+    public PdbResidue(PdbResidueIdentifier identifier, String residueName,
+            List<PdbAtomLine> atoms, boolean isModified, boolean isMissing) {
         this(identifier, residueName, residueName, atoms, isModified, isMissing);
         assert !isModified : "This is constructor for unmodified residues";
     }
@@ -84,7 +87,7 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
         double bestScore = Double.POSITIVE_INFINITY;
         ResidueInformationProvider bestProvider = null;
 
-        for (ResidueInformationProvider provider : RESIDUE_INFORMATION_PROVIDERS) {
+        for (ResidueInformationProvider provider : PdbResidue.RESIDUE_INFORMATION_PROVIDERS) {
             List<ResidueComponent> components = provider.getAllMoleculeComponents();
             Set<AtomName> nucleobaseAtomNames = new HashSet<AtomName>();
 
@@ -111,7 +114,7 @@ public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
     }
 
     private ResidueInformationProvider detectResidueTypeFromResidueName() {
-        for (ResidueInformationProvider provider : RESIDUE_INFORMATION_PROVIDERS) {
+        for (ResidueInformationProvider provider : PdbResidue.RESIDUE_INFORMATION_PROVIDERS) {
             if (provider.getPdbNames().contains(residueName)) {
                 return provider;
             }
