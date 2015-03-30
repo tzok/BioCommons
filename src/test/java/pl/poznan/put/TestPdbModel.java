@@ -27,6 +27,7 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 public class TestPdbModel {
     private String pdb1EHZ;
     private String pdb2Z74;
+    private String pdb4A04;
 
     @Before
     public void loadPdbFile() throws URISyntaxException, IOException {
@@ -34,6 +35,7 @@ public class TestPdbModel {
         File dir = new File(uri);
         pdb1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ.pdb"), "utf-8");
         pdb2Z74 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2Z74.pdb"), "utf-8");
+        pdb4A04 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/4A04.pdb"), "utf-8");
     }
 
     @Test
@@ -233,11 +235,21 @@ public class TestPdbModel {
         List<PdbChain> chains = model.getChains();
         sequence = chains.get(0).getSequence();
         assertEquals("AGCGCCUGGACUUAAAGCCAUUGCACU", sequence.toUpperCase());
-
         sequence = chains.get(1).getSequence();
         assertEquals("CCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA", sequence.toUpperCase());
-
         sequence = model.getSequence();
         assertEquals("AGCGCCUGGACUUAAAGCCAUUGCACUCCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA", sequence.toUpperCase());
+
+        models = parser.parse(pdb4A04);
+        model = models.get(0);
+        chains = model.getChains();
+        sequence = chains.get(0).getSequence();
+        assertEquals("MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD", sequence.toUpperCase());
+        sequence = chains.get(1).getSequence();
+        assertEquals("MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD", sequence.toUpperCase());
+        sequence = chains.get(2).getSequence();
+        assertEquals("AATTTCACACCTAGGTGTGAAATT", sequence.toUpperCase());
+        sequence = chains.get(2).getSequence();
+        assertEquals("AATTTCACACCTAGGTGTGAAATT", sequence.toUpperCase());
     }
 }

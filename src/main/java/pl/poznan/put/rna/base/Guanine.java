@@ -15,7 +15,7 @@ public class Guanine extends Purine {
     }
 
     private Guanine() {
-        super(Arrays.asList(new AtomName[] { AtomName.N9, AtomName.C4, AtomName.N2, AtomName.H21, AtomName.H22, AtomName.N3, AtomName.C2, AtomName.N1, AtomName.H1, AtomName.C6, AtomName.O6, AtomName.C5, AtomName.N7, AtomName.C8, AtomName.H8 }), "Guanine", 'G', "G", "GUA");
+        super(Arrays.asList(new AtomName[] { AtomName.N9, AtomName.C4, AtomName.N2, AtomName.H21, AtomName.H22, AtomName.N3, AtomName.C2, AtomName.N1, AtomName.H1, AtomName.C6, AtomName.O6, AtomName.C5, AtomName.N7, AtomName.C8, AtomName.H8 }), "Guanine", 'G', "G", "GUA", "DG");
     }
 
     @Override
