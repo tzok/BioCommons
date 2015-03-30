@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 
-public class PdbModel {
+public class PdbModel implements Serializable {
     private final List<PdbChain> chains = new ArrayList<PdbChain>();
     private final List<PdbResidue> residues = new ArrayList<PdbResidue>();
 

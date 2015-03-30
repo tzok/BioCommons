@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +27,7 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.protein.aminoacid.AminoAcidType;
 import pl.poznan.put.rna.base.NucleobaseType;
 
-public class PdbResidue implements Comparable<PdbResidue>, ChainNumberICode {
+public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNumberICode {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdbResidue.class);
     private static final List<ResidueInformationProvider> RESIDUE_INFORMATION_PROVIDERS = new ArrayList<ResidueInformationProvider>();
 

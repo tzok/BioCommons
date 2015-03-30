@@ -1,10 +1,11 @@
 package pl.poznan.put.pdb;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 import pl.poznan.put.atom.AtomName;
 
-public class PdbAtomLine implements ChainNumberICode {
+public class PdbAtomLine implements Serializable, ChainNumberICode {
     // @formatter:off
     /*
         COLUMNS        DATA  TYPE    FIELD        DEFINITION
@@ -77,7 +78,11 @@ public class PdbAtomLine implements ChainNumberICode {
     private final String elementSymbol;
     private final String charge;
 
-    public PdbAtomLine(int serialNumber, String atomName, char alternateLocation, String residueName, char chainIdentifier, int residueNumber, char insertionCode, double x, double y, double z, double occupancy, double temperatureFactor, String elementSymbol, String charge) {
+    public PdbAtomLine(int serialNumber, String atomName,
+            char alternateLocation, String residueName, char chainIdentifier,
+            int residueNumber, char insertionCode, double x, double y,
+            double z, double occupancy, double temperatureFactor,
+            String elementSymbol, String charge) {
         super();
         this.serialNumber = serialNumber;
         this.atomName = atomName;
