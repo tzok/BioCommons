@@ -15,7 +15,7 @@ public class IsoLeucine extends ProteinSidechain {
     }
 
     private IsoLeucine() {
-        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB, AtomName.CG2, AtomName.HG21, AtomName.HG22, AtomName.HG23, AtomName.CG1, AtomName.HG11, AtomName.HG12, AtomName.CD, AtomName.HD1, AtomName.HD2, AtomName.HD3 }), "Isoleucine", 'I', "ILE");
+        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB, AtomName.CG1, AtomName.HG11, AtomName.HG12, AtomName.CG2, AtomName.HG21, AtomName.HG22, AtomName.HG23, AtomName.CD1, AtomName.HD11, AtomName.HD12, AtomName.HD13 }), "Isoleucine", 'I', "ILE");
     }
 
     @Override
