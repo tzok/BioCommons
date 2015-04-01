@@ -63,14 +63,14 @@ public class SVGHelper {
 
     private static final NamespaceContext SVG_NAMESPACE = new SVGNamespace();
     private static final DOMImplementation DOM_IMPLEMENTATION = SVGDOMImplementation.getDOMImplementation();
-    private static final SAXSVGDocumentFactory SVG_FACTORY = new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
 
     public static SVGDocument emptyDocument() {
         return (SVGDocument) SVGHelper.DOM_IMPLEMENTATION.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
     }
 
     public static SVGDocument fromFile(File file) throws IOException {
-        return (SVGDocument) SVGHelper.SVG_FACTORY.createDocument("file://" + file.getAbsolutePath());
+        SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
+        return (SVGDocument) factory.createDocument("file://" + file.getAbsolutePath());
     }
 
     public static FontMetrics getFontMetrics(SVGGraphics2D svg) {
