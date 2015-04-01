@@ -29,6 +29,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     // @formatter:on
     private static final String FORMAT_ATOM_4_CHARACTER = "ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
     private static final String FORMAT = "ATOM  %5d  %-3s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
+    private static final String RECORD_NAME = "ATOM";
 
     public static PdbAtomLine parse(String line) throws PdbParsingException {
         if (line.length() < 80) {
@@ -62,7 +63,10 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         }
     }
 
-    private final String recordName = "ATOM";
+    public static String getRecordName() {
+        return PdbAtomLine.RECORD_NAME;
+    }
+
     private final int serialNumber;
     private final String atomName;
     private final char alternateLocation;
@@ -98,10 +102,6 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         this.temperatureFactor = temperatureFactor;
         this.elementSymbol = elementSymbol;
         this.charge = charge;
-    }
-
-    public String getRecordName() {
-        return recordName;
     }
 
     public int getSerialNumber() {

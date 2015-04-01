@@ -18,6 +18,7 @@ public class PdbRemarkLine {
      */
     // @formatter:on
     private static final String FORMAT = "REMARK %3d %-68s ";
+    private static final String RECORD_NAME = "REMARK";
 
     public static PdbRemarkLine parse(String line) throws PdbParsingException {
         if (line.length() < 79) {
@@ -39,7 +40,10 @@ public class PdbRemarkLine {
         }
     }
 
-    private final String recordName = "REMARK";
+    public static String getRecordName() {
+        return PdbRemarkLine.RECORD_NAME;
+    }
+
     private final int remarkNumber;
     private final String remarkContent;
 
@@ -47,10 +51,6 @@ public class PdbRemarkLine {
         super();
         this.remarkNumber = remarkNumber;
         this.remarkContent = remarkContent;
-    }
-
-    public String getRecordName() {
-        return recordName;
     }
 
     public int getRemarkNumber() {

@@ -17,8 +17,8 @@ public class PdbModresLine implements ChainNumberICode {
        30 - 70        String        comment     Description of the residue modification.
     */
     // @formatter:on
-
     private static final String FORMAT = "MODRES %4s %3s %c %4d%c %3s  %41s          ";
+    private final static String RECORD_NAME = "MODRES";
 
     public static PdbModresLine parse(String line) throws PdbParsingException {
         if (line.length() < 70) {
@@ -45,7 +45,10 @@ public class PdbModresLine implements ChainNumberICode {
         }
     }
 
-    private final String recordName = "MODRES";
+    public static String getRecordName() {
+        return PdbModresLine.RECORD_NAME;
+    }
+
     private final String idCode;
     private final String residueName;
     private final char chainIdentifier;
@@ -54,7 +57,9 @@ public class PdbModresLine implements ChainNumberICode {
     private final String standardResidueName;
     private final String comment;
 
-    public PdbModresLine(String idCode, String residueName, char chainIdentifier, int residueNumber, char insertionCode, String standardResidueName, String comment) {
+    public PdbModresLine(String idCode, String residueName,
+            char chainIdentifier, int residueNumber, char insertionCode,
+            String standardResidueName, String comment) {
         super();
         this.idCode = idCode;
         this.residueName = residueName;
@@ -63,10 +68,6 @@ public class PdbModresLine implements ChainNumberICode {
         this.insertionCode = insertionCode;
         this.standardResidueName = standardResidueName;
         this.comment = comment;
-    }
-
-    public String getRecordName() {
-        return recordName;
     }
 
     public String getIdCode() {
