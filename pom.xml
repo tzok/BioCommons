@@ -4,7 +4,7 @@
 
 	<groupId>pl.poznan.put</groupId>
 	<artifactId>BioCommons</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 
 	<name>BioCommons</name>
@@ -75,13 +75,13 @@
 		<dependency>
 			<groupId>pl.poznan.put</groupId>
 			<artifactId>circular</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>pl.poznan.put</groupId>
 			<artifactId>TzokCommons</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0</version>
 		</dependency>
 
 		<dependency>
