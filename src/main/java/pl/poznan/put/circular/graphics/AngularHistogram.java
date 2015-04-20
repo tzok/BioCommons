@@ -43,7 +43,7 @@ public class AngularHistogram extends RawDataPlot {
         this.binRadians = binRadians;
     }
 
-    public AngularHistogram(Collection<Circular> data) throws InvalidCircularOperationException {
+    public AngularHistogram(Collection<? extends Circular> data) throws InvalidCircularOperationException {
         super(data);
         this.binRadians = Math.PI / 12;
     }

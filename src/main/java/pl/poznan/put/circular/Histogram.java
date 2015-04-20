@@ -21,7 +21,7 @@ public class Histogram {
 
     private final List<Bin> histogram = new ArrayList<>();
 
-    public Histogram(Collection<Circular> data, double binWidth) throws InvalidCircularValueException {
+    public Histogram(Collection<? extends Circular> data, double binWidth) throws InvalidCircularValueException {
         super();
 
         if (binWidth < 0 || binWidth >= Math.PI) {

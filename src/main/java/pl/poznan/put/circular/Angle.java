@@ -10,7 +10,12 @@ import pl.poznan.put.circular.exception.InvalidVectorFormatException;
  * @author tzok
  */
 public class Angle extends Circular {
+    private static final Angle INVALID = new Angle();
     private static final int MINUTES_IN_DAY = 24 * 60;
+
+    public static Angle invalidInstance() {
+        return Angle.INVALID;
+    }
 
     /**
      * Subtract two vectorial values taking into account periodicity around
@@ -64,9 +69,17 @@ public class Angle extends Circular {
     public Angle(double radians) throws InvalidCircularValueException {
         super(radians);
 
-        if (radians < 0 || radians >= 360.0) {
-            throw new InvalidCircularValueException("A vector value must be in range [0..360)");
+        if (radians < 0 || radians >= 2 * Math.PI) {
+            throw new InvalidCircularValueException("A vector value must be in range [0..2pi) and not: " + radians);
         }
+    }
+
+    /**
+     * This private constructor is meant to be used only to create invalid
+     * instances of angles ie. those having Double.NaN as a value
+     */
+    private Angle() {
+        super(Double.NaN);
     }
 
     public Angle multiply(double n) throws InvalidCircularValueException {

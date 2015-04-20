@@ -3,7 +3,7 @@ package pl.poznan.put.circular;
 public abstract class Circular implements Comparable<Circular> {
     protected final double radians;
 
-    public Circular(double radians) {
+    protected Circular(double radians) {
         super();
         this.radians = radians;
     }

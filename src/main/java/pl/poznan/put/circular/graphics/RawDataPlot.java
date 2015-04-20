@@ -26,7 +26,7 @@ import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
 
 public class RawDataPlot extends AbstractDrawable {
-    protected final Collection<Circular> data;
+    protected final Collection<? extends Circular> data;
     protected final double diameter;
     protected final boolean isAxes;
     private final double majorTickSpread;
@@ -36,7 +36,8 @@ public class RawDataPlot extends AbstractDrawable {
     protected double centerY;
     protected double radius;
 
-    public RawDataPlot(Collection<Circular> data, double diameter, double majorTickSpread, double minorTickSpread) throws InvalidCircularOperationException {
+    public RawDataPlot(Collection<Circular> data, double diameter,
+            double majorTickSpread, double minorTickSpread) throws InvalidCircularOperationException {
         super();
         this.data = data;
         this.diameter = diameter;
@@ -66,7 +67,7 @@ public class RawDataPlot extends AbstractDrawable {
         init();
     }
 
-    public RawDataPlot(Collection<Circular> data) throws InvalidCircularOperationException {
+    public RawDataPlot(Collection<? extends Circular> data) throws InvalidCircularOperationException {
         super();
         this.data = data;
         this.diameter = 1024;
@@ -177,7 +178,8 @@ public class RawDataPlot extends AbstractDrawable {
         }
     }
 
-    private void drawTicks(SVGGraphics2D graphics, double tickSpread, double virtualRadius) {
+    private void drawTicks(SVGGraphics2D graphics, double tickSpread,
+            double virtualRadius) {
         for (double d = 0; d < 2 * Math.PI; d += tickSpread) {
             // angle as in XY coordinate system
             double t = -(d + Math.PI * 3 / 2) % (2 * Math.PI);
