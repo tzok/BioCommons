@@ -24,8 +24,20 @@ public class PdbParser {
     private final Set<Character> terminatedChainIdentifiers = new HashSet<Character>();
     private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<Integer, List<PdbAtomLine>>();
 
+    private final boolean strictMode;
+
     private char currentChainIdentifier;
     private int currentModelNumber;
+
+    public PdbParser(boolean strictMode) {
+        super();
+        this.strictMode = strictMode;
+    }
+
+    public PdbParser() {
+        super();
+        this.strictMode = true;
+    }
 
     public synchronized List<PdbModel> parse(String pdbFileContent) throws PdbParsingException {
         resetState();
@@ -86,7 +98,7 @@ public class PdbParser {
 
     private void handleAtomLine(String line) {
         try {
-            PdbAtomLine atomLine = PdbAtomLine.parse(line);
+            PdbAtomLine atomLine = PdbAtomLine.parse(line, strictMode);
 
             if (terminatedChainIdentifiers.contains(atomLine.getChainIdentifier())) {
                 atomLine = atomLine.replaceChainIdentifier(currentChainIdentifier);
