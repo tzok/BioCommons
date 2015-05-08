@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbChain;
@@ -28,6 +29,7 @@ public class TestPdbModel {
     private String pdb1EHZ;
     private String pdb2Z74;
     private String pdb4A04;
+    private String pdbPKB300;
 
     @Before
     public void loadPdbFile() throws URISyntaxException, IOException {
@@ -36,6 +38,7 @@ public class TestPdbModel {
         pdb1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ.pdb"), "utf-8");
         pdb2Z74 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2Z74.pdb"), "utf-8");
         pdb4A04 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/4A04.pdb"), "utf-8");
+        pdbPKB300 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/PKB300.pdb"), "utf-8");
     }
 
     @Test
@@ -251,5 +254,20 @@ public class TestPdbModel {
         assertEquals("AATTTCACACCTAGGTGTGAAATT", sequence.toUpperCase());
         sequence = chains.get(2).getSequence();
         assertEquals("AATTTCACACCTAGGTGTGAAATT", sequence.toUpperCase());
+    }
+
+    @Test
+    public void test79CharLongAtomLines() throws PdbParsingException {
+        PdbParser parser = new PdbParser(false);
+        List<PdbModel> models = parser.parse(pdbPKB300);
+        assertEquals(1, models.size());
+        PdbModel model = models.get(0);
+        List<PdbChain> chains = model.getChains();
+        List<PdbResidue> residues = model.getResidues();
+        List<PdbAtomLine> atoms = model.getAtoms();
+
+        assertEquals(1, chains.size());
+        assertEquals(37, residues.size());
+        assertEquals(1186, atoms.size());
     }
 }
