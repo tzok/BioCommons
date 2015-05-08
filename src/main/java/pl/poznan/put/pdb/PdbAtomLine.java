@@ -32,8 +32,13 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     private static final String RECORD_NAME = "ATOM";
 
     public static PdbAtomLine parse(String line) throws PdbParsingException {
-        if (line.length() < 80) {
-            throw new PdbParsingException("PDB ATOM line is not at least 80 character long");
+        return PdbAtomLine.parse(line, true);
+    }
+
+    public static PdbAtomLine parse(String line, boolean strictMode) throws PdbParsingException {
+        // in non-strict mode, only up to X, Y, Z fields are required, rest is optional
+        if (strictMode && line.length() < 80 || !strictMode && line.length() < 54) {
+            throw new PdbParsingException("PDB ATOM line is too short");
         }
 
         try {
@@ -53,10 +58,12 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
             double x = Double.parseDouble(line.substring(30, 38).trim());
             double y = Double.parseDouble(line.substring(38, 46).trim());
             double z = Double.parseDouble(line.substring(46, 54).trim());
-            double occupancy = Double.parseDouble(line.substring(54, 60).trim());
-            double temperatureFactor = Double.parseDouble(line.substring(60, 66).trim());
-            String elementSymbol = line.substring(76, 78).trim();
-            String charge = line.substring(78, 80).trim();
+
+            double occupancy = line.length() >= 60 ? Double.parseDouble(line.substring(54, 60).trim()) : 0;
+            double temperatureFactor = line.length() >= 66 ? Double.parseDouble(line.substring(60, 66).trim()) : 0;
+            String elementSymbol = line.length() >= 78 ? line.substring(76, 78).trim() : "";
+            String charge = line.length() >= 80 ? line.substring(78, 80).trim() : "";
+
             return new PdbAtomLine(serialNumber, atomName, alternateLocation, residueName, chainIdentifier, residueNumber, insertionCode, x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
         } catch (NumberFormatException e) {
             throw new PdbParsingException("Failed to parse PDB ATOM line", e);
