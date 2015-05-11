@@ -7,8 +7,6 @@ import java.util.List;
 import org.biojava.bio.structure.Chain;
 import org.biojava.bio.structure.Group;
 
-import pl.poznan.put.common.MoleculeType;
-
 public class PdbChain implements Comparable<PdbChain> {
     public static PdbChain fromBioJavaChain(Chain chain) {
         List<PdbResidue> residues = new ArrayList<PdbResidue>();

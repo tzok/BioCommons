@@ -2,7 +2,6 @@ package pl.poznan.put.torsion;
 
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.interfaces.DisplayableExportable;
-import pl.poznan.put.torsion.type.TorsionAngleType;
 import pl.poznan.put.utility.AngleFormat;
 
 public class TorsionAngleValue implements DisplayableExportable {

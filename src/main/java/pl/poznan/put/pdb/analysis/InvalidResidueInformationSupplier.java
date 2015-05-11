@@ -1,10 +1,9 @@
-package pl.poznan.put.common;
+package pl.poznan.put.pdb.analysis;
 
 import java.util.Collections;
 import java.util.List;
 
-import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.torsion.type.TorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleType;
 
 public class InvalidResidueInformationSupplier implements ResidueInformationProvider {
     private final MoleculeType moleculeType;
@@ -15,11 +14,6 @@ public class InvalidResidueInformationSupplier implements ResidueInformationProv
         super();
         this.moleculeType = moleculeType;
         this.pdbName = pdbName;
-    }
-
-    @Override
-    public List<AtomName> getAtoms() {
-        return Collections.emptyList();
     }
 
     @Override

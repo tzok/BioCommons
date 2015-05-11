@@ -1,6 +1,5 @@
 package pl.poznan.put.rna.base;
 
-import pl.poznan.put.common.ResidueInformationProvider;
 import pl.poznan.put.rna.Base;
 
 public enum NucleobaseType {
@@ -15,10 +14,6 @@ public enum NucleobaseType {
 
     private NucleobaseType(Base provider) {
         this.provider = provider;
-    }
-
-    public ResidueInformationProvider getResidueInformationProvider() {
-        return provider;
     }
 
     public Base getResidueComponent() {
