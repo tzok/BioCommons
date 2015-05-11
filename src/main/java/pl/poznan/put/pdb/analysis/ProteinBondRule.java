@@ -1,11 +1,9 @@
-package pl.poznan.put.protein;
+package pl.poznan.put.pdb.analysis;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.AtomType;
 import pl.poznan.put.atom.Bond;
-import pl.poznan.put.common.ResidueBondRule;
 import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.analysis.PdbResidue;
 
 public class ProteinBondRule implements ResidueBondRule {
     @Override

@@ -1,6 +1,4 @@
-package pl.poznan.put.common;
-
-import pl.poznan.put.pdb.analysis.PdbResidue;
+package pl.poznan.put.pdb.analysis;
 
 public class InvalidBondRule implements ResidueBondRule {
     @Override

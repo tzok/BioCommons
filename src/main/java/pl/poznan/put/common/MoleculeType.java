@@ -1,8 +1,10 @@
 package pl.poznan.put.common;
 
+import pl.poznan.put.pdb.analysis.InvalidBondRule;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.protein.ProteinBondRule;
-import pl.poznan.put.rna.RNABondRule;
+import pl.poznan.put.pdb.analysis.ProteinBondRule;
+import pl.poznan.put.pdb.analysis.RNABondRule;
+import pl.poznan.put.pdb.analysis.ResidueBondRule;
 
 public enum MoleculeType {
     RNA(new RNABondRule()),
