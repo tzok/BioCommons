@@ -1,14 +1,10 @@
 package pl.poznan.put.circular.samples;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.optim.MaxEval;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
@@ -21,7 +17,6 @@ import org.apache.commons.math3.optim.univariate.UnivariatePointValuePair;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
-import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 
 public class AngleSample {
     private final Collection<Angle> data;
@@ -166,30 +161,5 @@ public class AngleSample {
     @Override
     public String toString() {
         return "AngleSample [meanDirection=" + meanDirection + ", meanResultantLength=" + meanResultantLength + ", circularVariance=" + circularVariance + ", circularStandardDeviation=" + circularStandardDeviation + ", circularDispersion=" + circularDispersion + ", skewness=" + skewness + ", kurtosis=" + kurtosis + ", medianDirection=" + medianDirection + ", meanDeviation=" + meanDeviation + "]";
-    }
-
-    public static void main(String[] args) throws IOException, InvalidVectorFormatException, InvalidCircularValueException, InvalidCircularOperationException {
-        List<Angle> data = new ArrayList<>();
-        List<String> lines = FileUtils.readLines(new File("data/D01"), "UTF-8");
-
-        for (String line : lines) {
-            if (line.startsWith("#")) {
-                continue;
-            }
-
-            for (String token : StringUtils.split(line)) {
-                if (!StringUtils.isBlank(token)) {
-                    data.add(Angle.fromHourMinuteString(token));
-                }
-            }
-        }
-
-        AngleSample sampleAnalysis = new AngleSample(data);
-        System.out.println(sampleAnalysis);
-        System.out.println(sampleAnalysis.getCenteredMoment(1));
-        System.out.println(sampleAnalysis.getCenteredMoment(2));
-        System.out.println(sampleAnalysis.getCircularRank(data.get(0)));
-        System.out.println(sampleAnalysis.getUncenteredMoment(1));
-        System.out.println(sampleAnalysis.getUncenteredMoment(2));
     }
 }
