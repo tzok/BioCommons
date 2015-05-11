@@ -45,13 +45,7 @@ public class PdbChain implements Comparable<PdbChain> {
             }
         }
 
-        if (rnaCounter > proteinCounter) {
-            assert proteinCounter == 0;
-            return MoleculeType.RNA;
-        }
-
-        assert rnaCounter == 0;
-        return MoleculeType.PROTEIN;
+        return rnaCounter > proteinCounter ? MoleculeType.RNA : MoleculeType.PROTEIN;
     }
 
     public char getIdentifier() {
