@@ -1,14 +1,10 @@
 package pl.poznan.put.circular.samples;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.optim.MaxEval;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
@@ -18,13 +14,11 @@ import org.apache.commons.math3.optim.univariate.UnivariateObjectiveFunction;
 import org.apache.commons.math3.optim.univariate.UnivariateOptimizer;
 import org.apache.commons.math3.optim.univariate.UnivariatePointValuePair;
 
-import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
-import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 
-public class SampleAnalysis {
+public class AngleSample {
     private final Collection<Angle> data;
     private final List<Angle> dataSorted;
     private final Angle meanDirection;
@@ -37,7 +31,7 @@ public class SampleAnalysis {
     private final Angle medianDirection;
     private final double meanDeviation;
 
-    public SampleAnalysis(Collection<Angle> data) throws InvalidCircularValueException {
+    public AngleSample(Collection<Angle> data) throws InvalidCircularValueException {
         super();
         this.data = data;
         this.dataSorted = new ArrayList<>(data);
@@ -52,8 +46,8 @@ public class SampleAnalysis {
         TrigonometricMoment cm2 = getCenteredMoment(2);
         TrigonometricMoment um2 = getUncenteredMoment(2);
         circularDispersion = (1.0 - cm2.getMeanResultantLength()) / (2 * Math.pow(meanResultantLength, 2));
-        skewness = cm2.getMeanResultantLength() * Math.sin(Angle.subtract(cm2.getMeanDirection(), meanDirection.multiply(2)).getRadians()) / Math.sqrt(circularVariance);
-        kurtosis = (cm2.getMeanResultantLength() * Math.cos(Angle.subtract(um2.getMeanDirection(), meanDirection.multiply(2)).getRadians()) - Math.pow(meanResultantLength, 4)) / Math.pow(circularVariance, 2);
+        skewness = cm2.getMeanResultantLength() * Math.sin(cm2.getMeanDirection().subtract(meanDirection.multiply(2)).getRadians()) / Math.sqrt(circularVariance);
+        kurtosis = (cm2.getMeanResultantLength() * Math.cos(um2.getMeanDirection().subtract(meanDirection.multiply(2)).getRadians()) - Math.pow(meanResultantLength, 4)) / Math.pow(circularVariance, 2);
 
         UnivariatePointValuePair medianFunctionRoot = minimizeMedianFunction();
         medianDirection = new Angle(medianFunctionRoot.getPoint());
@@ -112,7 +106,7 @@ public class SampleAnalysis {
             double radians = vector.getRadians();
 
             if (isCentered) {
-                radians = Angle.subtract(radians, meanDirection.getRadians());
+                radians = vector.subtract(meanDirection).getRadians();
             }
 
             c += Math.cos(p * radians);
@@ -131,7 +125,7 @@ public class SampleAnalysis {
             mi = Math.atan(s / c) + Math.PI;
         } else {
             // s < 0 && c > 0
-            mi = Math.atan(s / c) + 2 * Math.PI;
+            mi = (Math.atan(s / c) + 2 * Math.PI) % (2 * Math.PI);
         }
 
         return new TrigonometricMoment(new Angle(mi), rho);
@@ -152,7 +146,7 @@ public class SampleAnalysis {
             public double value(double x) {
                 double sum = 0;
 
-                for (Circular vector : data) {
+                for (Angle vector : data) {
                     sum += Angle.subtract(Math.PI, Angle.subtract(vector.getRadians(), x));
                 }
 
@@ -166,31 +160,6 @@ public class SampleAnalysis {
 
     @Override
     public String toString() {
-        return "SampleAnalysis [meanDirection=" + meanDirection + ", meanResultantLength=" + meanResultantLength + ", circularVariance=" + circularVariance + ", circularStandardDeviation=" + circularStandardDeviation + ", circularDispersion=" + circularDispersion + ", skewness=" + skewness + ", kurtosis=" + kurtosis + ", medianDirection=" + medianDirection + ", meanDeviation=" + meanDeviation + "]";
-    }
-
-    public static void main(String[] args) throws IOException, InvalidVectorFormatException, InvalidCircularValueException, InvalidCircularOperationException {
-        List<Angle> data = new ArrayList<>();
-        List<String> lines = FileUtils.readLines(new File("data/D01"), "UTF-8");
-
-        for (String line : lines) {
-            if (line.startsWith("#")) {
-                continue;
-            }
-
-            for (String token : StringUtils.split(line)) {
-                if (!StringUtils.isBlank(token)) {
-                    data.add(Angle.fromHourMinuteString(token));
-                }
-            }
-        }
-
-        SampleAnalysis sampleAnalysis = new SampleAnalysis(data);
-        System.out.println(sampleAnalysis);
-        System.out.println(sampleAnalysis.getCenteredMoment(1));
-        System.out.println(sampleAnalysis.getCenteredMoment(2));
-        System.out.println(sampleAnalysis.getCircularRank(data.get(0)));
-        System.out.println(sampleAnalysis.getUncenteredMoment(1));
-        System.out.println(sampleAnalysis.getUncenteredMoment(2));
+        return "AngleSample [meanDirection=" + meanDirection + ", meanResultantLength=" + meanResultantLength + ", circularVariance=" + circularVariance + ", circularStandardDeviation=" + circularStandardDeviation + ", circularDispersion=" + circularDispersion + ", skewness=" + skewness + ", kurtosis=" + kurtosis + ", medianDirection=" + medianDirection + ", meanDeviation=" + meanDeviation + "]";
     }
 }

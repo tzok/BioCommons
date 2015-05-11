@@ -10,30 +10,16 @@ import pl.poznan.put.circular.exception.InvalidVectorFormatException;
  * @author tzok
  */
 public class Angle extends Circular {
-    private static final Angle INVALID = new Angle();
+    private static final Angle INVALID = new Angle(Double.NaN);
     private static final int MINUTES_IN_DAY = 24 * 60;
 
     public static Angle invalidInstance() {
         return Angle.INVALID;
     }
 
-    /**
-     * Subtract two vectorial values taking into account periodicity around
-     * 2*PI.
-     * 
-     * @param radiansA
-     *            First value in radians;
-     * @param radiansB
-     *            Second value in radians;
-     * @return Difference beteween two vectorial values.
-     */
-    public static double subtract(double radiansA, double radiansB) {
-        double d = Math.abs(radiansA - radiansB);
+    public static double subtract(double radians1, double radians2) {
+        double d = Math.abs(radians1 - radians2);
         return Math.min(d, 2 * Math.PI - d);
-    }
-
-    public static Angle subtract(Angle vA, Angle vB) throws InvalidCircularValueException {
-        return new Angle(Angle.subtract(vA.getRadians(), vB.getRadians()));
     }
 
     /**
@@ -66,23 +52,15 @@ public class Angle extends Circular {
         }
     }
 
-    public Angle(double radians) throws InvalidCircularValueException {
+    public Angle(double radians) {
         super(radians);
-
-        if (radians < 0 || radians >= 2 * Math.PI) {
-            throw new InvalidCircularValueException("A vector value must be in range [0..2pi) and not: " + radians);
-        }
-    }
-
-    /**
-     * This private constructor is meant to be used only to create invalid
-     * instances of angles ie. those having Double.NaN as a value
-     */
-    private Angle() {
-        super(Double.NaN);
     }
 
     public Angle multiply(double n) throws InvalidCircularValueException {
         return new Angle((radians * n) % (2 * Math.PI));
+    }
+
+    public Angle subtract(Angle other) throws InvalidCircularValueException {
+        return new Angle(Angle.subtract(radians, other.radians));
     }
 }
