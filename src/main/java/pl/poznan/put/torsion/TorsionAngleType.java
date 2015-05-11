@@ -1,9 +1,39 @@
-package pl.poznan.put.torsion.type;
+package pl.poznan.put.torsion;
 
-import pl.poznan.put.common.MoleculeType;
+import java.util.List;
+
 import pl.poznan.put.interfaces.DisplayableExportable;
+import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbResidue;
 
 public abstract class TorsionAngleType implements DisplayableExportable {
+    private static final TorsionAngleType INVALID_INSTANCE = new TorsionAngleType(MoleculeType.UNKNOWN) {
+        @Override
+        public String getShortDisplayName() {
+            return "Invalid";
+        }
+
+        @Override
+        public String getLongDisplayName() {
+            return "Invalid";
+        }
+
+        @Override
+        public String getExportName() {
+            return "Invalid";
+        }
+
+        @Override
+        public TorsionAngleValue calculate(List<PdbResidue> residues,
+                int currentIndex) {
+            return TorsionAngleValue.invalidInstance(this);
+        }
+    };
+
+    public static TorsionAngleType invalidInstance() {
+        return TorsionAngleType.INVALID_INSTANCE;
+    }
+
     private final MoleculeType moleculeType;
 
     protected TorsionAngleType(MoleculeType moleculeType) {
@@ -40,4 +70,7 @@ public abstract class TorsionAngleType implements DisplayableExportable {
         }
         return true;
     }
+
+    public abstract TorsionAngleValue calculate(List<PdbResidue> residues,
+            int currentIndex);
 }

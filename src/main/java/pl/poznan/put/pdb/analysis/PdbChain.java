@@ -1,11 +1,21 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import pl.poznan.put.common.MoleculeType;
+import org.biojava.bio.structure.Chain;
+import org.biojava.bio.structure.Group;
 
 public class PdbChain implements Comparable<PdbChain> {
+    public static PdbChain fromBioJavaChain(Chain chain) {
+        List<PdbResidue> residues = new ArrayList<PdbResidue>();
+        for (Group group : chain.getAtomGroups()) {
+            residues.add(PdbResidue.fromBioJavaGroup(group));
+        }
+        return new PdbChain(chain.getChainID().charAt(0), residues);
+    }
+
     private final char identifier;
     private final List<PdbResidue> residues;
     private final MoleculeType moleculeType;

@@ -1,11 +1,11 @@
 package pl.poznan.put.torsion;
 
-import java.util.List;
-
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
-import org.biojava.bio.structure.Atom;
 
+import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.exception.InvalidCircularValueException;
+import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.types.Quadruplet;
 
 /**
@@ -20,9 +20,10 @@ public final class TorsionAnglesHelper {
      * @param atoms
      *            A 4-tuple of atoms.
      * @return Value of the tosion angle.
+     * @throws InvalidCircularValueException
      */
-    public static double calculateTorsionAngle(Quadruplet<Atom> atoms) {
-        return TorsionAnglesHelper.calculateTorsion(atoms.a, atoms.b, atoms.c, atoms.d);
+    public static Angle calculateTorsionAngle(Quadruplet<PdbAtomLine> atoms) throws InvalidCircularValueException {
+        return TorsionAnglesHelper.calculateTorsionAngle(atoms.a, atoms.b, atoms.c, atoms.d);
     }
 
     /**
@@ -37,8 +38,10 @@ public final class TorsionAnglesHelper {
      * @param a4
      *            Atom 4.
      * @return Value of the torsion angle.
+     * @throws InvalidCircularValueException
      */
-    public static double calculateTorsion(Atom a1, Atom a2, Atom a3, Atom a4) {
+    public static Angle calculateTorsionAngle(PdbAtomLine a1, PdbAtomLine a2,
+            PdbAtomLine a3, PdbAtomLine a4) throws InvalidCircularValueException {
         return TorsionAnglesHelper.calculateTorsionAtan(a1, a2, a3, a4);
     }
 
@@ -55,10 +58,12 @@ public final class TorsionAnglesHelper {
      * @param a4
      *            Atom 4.
      * @return Dihedral angle between atoms 1-4.
+     * @throws InvalidCircularValueException
      */
-    public static double calculateTorsionAcos(Atom a1, Atom a2, Atom a3, Atom a4) {
+    public static Angle calculateTorsionAcos(PdbAtomLine a1, PdbAtomLine a2,
+            PdbAtomLine a3, PdbAtomLine a4) throws InvalidCircularValueException {
         if (a1 == null || a2 == null || a3 == null || a4 == null) {
-            return Double.NaN;
+            return Angle.invalidInstance();
         }
 
         Vector3D d1 = TorsionAnglesHelper.atomDistance(a1, a2);
@@ -74,7 +79,7 @@ public final class TorsionAnglesHelper {
         if (u1.dotProduct(u2.crossProduct(d2)) < 0) {
             torp = -torp;
         }
-        return torp;
+        return new Angle(torp);
     }
 
     /**
@@ -89,10 +94,12 @@ public final class TorsionAnglesHelper {
      * @param a4
      *            Atom 4.
      * @return Dihedral angle between atoms 1-4.
+     * @throws InvalidCircularValueException
      */
-    public static double calculateTorsionAtan(Atom a1, Atom a2, Atom a3, Atom a4) {
+    public static Angle calculateTorsionAtan(PdbAtomLine a1, PdbAtomLine a2,
+            PdbAtomLine a3, PdbAtomLine a4) throws InvalidCircularValueException {
         if (a1 == null || a2 == null || a3 == null || a4 == null) {
-            return Double.NaN;
+            return Angle.invalidInstance();
         }
 
         Vector3D v1 = TorsionAnglesHelper.atomDistance(a1, a2);
@@ -102,7 +109,7 @@ public final class TorsionAnglesHelper {
         Vector3D tmp1 = v1.crossProduct(v2);
         Vector3D tmp2 = v2.crossProduct(v3);
         Vector3D tmp3 = v1.scalarMultiply(v2.getNorm());
-        return FastMath.atan2(tmp3.dotProduct(tmp2), tmp1.dotProduct(tmp2));
+        return new Angle(FastMath.atan2(tmp3.dotProduct(tmp2), tmp1.dotProduct(tmp2)));
     }
 
     public static double subtractTorsions(double a1, double a2) {
@@ -118,24 +125,10 @@ public final class TorsionAnglesHelper {
         return diff;
     }
 
-    public static double calculateMean(List<Double> values) {
-        if (values.size() == 0) {
-            return Double.NaN;
-        }
-
-        double sines = 0.0;
-        double cosines = 0.0;
-        for (double v : values) {
-            sines += Math.sin(v);
-            cosines += Math.cos(v);
-        }
-        return Math.atan2(sines / values.size(), cosines / values.size());
-    }
-
-    private static Vector3D atomDistance(Atom a, Atom b) {
-        Vector3D va = new Vector3D(a.getCoords());
-        Vector3D vb = new Vector3D(b.getCoords());
-        return va.subtract(vb);
+    public static Vector3D atomDistance(PdbAtomLine a, PdbAtomLine b) {
+        Vector3D va = new Vector3D(a.getX(), a.getY(), a.getZ());
+        Vector3D vb = new Vector3D(b.getX(), b.getY(), b.getZ());
+        return vb.subtract(va);
     }
 
     private TorsionAnglesHelper() {
