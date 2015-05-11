@@ -12,6 +12,9 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.PredicateUtils;
+import org.biojava.bio.structure.Atom;
+import org.biojava.bio.structure.Group;
+import org.biojava.bio.structure.ResidueNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +29,7 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.protein.aminoacid.AminoAcidType;
 import pl.poznan.put.rna.base.NucleobaseType;
+import pl.poznan.put.torsion.type.TorsionAngleType;
 
 public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNumberICode {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdbResidue.class);
@@ -40,8 +44,24 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
         }
     }
 
+    public static PdbResidue fromBioJavaGroup(Group group) {
+        ResidueNumber residueNumberObject = group.getResidueNumber();
+        char chainIdentifier = residueNumberObject.getChainId().charAt(0);
+        int residueNumber = residueNumberObject.getSeqNum();
+        char insertionCode = residueNumberObject.getInsCode() == null ? ' ' : residueNumberObject.getInsCode();
+        PdbResidueIdentifier residueIdentifier = new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
+        String residueName = group.getPDBName();
+        List<PdbAtomLine> atoms = new ArrayList<PdbAtomLine>();
+
+        for (Atom atom : group.getAtoms()) {
+            atoms.add(PdbAtomLine.fromBioJavaAtom(atom));
+        }
+
+        return new PdbResidue(residueIdentifier, residueName, atoms, false);
+    }
+
     private final List<AtomName> atomNames;
-    private final ResidueInformationProvider nameProvider;
+    private final ResidueInformationProvider residueInformationProvider;
 
     private final PdbResidueIdentifier identifier;
     private final String residueName;
@@ -63,18 +83,17 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
         this.atomNames = detectAtomNames();
 
         if (isMissing) {
-            this.nameProvider = detectResidueTypeFromResidueName();
+            this.residueInformationProvider = detectResidueTypeFromResidueName();
             this.isModified = false;
         } else {
-            this.nameProvider = detectResidueType();
+            this.residueInformationProvider = detectResidueType();
             this.isModified = isModified || (wasSuccessfullyDetected() && !hasAllAtoms());
         }
     }
 
     public PdbResidue(PdbResidueIdentifier identifier, String residueName,
-            List<PdbAtomLine> atoms, boolean isModified, boolean isMissing) {
-        this(identifier, residueName, residueName, atoms, isModified, isMissing);
-        assert !isModified : "This is constructor for unmodified residues";
+            List<PdbAtomLine> atoms, boolean isMissing) {
+        this(identifier, residueName, residueName, atoms, false, isMissing);
     }
 
     private List<AtomName> detectAtomNames() {
@@ -176,11 +195,15 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     }
 
     public final String getDetectedResidueName() {
-        return nameProvider.getDefaultPdbName();
+        return residueInformationProvider.getDefaultPdbName();
+    }
+
+    public List<TorsionAngleType> getTorsionAngleTypes() {
+        return residueInformationProvider.getTorsionAngleTypes();
     }
 
     public char getOneLetterName() {
-        char oneLetterName = nameProvider.getOneLetterName();
+        char oneLetterName = residueInformationProvider.getOneLetterName();
         return isModified ? Character.toLowerCase(oneLetterName) : oneLetterName;
     }
 
@@ -193,11 +216,11 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     }
 
     public MoleculeType getMoleculeType() {
-        return nameProvider.getMoleculeType();
+        return residueInformationProvider.getMoleculeType();
     }
 
     public final boolean wasSuccessfullyDetected() {
-        return !(nameProvider instanceof InvalidResidueInformationSupplier);
+        return !(residueInformationProvider instanceof InvalidResidueInformationSupplier);
     }
 
     @Override
@@ -296,7 +319,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
         List<AtomName> actual = new ArrayList<AtomName>(atomNames);
         List<AtomName> expected = new ArrayList<AtomName>();
 
-        for (ResidueComponent component : nameProvider.getAllMoleculeComponents()) {
+        for (ResidueComponent component : residueInformationProvider.getAllMoleculeComponents()) {
             expected.addAll(component.getAtoms());
         }
 
@@ -333,5 +356,30 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
         }
 
         throw new IllegalArgumentException("Failed to find: " + atomName);
+    }
+
+    public boolean isConnectedTo(PdbResidue other) {
+        MoleculeType moleculeType = residueInformationProvider.getMoleculeType();
+        return moleculeType.areConnected(this, other);
+    }
+
+    public int findConnectedResidueIndex(List<PdbResidue> candidates) {
+        MoleculeType moleculeType = residueInformationProvider.getMoleculeType();
+        for (int i = 0; i < candidates.size(); i++) {
+            PdbResidue candidate = candidates.get(i);
+            if (moleculeType.areConnected(this, candidate)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public String toPdb() {
+        StringBuilder builder = new StringBuilder();
+        for (PdbAtomLine atom : atoms) {
+            builder.append(atom.toString());
+            builder.append('\n');
+        }
+        return builder.toString();
     }
 }

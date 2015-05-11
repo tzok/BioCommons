@@ -4,12 +4,14 @@ import java.util.Collections;
 import java.util.List;
 
 import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.torsion.type.TorsionAngleType;
 
 public class InvalidResidueInformationSupplier implements ResidueInformationProvider {
     private final MoleculeType moleculeType;
     private final String pdbName;
 
-    public InvalidResidueInformationSupplier(MoleculeType moleculeType, String pdbName) {
+    public InvalidResidueInformationSupplier(MoleculeType moleculeType,
+            String pdbName) {
         super();
         this.moleculeType = moleculeType;
         this.pdbName = pdbName;
@@ -49,5 +51,10 @@ public class InvalidResidueInformationSupplier implements ResidueInformationProv
     @Override
     public List<String> getPdbNames() {
         return Collections.singletonList(pdbName);
+    }
+
+    @Override
+    public List<TorsionAngleType> getTorsionAngleTypes() {
+        return Collections.emptyList();
     }
 }

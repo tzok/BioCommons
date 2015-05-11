@@ -2,6 +2,8 @@ package pl.poznan.put.common;
 
 import java.util.List;
 
+import pl.poznan.put.torsion.type.TorsionAngleType;
+
 public interface ResidueInformationProvider extends AtomContainer {
     MoleculeType getMoleculeType();
 
@@ -14,4 +16,6 @@ public interface ResidueInformationProvider extends AtomContainer {
     String getDefaultPdbName();
 
     List<String> getPdbNames();
+
+    List<TorsionAngleType> getTorsionAngleTypes();
 }

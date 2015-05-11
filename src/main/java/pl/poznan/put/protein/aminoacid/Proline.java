@@ -5,6 +5,8 @@ import java.util.Arrays;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.protein.ProteinChiType;
 import pl.poznan.put.protein.ProteinSidechain;
+import pl.poznan.put.protein.torsion.Chi1;
+import pl.poznan.put.protein.torsion.Chi2;
 import pl.poznan.put.types.Quadruplet;
 
 public class Proline extends ProteinSidechain {
@@ -16,6 +18,8 @@ public class Proline extends ProteinSidechain {
 
     private Proline() {
         super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CD, AtomName.HD1, AtomName.HD2, AtomName.CG, AtomName.HG1, AtomName.HG2 }), "Proline", 'P', "PRO");
+        torsionAngleTypes.add(Chi1.getInstance(this));
+        torsionAngleTypes.add(Chi2.getInstance(this));
     }
 
     @Override
