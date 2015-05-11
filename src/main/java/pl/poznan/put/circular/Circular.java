@@ -16,6 +16,10 @@ public abstract class Circular implements Comparable<Circular> {
         return Math.toDegrees(radians);
     }
 
+    public boolean isValid() {
+        return !Double.isNaN(radians);
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -51,6 +55,6 @@ public abstract class Circular implements Comparable<Circular> {
 
     @Override
     public String toString() {
-        return String.valueOf(getRadians()) + " rad\t" + String.valueOf(getDegrees()) + " deg";
+        return !isValid() ? "invalid" : String.valueOf(getRadians()) + " rad\t" + String.valueOf(getDegrees()) + " deg";
     }
 }
