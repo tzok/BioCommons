@@ -13,6 +13,7 @@ import java.util.Set;
 
 import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark465Line;
@@ -27,14 +28,20 @@ public class PdbModel implements Serializable {
     private final Map<PdbResidueIdentifier, PdbResidue> identifierToResidue = new HashMap<PdbResidueIdentifier, PdbResidue>();
     private final Map<PdbResidueIdentifier, PdbChain> identifierToChain = new HashMap<PdbResidueIdentifier, PdbChain>();
 
+    private final PdbHeaderLine headerLine;
     private final int modelNumber;
     private final List<PdbAtomLine> atoms;
     private final List<PdbModresLine> modifiedResidues;
 
-    public PdbModel(int modelNumber, List<PdbAtomLine> atoms,
-            List<PdbModresLine> modifiedResidues,
+    public PdbModel(List<PdbAtomLine> atoms) throws PdbParsingException {
+        this(PdbHeaderLine.emptyInstance(), 1, atoms, Collections.<PdbModresLine> emptyList(), Collections.<PdbRemark465Line> emptyList());
+    }
+
+    public PdbModel(PdbHeaderLine headerLine, int modelNumber,
+            List<PdbAtomLine> atoms, List<PdbModresLine> modifiedResidues,
             List<PdbRemark465Line> missingResidues) throws PdbParsingException {
         super();
+        this.headerLine = headerLine;
         this.modelNumber = modelNumber;
         this.atoms = atoms;
         this.modifiedResidues = modifiedResidues;
@@ -76,7 +83,7 @@ public class PdbModel implements Serializable {
 
         for (PdbRemark465Line missingResidue : missingResidues) {
             List<PdbAtomLine> emptyAtomList = Collections.emptyList();
-            PdbResidue residue = new PdbResidue(PdbResidueIdentifier.fromChainNumberICode(missingResidue), missingResidue.getResidueName(), emptyAtomList, false, true);
+            PdbResidue residue = new PdbResidue(PdbResidueIdentifier.fromChainNumberICode(missingResidue), missingResidue.getResidueName(), emptyAtomList, true);
 
             for (int i = 0; i < residues.size(); i++) {
                 if (residues.get(i).compareTo(residue) > 0) {
@@ -163,6 +170,10 @@ public class PdbModel implements Serializable {
         return Collections.unmodifiableList(chains);
     }
 
+    public String getIdCode() {
+        return headerLine.getIdCode();
+    }
+
     public boolean isModified(PdbResidueIdentifier residueIdentifier) {
         return identifierToModification.containsKey(residueIdentifier);
     }
@@ -235,6 +246,6 @@ public class PdbModel implements Serializable {
             }
         }
 
-        return new PdbModel(modelNumber, filteredAtoms, modifiedResidues, filteredMissing);
+        return new PdbModel(headerLine, modelNumber, filteredAtoms, modifiedResidues, filteredMissing);
     }
 }

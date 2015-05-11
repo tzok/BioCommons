@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark465Line;
@@ -24,6 +25,7 @@ public class PdbParser {
     private final Set<Character> terminatedChainIdentifiers = new HashSet<Character>();
     private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<Integer, List<PdbAtomLine>>();
 
+    private PdbHeaderLine headerLine;
     private char currentChainIdentifier;
     private int currentModelNumber;
 
@@ -41,6 +43,8 @@ public class PdbParser {
                 handleMissingResidueLine(line);
             } else if (line.startsWith("MODRES")) {
                 handleModifiedResidueLine(line);
+            } else if (line.startsWith("HEADER")) {
+                handleHeaderLine(line);
             }
         }
 
@@ -49,7 +53,7 @@ public class PdbParser {
         for (Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
             int modelNumber = entry.getKey();
             List<PdbAtomLine> atoms = entry.getValue();
-            PdbModel pdbModel = new PdbModel(modelNumber, atoms, modifiedResidues, missingResidues);
+            PdbModel pdbModel = new PdbModel(headerLine, modelNumber, atoms, modifiedResidues, missingResidues);
             result.add(pdbModel);
         }
 
@@ -65,6 +69,7 @@ public class PdbParser {
         // on default, the ' ' chain id is terminated
         terminatedChainIdentifiers.add(' ');
 
+        headerLine = PdbHeaderLine.emptyInstance();
         currentChainIdentifier = 'a';
         currentModelNumber = 0;
     }
@@ -122,6 +127,14 @@ public class PdbParser {
             modifiedResidues.add(modresLine);
         } catch (PdbParsingException e) {
             LOGGER.warn("Invalid MODRES line: " + line, e);
+        }
+    }
+
+    private void handleHeaderLine(String line) {
+        try {
+            headerLine = PdbHeaderLine.parse(line);
+        } catch (PdbParsingException e) {
+            LOGGER.warn("Invalid HEADER line: " + line, e);
         }
     }
 }
