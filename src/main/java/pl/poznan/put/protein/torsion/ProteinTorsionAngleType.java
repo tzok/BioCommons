@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import pl.poznan.put.protein.ProteinChiType;
 import pl.poznan.put.torsion.type.MasterTorsionAngleType;
 import pl.poznan.put.torsion.type.TorsionAngleType;
 

@@ -1,14 +1,10 @@
-package pl.poznan.put.protein;
+package pl.poznan.put.protein.torsion;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import pl.poznan.put.protein.ProteinSidechain;
 import pl.poznan.put.protein.aminoacid.AminoAcidType;
-import pl.poznan.put.protein.torsion.Chi1;
-import pl.poznan.put.protein.torsion.Chi2;
-import pl.poznan.put.protein.torsion.Chi3;
-import pl.poznan.put.protein.torsion.Chi4;
-import pl.poznan.put.protein.torsion.Chi5;
 import pl.poznan.put.torsion.type.TorsionAngleType;
 
 public enum ProteinChiType {

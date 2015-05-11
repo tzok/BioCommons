@@ -6,7 +6,6 @@ import java.util.Map;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.constant.Unicode;
-import pl.poznan.put.protein.ProteinChiType;
 import pl.poznan.put.protein.ProteinSidechain;
 import pl.poznan.put.torsion.type.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
