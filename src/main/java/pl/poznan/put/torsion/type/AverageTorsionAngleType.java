@@ -1,191 +1,127 @@
 package pl.poznan.put.torsion.type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
+import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.exception.InvalidCircularValueException;
+import pl.poznan.put.circular.samples.AngleSample;
 import pl.poznan.put.common.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.protein.torsion.ProteinTorsionAngleType;
+import pl.poznan.put.rna.torsion.RNATorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleValue;
 
-public class AverageTorsionAngleType extends TorsionAngleType {
-    // private static AverageTorsionAngleType proteinAll;
-    // private static AverageTorsionAngleType proteinMain;
-    // private static AverageTorsionAngleType rnaAll;
-    // private static AverageTorsionAngleType rnaMain;
-    //
-    // public static AverageTorsionAngleType getInstanceAllAngles(MoleculeType
-    // moleculeType) {
-    // switch (moleculeType) {
-    // case PROTEIN:
-    // if (AverageTorsionAngleType.proteinAll == null) {
-    // List<TorsionAngleType> angles = new ArrayList<TorsionAngleType>();
-    // angles.addAll(Arrays.asList(ProteinTorsionAngle.values()));
-    // angles.addAll(Arrays.asList(ChiTorsionAngleType.getChiTorsionAngles(MoleculeType.PROTEIN)));
-    // AverageTorsionAngleType.proteinAll = new AverageTorsionAngleType(angles,
-    // "MCQ(selected)", "MCQ_SELECTED");
-    // }
-    // return AverageTorsionAngleType.proteinAll;
-    // case RNA:
-    // if (AverageTorsionAngleType.rnaAll == null) {
-    // List<TorsionAngleType> angles = new ArrayList<TorsionAngleType>();
-    // angles.addAll(Arrays.asList(RNATorsionAngle.values()));
-    // angles.addAll(Arrays.asList(ChiTorsionAngleType.getChiTorsionAngles(MoleculeType.RNA)));
-    // angles.add(PseudophasePucker.getInstance());
-    // AverageTorsionAngleType.rnaAll = new AverageTorsionAngleType(angles,
-    // "MCQ(selected)", "MCQ_SELECTED");
-    // }
-    // return AverageTorsionAngleType.rnaAll;
-    // case UNKNOWN:
-    // default:
-    // return null;
-    // }
-    // }
-    //
-    // public static AverageTorsionAngleType getInstanceMainAngles(MoleculeType
-    // moleculeType) {
-    // switch (moleculeType) {
-    // case PROTEIN:
-    // if (AverageTorsionAngleType.proteinMain == null) {
-    // List<TorsionAngleType> angles = new ArrayList<TorsionAngleType>();
-    // angles.add(ProteinTorsionAngle.PHI);
-    // angles.add(ProteinTorsionAngle.PSI);
-    // angles.add(ProteinTorsionAngle.OMEGA);
-    // AverageTorsionAngleType.proteinMain = new
-    // AverageTorsionAngleType(angles);
-    // }
-    // return AverageTorsionAngleType.proteinMain;
-    // case RNA:
-    // if (AverageTorsionAngleType.rnaMain == null) {
-    // List<TorsionAngleType> angles = new ArrayList<TorsionAngleType>();
-    // angles.add(RNATorsionAngle.ALPHA);
-    // angles.add(RNATorsionAngle.BETA);
-    // angles.add(RNATorsionAngle.GAMMA);
-    // angles.add(RNATorsionAngle.DELTA);
-    // angles.add(RNATorsionAngle.EPSILON);
-    // angles.add(RNATorsionAngle.ZETA);
-    // angles.add(ChiTorsionAngleType.CHI);
-    // angles.add(PseudophasePucker.getInstance());
-    // AverageTorsionAngleType.rnaMain = new AverageTorsionAngleType(angles);
-    // }
-    // return AverageTorsionAngleType.rnaMain;
-    // case UNKNOWN:
-    // default:
-    // return null;
-    // }
-    // }
-    //
-    // private static MoleculeType commonMoleculeType(List<TorsionAngleType>
-    // consideredAngles) {
-    // MoleculeType type = null;
-    //
-    // for (TorsionAngleType angle : consideredAngles) {
-    // if (type == null) {
-    // type = angle.getMoleculeType();
-    // }
-    //
-    // if (type != angle.getMoleculeType()) {
-    // throw new IllegalArgumentException("Considered angles must " +
-    // "all be of the same molecule type!");
-    // }
-    // }
-    //
-    // return type;
-    // }
+public class AverageTorsionAngleType extends TorsionAngleType implements MasterTorsionAngleType {
+    private static final AverageTorsionAngleType RNA_ALL_INSTANCE = new AverageTorsionAngleType(MoleculeType.RNA, RNATorsionAngleType.values());
+    private static final AverageTorsionAngleType RNA_MAIN_INSTANCE = new AverageTorsionAngleType(MoleculeType.RNA, RNATorsionAngleType.mainAngles());
+    private static final AverageTorsionAngleType PROTEIN_ALL_INSTANCE = new AverageTorsionAngleType(MoleculeType.PROTEIN, ProteinTorsionAngleType.values());
+    private static final AverageTorsionAngleType PROTEIN_MAIN_INSTANCE = new AverageTorsionAngleType(MoleculeType.PROTEIN, ProteinTorsionAngleType.mainAngles());
+
+    public static AverageTorsionAngleType invalidInstance(
+            MoleculeType moleculeType) {
+        return new AverageTorsionAngleType(moleculeType, Collections.<MasterTorsionAngleType> emptyList(), "invalid", "invalid");
+    }
+
+    public static AverageTorsionAngleType instanceForAllAngles(
+            MoleculeType moleculeType) {
+        switch (moleculeType) {
+        case PROTEIN:
+            return AverageTorsionAngleType.PROTEIN_ALL_INSTANCE;
+        case RNA:
+            return AverageTorsionAngleType.RNA_ALL_INSTANCE;
+        case UNKNOWN:
+        default:
+            return AverageTorsionAngleType.invalidInstance(moleculeType);
+        }
+    }
+
+    public static AverageTorsionAngleType instanceForMainAngles(
+            MoleculeType moleculeType) {
+        switch (moleculeType) {
+        case PROTEIN:
+            return AverageTorsionAngleType.PROTEIN_MAIN_INSTANCE;
+        case RNA:
+            return AverageTorsionAngleType.RNA_MAIN_INSTANCE;
+        case UNKNOWN:
+        default:
+            return AverageTorsionAngleType.invalidInstance(moleculeType);
+        }
+    }
 
     private final String displayName;
     private final String exportName;
-    private final List<TorsionAngleType> consideredAngles;
+    private final List<MasterTorsionAngleType> consideredAngles;
 
-    private AverageTorsionAngleType(MoleculeType moleculeType, List<TorsionAngleType> angles) {
+    private AverageTorsionAngleType(MoleculeType moleculeType,
+            MasterTorsionAngleType... masterTypes) {
         super(moleculeType);
-
-        if (angles == null || angles.size() == 0) {
-            throw new IllegalArgumentException("Considered angles list cannot be empty!");
-        }
-
-        consideredAngles = new ArrayList<TorsionAngleType>(angles);
-
-        StringBuilder display = new StringBuilder("MCQ(");
-        StringBuilder export = new StringBuilder("MCQ_");
-
-        display.append(angles.get(0).getShortDisplayName());
-        export.append(angles.get(0).getExportName());
-
-        for (int i = 1; i < angles.size(); i++) {
-            TorsionAngleType angle = angles.get(i);
-            display.append(", ");
-            display.append(angle.getShortDisplayName());
-            export.append("_");
-            export.append(angle.getExportName());
-        }
-        display.append(')');
-
-        displayName = display.toString();
-        exportName = export.toString();
+        this.consideredAngles = Arrays.asList(masterTypes);
+        this.displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
+        this.exportName = AverageTorsionAngleType.toExportName(consideredAngles);
     }
 
-    private AverageTorsionAngleType(MoleculeType moleculeType, List<TorsionAngleType> angles, String displayName, String exportName) {
+    public AverageTorsionAngleType(MoleculeType moleculeType,
+            List<MasterTorsionAngleType> consideredAngles) {
         super(moleculeType);
+        this.consideredAngles = consideredAngles;
+        this.displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
+        this.exportName = AverageTorsionAngleType.toExportName(consideredAngles);
+    }
 
-        consideredAngles = new ArrayList<TorsionAngleType>(angles);
+    private static String toDisplayName(
+            List<MasterTorsionAngleType> consideredAngles) {
+        Set<String> angleNames = new LinkedHashSet<String>();
+        for (MasterTorsionAngleType angleType : consideredAngles) {
+            angleNames.add(angleType.getShortDisplayName());
+        }
+
+        StringBuilder builder = new StringBuilder("MCQ(");
+        Iterator<String> iterator = angleNames.iterator();
+        builder.append(iterator.next());
+
+        while (iterator.hasNext()) {
+            builder.append(", ");
+            builder.append(iterator.next());
+        }
+
+        builder.append(')');
+        return builder.toString();
+    }
+
+    private static String toExportName(
+            List<MasterTorsionAngleType> consideredAngles) {
+        Set<String> angleNames = new LinkedHashSet<String>();
+        for (MasterTorsionAngleType angleType : consideredAngles) {
+            angleNames.add(angleType.getExportName());
+        }
+
+        StringBuilder builder = new StringBuilder("MCQ_");
+        Iterator<String> iterator = angleNames.iterator();
+        builder.append(iterator.next());
+
+        while (iterator.hasNext()) {
+            builder.append("_");
+            builder.append(iterator.next());
+        }
+
+        return builder.toString();
+    }
+
+    private AverageTorsionAngleType(MoleculeType moleculeType,
+            List<MasterTorsionAngleType> consideredAngles, String displayName,
+            String exportName) {
+        super(moleculeType);
+        this.consideredAngles = consideredAngles;
         this.displayName = displayName;
         this.exportName = exportName;
     }
-
-    // public TorsionAngleValue calculateValue(List<TorsionAngleValue>
-    // angleValues) {
-    // List<TorsionAngleType> angles = new ArrayList<TorsionAngleType>();
-    // List<Double> values = new ArrayList<Double>();
-    //
-    // for (TorsionAngleValue angleValue : angleValues) {
-    // TorsionAngleType angle = angleValue.getAngle();
-    // double value = angleValue.getValue();
-    //
-    // if (consideredAngles.contains(angle)) {
-    // angles.add(angle);
-    // values.add(value);
-    // }
-    // }
-    //
-    // if (angles.size() == 0) {
-    // return TorsionAngleValue.getInvalidInstance(this);
-    // }
-    //
-    // return new TorsionAngleValue(new AverageTorsionAngleType(angles),
-    // TorsionAnglesHelper.calculateMean(values));
-    // }
-    //
-    // public AngleDelta calculateDelta(List<AngleDelta> angleDeltas) {
-    // List<TorsionAngleValue> targetValues = new
-    // ArrayList<TorsionAngleValue>();
-    // List<TorsionAngleValue> modelValues = new ArrayList<TorsionAngleValue>();
-    // List<Double> deltas = new ArrayList<Double>();
-    //
-    // for (AngleDelta tad : angleDeltas) {
-    // TorsionAngleType torsionAngle = tad.getTorsionAngle();
-    // if (torsionAngle instanceof ChiTorsionAngle) {
-    // torsionAngle = ((ChiTorsionAngle) torsionAngle).getType();
-    // }
-    // if (!consideredAngles.contains(torsionAngle)) {
-    // continue;
-    // }
-    //
-    // if (tad.getState() == State.BOTH_VALID) {
-    // targetValues.add(tad.getTargetValue());
-    // modelValues.add(tad.getModelValue());
-    // deltas.add(tad.getDelta());
-    // } else if (tad.getState() == State.TORSION_TARGET_INVALID) {
-    // modelValues.add(tad.getModelValue());
-    // } else if (tad.getState() == State.TORSION_MODEL_INVALID) {
-    // targetValues.add(tad.getTargetValue());
-    // }
-    // }
-    //
-    // TorsionAngleValue averageTarget = calculateValue(targetValues);
-    // TorsionAngleValue averageModel = calculateValue(modelValues);
-    // double mcq = TorsionAnglesHelper.calculateMean(deltas);
-    // return new AngleDelta(this, averageTarget, averageModel,
-    // Double.isNaN(mcq) ? State.BOTH_INVALID : State.BOTH_VALID, mcq);
-    // }
 
     @Override
     public String getLongDisplayName() {
@@ -207,7 +143,49 @@ public class AverageTorsionAngleType extends TorsionAngleType {
         return displayName;
     }
 
-    public List<TorsionAngleType> getConsideredAngles() {
+    public List<MasterTorsionAngleType> getConsideredAngles() {
         return Collections.unmodifiableList(consideredAngles);
+    }
+
+    @Override
+    public TorsionAngleValue calculate(List<PdbResidue> residues,
+            int currentIndex) throws InvalidCircularValueException {
+        PdbResidue residue = residues.get(currentIndex);
+        List<Angle> angles = new ArrayList<Angle>();
+
+        for (TorsionAngleType type : residue.getTorsionAngleTypes()) {
+            for (MasterTorsionAngleType masterType : consideredAngles) {
+                if (masterType.getAngleTypes().contains(type)) {
+                    TorsionAngleValue angleValue = type.calculate(residues, currentIndex);
+                    angles.add(angleValue.getValue());
+                }
+            }
+        }
+
+        AngleSample angleSample = new AngleSample(angles);
+        return new TorsionAngleValue(this, angleSample.getMeanDirection());
+    }
+
+    public TorsionAngleValue calculate(Collection<TorsionAngleValue> values) {
+        List<Angle> angles = new ArrayList<Angle>();
+
+        for (MasterTorsionAngleType masterType : consideredAngles) {
+            for (TorsionAngleValue angleValue : values) {
+                if (masterType.getAngleTypes().contains(angleValue.getAngleType())) {
+                    if (angleValue.isValid()) {
+                        angles.add(angleValue.getValue());
+                    }
+                    break;
+                }
+            }
+        }
+
+        AngleSample angleSample = new AngleSample(angles);
+        return new TorsionAngleValue(this, angleSample.getMeanDirection());
+    }
+
+    @Override
+    public Collection<? extends TorsionAngleType> getAngleTypes() {
+        return Collections.singleton(this);
     }
 }

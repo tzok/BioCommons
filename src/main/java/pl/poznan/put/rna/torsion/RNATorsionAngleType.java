@@ -1,8 +1,14 @@
 package pl.poznan.put.rna.torsion;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import pl.poznan.put.rna.BaseType;
+import pl.poznan.put.torsion.type.MasterTorsionAngleType;
 import pl.poznan.put.torsion.type.TorsionAngleType;
 
-public enum RNATorsionAngleType {
+public enum RNATorsionAngleType implements MasterTorsionAngleType {
     ALPHA(Alpha.getInstance()),
     BETA(Beta.getInstance()),
     GAMMA(Gamma.getInstance()),
@@ -17,15 +23,42 @@ public enum RNATorsionAngleType {
     ETA(Eta.getInstance()),
     THETA(Theta.getInstance()),
     ETA_PRIM(EtaPrim.getInstance()),
-    THETA_PRIM(ThetaPrim.getInstance());
+    THETA_PRIM(ThetaPrim.getInstance()),
+    CHI(Chi.getInstance(BaseType.PURINE), Chi.getInstance(BaseType.PYRIMIDINE)),
+    PSEUDOPHASE_PUCKER(PseudophasePuckerType.getInstance());
 
-    private final TorsionAngleType type;
+    private final List<TorsionAngleType> angleTypes;
 
-    private RNATorsionAngleType(TorsionAngleType type) {
-        this.type = type;
+    private RNATorsionAngleType(TorsionAngleType... angleTypes) {
+        this.angleTypes = Arrays.asList(angleTypes);
     }
 
-    public TorsionAngleType getAngleType() {
-        return type;
+    @Override
+    public Collection<? extends TorsionAngleType> getAngleTypes() {
+        return angleTypes;
+    }
+
+    private static final MasterTorsionAngleType[] MAIN = new MasterTorsionAngleType[] { ALPHA, BETA, GAMMA, DELTA, EPSILON, ZETA, CHI, PSEUDOPHASE_PUCKER };
+
+    public static MasterTorsionAngleType[] mainAngles() {
+        return RNATorsionAngleType.MAIN;
+    }
+
+    @Override
+    public String getLongDisplayName() {
+        assert angleTypes.size() > 0;
+        return angleTypes.get(0).getLongDisplayName();
+    }
+
+    @Override
+    public String getShortDisplayName() {
+        assert angleTypes.size() > 0;
+        return angleTypes.get(0).getShortDisplayName();
+    }
+
+    @Override
+    public String getExportName() {
+        assert angleTypes.size() > 0;
+        return angleTypes.get(0).getExportName();
     }
 }
