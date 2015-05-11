@@ -17,7 +17,7 @@ public class Cysteine extends ProteinSidechain {
 
     private Cysteine() {
         super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.SG, AtomName.HG1 }), "Cysteine", 'C', "CYS");
-        torsionAngleTypes.add(Chi1.getInstance(this));
+        torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     }
 
     @Override

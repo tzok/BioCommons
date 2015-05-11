@@ -6,16 +6,13 @@ import java.util.Map;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.protein.ProteinSidechain;
 import pl.poznan.put.torsion.type.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
 public class Chi1 extends AtomBasedTorsionAngleType {
     private static final Map<Quadruplet<AtomName>, Chi1> INSTANCE_CACHE = new HashMap<Quadruplet<AtomName>, Chi1>();
 
-    public static Chi1 getInstance(ProteinSidechain sidechain) {
-        Quadruplet<AtomName> chiAtoms = sidechain.getChiAtoms(ProteinChiType.CHI1);
-
+    public static Chi1 getInstance(Quadruplet<AtomName> chiAtoms) {
         if (!Chi1.INSTANCE_CACHE.containsKey(chiAtoms)) {
             Chi1.INSTANCE_CACHE.put(chiAtoms, new Chi1(chiAtoms));
         }

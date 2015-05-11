@@ -28,10 +28,10 @@ public class ResidueTypeDetector {
     private ResidueTypeDetector() {
         super();
         for (NucleobaseType nucleobase : NucleobaseType.values()) {
-            residueInformationProviders.add(nucleobase.getResidueInformationProvider());
+            residueInformationProviders.add(nucleobase.getResidueComponent());
         }
         for (AminoAcidType aminoAcid : AminoAcidType.values()) {
-            residueInformationProviders.add(aminoAcid.getResidueInformationProvider());
+            residueInformationProviders.add(aminoAcid.getResidueComponent());
         }
     }
 

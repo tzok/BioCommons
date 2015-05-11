@@ -19,9 +19,9 @@ public class Glutamine extends ProteinSidechain {
 
     private Glutamine() {
         super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.HG1, AtomName.HG2, AtomName.CD, AtomName.OE1, AtomName.NE2, AtomName.HE21, AtomName.HE22 }), "Glutamine", 'Q', "GLN");
-        torsionAngleTypes.add(Chi1.getInstance(this));
-        torsionAngleTypes.add(Chi2.getInstance(this));
-        torsionAngleTypes.add(Chi3.getInstance(this));
+        torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
+        torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
+        torsionAngleTypes.add(Chi3.getInstance(getChiAtoms(ProteinChiType.CHI3)));
     }
 
     @Override

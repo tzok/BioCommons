@@ -18,8 +18,8 @@ public class Tyrosine extends ProteinSidechain {
 
     private Tyrosine() {
         super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.CD1, AtomName.HD1, AtomName.CE1, AtomName.HE1, AtomName.CZ, AtomName.OH, AtomName.HH, AtomName.CD2, AtomName.HD2, AtomName.CE2, AtomName.HE2 }), "Tyrosine", 'Y', "TYR");
-        torsionAngleTypes.add(Chi1.getInstance(this));
-        torsionAngleTypes.add(Chi2.getInstance(this));
+        torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
+        torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
     }
 
     @Override

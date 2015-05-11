@@ -17,7 +17,7 @@ public class Valine extends ProteinSidechain {
 
     private Valine() {
         super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB, AtomName.CG1, AtomName.HG11, AtomName.HG12, AtomName.HG13, AtomName.CG2, AtomName.HG21, AtomName.HG22, AtomName.HG23 }), "Valine", 'V', "VAL");
-        torsionAngleTypes.add(Chi1.getInstance(this));
+        torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     }
 
     @Override
