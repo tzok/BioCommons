@@ -1,4 +1,4 @@
-package pl.poznan.put.common;
+package pl.poznan.put.pdb.analysis;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +12,6 @@ import org.apache.commons.collections4.PredicateUtils;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.AtomType;
-import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.protein.aminoacid.AminoAcidType;
 import pl.poznan.put.rna.base.NucleobaseType;
 

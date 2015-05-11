@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.common.ResidueComponent;
-import pl.poznan.put.common.ResidueInformationProvider;
+import pl.poznan.put.pdb.analysis.ResidueComponent;
+import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.rna.torsion.Alpha;
 import pl.poznan.put.rna.torsion.Beta;
 import pl.poznan.put.rna.torsion.Delta;

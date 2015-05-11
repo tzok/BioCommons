@@ -16,10 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.common.InvalidResidueInformationSupplier;
-import pl.poznan.put.common.ResidueComponent;
-import pl.poznan.put.common.ResidueInformationProvider;
-import pl.poznan.put.common.ResidueTypeDetector;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;

@@ -1,9 +1,8 @@
-package pl.poznan.put.common;
+package pl.poznan.put.pdb.analysis;
 
 import java.util.List;
 
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.pdb.analysis.MoleculeType;
 
 public abstract class ResidueComponent implements AtomContainer {
     private final String residueComponentName;

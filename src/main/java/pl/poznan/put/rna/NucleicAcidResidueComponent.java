@@ -3,8 +3,8 @@ package pl.poznan.put.rna;
 import java.util.List;
 
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.common.ResidueComponent;
 import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.ResidueComponent;
 
 public abstract class NucleicAcidResidueComponent extends ResidueComponent {
     private final RNAResidueComponentType type;
