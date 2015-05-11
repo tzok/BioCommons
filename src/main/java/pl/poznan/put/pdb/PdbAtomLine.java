@@ -3,6 +3,15 @@ package pl.poznan.put.pdb;
 import java.io.Serializable;
 import java.util.Locale;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.biojava.bio.structure.Atom;
+import org.biojava.bio.structure.AtomImpl;
+import org.biojava.bio.structure.Element;
+import org.biojava.bio.structure.Group;
+import org.biojava.bio.structure.HetatomImpl;
+import org.biojava.bio.structure.ResidueNumber;
+import org.biojava.bio.structure.io.PDBParseException;
+
 import pl.poznan.put.atom.AtomName;
 
 public class PdbAtomLine implements Serializable, ChainNumberICode {
@@ -30,6 +39,27 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     private static final String FORMAT_ATOM_4_CHARACTER = "ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
     private static final String FORMAT = "ATOM  %5d  %-3s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
     private static final String RECORD_NAME = "ATOM";
+
+    public static PdbAtomLine fromBioJavaAtom(Atom atom) {
+        Group group = atom.getGroup();
+        String residueName = group.getPDBName();
+        ResidueNumber residueNumberObject = group.getResidueNumber();
+        char chainIdentifier = residueNumberObject.getChainId().charAt(0);
+        int residueNumber = residueNumberObject.getSeqNum();
+        char insertionCode = residueNumberObject.getInsCode() == null ? ' ' : residueNumberObject.getInsCode();
+
+        int serialNumber = atom.getPDBserial();
+        String atomName = atom.getName();
+        char alternateLocation = atom.getAltLoc() == null ? ' ' : atom.getAltLoc();
+        double x = atom.getX();
+        double y = atom.getY();
+        double z = atom.getZ();
+        double occupancy = atom.getOccupancy();
+        double temperatureFactor = atom.getTempFactor();
+        String elementSymbol = atom.getElement().name();
+        String charge = "";
+        return new PdbAtomLine(serialNumber, atomName, alternateLocation, residueName, chainIdentifier, residueNumber, insertionCode, x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
+    }
 
     public static PdbAtomLine parse(String line) throws PdbParsingException {
         if (line.length() < 80) {
@@ -180,5 +210,36 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
 
     public AtomName detectAtomName() {
         return AtomName.fromString(atomName);
+    }
+
+    public double distanceTo(PdbAtomLine other) {
+        Vector3D v1 = new Vector3D(x, y, z);
+        Vector3D v2 = new Vector3D(other.x, other.y, other.z);
+        return v1.distance(v2);
+    }
+
+    public Atom toBioJavaAtom() {
+        Group group = new HetatomImpl();
+        group.setResidueNumber(String.valueOf(chainIdentifier), residueNumber, insertionCode == ' ' ? null : insertionCode);
+
+        try {
+            group.setPDBName(residueName);
+        } catch (PDBParseException e) {
+            // do nothing
+        }
+
+        Atom atom = new AtomImpl();
+        atom.setPDBserial(serialNumber);
+        atom.setAltLoc(alternateLocation);
+        atom.setFullName(atomName.length() == 4 ? atomName : String.format(" %-3s", atomName));
+        atom.setName(atomName);
+        atom.setX(x);
+        atom.setY(y);
+        atom.setZ(z);
+        atom.setOccupancy(occupancy);
+        atom.setTempFactor(temperatureFactor);
+        atom.setElement(Element.valueOfIgnoreCase(elementSymbol));
+        atom.setGroup(group);
+        return atom;
     }
 }
