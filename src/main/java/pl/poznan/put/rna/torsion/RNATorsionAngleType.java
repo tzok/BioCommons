@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.rna.BaseType;
 import pl.poznan.put.torsion.type.AverageTorsionAngleType;
 import pl.poznan.put.torsion.type.MasterTorsionAngleType;
 import pl.poznan.put.torsion.type.TorsionAngleType;
@@ -26,7 +25,7 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
     THETA(Theta.getInstance()),
     ETA_PRIM(EtaPrim.getInstance()),
     THETA_PRIM(ThetaPrim.getInstance()),
-    CHI(Chi.getInstance(BaseType.PURINE), Chi.getInstance(BaseType.PYRIMIDINE)),
+    CHI(Chi.getPurineInstance(), Chi.getPyrimidineInstance()),
     PSEUDOPHASE_PUCKER(PseudophasePuckerType.getInstance());
 
     private final List<TorsionAngleType> angleTypes;
