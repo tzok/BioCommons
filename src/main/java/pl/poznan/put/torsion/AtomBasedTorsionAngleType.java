@@ -1,4 +1,4 @@
-package pl.poznan.put.torsion.type;
+package pl.poznan.put.torsion;
 
 import java.util.List;
 
@@ -7,8 +7,6 @@ import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.torsion.TorsionAngleValue;
-import pl.poznan.put.torsion.TorsionAnglesHelper;
 import pl.poznan.put.types.Quadruplet;
 
 public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {

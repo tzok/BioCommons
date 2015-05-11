@@ -1,4 +1,4 @@
-package pl.poznan.put.torsion.type;
+package pl.poznan.put.torsion;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.MoleculeType;

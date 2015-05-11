@@ -4,12 +4,13 @@ import java.util.List;
 
 import pl.poznan.put.atom.AtomName;
 
-public abstract class ResidueComponent implements AtomContainer {
+public abstract class ResidueComponent {
     private final String residueComponentName;
     private final MoleculeType moleculeType;
     private final List<AtomName> atoms;
 
-    protected ResidueComponent(String residueComponentName, MoleculeType moleculeType, List<AtomName> atoms) {
+    protected ResidueComponent(String residueComponentName,
+            MoleculeType moleculeType, List<AtomName> atoms) {
         super();
         this.residueComponentName = residueComponentName;
         this.moleculeType = moleculeType;
@@ -24,7 +25,6 @@ public abstract class ResidueComponent implements AtomContainer {
         return moleculeType;
     }
 
-    @Override
     public List<AtomName> getAtoms() {
         return atoms;
     }

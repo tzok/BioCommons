@@ -1,4 +1,4 @@
-package pl.poznan.put.torsion.type;
+package pl.poznan.put.torsion;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +14,6 @@ import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.samples.AngleSample;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.torsion.TorsionAngleValue;
 
 public class AverageTorsionAngleType extends TorsionAngleType implements MasterTorsionAngleType {
     private final String displayName;

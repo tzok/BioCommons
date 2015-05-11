@@ -10,7 +10,7 @@ import pl.poznan.put.protein.torsion.Chi3;
 import pl.poznan.put.protein.torsion.Chi4;
 import pl.poznan.put.protein.torsion.Chi5;
 import pl.poznan.put.protein.torsion.ProteinChiType;
-import pl.poznan.put.torsion.type.TorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleType;
 
 public enum AminoAcidType {
     ALANINE(Alanine.getInstance()),

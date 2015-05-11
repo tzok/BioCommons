@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.List;
 
 import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.torsion.type.AverageTorsionAngleType;
-import pl.poznan.put.torsion.type.MasterTorsionAngleType;
-import pl.poznan.put.torsion.type.TorsionAngleType;
+import pl.poznan.put.torsion.AverageTorsionAngleType;
+import pl.poznan.put.torsion.MasterTorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleType;
 
 public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
     PHI(Phi.getInstance()),

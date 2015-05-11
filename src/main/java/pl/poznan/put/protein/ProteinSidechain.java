@@ -15,7 +15,7 @@ import pl.poznan.put.protein.torsion.Omega;
 import pl.poznan.put.protein.torsion.Phi;
 import pl.poznan.put.protein.torsion.ProteinChiType;
 import pl.poznan.put.protein.torsion.Psi;
-import pl.poznan.put.torsion.type.TorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
 public abstract class ProteinSidechain extends ResidueComponent implements ResidueInformationProvider {

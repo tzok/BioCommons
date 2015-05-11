@@ -24,7 +24,7 @@ import pl.poznan.put.rna.torsion.PseudophasePuckerType;
 import pl.poznan.put.rna.torsion.Theta;
 import pl.poznan.put.rna.torsion.ThetaPrim;
 import pl.poznan.put.rna.torsion.Zeta;
-import pl.poznan.put.torsion.type.TorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
 public abstract class Base extends NucleicAcidResidueComponent implements ResidueInformationProvider {

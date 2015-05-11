@@ -1,4 +1,4 @@
-package pl.poznan.put.torsion.type;
+package pl.poznan.put.torsion;
 
 import java.util.Collection;
 

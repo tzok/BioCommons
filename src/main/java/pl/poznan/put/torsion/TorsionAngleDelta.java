@@ -1,7 +1,6 @@
 package pl.poznan.put.torsion;
 
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.torsion.type.MasterTorsionAngleType;
 import pl.poznan.put.utility.AngleFormat;
 
 public class TorsionAngleDelta {

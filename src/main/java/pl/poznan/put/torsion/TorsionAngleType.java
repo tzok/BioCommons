@@ -1,11 +1,10 @@
-package pl.poznan.put.torsion.type;
+package pl.poznan.put.torsion;
 
 import java.util.List;
 
 import pl.poznan.put.interfaces.DisplayableExportable;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.torsion.TorsionAngleValue;
 
 public abstract class TorsionAngleType implements DisplayableExportable {
     private static final TorsionAngleType INVALID_INSTANCE = new TorsionAngleType(MoleculeType.UNKNOWN) {
