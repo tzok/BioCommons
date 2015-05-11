@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 import pl.poznan.put.torsion.type.TorsionAngleType;
 

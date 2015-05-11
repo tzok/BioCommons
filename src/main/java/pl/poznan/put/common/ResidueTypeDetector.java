@@ -12,6 +12,7 @@ import org.apache.commons.collections4.PredicateUtils;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.AtomType;
+import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.protein.aminoacid.AminoAcidType;
 import pl.poznan.put.rna.base.NucleobaseType;
 

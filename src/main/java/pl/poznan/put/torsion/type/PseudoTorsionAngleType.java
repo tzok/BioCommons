@@ -1,7 +1,7 @@
 package pl.poznan.put.torsion.type;
 
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.common.MoleculeType;
+import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.types.Quadruplet;
 
 /*

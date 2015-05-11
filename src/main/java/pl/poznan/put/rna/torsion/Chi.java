@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.constant.Unicode;
+import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.rna.BaseType;
 import pl.poznan.put.rna.Purine;
 import pl.poznan.put.rna.Pyrimidine;

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.type.TorsionAngleType;
 
 public class InvalidResidueInformationSupplier implements ResidueInformationProvider {

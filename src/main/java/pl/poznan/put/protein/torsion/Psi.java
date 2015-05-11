@@ -1,8 +1,8 @@
 package pl.poznan.put.protein.torsion;
 
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.constant.Unicode;
+import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.type.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 

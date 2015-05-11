@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.common.InvalidResidueInformationSupplier;
-import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.common.ResidueComponent;
 import pl.poznan.put.common.ResidueInformationProvider;
 import pl.poznan.put.common.ResidueTypeDetector;
