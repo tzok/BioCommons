@@ -9,11 +9,11 @@ public class Unicode {
     public static final String ZETA = "\u03B6";
     public static final String CHI = "\u03C7";
     public static final String TAU = "\u03C4";
-    public static final String NU0 = "\u03C40";
-    public static final String NU1 = "\u03C41";
-    public static final String NU2 = "\u03C42";
-    public static final String NU3 = "\u03C43";
-    public static final String NU4 = "\u03C44";
+    public static final String NU0 = "\u03BD0";
+    public static final String NU1 = "\u03BD1";
+    public static final String NU2 = "\u03BD2";
+    public static final String NU3 = "\u03BD3";
+    public static final String NU4 = "\u03BD4";
     public static final String ETA = "\u03B7";
     public static final String ETA_PRIM = "\u03B7'";
     public static final String THETA = "\u03B8";
@@ -30,6 +30,7 @@ public class Unicode {
     public static final String DEGREE = "\u00B0";
     public static final String ANGSTROM = "\u00C5";
     public static final String PI = "\u03C0";
+    public static final String INFINITY = "\u221E";
 
     private Unicode() {
     }
