@@ -14,52 +14,14 @@ import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.samples.AngleSample;
 import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.protein.torsion.ProteinTorsionAngleType;
-import pl.poznan.put.rna.torsion.RNATorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 
 public class AverageTorsionAngleType extends TorsionAngleType implements MasterTorsionAngleType {
-    private static final AverageTorsionAngleType RNA_ALL_INSTANCE = new AverageTorsionAngleType(MoleculeType.RNA, RNATorsionAngleType.values());
-    private static final AverageTorsionAngleType RNA_MAIN_INSTANCE = new AverageTorsionAngleType(MoleculeType.RNA, RNATorsionAngleType.mainAngles());
-    private static final AverageTorsionAngleType PROTEIN_ALL_INSTANCE = new AverageTorsionAngleType(MoleculeType.PROTEIN, ProteinTorsionAngleType.values());
-    private static final AverageTorsionAngleType PROTEIN_MAIN_INSTANCE = new AverageTorsionAngleType(MoleculeType.PROTEIN, ProteinTorsionAngleType.mainAngles());
-
-    public static AverageTorsionAngleType invalidInstance(
-            MoleculeType moleculeType) {
-        return new AverageTorsionAngleType(moleculeType, Collections.<MasterTorsionAngleType> emptyList(), "invalid", "invalid");
-    }
-
-    public static AverageTorsionAngleType instanceForAllAngles(
-            MoleculeType moleculeType) {
-        switch (moleculeType) {
-        case PROTEIN:
-            return AverageTorsionAngleType.PROTEIN_ALL_INSTANCE;
-        case RNA:
-            return AverageTorsionAngleType.RNA_ALL_INSTANCE;
-        case UNKNOWN:
-        default:
-            return AverageTorsionAngleType.invalidInstance(moleculeType);
-        }
-    }
-
-    public static AverageTorsionAngleType instanceForMainAngles(
-            MoleculeType moleculeType) {
-        switch (moleculeType) {
-        case PROTEIN:
-            return AverageTorsionAngleType.PROTEIN_MAIN_INSTANCE;
-        case RNA:
-            return AverageTorsionAngleType.RNA_MAIN_INSTANCE;
-        case UNKNOWN:
-        default:
-            return AverageTorsionAngleType.invalidInstance(moleculeType);
-        }
-    }
-
     private final String displayName;
     private final String exportName;
     private final List<MasterTorsionAngleType> consideredAngles;
 
-    private AverageTorsionAngleType(MoleculeType moleculeType,
+    public AverageTorsionAngleType(MoleculeType moleculeType,
             MasterTorsionAngleType... masterTypes) {
         super(moleculeType);
         this.consideredAngles = Arrays.asList(masterTypes);

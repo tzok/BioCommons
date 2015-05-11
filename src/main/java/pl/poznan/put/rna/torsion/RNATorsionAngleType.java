@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import pl.poznan.put.common.MoleculeType;
 import pl.poznan.put.rna.BaseType;
+import pl.poznan.put.torsion.type.AverageTorsionAngleType;
 import pl.poznan.put.torsion.type.MasterTorsionAngleType;
 import pl.poznan.put.torsion.type.TorsionAngleType;
 
@@ -39,9 +41,14 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
     }
 
     private static final MasterTorsionAngleType[] MAIN = new MasterTorsionAngleType[] { ALPHA, BETA, GAMMA, DELTA, EPSILON, ZETA, CHI, PSEUDOPHASE_PUCKER };
+    private static final AverageTorsionAngleType AVERAGE_TORSION_INSTANCE = new AverageTorsionAngleType(MoleculeType.RNA, RNATorsionAngleType.MAIN);
 
     public static MasterTorsionAngleType[] mainAngles() {
         return RNATorsionAngleType.MAIN;
+    }
+
+    public static AverageTorsionAngleType getAverageOverMainAngles() {
+        return RNATorsionAngleType.AVERAGE_TORSION_INSTANCE;
     }
 
     @Override

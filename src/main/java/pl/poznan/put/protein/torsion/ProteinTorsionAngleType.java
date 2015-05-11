@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import pl.poznan.put.common.MoleculeType;
+import pl.poznan.put.torsion.type.AverageTorsionAngleType;
 import pl.poznan.put.torsion.type.MasterTorsionAngleType;
 import pl.poznan.put.torsion.type.TorsionAngleType;
 
@@ -30,9 +32,14 @@ public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
     }
 
     private static final MasterTorsionAngleType[] MAIN = new MasterTorsionAngleType[] { PHI, PSI, OMEGA };
+    private static final AverageTorsionAngleType AVERAGE_TORSION_INSTANCE = new AverageTorsionAngleType(MoleculeType.PROTEIN, ProteinTorsionAngleType.MAIN);
 
     public static MasterTorsionAngleType[] mainAngles() {
         return ProteinTorsionAngleType.MAIN;
+    }
+
+    public static AverageTorsionAngleType getAverageOverMainAngles() {
+        return ProteinTorsionAngleType.AVERAGE_TORSION_INSTANCE;
     }
 
     @Override
