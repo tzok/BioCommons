@@ -1,33 +1,21 @@
 package pl.poznan.put.rna;
 
-import org.biojava.bio.structure.Atom;
-import org.biojava.bio.structure.Calc;
-import org.biojava.bio.structure.Group;
-import org.biojava.bio.structure.StructureException;
-
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.AtomType;
 import pl.poznan.put.atom.Bond;
 import pl.poznan.put.common.ResidueBondRule;
-import pl.poznan.put.structure.tertiary.StructureHelper;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.analysis.PdbResidue;
 
 public class RNABondRule implements ResidueBondRule {
     @Override
-    public boolean areConnected(Group r1, Group r2) {
-        Atom o3p = StructureHelper.findAtom(r1, AtomName.O3p);
-        Atom p = StructureHelper.findAtom(r2, AtomName.P);
-
-        try {
-            if (o3p != null && p != null) {
-                double distance = Calc.getDistance(o3p, p);
-                if (distance <= Bond.length(AtomType.O, AtomType.P).getMax() * 1.5) {
-                    return true;
-                }
-            }
-        } catch (StructureException e) {
-            // do nothing
+    public boolean areConnected(PdbResidue r1, PdbResidue r2) {
+        if (!r1.hasAtom(AtomName.O3p) || !r2.hasAtom(AtomName.P)) {
+            return false;
         }
 
-        return false;
+        PdbAtomLine o3p = r1.findAtom(AtomName.O3p);
+        PdbAtomLine p = r2.findAtom(AtomName.P);
+        return o3p.distanceTo(p) <= Bond.length(AtomType.O, AtomType.P).getMax() * 1.5;
     }
 }

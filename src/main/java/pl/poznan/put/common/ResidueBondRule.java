@@ -1,7 +1,7 @@
 package pl.poznan.put.common;
 
-import org.biojava.bio.structure.Group;
+import pl.poznan.put.pdb.analysis.PdbResidue;
 
 public interface ResidueBondRule {
-    boolean areConnected(Group r1, Group r2);
+    boolean areConnected(PdbResidue r1, PdbResidue r2);
 }
