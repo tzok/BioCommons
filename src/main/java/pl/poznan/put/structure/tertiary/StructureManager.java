@@ -29,7 +29,7 @@ import pl.poznan.put.pdb.analysis.PdbParser;
 public final class StructureManager {
     private static final String ENCODING_UTF_8 = "UTF-8";
     private static final List<StructureInfo> STRUCTURES = new ArrayList<StructureInfo>();
-    private static final PdbParser PDB_READER = new PdbParser();
+    private static final PdbParser PDB_READER = new PdbParser(false);
 
     public static List<PdbModel> getAllStructures() {
         List<PdbModel> result = new ArrayList<PdbModel>();
