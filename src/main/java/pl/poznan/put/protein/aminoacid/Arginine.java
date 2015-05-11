@@ -10,7 +10,6 @@ import pl.poznan.put.protein.torsion.Chi3;
 import pl.poznan.put.protein.torsion.Chi4;
 import pl.poznan.put.protein.torsion.Chi5;
 import pl.poznan.put.protein.torsion.ProteinChiType;
-import pl.poznan.put.types.Quadruplet;
 
 public class Arginine extends ProteinSidechain {
     private static final Arginine INSTANCE = new Arginine();
@@ -30,10 +29,10 @@ public class Arginine extends ProteinSidechain {
 
     @Override
     protected void fillChiAtomsMap() {
-        chiAtoms.put(ProteinChiType.CHI1, new Quadruplet<AtomName>(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG));
-        chiAtoms.put(ProteinChiType.CHI2, new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD));
-        chiAtoms.put(ProteinChiType.CHI3, new Quadruplet<AtomName>(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.NE));
-        chiAtoms.put(ProteinChiType.CHI4, new Quadruplet<AtomName>(AtomName.CG, AtomName.CD, AtomName.NE, AtomName.CZ));
-        chiAtoms.put(ProteinChiType.CHI5, new Quadruplet<AtomName>(AtomName.CD, AtomName.NE, AtomName.CZ, AtomName.NH1));
+        chiAtoms.put(ProteinChiType.CHI1, Chi1.ARGININE_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI2, Chi2.ARGININE_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI3, Chi3.ARGININE_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI4, Chi4.ARGININE_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI5, Chi5.ARGININE_ATOMS);
     }
 }

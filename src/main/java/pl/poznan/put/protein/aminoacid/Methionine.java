@@ -8,7 +8,6 @@ import pl.poznan.put.protein.torsion.Chi1;
 import pl.poznan.put.protein.torsion.Chi2;
 import pl.poznan.put.protein.torsion.Chi3;
 import pl.poznan.put.protein.torsion.ProteinChiType;
-import pl.poznan.put.types.Quadruplet;
 
 public class Methionine extends ProteinSidechain {
     private static final Methionine INSTANCE = new Methionine();
@@ -26,8 +25,8 @@ public class Methionine extends ProteinSidechain {
 
     @Override
     protected void fillChiAtomsMap() {
-        chiAtoms.put(ProteinChiType.CHI1, new Quadruplet<AtomName>(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG));
-        chiAtoms.put(ProteinChiType.CHI2, new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.SD));
-        chiAtoms.put(ProteinChiType.CHI3, new Quadruplet<AtomName>(AtomName.CB, AtomName.CG, AtomName.SD, AtomName.CE));
+        chiAtoms.put(ProteinChiType.CHI1, Chi1.METHIONINE_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI2, Chi2.METHIONINE_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI3, Chi3.METHIONINE_ATOMS);
     }
 }

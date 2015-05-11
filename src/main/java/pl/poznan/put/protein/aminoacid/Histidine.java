@@ -7,7 +7,6 @@ import pl.poznan.put.protein.ProteinSidechain;
 import pl.poznan.put.protein.torsion.Chi1;
 import pl.poznan.put.protein.torsion.Chi2;
 import pl.poznan.put.protein.torsion.ProteinChiType;
-import pl.poznan.put.types.Quadruplet;
 
 public class Histidine extends ProteinSidechain {
     private static final Histidine INSTANCE = new Histidine();
@@ -24,7 +23,7 @@ public class Histidine extends ProteinSidechain {
 
     @Override
     protected void fillChiAtomsMap() {
-        chiAtoms.put(ProteinChiType.CHI1, new Quadruplet<AtomName>(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG));
-        chiAtoms.put(ProteinChiType.CHI2, new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.ND1));
+        chiAtoms.put(ProteinChiType.CHI1, Chi1.HISTIDINE_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI2, Chi2.HISTIDINE_ATOMS);
     }
 }

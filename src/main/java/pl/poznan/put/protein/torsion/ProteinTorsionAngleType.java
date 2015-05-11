@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.protein.aminoacid.AminoAcidType;
 import pl.poznan.put.torsion.type.AverageTorsionAngleType;
 import pl.poznan.put.torsion.type.MasterTorsionAngleType;
 import pl.poznan.put.torsion.type.TorsionAngleType;
@@ -15,11 +14,11 @@ public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
     PSI(Psi.getInstance()),
     OMEGA(Omega.getInstance()),
     CALPHA(Calpha.getInstance()),
-    CHI1(AminoAcidType.getChiInstances(ProteinChiType.CHI1)),
-    CHI2(AminoAcidType.getChiInstances(ProteinChiType.CHI2)),
-    CHI3(AminoAcidType.getChiInstances(ProteinChiType.CHI3)),
-    CHI4(AminoAcidType.getChiInstances(ProteinChiType.CHI4)),
-    CHI5(AminoAcidType.getChiInstances(ProteinChiType.CHI5));
+    CHI1(Chi1.getInstances()),
+    CHI2(Chi2.getInstances()),
+    CHI3(Chi3.getInstances()),
+    CHI4(Chi4.getInstances()),
+    CHI5(Chi5.getInstances());
 
     private final List<TorsionAngleType> angleTypes;
 

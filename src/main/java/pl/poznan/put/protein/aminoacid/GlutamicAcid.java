@@ -8,7 +8,6 @@ import pl.poznan.put.protein.torsion.Chi1;
 import pl.poznan.put.protein.torsion.Chi2;
 import pl.poznan.put.protein.torsion.Chi3;
 import pl.poznan.put.protein.torsion.ProteinChiType;
-import pl.poznan.put.types.Quadruplet;
 
 public class GlutamicAcid extends ProteinSidechain {
     private static final GlutamicAcid INSTANCE = new GlutamicAcid();
@@ -26,8 +25,8 @@ public class GlutamicAcid extends ProteinSidechain {
 
     @Override
     protected void fillChiAtomsMap() {
-        chiAtoms.put(ProteinChiType.CHI1, new Quadruplet<AtomName>(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG));
-        chiAtoms.put(ProteinChiType.CHI2, new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD));
-        chiAtoms.put(ProteinChiType.CHI3, new Quadruplet<AtomName>(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.OE1));
+        chiAtoms.put(ProteinChiType.CHI1, Chi1.GLUTAMIC_ACID_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI2, Chi2.GLUTAMIC_ACID_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI3, Chi3.GLUTAMIC_ACID_ATOMS);
     }
 }

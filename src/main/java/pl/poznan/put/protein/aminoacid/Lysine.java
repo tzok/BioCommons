@@ -9,7 +9,6 @@ import pl.poznan.put.protein.torsion.Chi2;
 import pl.poznan.put.protein.torsion.Chi3;
 import pl.poznan.put.protein.torsion.Chi4;
 import pl.poznan.put.protein.torsion.ProteinChiType;
-import pl.poznan.put.types.Quadruplet;
 
 public class Lysine extends ProteinSidechain {
     private static final Lysine INSTANCE = new Lysine();
@@ -28,9 +27,9 @@ public class Lysine extends ProteinSidechain {
 
     @Override
     protected void fillChiAtomsMap() {
-        chiAtoms.put(ProteinChiType.CHI1, new Quadruplet<AtomName>(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG));
-        chiAtoms.put(ProteinChiType.CHI2, new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD));
-        chiAtoms.put(ProteinChiType.CHI3, new Quadruplet<AtomName>(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.CE));
-        chiAtoms.put(ProteinChiType.CHI4, new Quadruplet<AtomName>(AtomName.CG, AtomName.CD, AtomName.CE, AtomName.NZ));
+        chiAtoms.put(ProteinChiType.CHI1, Chi1.LYSINE_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI2, Chi2.LYSINE_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI3, Chi3.LYSINE_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI4, Chi4.LYSINE_ATOMS);
     }
 }

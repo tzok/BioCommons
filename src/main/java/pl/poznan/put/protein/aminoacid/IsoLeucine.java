@@ -7,7 +7,6 @@ import pl.poznan.put.protein.ProteinSidechain;
 import pl.poznan.put.protein.torsion.Chi1;
 import pl.poznan.put.protein.torsion.Chi2;
 import pl.poznan.put.protein.torsion.ProteinChiType;
-import pl.poznan.put.types.Quadruplet;
 
 public class IsoLeucine extends ProteinSidechain {
     private static final IsoLeucine INSTANCE = new IsoLeucine();
@@ -24,7 +23,7 @@ public class IsoLeucine extends ProteinSidechain {
 
     @Override
     protected void fillChiAtomsMap() {
-        chiAtoms.put(ProteinChiType.CHI1, new Quadruplet<AtomName>(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG1));
-        chiAtoms.put(ProteinChiType.CHI2, new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG1, AtomName.CD1));
+        chiAtoms.put(ProteinChiType.CHI1, Chi1.ISOLEUCINE_ATOMS);
+        chiAtoms.put(ProteinChiType.CHI2, Chi2.ISOLEUCINE_ATOMS);
     }
 }

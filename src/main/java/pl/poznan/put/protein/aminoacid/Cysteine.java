@@ -6,7 +6,6 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.protein.ProteinSidechain;
 import pl.poznan.put.protein.torsion.Chi1;
 import pl.poznan.put.protein.torsion.ProteinChiType;
-import pl.poznan.put.types.Quadruplet;
 
 public class Cysteine extends ProteinSidechain {
     private static final Cysteine INSTANCE = new Cysteine();
@@ -22,6 +21,6 @@ public class Cysteine extends ProteinSidechain {
 
     @Override
     protected void fillChiAtomsMap() {
-        chiAtoms.put(ProteinChiType.CHI1, new Quadruplet<AtomName>(AtomName.N, AtomName.CA, AtomName.CB, AtomName.SG));
+        chiAtoms.put(ProteinChiType.CHI1, Chi1.CYSTEINE_ATOMS);
     }
 }
