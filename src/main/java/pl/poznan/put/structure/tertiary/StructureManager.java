@@ -1,22 +1,25 @@
 package pl.poznan.put.structure.tertiary;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.biojava.bio.structure.Structure;
-import org.biojava.bio.structure.align.ce.AbstractUserArgumentProcessor;
-import org.biojava.bio.structure.io.MMCIFFileReader;
-import org.biojava.bio.structure.io.PDBFileReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.lang3.StringUtils;
+
+import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbParser;
 
 /**
  * A common manager of loaded PDB files shared between all classes.
@@ -25,50 +28,37 @@ import org.slf4j.LoggerFactory;
  */
 public final class StructureManager {
     private static final String ENCODING_UTF_8 = "UTF-8";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(StructureManager.class);
-
     private static final List<StructureInfo> STRUCTURES = new ArrayList<StructureInfo>();
-    private static final MMCIFFileReader MMCIF_READER = new MMCIFFileReader();
-    private static final PDBFileReader PDB_READER = new PDBFileReader();
-    private static final File TMP_DIR = new File(System.getProperty("java.io.tmpdir"));
-    private static final File PDB_DIR = new File(StructureManager.TMP_DIR, "pdbs");
+    private static final PdbParser PDB_READER = new PdbParser(false);
 
-    static {
-        // AbstractUserArgumentProcessor.PDB_DIR is what PDBFileReader in
-        // BioJava checks!
-        StructureManager.PDB_DIR.mkdirs();
-        System.setProperty(AbstractUserArgumentProcessor.PDB_DIR, StructureManager.PDB_DIR.getAbsolutePath());
-    }
-
-    public static List<Structure> getAllStructures() {
-        List<Structure> result = new ArrayList<Structure>();
+    public static List<PdbModel> getAllStructures() {
+        List<PdbModel> result = new ArrayList<PdbModel>();
         for (StructureInfo si : StructureManager.STRUCTURES) {
             result.add(si.getStructure());
         }
         return result;
     }
 
-    public static File getFile(Structure structure) {
+    public static File getFile(PdbModel structure) {
         for (StructureInfo si : StructureManager.STRUCTURES) {
             if (si.getStructure().equals(structure)) {
                 return si.getPath();
             }
         }
-        return null;
+        throw new IllegalArgumentException("Failed to find PdbModel");
     }
 
-    public static String getName(Structure structure) {
+    public static String getName(PdbModel structure) {
         for (StructureInfo si : StructureManager.STRUCTURES) {
             if (si.getStructure().equals(structure)) {
                 return si.getName();
             }
         }
-        return null;
+        throw new IllegalArgumentException("Failed to find PdbModel");
     }
 
-    public static List<Structure> getModels(File file) {
-        List<Structure> result = new ArrayList<Structure>();
+    public static List<PdbModel> getModels(File file) {
+        List<PdbModel> result = new ArrayList<PdbModel>();
         for (StructureInfo si : StructureManager.STRUCTURES) {
             if (si.getPath().equals(file)) {
                 result.add(si.getStructure());
@@ -77,9 +67,9 @@ public final class StructureManager {
         return result;
     }
 
-    public static List<String> getNames(List<Structure> structures) {
+    public static List<String> getNames(List<PdbModel> structures) {
         List<String> result = new ArrayList<String>();
-        for (Structure s : structures) {
+        for (PdbModel s : structures) {
             result.add(StructureManager.getName(s));
         }
         return result;
@@ -91,55 +81,92 @@ public final class StructureManager {
      * @param path
      *            Path to the PDB file.
      * @return Structure object..
+     * @throws IOException
+     * @throws PdbParsingException
      */
-    public static List<Structure> loadStructure(File file) throws IOException {
-        List<Structure> models = StructureManager.getModels(file);
+    public static List<PdbModel> loadStructure(File file) throws IOException, PdbParsingException {
+        List<PdbModel> models = StructureManager.getModels(file);
         if (models.size() > 0) {
             return models;
         }
 
-        try {
-            Structure structure;
-            String name = file.getName();
+        String fileContent = StructureManager.readFileUnzipIfNeeded(file);
+        String name = file.getName();
 
-            if (name.endsWith(".cif") || name.endsWith(".cif.gz")) {
-                if (!StructureManager.isMmCif(file)) {
-                    throw new IOException("File is not a mmCIF structure: " + file);
-                }
-                structure = StructureManager.MMCIF_READER.getStructure(file);
-            } else {
-                if (!StructureManager.isPdb(file)) {
-                    throw new IOException("File is not a PDB structure: " + file);
-                }
-                structure = StructureManager.PDB_READER.getStructure(file);
+        if (name.endsWith(".cif") || name.endsWith(".cif.gz")) {
+            if (!StructureManager.isMmCif(fileContent)) {
+                throw new IOException("File is not a mmCIF structure: " + file);
+            }
+            // TODO: Implement a parser for mmCIF format
+            throw new UnsupportedOperationException("Sorry, mmCIF parsing is currently unavailable");
+        }
+
+        if (!StructureManager.isPdb(fileContent)) {
+            throw new IOException("File is not a PDB structure: " + file);
+        }
+
+        List<PdbModel> structures = StructureManager.PDB_READER.parse(fileContent);
+        StructureManager.storeStructureInfo(file, structures);
+        return structures;
+    }
+
+    private static String readFileUnzipIfNeeded(File file) throws IOException {
+        ByteArrayOutputStream copyStream = null;
+        FileInputStream inputStream = null;
+
+        try {
+            inputStream = new FileInputStream(file);
+            copyStream = new ByteArrayOutputStream();
+            IOUtils.copy(inputStream, copyStream);
+            byte[] byteArray = copyStream.toByteArray();
+
+            if (StructureManager.isGzipStream(byteArray)) {
+                return StructureManager.unzipContent(byteArray);
             }
 
-            return StructureManager.storeStructureInfo(file, structure);
-        } catch (IOException e) {
-            String message = "Failed to load structure: " + file;
-            StructureManager.LOGGER.error(message, e);
-            throw new IOException(message, e);
+            return copyStream.toString(StructureManager.ENCODING_UTF_8);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(copyStream);
         }
     }
 
-    public static List<Structure> loadStructure(String pdbId) {
-        StructureManager.PDB_READER.setAutoFetch(true);
-        Structure structure;
+    private static String unzipContent(byte[] byteArray) throws IOException {
+        ByteArrayInputStream inputStream = null;
+        GZIPInputStream gzipInputStream = null;
 
         try {
-            structure = StructureManager.PDB_READER.getStructureById(pdbId);
-        } catch (IOException e) {
-            StructureManager.LOGGER.error("Failed to fetch PDB id:" + pdbId, e);
-            return new ArrayList<Structure>();
+            inputStream = new ByteArrayInputStream(byteArray);
+            gzipInputStream = new GZIPInputStream(inputStream);
+            return IOUtils.toString(gzipInputStream);
+        } finally {
+            IOUtils.closeQuietly(gzipInputStream);
+            IOUtils.closeQuietly(inputStream);
         }
+    }
 
-        File pdbFile = new File(StructureManager.PDB_DIR, "pdb" + pdbId.toLowerCase() + ".ent.gz");
+    private static boolean isGzipStream(byte[] bytes) {
+        int head = bytes[0] & 0xff | bytes[1] << 8 & 0xff00;
+        return GZIPInputStream.GZIP_MAGIC == head;
+    }
 
-        if (!pdbFile.exists()) {
-            return new ArrayList<Structure>();
+    public static List<PdbModel> loadStructure(String pdbId) throws IOException, PdbParsingException {
+        InputStream stream = null;
+
+        try {
+            URL url = new URL("http://www.rcsb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=" + pdbId);
+            stream = url.openStream();
+            String pdbContent = IOUtils.toString(stream, StructureManager.ENCODING_UTF_8);
+
+            File pdbFile = File.createTempFile("mcq", ".pdb");
+            FileUtils.writeStringToFile(pdbFile, pdbContent, StructureManager.ENCODING_UTF_8);
+
+            List<PdbModel> models = StructureManager.PDB_READER.parse(pdbContent);
+            StructureManager.storeStructureInfo(pdbFile, models);
+            return models;
+        } finally {
+            IOUtils.closeQuietly(stream);
         }
-
-        return StructureManager.storeStructureInfo(pdbFile, structure);
     }
 
     public static void remove(File path) {
@@ -157,105 +184,45 @@ public final class StructureManager {
         }
     }
 
-    private static boolean isMmCif(File file) throws IOException {
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(file);
-
-            if (file.getName().endsWith(".gz")) {
-                BufferedReader reader = null;
-                try {
-                    reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(stream), StructureManager.ENCODING_UTF_8));
-                    String line = reader.readLine();
-                    return line != null && line.startsWith("data_");
-                } finally {
-                    IOUtils.closeQuietly(reader);
-                }
-            }
-
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new InputStreamReader(stream, StructureManager.ENCODING_UTF_8));
-                String line = reader.readLine();
-                return line != null && line.startsWith("data_");
-            } finally {
-                IOUtils.closeQuietly(reader);
-            }
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
+    private static boolean isMmCif(String fileContent) {
+        return fileContent.startsWith("data_");
     }
 
-    private static boolean isPdb(File file) throws IOException {
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(file);
-
-            if (file.getName().endsWith(".gz")) {
-                BufferedReader reader = null;
-                try {
-                    reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(stream), StructureManager.ENCODING_UTF_8));
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        if (line.startsWith("ATOM")) {
-                            return true;
-                        }
-                    }
-                } finally {
-                    IOUtils.closeQuietly(reader);
-                }
-            }
-
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new InputStreamReader(stream, StructureManager.ENCODING_UTF_8));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (line.startsWith("ATOM")) {
-                        return true;
-                    }
-                }
-            } finally {
-                IOUtils.closeQuietly(reader);
-            }
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
-
-        return false;
+    private static boolean isPdb(String fileContent) {
+        Pattern pdbPattern = Pattern.compile("^ATOM", Pattern.MULTILINE);
+        Matcher matcher = pdbPattern.matcher(fileContent);
+        return matcher.find();
     }
 
-    private static List<Structure> storeStructureInfo(File file, Structure structure) {
-        String name = structure.getPDBCode();
+    private static void storeStructureInfo(File file, List<PdbModel> structures) {
+        String format = "%s";
 
-        if (name == null || name.trim().equals("")) {
-            name = file.getName();
-            if (name.endsWith(".pdb") || name.endsWith(".cif")) {
-                name = name.substring(0, name.length() - 4);
-            } else if (name.endsWith(".pdb.gz") || name.endsWith(".cif.gz")) {
-                name = name.substring(0, name.length() - 7);
+        if (structures.size() > 1) {
+            int count = structures.size();
+            int order = 10;
+            int leading = 1;
+            while (order < count) {
+                leading++;
+                order *= 10;
             }
-            structure.setPDBCode(name);
+            format = "%s.%0" + leading + "d";
         }
 
-        int count = structure.nrModels();
-        int order = 10;
-        int leading = 1;
-        while (order < count) {
-            leading++;
-            order *= 10;
-        }
-        String format = "%s.%0" + leading + "d";
+        for (int i = 0; i < structures.size(); i++) {
+            PdbModel model = structures.get(i);
+            String name = model.getIdCode();
 
-        List<Structure> models = new ArrayList<Structure>();
-        for (int i = 0; i < count; i++) {
-            Structure clone = structure.clone();
-            clone.setChains(structure.getModel(i));
-            models.add(clone);
+            if (StringUtils.isBlank(name)) {
+                name = file.getName();
+                if (name.endsWith(".pdb") || name.endsWith(".cif")) {
+                    name = name.substring(0, name.length() - 4);
+                } else if (name.endsWith(".pdb.gz") || name.endsWith(".cif.gz")) {
+                    name = name.substring(0, name.length() - 7);
+                }
+            }
 
-            StructureManager.STRUCTURES.add(new StructureInfo(clone, file, String.format(format, name, i + 1)));
+            StructureManager.STRUCTURES.add(new StructureInfo(model, file, String.format(format, name, i + 1)));
         }
-        return models;
     }
 
     private StructureManager() {

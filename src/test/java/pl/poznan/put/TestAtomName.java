@@ -1,6 +1,6 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.File;
 import java.io.IOException;

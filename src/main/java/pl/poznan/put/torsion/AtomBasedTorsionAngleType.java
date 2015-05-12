@@ -1,7 +1,12 @@
-package pl.poznan.put.torsion.type;
+package pl.poznan.put.torsion;
+
+import java.util.List;
 
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.common.MoleculeType;
+import pl.poznan.put.circular.exception.InvalidCircularValueException;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.types.Quadruplet;
 
 public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
@@ -85,5 +90,32 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public TorsionAngleValue calculate(List<PdbResidue> residues,
+            int currentIndex) throws InvalidCircularValueException {
+        PdbAtomLine[] foundAtoms = new PdbAtomLine[4];
+
+        for (int i = 0; i < 4; i++) {
+            int index = currentIndex + residueRule.get(i);
+            if (index < 0 || index >= residues.size()) {
+                return TorsionAngleValue.invalidInstance(this);
+            }
+
+            PdbResidue residue = residues.get(index);
+            if (!residue.hasAtom(atoms.get(i))) {
+                return TorsionAngleValue.invalidInstance(this);
+            }
+
+            foundAtoms[i] = residue.findAtom(atoms.get(i));
+        }
+
+        return new TorsionAngleValue(this, TorsionAnglesHelper.calculateTorsionAngle(foundAtoms[0], foundAtoms[1], foundAtoms[2], foundAtoms[3]));
+    }
+
+    public TorsionAngleValue calculate(PdbAtomLine a1, PdbAtomLine a2,
+            PdbAtomLine a3, PdbAtomLine a4) {
+        return new TorsionAngleValue(this, TorsionAnglesHelper.calculateTorsionAngle(a1, a2, a3, a4));
     }
 }
