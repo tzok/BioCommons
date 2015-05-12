@@ -87,7 +87,7 @@ public class PdbParser {
     }
 
     private void handleTerLine(String line) {
-        char chain = line.charAt(21);
+        char chain = line.length() > 21 ? line.charAt(21) : ' ';
 
         if (terminatedChainIdentifiers.contains(chain)) {
             chain = currentChainIdentifier++;
