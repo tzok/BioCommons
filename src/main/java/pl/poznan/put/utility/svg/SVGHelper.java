@@ -87,7 +87,8 @@ public class SVGHelper {
         return SVGHelper.SVG_NAMESPACE;
     }
 
-    public static void export(SVGDocument svgDocument, OutputStream stream, Format format, Map<TranscodingHints.Key, Object> transcodingHints) throws IOException {
+    public static void export(SVGDocument svgDocument, OutputStream stream,
+            Format format, Map<TranscodingHints.Key, Object> transcodingHints) throws IOException {
         if (format == Format.EPS || format == Format.SVG) {
             OutputStreamWriter writer = null;
 
@@ -118,7 +119,8 @@ public class SVGHelper {
         }
     }
 
-    private static void export(SVGDocument svgDocument, Writer writer, Format format, Map<TranscodingHints.Key, Object> transcodingHints) throws IOException {
+    private static void export(SVGDocument svgDocument, Writer writer,
+            Format format, Map<TranscodingHints.Key, Object> transcodingHints) throws IOException {
         try {
             TranscoderInput input = new TranscoderInput(svgDocument);
             TranscoderOutput output = new TranscoderOutput(writer);
