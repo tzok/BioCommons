@@ -92,6 +92,14 @@ public final class Colors {
         return Color.getHSBColor((float) h, (float) s, (float) b);
     }
 
+    public static String toHexString(Color color) {
+        return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
+    }
+
+    public static String toSvgString(Color color) {
+        return String.format("rgb(%d,%d,%d)", color.getRed(), color.getGreen(), color.getBlue());
+    }
+
     private Colors() {
     }
 }
