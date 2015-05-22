@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.biojava.bio.structure.Structure;
 import org.biojava.bio.structure.io.PDBFileParser;
 import org.junit.Before;
@@ -31,6 +32,7 @@ public class TestPdbModel {
     private String pdb4A04;
     private String pdbPKB300;
     private String pdbAmber;
+    private String pdb2MIY;
 
     @Before
     public void loadPdbFile() throws URISyntaxException, IOException {
@@ -41,6 +43,7 @@ public class TestPdbModel {
         pdb4A04 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/4A04.pdb"), "utf-8");
         pdbPKB300 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/PKB300.pdb"), "utf-8");
         pdbAmber = FileUtils.readFileToString(new File(dir, "../../src/test/resources/amber.pdb"), "utf-8");
+        pdb2MIY = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2MIY.pdb"), "utf-8");
     }
 
     @Test
@@ -286,5 +289,25 @@ public class TestPdbModel {
         assertEquals(3, chains.size());
         assertEquals(49, residues.size());
         assertEquals(1557, atoms.size());
+    }
+
+    @Test
+    public void testNMRModelsWithHydrogenAtoms() throws PdbParsingException {
+        PdbParser parser = new PdbParser(false);
+        List<PdbModel> models = parser.parse(pdb2MIY);
+        assertEquals(18, models.size());
+
+        PdbModel model = models.get(0);
+        List<PdbChain> chains = model.getChains();
+        List<PdbResidue> residues = model.getResidues();
+        List<PdbAtomLine> atoms = model.getAtoms();
+        assertEquals(1, chains.size());
+        assertEquals(59, residues.size());
+        assertEquals(1909, atoms.size());
+
+        PdbChain chain = chains.get(0);
+        String sequence = chain.getSequence();
+        assertEquals(true, Character.isLowerCase(sequence.charAt(0)));
+        assertEquals(true, StringUtils.isAllUpperCase(sequence.substring(1)));
     }
 }
