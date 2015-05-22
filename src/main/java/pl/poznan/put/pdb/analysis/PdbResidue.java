@@ -245,12 +245,9 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
             expected.addAll(component.getAtoms());
         }
 
-        if (!hasHydrogen()) {
-            Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils.invokerPredicate("isHeavy");
-            CollectionUtils.filter(actual, isHeavyAtomPredicate);
-            CollectionUtils.filter(expected, isHeavyAtomPredicate);
-        }
-
+        Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils.invokerPredicate("isHeavy");
+        CollectionUtils.filter(actual, isHeavyAtomPredicate);
+        CollectionUtils.filter(expected, isHeavyAtomPredicate);
         boolean result = CollectionUtils.isEqualCollection(actual, expected);
 
         if (!result) {
