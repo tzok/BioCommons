@@ -2,21 +2,21 @@ package pl.poznan.put.structure.tertiary;
 
 import java.io.File;
 
-import org.biojava.bio.structure.Structure;
+import pl.poznan.put.pdb.analysis.PdbModel;
 
 public class StructureInfo implements Comparable<StructureInfo> {
-    private final Structure structure;
+    private final PdbModel structure;
     private final File path;
     private final String name;
 
-    public StructureInfo(Structure structure, File path, String name) {
+    public StructureInfo(PdbModel structure, File path, String name) {
         super();
         this.structure = structure;
         this.path = path;
         this.name = name;
     }
 
-    public Structure getStructure() {
+    public PdbModel getStructure() {
         return structure;
     }
 
