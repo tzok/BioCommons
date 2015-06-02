@@ -19,8 +19,17 @@ import org.slf4j.LoggerFactory;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class DotBracket implements Serializable {
-    private static Logger logger = LoggerFactory.getLogger(DotBracket.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DotBracket.class);
     private static final Pattern DOTBRACKET_PATTERN = Pattern.compile(">(strand_)?(.+)\n([ACGUTRYNacgutryn]+)\n([-.()\\[\\]{}<>A-Za-z]+)");
+
+    /*
+     * This is just a simple and naive implementation. For a robust solution, go
+     * check RNApdbee http://rnapdbee.cs.put.poznan.pl
+     */
+    public static DotBracket fromBpSeq(BpSeq bpSeq) {
+        // FIXME
+        return null;
+    }
 
     public static DotBracket fromString(String data) throws InvalidSecondaryStructureException {
         List<Pair<Integer, Integer>> pairBeginEnd = new ArrayList<Pair<Integer, Integer>>();
@@ -150,7 +159,7 @@ public class DotBracket implements Serializable {
                 continue;
             }
 
-            DotBracket.logger.error("Unknown symbol in dot-bracket string: " + str);
+            DotBracket.LOGGER.error("Unknown symbol in dot-bracket string: " + str);
         }
     }
 
