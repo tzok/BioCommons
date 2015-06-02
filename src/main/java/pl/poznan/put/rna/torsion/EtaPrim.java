@@ -14,6 +14,6 @@ public class EtaPrim extends PseudoTorsionAngleType {
     }
 
     private EtaPrim() {
-        super(MoleculeType.RNA, Unicode.ETA_PRIM, new Quadruplet<AtomName>(AtomName.C1p, AtomName.P, AtomName.C1p, AtomName.P), new Quadruplet<Integer>(0, 1, 1, 2));
+        super(MoleculeType.RNA, Unicode.ETA_PRIM, new Quadruplet<AtomName>(AtomName.C1p, AtomName.P, AtomName.C1p, AtomName.P), new Quadruplet<Integer>(-1, 0, 0, 1));
     }
 }
