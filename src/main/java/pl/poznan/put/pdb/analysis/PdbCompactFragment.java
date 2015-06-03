@@ -1,6 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 
@@ -81,13 +83,18 @@ public class PdbCompactFragment {
     }
 
     public TorsionAngleValue getTorsionAngleValue(PdbResidue residue,
-            TorsionAngleType angleType) {
+            MasterTorsionAngleType masterType) {
+        Collection<? extends TorsionAngleType> angleTypes = masterType.getAngleTypes();
         for (TorsionAngleValue angleValue : mapResidueAngleValue.get(residue)) {
-            if (angleType.equals(angleValue.getAngleType())) {
-                return angleValue;
+            for (TorsionAngleType angleType : angleTypes) {
+                if (angleType.equals(angleValue.getAngleType())) {
+                    return angleValue;
+                }
             }
         }
-        return TorsionAngleValue.invalidInstance(angleType);
+
+        TorsionAngleType first = angleTypes.iterator().next();
+        return TorsionAngleValue.invalidInstance(first);
     }
 
     public MoleculeType getMoleculeType() {
