@@ -33,6 +33,7 @@ public class TestPdbModel {
     private String pdbPKB300;
     private String pdbAmber;
     private String pdb2MIY;
+    private String pdbFrabaseExport;
 
     @Before
     public void loadPdbFile() throws URISyntaxException, IOException {
@@ -44,6 +45,7 @@ public class TestPdbModel {
         pdbPKB300 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/PKB300.pdb"), "utf-8");
         pdbAmber = FileUtils.readFileToString(new File(dir, "../../src/test/resources/amber.pdb"), "utf-8");
         pdb2MIY = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2MIY.pdb"), "utf-8");
+        pdbFrabaseExport = FileUtils.readFileToString(new File(dir, "../../src/test/resources/FrabaseExport.pdb"), "utf-8");
     }
 
     @Test
@@ -309,5 +311,28 @@ public class TestPdbModel {
         String sequence = chain.getSequence();
         assertEquals(true, Character.isLowerCase(sequence.charAt(0)));
         assertEquals(true, StringUtils.isAllUpperCase(sequence.substring(1)));
+    }
+
+    @Test
+    public void testFrabaseExport() throws PdbParsingException {
+        PdbParser parser = new PdbParser(false);
+        List<PdbModel> models = parser.parse(pdbFrabaseExport);
+        assertEquals(2, models.size());
+
+        PdbModel model = models.get(0);
+        List<PdbChain> chains = model.getChains();
+        List<PdbResidue> residues = model.getResidues();
+        List<PdbAtomLine> atoms = model.getAtoms();
+        assertEquals(1, chains.size());
+        assertEquals(7, residues.size());
+        assertEquals(150, atoms.size());
+
+        model = models.get(1);
+        chains = model.getChains();
+        residues = model.getResidues();
+        atoms = model.getAtoms();
+        assertEquals(1, chains.size());
+        assertEquals(7, residues.size());
+        assertEquals(150, atoms.size());
     }
 }
