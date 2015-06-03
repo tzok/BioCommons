@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,7 @@ public class PdbParser {
     private final List<PdbModresLine> modifiedResidues = new ArrayList<PdbModresLine>();
     private final List<PdbRemark465Line> missingResidues = new ArrayList<PdbRemark465Line>();
     private final Set<Character> terminatedChainIdentifiers = new HashSet<Character>();
+    private final Set<Integer> endedModelNumbers = new HashSet<Integer>();
     private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<Integer, List<PdbAtomLine>>();
 
     private final boolean strictMode;
@@ -76,6 +78,7 @@ public class PdbParser {
         modifiedResidues.clear();
         missingResidues.clear();
         terminatedChainIdentifiers.clear();
+        endedModelNumbers.clear();
         modelAtoms.clear();
 
         // on default, the ' ' chain id is terminated
@@ -87,7 +90,17 @@ public class PdbParser {
     }
 
     private void handleModelLine(String line) {
-        currentModelNumber = Integer.parseInt(line.substring(10, 14).trim());
+        endedModelNumbers.add(currentModelNumber);
+
+        String modelNumberString = line.length() > 14 ? line.substring(10, 14).trim() : line.substring(5).trim();
+        int modelNumber = Integer.parseInt(modelNumberString);
+
+        while (endedModelNumbers.contains(modelNumber)) {
+            // model number has four digits
+            modelNumber = RandomUtils.nextInt(1, 10000);
+        }
+
+        currentModelNumber = modelNumber;
         terminatedChainIdentifiers.clear();
     }
 
