@@ -34,7 +34,7 @@ public class AngleSample {
     public AngleSample(Collection<Angle> data) throws InvalidCircularValueException {
         super();
         this.data = data;
-        this.dataSorted = new ArrayList<>(data);
+        this.dataSorted = new ArrayList<Angle>(data);
         Collections.sort(dataSorted);
 
         TrigonometricMoment um1 = getUncenteredMoment(1);

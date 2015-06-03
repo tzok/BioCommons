@@ -19,7 +19,7 @@ public class Histogram {
         }
     }
 
-    private final List<Bin> histogram = new ArrayList<>();
+    private final List<Bin> histogram = new ArrayList<Bin>();
 
     public Histogram(Collection<? extends Circular> data, double binWidth) throws InvalidCircularValueException {
         super();
@@ -29,7 +29,7 @@ public class Histogram {
         }
 
         for (double radiansStart = 0; radiansStart < 2 * Math.PI; radiansStart += binWidth) {
-            List<Circular> binData = new ArrayList<>();
+            List<Circular> binData = new ArrayList<Circular>();
 
             for (Circular circular : data) {
                 double radians = circular.getRadians2PI();

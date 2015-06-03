@@ -94,7 +94,7 @@ public class AngularHistogram extends RawDataPlot {
             return;
         }
 
-        List<Circular> data = new ArrayList<>();
+        List<Circular> data = new ArrayList<Circular>();
         List<String> lines = FileUtils.readLines(new File(args[0]), "UTF-8");
 
         for (String line : lines) {

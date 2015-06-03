@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.svg.SVGDocument;
 
@@ -29,7 +30,8 @@ public class LinearHistogram extends AbstractDrawable {
     private final double binRadians;
     private final int drawingUnitSize;
 
-    public LinearHistogram(Collection<Circular> data, double binRadians, int drawingUnitSize) {
+    public LinearHistogram(Collection<Circular> data, double binRadians,
+            int drawingUnitSize) {
         super();
         this.data = data;
         this.binRadians = binRadians;
@@ -93,7 +95,7 @@ public class LinearHistogram extends AbstractDrawable {
         /*
          * First example
          */
-        List<Circular> data = new ArrayList<>();
+        List<Circular> data = new ArrayList<Circular>();
         List<String> lines = FileUtils.readLines(new File("data/D01"), "UTF-8");
 
         for (String line : lines) {
@@ -111,9 +113,13 @@ public class LinearHistogram extends AbstractDrawable {
         LinearHistogram histogram = new LinearHistogram(data, Math.toRadians(20));
         histogram.draw();
         SVGDocument svgDocument = histogram.finalizeDrawingAndGetSVG();
+        OutputStream stream = null;
 
-        try (OutputStream stream = new FileOutputStream("/tmp/D01-linear-histogram.svg")) {
+        try {
+            stream = new FileOutputStream("/tmp/D01-linear-histogram.svg");
             SVGHelper.export(svgDocument, stream, Format.SVG, null);
+        } finally {
+            IOUtils.closeQuietly(stream);
         }
     }
 }
