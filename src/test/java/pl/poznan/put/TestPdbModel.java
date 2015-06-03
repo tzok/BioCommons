@@ -35,6 +35,7 @@ public class TestPdbModel {
     private String pdbPKB300;
     private String pdbAmber;
     private String pdb2MIY;
+    private String pdbFrabaseExport;
 
     private String bpseq1EHZ;
     private String bpseq2Z74;
@@ -50,6 +51,7 @@ public class TestPdbModel {
         pdbPKB300 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/PKB300.pdb"), "utf-8");
         pdbAmber = FileUtils.readFileToString(new File(dir, "../../src/test/resources/amber.pdb"), "utf-8");
         pdb2MIY = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2MIY.pdb"), "utf-8");
+        pdbFrabaseExport = FileUtils.readFileToString(new File(dir, "../../src/test/resources/FrabaseExport.pdb"), "utf-8");
 
         bpseq1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ-2D-bpseq.txt"), "utf-8");
         bpseq2Z74 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2Z74-2D-bpseq.txt"), "utf-8");
@@ -338,5 +340,28 @@ public class TestPdbModel {
 
         BpSeq bpSeqFromString = BpSeq.fromString(bpSeqString);
         assertEquals(bpSeqFromString, bpSeqFromModel);
+    }
+
+    @Test
+    public void testFrabaseExport() throws PdbParsingException {
+        PdbParser parser = new PdbParser(false);
+        List<PdbModel> models = parser.parse(pdbFrabaseExport);
+        assertEquals(2, models.size());
+
+        PdbModel model = models.get(0);
+        List<PdbChain> chains = model.getChains();
+        List<PdbResidue> residues = model.getResidues();
+        List<PdbAtomLine> atoms = model.getAtoms();
+        assertEquals(1, chains.size());
+        assertEquals(7, residues.size());
+        assertEquals(150, atoms.size());
+
+        model = models.get(1);
+        chains = model.getChains();
+        residues = model.getResidues();
+        atoms = model.getAtoms();
+        assertEquals(1, chains.size());
+        assertEquals(7, residues.size());
+        assertEquals(150, atoms.size());
     }
 }
