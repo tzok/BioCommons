@@ -32,7 +32,7 @@ public class Histogram {
             List<Circular> binData = new ArrayList<>();
 
             for (Circular circular : data) {
-                double radians = circular.getRadians();
+                double radians = circular.getRadians2PI();
 
                 if (radians >= radiansStart && radians < radiansStart + binWidth) {
                     binData.add(circular);

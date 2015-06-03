@@ -104,7 +104,7 @@ public class RawDataPlot extends AbstractDrawable {
         Map<Integer, List<Circular>> observations = new TreeMap<>();
 
         for (Circular circular : data) {
-            double degrees = circular.getDegrees();
+            double degrees = circular.getDegrees360();
             int index = (int) degrees;
 
             if (!observations.containsKey(index)) {
