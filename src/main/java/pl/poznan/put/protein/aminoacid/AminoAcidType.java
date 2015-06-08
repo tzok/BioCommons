@@ -3,6 +3,9 @@ package pl.poznan.put.protein.aminoacid;
 import java.util.ArrayList;
 import java.util.List;
 
+import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.ResidueComponent;
+import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.protein.ProteinSidechain;
 import pl.poznan.put.protein.torsion.Chi1;
 import pl.poznan.put.protein.torsion.Chi2;
@@ -12,7 +15,7 @@ import pl.poznan.put.protein.torsion.Chi5;
 import pl.poznan.put.protein.torsion.ProteinChiType;
 import pl.poznan.put.torsion.TorsionAngleType;
 
-public enum AminoAcidType {
+public enum AminoAcidType implements ResidueInformationProvider {
     ALANINE(Alanine.getInstance()),
     ARGININE(Arginine.getInstance()),
     ASPARAGINE(Asparagine.getInstance()),
@@ -34,21 +37,21 @@ public enum AminoAcidType {
     TYROSINE(Tyrosine.getInstance()),
     VALINE(Valine.getInstance());
 
-    private final ProteinSidechain nameProvider;
+    private final ProteinSidechain sidechain;
 
-    private AminoAcidType(ProteinSidechain nameSupplier) {
-        this.nameProvider = nameSupplier;
+    private AminoAcidType(ProteinSidechain sidechain) {
+        this.sidechain = sidechain;
     }
 
-    public ProteinSidechain getResidueComponent() {
-        return nameProvider;
+    public ProteinSidechain getProteinSidechainInstance() {
+        return sidechain;
     }
 
     public static TorsionAngleType[] getChiInstances(ProteinChiType chiType) {
         List<TorsionAngleType> typesList = new ArrayList<TorsionAngleType>();
 
         for (AminoAcidType aminoAcidType : values()) {
-            ProteinSidechain residueComponent = aminoAcidType.getResidueComponent();
+            ProteinSidechain residueComponent = aminoAcidType.getProteinSidechainInstance();
             if (!residueComponent.hasChiDefined(chiType)) {
                 continue;
             }
@@ -75,5 +78,40 @@ public enum AminoAcidType {
         }
 
         return typesList.toArray(new TorsionAngleType[typesList.size()]);
+    }
+
+    @Override
+    public MoleculeType getMoleculeType() {
+        return sidechain.getMoleculeType();
+    }
+
+    @Override
+    public List<ResidueComponent> getAllMoleculeComponents() {
+        return sidechain.getAllMoleculeComponents();
+    }
+
+    @Override
+    public String getDescription() {
+        return sidechain.getDescription();
+    }
+
+    @Override
+    public char getOneLetterName() {
+        return sidechain.getOneLetterName();
+    }
+
+    @Override
+    public String getDefaultPdbName() {
+        return sidechain.getDefaultPdbName();
+    }
+
+    @Override
+    public List<String> getPdbNames() {
+        return sidechain.getPdbNames();
+    }
+
+    @Override
+    public List<TorsionAngleType> getTorsionAngleTypes() {
+        return sidechain.getTorsionAngleTypes();
     }
 }

@@ -141,7 +141,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     }
 
     public final boolean wasSuccessfullyDetected() {
-        return !(residueInformationProvider instanceof InvalidResidueInformationSupplier);
+        return !(residueInformationProvider instanceof InvalidResidueInformationProvider);
     }
 
     @Override

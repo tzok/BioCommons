@@ -1,9 +1,8 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -16,14 +15,14 @@ import pl.poznan.put.protein.aminoacid.AminoAcidType;
 import pl.poznan.put.rna.base.NucleobaseType;
 
 public class ResidueTypeDetector {
-    private static final List<ResidueInformationProvider> PROVIDERS = new ArrayList<ResidueInformationProvider>();
+    private static final Set<ResidueInformationProvider> PROVIDERS = new LinkedHashSet<ResidueInformationProvider>();
 
     static {
         for (NucleobaseType nucleobase : NucleobaseType.values()) {
-            ResidueTypeDetector.PROVIDERS.add(nucleobase.getResidueComponent());
+            ResidueTypeDetector.PROVIDERS.add(nucleobase);
         }
         for (AminoAcidType aminoAcid : AminoAcidType.values()) {
-            ResidueTypeDetector.PROVIDERS.add(aminoAcid.getResidueComponent());
+            ResidueTypeDetector.PROVIDERS.add(aminoAcid);
         }
     }
 
@@ -43,7 +42,7 @@ public class ResidueTypeDetector {
                 return provider;
             }
         }
-        return new InvalidResidueInformationSupplier(MoleculeType.UNKNOWN, residueName);
+        return new InvalidResidueInformationProvider(MoleculeType.UNKNOWN, residueName);
     }
 
     public static ResidueInformationProvider detectResidueTypeFromAtoms(
@@ -85,7 +84,7 @@ public class ResidueTypeDetector {
         if (bestScore < 0.5) {
             return bestProvider;
         }
-        return new InvalidResidueInformationSupplier(MoleculeType.UNKNOWN, residueName);
+        return new InvalidResidueInformationProvider(MoleculeType.UNKNOWN, residueName);
     }
 
     private static boolean hasHydrogen(Collection<AtomName> atomNames) {
