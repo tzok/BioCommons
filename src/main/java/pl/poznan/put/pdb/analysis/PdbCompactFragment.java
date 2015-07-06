@@ -14,7 +14,7 @@ import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 
-public class PdbCompactFragment {
+public class PdbCompactFragment implements ResidueCollection {
     private final String name;
     private final List<PdbResidue> residues;
     private final Map<PdbResidue, List<TorsionAngleValue>> mapResidueAngleValue = new LinkedHashMap<PdbResidue, List<TorsionAngleValue>>();
@@ -41,6 +41,7 @@ public class PdbCompactFragment {
         return name;
     }
 
+    @Override
     public List<PdbResidue> getResidues() {
         return Collections.unmodifiableList(residues);
     }
