@@ -25,6 +25,7 @@ import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
 
@@ -335,7 +336,7 @@ public class TestPdbModel {
         List<PdbModel> models = parser.parse(pdbString);
         PdbModel model = models.get(0);
 
-        BpSeq bpSeqFromModel = model.getCanonicalSecondaryStructure();
+        BpSeq bpSeqFromModel = CanonicalStructureExtractor.getCanonicalSecondaryStructure(model);
         assertEquals(bpSeqString, bpSeqFromModel.toString());
 
         BpSeq bpSeqFromString = BpSeq.fromString(bpSeqString);

@@ -11,22 +11,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import pl.poznan.put.notation.LeontisWesthof;
-import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.rna.RNAInteractionType;
-import pl.poznan.put.structure.secondary.BasePair;
-import pl.poznan.put.structure.secondary.ClassifiedBasePair;
-import pl.poznan.put.structure.secondary.HelixOrigin;
-import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
 
-public class PdbModel implements Serializable {
+public class PdbModel implements Serializable, ResidueCollection {
     private final List<PdbChain> chains = new ArrayList<PdbChain>();
     private final List<PdbResidue> residues = new ArrayList<PdbResidue>();
 
@@ -169,6 +161,7 @@ public class PdbModel implements Serializable {
         return Collections.unmodifiableList(atoms);
     }
 
+    @Override
     public List<PdbResidue> getResidues() {
         return Collections.unmodifiableList(residues);
     }
@@ -254,64 +247,5 @@ public class PdbModel implements Serializable {
         }
 
         return new PdbModel(headerLine, modelNumber, filteredAtoms, modifiedResidues, filteredMissing);
-    }
-
-    /*
-     * This is just a simple implementation. For a robust solution, see RNApdbee
-     * http://rnapdbee.cs.put.poznan.pl
-     */
-    public BpSeq getCanonicalSecondaryStructure() throws InvalidSecondaryStructureException {
-        List<ClassifiedBasePair> basePairs = new ArrayList<ClassifiedBasePair>();
-
-        for (int i = 0; i < residues.size(); i++) {
-            PdbResidue left = residues.get(i);
-            char leftName = Character.toUpperCase(left.getOneLetterName());
-
-            for (int j = 0; j < residues.size(); j++) {
-                if (Math.abs(i - j) <= 1) {
-                    continue;
-                }
-
-                PdbResidue right = residues.get(j);
-                char rightName = Character.toUpperCase(right.getOneLetterName());
-                Saenger saenger;
-
-                if (leftName == 'C' && rightName == 'G' && BasePair.isCanonicalCG(left, right)) {
-                    saenger = Saenger.XIX;
-                } else if (leftName == 'A' && rightName == 'U' && BasePair.isCanonicalAU(left, right)) {
-                    saenger = Saenger.XX;
-                } else if (leftName == 'G' && rightName == 'U' && BasePair.isCanonicalGU(left, right)) {
-                    saenger = Saenger.XXVIII;
-                } else {
-                    continue;
-                }
-
-                BasePair basePair = new BasePair(left, right);
-                ClassifiedBasePair classifiedBasePair = new ClassifiedBasePair(basePair, RNAInteractionType.BASE_BASE, saenger, LeontisWesthof.CWW, HelixOrigin.UNKNOWN);
-
-                if (PdbModel.areBothBasesUnpaired(basePairs, left, right)) {
-                    basePairs.add(classifiedBasePair);
-                }
-            }
-        }
-
-        return BpSeq.fromPdbModel(this, basePairs);
-    }
-
-    private static boolean areBothBasesUnpaired(
-            List<ClassifiedBasePair> basePairs, PdbResidue left,
-            PdbResidue right) {
-
-        for (ClassifiedBasePair classifiedBasePair : basePairs) {
-            BasePair basePair = classifiedBasePair.getBasePair();
-            PdbResidue bpLeft = basePair.getLeft();
-            PdbResidue bpRight = basePair.getRight();
-
-            if (bpLeft.equals(left) || bpLeft.equals(right) || bpRight.equals(left) || bpRight.equals(right)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }
