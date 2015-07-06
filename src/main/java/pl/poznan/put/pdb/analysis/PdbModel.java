@@ -18,7 +18,7 @@ import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 
-public class PdbModel implements Serializable {
+public class PdbModel implements Serializable, ResidueCollection {
     private final List<PdbChain> chains = new ArrayList<PdbChain>();
     private final List<PdbResidue> residues = new ArrayList<PdbResidue>();
 
@@ -161,6 +161,7 @@ public class PdbModel implements Serializable {
         return Collections.unmodifiableList(atoms);
     }
 
+    @Override
     public List<PdbResidue> getResidues() {
         return Collections.unmodifiableList(residues);
     }

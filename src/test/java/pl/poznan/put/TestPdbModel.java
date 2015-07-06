@@ -25,6 +25,9 @@ import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
+import pl.poznan.put.structure.secondary.formats.BpSeq;
+import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
 
 public class TestPdbModel {
     private String pdb1EHZ;
@@ -33,6 +36,11 @@ public class TestPdbModel {
     private String pdbPKB300;
     private String pdbAmber;
     private String pdb2MIY;
+    private String pdbFrabaseExport;
+
+    private String bpseq1EHZ;
+    private String bpseq2Z74;
+    private String bpseq2MIY;
 
     @Before
     public void loadPdbFile() throws URISyntaxException, IOException {
@@ -44,6 +52,11 @@ public class TestPdbModel {
         pdbPKB300 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/PKB300.pdb"), "utf-8");
         pdbAmber = FileUtils.readFileToString(new File(dir, "../../src/test/resources/amber.pdb"), "utf-8");
         pdb2MIY = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2MIY.pdb"), "utf-8");
+        pdbFrabaseExport = FileUtils.readFileToString(new File(dir, "../../src/test/resources/FrabaseExport.pdb"), "utf-8");
+
+        bpseq1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ-2D-bpseq.txt"), "utf-8");
+        bpseq2Z74 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2Z74-2D-bpseq.txt"), "utf-8");
+        bpseq2MIY = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2MIY-2D-bpseq.txt"), "utf-8");
     }
 
     @Test
@@ -309,5 +322,47 @@ public class TestPdbModel {
         String sequence = chain.getSequence();
         assertEquals(true, Character.isLowerCase(sequence.charAt(0)));
         assertEquals(true, StringUtils.isAllUpperCase(sequence.substring(1)));
+    }
+
+    @Test
+    public void testCanonicalSecondaryStructure() throws PdbParsingException, InvalidSecondaryStructureException {
+        assertBpSeqEquals(pdb1EHZ, bpseq1EHZ);
+        assertBpSeqEquals(pdb2Z74, bpseq2Z74);
+        assertBpSeqEquals(pdb2MIY, bpseq2MIY);
+    }
+
+    private static void assertBpSeqEquals(String pdbString, String bpSeqString) throws PdbParsingException, InvalidSecondaryStructureException {
+        PdbParser parser = new PdbParser(false);
+        List<PdbModel> models = parser.parse(pdbString);
+        PdbModel model = models.get(0);
+
+        BpSeq bpSeqFromModel = CanonicalStructureExtractor.getCanonicalSecondaryStructure(model);
+        assertEquals(bpSeqString, bpSeqFromModel.toString());
+
+        BpSeq bpSeqFromString = BpSeq.fromString(bpSeqString);
+        assertEquals(bpSeqFromString, bpSeqFromModel);
+    }
+
+    @Test
+    public void testFrabaseExport() throws PdbParsingException {
+        PdbParser parser = new PdbParser(false);
+        List<PdbModel> models = parser.parse(pdbFrabaseExport);
+        assertEquals(2, models.size());
+
+        PdbModel model = models.get(0);
+        List<PdbChain> chains = model.getChains();
+        List<PdbResidue> residues = model.getResidues();
+        List<PdbAtomLine> atoms = model.getAtoms();
+        assertEquals(1, chains.size());
+        assertEquals(7, residues.size());
+        assertEquals(150, atoms.size());
+
+        model = models.get(1);
+        chains = model.getChains();
+        residues = model.getResidues();
+        atoms = model.getAtoms();
+        assertEquals(1, chains.size());
+        assertEquals(7, residues.size());
+        assertEquals(150, atoms.size());
     }
 }

@@ -1,9 +1,8 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -16,46 +15,39 @@ import pl.poznan.put.protein.aminoacid.AminoAcidType;
 import pl.poznan.put.rna.base.NucleobaseType;
 
 public class ResidueTypeDetector {
-    private static final ResidueTypeDetector INSTANCE = new ResidueTypeDetector();
+    private static final Set<ResidueInformationProvider> PROVIDERS = new LinkedHashSet<ResidueInformationProvider>();
 
-    public static ResidueTypeDetector getInstance() {
-        return ResidueTypeDetector.INSTANCE;
-    }
-
-    private final List<ResidueInformationProvider> residueInformationProviders = new ArrayList<ResidueInformationProvider>();
-
-    private ResidueTypeDetector() {
-        super();
+    static {
         for (NucleobaseType nucleobase : NucleobaseType.values()) {
-            residueInformationProviders.add(nucleobase.getResidueComponent());
+            ResidueTypeDetector.PROVIDERS.add(nucleobase);
         }
         for (AminoAcidType aminoAcid : AminoAcidType.values()) {
-            residueInformationProviders.add(aminoAcid.getResidueComponent());
+            ResidueTypeDetector.PROVIDERS.add(aminoAcid);
         }
     }
 
-    public ResidueInformationProvider detectResidueType(String residueName,
-            Collection<AtomName> atomNames) {
-        ResidueInformationProvider provider = detectResidueTypeFromResidueName(residueName);
+    public static ResidueInformationProvider detectResidueType(
+            String residueName, Collection<AtomName> atomNames) {
+        ResidueInformationProvider provider = ResidueTypeDetector.detectResidueTypeFromResidueName(residueName);
         if (provider.getMoleculeType() != MoleculeType.UNKNOWN) {
             return provider;
         }
-        return detectResidueTypeFromAtoms(atomNames, residueName);
+        return ResidueTypeDetector.detectResidueTypeFromAtoms(atomNames, residueName);
     }
 
-    public ResidueInformationProvider detectResidueTypeFromResidueName(
+    public static ResidueInformationProvider detectResidueTypeFromResidueName(
             String residueName) {
-        for (ResidueInformationProvider provider : residueInformationProviders) {
+        for (ResidueInformationProvider provider : ResidueTypeDetector.PROVIDERS) {
             if (provider.getPdbNames().contains(residueName)) {
                 return provider;
             }
         }
-        return new InvalidResidueInformationSupplier(MoleculeType.UNKNOWN, residueName);
+        return new InvalidResidueInformationProvider(MoleculeType.UNKNOWN, residueName);
     }
 
-    public ResidueInformationProvider detectResidueTypeFromAtoms(
+    public static ResidueInformationProvider detectResidueTypeFromAtoms(
             Collection<AtomName> atomNames, String residueName) {
-        boolean hasHydrogen = hasHydrogen(atomNames);
+        boolean hasHydrogen = ResidueTypeDetector.hasHydrogen(atomNames);
         Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils.invokerPredicate("isHeavy");
         Set<AtomName> actual = new HashSet<AtomName>(atomNames);
 
@@ -66,7 +58,7 @@ public class ResidueTypeDetector {
         double bestScore = Double.POSITIVE_INFINITY;
         ResidueInformationProvider bestProvider = null;
 
-        for (ResidueInformationProvider provider : residueInformationProviders) {
+        for (ResidueInformationProvider provider : ResidueTypeDetector.PROVIDERS) {
             Set<AtomName> expected = new HashSet<AtomName>();
 
             for (ResidueComponent component : provider.getAllMoleculeComponents()) {
@@ -92,11 +84,15 @@ public class ResidueTypeDetector {
         if (bestScore < 0.5) {
             return bestProvider;
         }
-        return new InvalidResidueInformationSupplier(MoleculeType.UNKNOWN, residueName);
+        return new InvalidResidueInformationProvider(MoleculeType.UNKNOWN, residueName);
     }
 
     private static boolean hasHydrogen(Collection<AtomName> atomNames) {
         Predicate<AtomName> notIsHeavyPredicate = PredicateUtils.notPredicate(PredicateUtils.invokerPredicate("isHeavy"));
         return CollectionUtils.exists(atomNames, notIsHeavyPredicate);
+    }
+
+    private ResidueTypeDetector() {
+        // empty constructor
     }
 }

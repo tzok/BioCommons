@@ -12,10 +12,11 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
@@ -190,7 +191,9 @@ public class BpSeq implements Serializable {
         return new BpSeq(entries);
     }
 
-    public static BpSeq fromPdbModel(PdbModel model, List<ClassifiedBasePair> basePairs) throws InvalidSecondaryStructureException {
+    public static BpSeq fromResidueCollection(
+            ResidueCollection residueCollection,
+            List<ClassifiedBasePair> basePairs) throws InvalidSecondaryStructureException {
         List<BasePair> allBasePairs = new ArrayList<BasePair>();
         Map<BasePair, String> basePairToComment = new HashMap<BasePair, String>();
 
@@ -204,14 +207,15 @@ public class BpSeq implements Serializable {
         }
 
         List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
-        entries.addAll(BpSeq.generateEntriesForPaired(model, allBasePairs, basePairToComment));
-        entries.addAll(BpSeq.generateEntriesForUnpaired(model, allBasePairs));
+        entries.addAll(BpSeq.generateEntriesForPaired(residueCollection, allBasePairs, basePairToComment));
+        entries.addAll(BpSeq.generateEntriesForUnpaired(residueCollection, allBasePairs));
         return new BpSeq(entries);
     }
 
-    private static List<BpSeq.Entry> generateEntriesForUnpaired(PdbModel model, List<BasePair> allBasePairs) {
+    private static List<BpSeq.Entry> generateEntriesForUnpaired(
+            ResidueCollection residueCollection, List<BasePair> allBasePairs) {
         List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
-        List<PdbResidue> residues = model.getResidues();
+        List<PdbResidue> residues = residueCollection.getResidues();
         Set<PdbResidue> paired = new HashSet<PdbResidue>();
 
         for (BasePair basePair : allBasePairs) {
@@ -229,9 +233,12 @@ public class BpSeq implements Serializable {
         return entries;
     }
 
-    private static List<BpSeq.Entry> generateEntriesForPaired(PdbModel model, Collection<BasePair> basePairs, Map<BasePair, String> basePairToComment) {
+    private static List<BpSeq.Entry> generateEntriesForPaired(
+            ResidueCollection residueCollection,
+            Collection<BasePair> basePairs,
+            Map<BasePair, String> basePairToComment) {
         List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
-        List<PdbResidue> residues = model.getResidues();
+        List<PdbResidue> residues = residueCollection.getResidues();
 
         for (BasePair basePair : basePairs) {
             PdbResidue left = basePair.getLeft();
@@ -294,6 +301,44 @@ public class BpSeq implements Serializable {
         return Collections.unmodifiableSortedSet(entries);
     }
 
+    public String getSequence() {
+        StringBuilder builder = new StringBuilder();
+        for (Entry e : entries) {
+            builder.append(e.seq);
+        }
+        return builder.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (entries == null ? 0 : entries.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        BpSeq other = (BpSeq) obj;
+        if (entries == null) {
+            if (other.entries != null) {
+                return false;
+            }
+        } else if (!CollectionUtils.isEqualCollection(entries, other.entries)) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -303,14 +348,6 @@ public class BpSeq implements Serializable {
             builder.append('\n');
         }
 
-        return builder.toString();
-    }
-
-    public String getSequence() {
-        StringBuilder builder = new StringBuilder();
-        for (Entry e : entries) {
-            builder.append(e.seq);
-        }
         return builder.toString();
     }
 }
