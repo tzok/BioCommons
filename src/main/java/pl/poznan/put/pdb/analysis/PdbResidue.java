@@ -61,12 +61,11 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
         this.isMissing = isMissing;
         this.atomNames = detectAtomNames();
 
-        ResidueTypeDetector residueTypeDetector = ResidueTypeDetector.getInstance();
         if (isMissing) {
-            this.residueInformationProvider = residueTypeDetector.detectResidueTypeFromResidueName(residueName);
+            this.residueInformationProvider = ResidueTypeDetector.detectResidueTypeFromResidueName(residueName);
             this.isModified = false;
         } else {
-            this.residueInformationProvider = residueTypeDetector.detectResidueType(residueName, atomNames);
+            this.residueInformationProvider = ResidueTypeDetector.detectResidueType(residueName, atomNames);
             this.isModified = isModified || (wasSuccessfullyDetected() && !hasAllAtoms());
         }
     }
@@ -142,7 +141,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     }
 
     public final boolean wasSuccessfullyDetected() {
-        return !(residueInformationProvider instanceof InvalidResidueInformationSupplier);
+        return !(residueInformationProvider instanceof InvalidResidueInformationProvider);
     }
 
     @Override

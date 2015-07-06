@@ -15,8 +15,8 @@ import java.util.TreeSet;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
@@ -191,7 +191,8 @@ public class BpSeq implements Serializable {
         return new BpSeq(entries);
     }
 
-    public static BpSeq fromPdbModel(PdbModel model,
+    public static BpSeq fromResidueCollection(
+            ResidueCollection residueCollection,
             List<ClassifiedBasePair> basePairs) throws InvalidSecondaryStructureException {
         List<BasePair> allBasePairs = new ArrayList<BasePair>();
         Map<BasePair, String> basePairToComment = new HashMap<BasePair, String>();
@@ -206,15 +207,15 @@ public class BpSeq implements Serializable {
         }
 
         List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
-        entries.addAll(BpSeq.generateEntriesForPaired(model, allBasePairs, basePairToComment));
-        entries.addAll(BpSeq.generateEntriesForUnpaired(model, allBasePairs));
+        entries.addAll(BpSeq.generateEntriesForPaired(residueCollection, allBasePairs, basePairToComment));
+        entries.addAll(BpSeq.generateEntriesForUnpaired(residueCollection, allBasePairs));
         return new BpSeq(entries);
     }
 
-    private static List<BpSeq.Entry> generateEntriesForUnpaired(PdbModel model,
-            List<BasePair> allBasePairs) {
+    private static List<BpSeq.Entry> generateEntriesForUnpaired(
+            ResidueCollection residueCollection, List<BasePair> allBasePairs) {
         List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
-        List<PdbResidue> residues = model.getResidues();
+        List<PdbResidue> residues = residueCollection.getResidues();
         Set<PdbResidue> paired = new HashSet<PdbResidue>();
 
         for (BasePair basePair : allBasePairs) {
@@ -232,11 +233,12 @@ public class BpSeq implements Serializable {
         return entries;
     }
 
-    private static List<BpSeq.Entry> generateEntriesForPaired(PdbModel model,
+    private static List<BpSeq.Entry> generateEntriesForPaired(
+            ResidueCollection residueCollection,
             Collection<BasePair> basePairs,
             Map<BasePair, String> basePairToComment) {
         List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
-        List<PdbResidue> residues = model.getResidues();
+        List<PdbResidue> residues = residueCollection.getResidues();
 
         for (BasePair basePair : basePairs) {
             PdbResidue left = basePair.getLeft();
