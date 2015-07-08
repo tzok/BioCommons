@@ -39,10 +39,27 @@ public final class StructureManager {
         return result;
     }
 
+    public static List<String> getAllNames() {
+        List<String> result = new ArrayList<String>();
+        for (StructureInfo si : StructureManager.STRUCTURES) {
+            result.add(si.getName());
+        }
+        return result;
+    }
+
     public static File getFile(PdbModel structure) {
         for (StructureInfo si : StructureManager.STRUCTURES) {
             if (si.getStructure().equals(structure)) {
                 return si.getPath();
+            }
+        }
+        throw new IllegalArgumentException("Failed to find PdbModel");
+    }
+
+    public static PdbModel getStructure(String name) {
+        for (StructureInfo si : StructureManager.STRUCTURES) {
+            if (si.getName().equals(name)) {
+                return si.getStructure();
             }
         }
         throw new IllegalArgumentException("Failed to find PdbModel");
