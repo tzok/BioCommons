@@ -6,10 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.Stack;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
-import pl.poznan.put.structure.secondary.formats.BpSeq.Entry;
 
 public class DotBracket implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(DotBracket.class);
@@ -37,41 +35,63 @@ public class DotBracket implements Serializable {
     }
 
     private static String bpSeqToStructure(BpSeq bpSeq) {
-        Set<Entry> entries = bpSeq.getEntries();
-        char[] structure = new char[entries.size()];
-        char[] bracketsOpening = "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-        char[] bracketsClosing = ")]}>abcdefghijklmnopqrstuvwxyz".toCharArray();
+        Stack<Integer> stack = new Stack<Integer>();
 
-        Queue<BpSeq.Entry> remaining = new PriorityQueue<BpSeq.Entry>(entries);
-        int level = 0;
+        List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>(bpSeq.getEntries());
+        SortedSet<BpSeq.Entry> current = new TreeSet<BpSeq.Entry>();
+        SortedSet<BpSeq.Entry> next = new TreeSet<BpSeq.Entry>(entries);
 
-        while (!remaining.isEmpty()) {
-            Queue<Entry> queue = new PriorityQueue<BpSeq.Entry>(remaining);
-            remaining.clear();
-            int lastClosing = Integer.MAX_VALUE;
+        int[] levels = new int[entries.size()];
+        int currentLevel = 0;
 
-            while (!queue.isEmpty()) {
-                BpSeq.Entry entry = queue.poll();
+        while (!next.isEmpty()) {
+            current.clear();
+            current.addAll(next);
+            next.clear();
+
+            for (BpSeq.Entry entry : current) {
                 int index = entry.getIndex();
                 int pair = entry.getPair();
 
                 if (pair == 0) {
-                    structure[index - 1] = '.';
+                    levels[index - 1] = -1;
                 } else if (index < pair) {
-                    if (pair < lastClosing) {
-                        structure[index - 1] = bracketsOpening[level];
-                        structure[pair - 1] = bracketsClosing[level];
-                        lastClosing = pair;
+                    stack.push(index);
+                } else if (index > pair) {
+                    if (stack.contains(pair)) {
+                        while (stack.peek() != pair) {
+                            next.add(entries.get(stack.pop() - 1));
+                        }
+                        stack.pop();
+                        levels[index - 1] = currentLevel;
+                        levels[pair - 1] = currentLevel;
                     } else {
-                        remaining.add(entry);
+                        next.add(entry);
                     }
                 }
             }
 
-            level += 1;
+            currentLevel += 1;
         }
 
-        return new String(structure);
+        StringBuilder builder = new StringBuilder();
+        char[] bracketsOpening = "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+        char[] bracketsClosing = ")]}>abcdefghijklmnopqrstuvwxyz".toCharArray();
+
+        for (BpSeq.Entry entry : entries) {
+            int index = entry.getIndex();
+            int pair = entry.getPair();
+
+            if (pair == 0) {
+                builder.append('.');
+            } else if (index < pair) {
+                builder.append(bracketsOpening[levels[index - 1]]);
+            } else {
+                builder.append(bracketsClosing[levels[index - 1]]);
+            }
+        }
+
+        return builder.toString();
     }
 
     public static DotBracket fromString(String data) throws InvalidSecondaryStructureException {
