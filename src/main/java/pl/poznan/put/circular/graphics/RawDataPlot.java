@@ -13,6 +13,7 @@ import java.util.TreeMap;
 
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.svg.SVGDocument;
 
@@ -101,10 +102,10 @@ public class RawDataPlot extends AbstractDrawable {
         drawTicks(svgGraphics, majorTickSpread, rmajor);
 
         // observations for every degree on a circle (map key = 0..360)
-        Map<Integer, List<Circular>> observations = new TreeMap<>();
+        Map<Integer, List<Circular>> observations = new TreeMap<Integer, List<Circular>>();
 
         for (Circular circular : data) {
-            double degrees = circular.getDegrees();
+            double degrees = circular.getDegrees360();
             int index = (int) degrees;
 
             if (!observations.containsKey(index)) {
@@ -197,7 +198,7 @@ public class RawDataPlot extends AbstractDrawable {
         /*
          * First example
          */
-        List<Circular> data = new ArrayList<>();
+        List<Circular> data = new ArrayList<Circular>();
         List<String> lines = FileUtils.readLines(new File("data/D01"), "UTF-8");
 
         for (String line : lines) {
@@ -215,9 +216,13 @@ public class RawDataPlot extends AbstractDrawable {
         RawDataPlot plot = new RawDataPlot(data);
         plot.draw();
         SVGDocument svgDocument = plot.finalizeDrawingAndGetSVG();
+        OutputStream stream = null;
 
-        try (OutputStream stream = new FileOutputStream("/tmp/D01-plot.svg")) {
+        try {
+            stream = new FileOutputStream("/tmp/D01-plot.svg");
             SVGHelper.export(svgDocument, stream, Format.SVG, null);
+        } finally {
+            IOUtils.closeQuietly(stream);
         }
 
         /*
@@ -243,8 +248,11 @@ public class RawDataPlot extends AbstractDrawable {
         plot.draw();
         svgDocument = plot.finalizeDrawingAndGetSVG();
 
-        try (OutputStream stream = new FileOutputStream("/tmp/D02-plot.svg")) {
+        try {
+            stream = new FileOutputStream("/tmp/D02-plot.svg");
             SVGHelper.export(svgDocument, stream, Format.SVG, null);
+        } finally {
+            IOUtils.closeQuietly(stream);
         }
     }
 }
