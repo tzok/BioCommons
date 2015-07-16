@@ -2,6 +2,13 @@ package pl.poznan.put;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import pl.poznan.put.structure.secondary.formats.BpSeq;
@@ -35,8 +42,19 @@ public class TestDotBracket {
             ">strand_1" +
             "CCCCCCCCCCCCC\n" +
             "((.[[.{.)])}]";
-    // @formatter:off
-    
+    // @formatter:on
+
+    private String bpseq1EHZ;
+    private String dotBracket1EHZ;
+
+    @Before
+    public void loadPdbFile() throws URISyntaxException, IOException {
+        URI uri = getClass().getClassLoader().getResource(".").toURI();
+        File dir = new File(uri);
+        bpseq1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ-2D-bpseq.txt"), "utf-8");
+        dotBracket1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ-2D-dotbracket.txt"), "utf-8");
+    }
+
     @SuppressWarnings("static-method")
     @Test
     public void from2Z74() throws InvalidSecondaryStructureException {
@@ -50,6 +68,14 @@ public class TestDotBracket {
         BpSeq bpSeq = BpSeq.fromString(TestDotBracket.BPSEQ);
         DotBracket dotBracketFromBpSeq = DotBracket.fromBpSeq(bpSeq);
         DotBracket dotBracketFromString = DotBracket.fromString(TestDotBracket.DOTBRACKET);
+        assertEquals(dotBracketFromString, dotBracketFromBpSeq);
+    }
+
+    @Test
+    public void fromBpSeq1EHZ() throws InvalidSecondaryStructureException {
+        BpSeq bpSeq = BpSeq.fromString(bpseq1EHZ);
+        DotBracket dotBracketFromBpSeq = DotBracket.fromBpSeq(bpSeq);
+        DotBracket dotBracketFromString = DotBracket.fromString(dotBracket1EHZ);
         assertEquals(dotBracketFromString, dotBracketFromBpSeq);
     }
 }
