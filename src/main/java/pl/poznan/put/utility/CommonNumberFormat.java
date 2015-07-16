@@ -49,6 +49,6 @@ public class CommonNumberFormat extends NumberFormat {
     private CommonNumberFormat() {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setDecimalSeparator('.');
-        numberFormat = new DecimalFormat("###.###", symbols);
+        numberFormat = new DecimalFormat("###.##", symbols);
     }
 }
