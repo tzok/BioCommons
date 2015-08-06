@@ -11,6 +11,8 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 
+import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
@@ -238,8 +240,15 @@ public class Ct implements Serializable {
     }
 
     public static Ct fromBpSeqAndPdbModel(BpSeq bpSeq, PdbModel model) throws InvalidSecondaryStructureException {
+        PdbModel rna;
+        try {
+            rna = model.filteredNewInstance(MoleculeType.RNA);
+        } catch (PdbParsingException e) {
+            throw new InvalidSecondaryStructureException("Failed to filter RNA chains", e);
+        }
+
         List<Ct.Entry> ctEntries = new ArrayList<Ct.Entry>();
-        List<PdbResidue> residues = model.getResidues();
+        List<PdbResidue> residues = rna.getResidues();
         SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
         int i = 0;
 
@@ -274,7 +283,7 @@ public class Ct implements Serializable {
                 int index = symbol.getIndex() + 1;
                 int pairIndex = pair != null ? pair.getIndex() + 1 : 0;
                 int before = i;
-                int after = (i + 2) % (s.getTo() + 1);
+                int after = j == s.getTo() - 1 ? 0 : i + 2;
                 int original = dotBracket.getCtOriginalColumn(symbol);
                 char seq = symbol.getSequence();
 
