@@ -13,8 +13,7 @@ public enum NucleobaseType implements ResidueInformationProvider {
     CYTOSINE(Cytosine.getInstance()),
     GUANINE(Guanine.getInstance()),
     URACIL(Uracil.getInstance()),
-    THYMINE(Thymine.getInstance()),
-    UNKNOWN(Base.invalidInstance());
+    THYMINE(Thymine.getInstance());
 
     private final Base base;
 
@@ -24,15 +23,6 @@ public enum NucleobaseType implements ResidueInformationProvider {
 
     public Base getBaseInstance() {
         return base;
-    }
-
-    public static NucleobaseType fromOneLetterName(char oneLetterName) {
-        for (NucleobaseType candidate : NucleobaseType.values()) {
-            if (Character.toLowerCase(oneLetterName) == Character.toLowerCase(candidate.base.getOneLetterName())) {
-                return candidate;
-            }
-        }
-        return NucleobaseType.UNKNOWN;
     }
 
     @Override
