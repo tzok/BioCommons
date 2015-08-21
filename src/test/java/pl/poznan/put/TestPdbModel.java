@@ -21,6 +21,7 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
@@ -37,6 +38,7 @@ public class TestPdbModel {
     private String pdbAmber;
     private String pdb2MIY;
     private String pdbFrabaseExport;
+    private String pdb3KFU;
 
     private String bpseq1EHZ;
     private String bpseq2Z74;
@@ -53,6 +55,7 @@ public class TestPdbModel {
         pdbAmber = FileUtils.readFileToString(new File(dir, "../../src/test/resources/amber.pdb"), "utf-8");
         pdb2MIY = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2MIY.pdb"), "utf-8");
         pdbFrabaseExport = FileUtils.readFileToString(new File(dir, "../../src/test/resources/FrabaseExport.pdb"), "utf-8");
+        pdb3KFU = FileUtils.readFileToString(new File(dir, "../../src/test/resources/3KFU.pdb"), "utf-8");
 
         bpseq1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ-2D-bpseq.txt"), "utf-8");
         bpseq2Z74 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2Z74-2D-bpseq.txt"), "utf-8");
@@ -364,5 +367,18 @@ public class TestPdbModel {
         assertEquals(1, chains.size());
         assertEquals(7, residues.size());
         assertEquals(150, atoms.size());
+    }
+
+    @Test
+    public void testModelWithResiduesUNK() throws PdbParsingException {
+        PdbParser parser = new PdbParser(false);
+        List<PdbModel> models = parser.parse(pdb3KFU);
+        assertEquals(1, models.size());
+
+        PdbModel model = models.get(0);
+        assertEquals(14, model.getChains().size());
+
+        PdbModel rna = model.filteredNewInstance(MoleculeType.RNA);
+        assertEquals(4, rna.getChains().size());
     }
 }
