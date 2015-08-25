@@ -10,6 +10,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
@@ -163,6 +165,7 @@ public class Ct implements Serializable {
         }
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Ct.class);
     private static final boolean FIX_LAST_ENTRY = true;
     private static boolean printComments = true;
 
@@ -274,7 +277,7 @@ public class Ct implements Serializable {
                 int index = symbol.getIndex() + 1;
                 int pairIndex = pair != null ? pair.getIndex() + 1 : 0;
                 int before = i;
-                int after = (i + 2) % (s.getTo() + 1);
+                int after = j == s.getTo() - 1 ? 0 : i + 2;
                 int original = dotBracket.getCtOriginalColumn(symbol);
                 char seq = symbol.getSequence();
 
@@ -310,6 +313,10 @@ public class Ct implements Serializable {
      * Check if all pairs match.
      */
     private void validate() throws InvalidSecondaryStructureException {
+        if (Ct.LOGGER.isTraceEnabled()) {
+            Ct.LOGGER.trace("CT to be validated:\n" + toString());
+        }
+
         Map<Integer, Integer> map = new HashMap<Integer, Integer>();
 
         for (Entry e : entries) {

@@ -6,6 +6,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import pl.poznan.put.structure.secondary.formats.Ct;
@@ -135,6 +137,13 @@ public class TestCt {
                     "3 U 2 4 1 12314\n" + 
                     "4 C 3 0 0 12315\n";
     //@formatter:on
+
+    private String dbn4UG0;
+
+    @Before
+    public void prepare() throws IOException {
+        dbn4UG0 = IOUtils.toString(TestCt.class.getClassLoader().getResourceAsStream("4UG0-dotbracket.txt"));
+    }
 
     @SuppressWarnings("static-method")
     @Test
@@ -280,5 +289,11 @@ public class TestCt {
     @Test
     public void fromDotBracket() throws InvalidSecondaryStructureException {
         Ct.fromDotBracket(DotBracket.fromString(TestDotBracket.FROM_2Z74));
+    }
+
+    @Test
+    public void test4UG0() throws InvalidSecondaryStructureException {
+        DotBracket dotBracket = DotBracket.fromString(dbn4UG0);
+        Ct.fromDotBracket(dotBracket);
     }
 }
