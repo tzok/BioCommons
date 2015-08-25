@@ -14,6 +14,8 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
@@ -126,6 +128,7 @@ public class BpSeq implements Serializable {
         }
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(BpSeq.class);
     private static boolean printComments = false;
 
     public static BpSeq fromString(String data) throws InvalidSecondaryStructureException {
@@ -243,10 +246,11 @@ public class BpSeq implements Serializable {
         for (BasePair basePair : basePairs) {
             PdbResidue left = basePair.getLeft();
             PdbResidue right = basePair.getRight();
-            int indexL = residues.indexOf(left);
-            int indexR = residues.indexOf(right);
-            entries.add(new Entry(indexL + 1, indexR + 1, left.getOneLetterName(), basePairToComment.get(basePair)));
-            entries.add(new Entry(indexR + 1, indexL + 1, right.getOneLetterName(), basePairToComment.get(basePair)));
+            int indexL = 1 + residues.indexOf(left);
+            int indexR = 1 + residues.indexOf(right);
+            entries.add(new Entry(indexL, indexR, left.getOneLetterName(), basePairToComment.get(basePair)));
+            entries.add(new Entry(indexR, indexL, right.getOneLetterName(), basePairToComment.get(basePair)));
+            BpSeq.LOGGER.trace("Storing pair (" + indexL + " -> " + indexR + ") which is (" + left + " -> " + right + ")");
         }
 
         return entries;
