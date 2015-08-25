@@ -1,8 +1,22 @@
 package pl.poznan.put;
 
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 
+import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
+import pl.poznan.put.structure.secondary.formats.Ct;
 import pl.poznan.put.structure.secondary.formats.DotBracket;
 import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
 
@@ -20,6 +34,17 @@ public class TestBpSeq {
     private static final String INPUT_SELF_PAIRED = "1 A 0\n" + "2 C 2\n" + "3 G 0\n" + "4 U 0";
     private static final String INPUT_MAPPING_1 = "1 A 0\n" + "2 C 5\n" + "3 G 2\n" + "4 U 0";
     private static final String INPUT_MAPPING_2 = "1 A 0\n" + "2 C 3\n" + "3 G 4\n" + "4 U 3";
+
+    private String pdb1XPO;
+    private String bpseq1XPO;
+
+    @Before
+    public void loadPdbFile() throws URISyntaxException, IOException {
+        URI uri = getClass().getClassLoader().getResource(".").toURI();
+        File dir = new File(uri);
+        pdb1XPO = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1XPO.pdb"), "utf-8");
+        bpseq1XPO = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1XPO.bpseq"), "utf-8");
+    }
 
     @SuppressWarnings("static-method")
     @Test
@@ -99,5 +124,16 @@ public class TestBpSeq {
     public void fromDotBracket() throws InvalidSecondaryStructureException {
         DotBracket db = DotBracket.fromString(TestDotBracket.FROM_2Z74);
         BpSeq.fromDotBracket(db);
+    }
+
+    @Test
+    public void testManyChainsWithMissingResidues() throws PdbParsingException, InvalidSecondaryStructureException {
+        PdbParser parser = new PdbParser();
+        List<PdbModel> models = parser.parse(pdb1XPO);
+        assertEquals(1, models.size());
+        PdbModel model = models.get(0);
+
+        BpSeq bpSeq = BpSeq.fromString(bpseq1XPO);
+        Ct.fromBpSeqAndPdbModel(bpSeq, model);
     }
 }

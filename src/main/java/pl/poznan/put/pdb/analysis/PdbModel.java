@@ -78,11 +78,24 @@ public class PdbModel implements Serializable {
             List<PdbAtomLine> emptyAtomList = Collections.emptyList();
             PdbResidue residue = new PdbResidue(PdbResidueIdentifier.fromChainNumberICode(missingResidue), missingResidue.getResidueName(), emptyAtomList, false, true);
 
-            for (int i = 0; i < residues.size(); i++) {
-                if (residues.get(i).compareTo(residue) > 0) {
+            char chain = residue.getChainIdentifier();
+            boolean isChainFound = false;
+            int i = 0;
+
+            while (i < residues.size()) {
+                PdbResidue existing = residues.get(i);
+                char existingChain = existing.getChainIdentifier();
+
+                if (!isChainFound && chain == existingChain) {
+                    isChainFound = true;
+                }
+
+                if (isChainFound && (existing.compareTo(residue) > 0 || chain != existingChain)) {
                     residues.add(i, residue);
                     break;
                 }
+
+                i += 1;
             }
         }
 

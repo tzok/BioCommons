@@ -13,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.poznan.put.common.MoleculeType;
+import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
@@ -241,8 +243,15 @@ public class Ct implements Serializable {
     }
 
     public static Ct fromBpSeqAndPdbModel(BpSeq bpSeq, PdbModel model) throws InvalidSecondaryStructureException {
+        PdbModel rna;
+        try {
+            rna = model.filteredNewInstance(MoleculeType.RNA);
+        } catch (PdbParsingException e) {
+            throw new InvalidSecondaryStructureException("Failed to filter RNA chains", e);
+        }
+
         List<Ct.Entry> ctEntries = new ArrayList<Ct.Entry>();
-        List<PdbResidue> residues = model.getResidues();
+        List<PdbResidue> residues = rna.getResidues();
         SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
         int i = 0;
 
