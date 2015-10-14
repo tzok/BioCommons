@@ -163,6 +163,10 @@ public final class StructureManager {
     }
 
     private static boolean isGzipStream(byte[] bytes) {
+        if (bytes.length < 2) {
+            return false;
+        }
+
         int head = bytes[0] & 0xff | bytes[1] << 8 & 0xff00;
         return GZIPInputStream.GZIP_MAGIC == head;
     }
