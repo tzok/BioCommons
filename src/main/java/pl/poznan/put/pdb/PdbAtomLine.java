@@ -66,7 +66,8 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     }
 
     public static PdbAtomLine parse(String line, boolean strictMode) throws PdbParsingException {
-        // in non-strict mode, only up to X, Y, Z fields are required, rest is optional
+        // in non-strict mode, only up to X, Y, Z fields are required, rest is
+        // optional
         if (strictMode && line.length() < 80 || !strictMode && line.length() < 54) {
             throw new PdbParsingException("PDB ATOM line is too short");
         }
@@ -119,11 +120,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     private final String elementSymbol;
     private final String charge;
 
-    public PdbAtomLine(int serialNumber, String atomName,
-            char alternateLocation, String residueName, char chainIdentifier,
-            int residueNumber, char insertionCode, double x, double y,
-            double z, double occupancy, double temperatureFactor,
-            String elementSymbol, String charge) {
+    public PdbAtomLine(int serialNumber, String atomName, char alternateLocation, String residueName, char chainIdentifier, int residueNumber, char insertionCode, double x, double y, double z, double occupancy, double temperatureFactor, String elementSymbol, String charge) {
         super();
         this.serialNumber = serialNumber;
         this.atomName = atomName;
@@ -231,7 +228,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
 
         try {
             group.setPDBName(residueName);
-        } catch (PDBParseException e) {
+        } catch (@SuppressWarnings("unused") PDBParseException e) {
             // do nothing
         }
 

@@ -4,14 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class DotBracketFromPdb extends DotBracket {
-    private final Map<DotBracketSymbol, PdbResidue> symbolToResidue = new HashMap<DotBracketSymbol, PdbResidue>();
-    private final Map<PdbResidue, DotBracketSymbol> residueToSymbol = new HashMap<PdbResidue, DotBracketSymbol>();
+    private final Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue = new HashMap<DotBracketSymbol, PdbResidueIdentifier>();
+    private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<PdbResidueIdentifier, DotBracketSymbol>();
 
     public DotBracketFromPdb(String sequence, String structure, PdbModel model) throws InvalidSecondaryStructureException {
         super(sequence, DotBracketFromPdb.updateMissingIndices(structure, model));
@@ -43,10 +44,11 @@ public class DotBracketFromPdb extends DotBracket {
         assert residues.size() == symbols.size();
 
         for (int i = 0; i < residues.size(); i++) {
-            PdbResidue residue = residues.get(i);
             DotBracketSymbol symbol = symbols.get(i);
-            symbolToResidue.put(symbol, residue);
-            residueToSymbol.put(residue, symbol);
+            PdbResidue residue = residues.get(i);
+            PdbResidueIdentifier residueIdentifier = residue.getResidueIdentifier();
+            symbolToResidue.put(symbol, residueIdentifier);
+            residueToSymbol.put(residueIdentifier, symbol);
         }
     }
 
@@ -62,12 +64,12 @@ public class DotBracketFromPdb extends DotBracket {
         }
     }
 
-    public PdbResidue getResidue(DotBracketSymbol symbol) {
+    public PdbResidueIdentifier getResidueIdentifier(DotBracketSymbol symbol) {
         return symbolToResidue.get(symbol);
     }
 
-    public DotBracketSymbol getSymbol(PdbResidue residue) {
-        return residueToSymbol.get(residue);
+    public DotBracketSymbol getSymbol(PdbResidueIdentifier residueIdentifier) {
+        return residueToSymbol.get(residueIdentifier);
     }
 
     @Override

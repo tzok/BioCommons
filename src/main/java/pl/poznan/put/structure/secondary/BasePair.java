@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
 public class BasePair implements Serializable, Comparable<BasePair> {
@@ -90,18 +91,18 @@ public class BasePair implements Serializable, Comparable<BasePair> {
         return n3n1 <= BasePair.CG_DISTANCE_N3_N1 && o2n2 <= BasePair.CG_DISTANCE_O2_N2 && n4o6 <= BasePair.CG_DISTANCE_N4_O6;
     }
 
-    private Pair<PdbResidue, PdbResidue> pair;
+    private Pair<PdbResidueIdentifier, PdbResidueIdentifier> pair;
 
-    public BasePair(PdbResidue left, PdbResidue right) {
+    public BasePair(PdbResidueIdentifier left, PdbResidueIdentifier right) {
         super();
         pair = Pair.of(left, right);
     }
 
-    public PdbResidue getLeft() {
+    public PdbResidueIdentifier getLeft() {
         return pair.getLeft();
     }
 
-    public PdbResidue getRight() {
+    public PdbResidueIdentifier getRight() {
         return pair.getRight();
     }
 

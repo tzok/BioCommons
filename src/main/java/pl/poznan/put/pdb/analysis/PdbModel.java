@@ -36,9 +36,7 @@ public class PdbModel implements Serializable, ResidueCollection {
         this(PdbHeaderLine.emptyInstance(), 1, atoms, Collections.<PdbModresLine> emptyList(), Collections.<PdbRemark465Line> emptyList());
     }
 
-    public PdbModel(PdbHeaderLine headerLine, int modelNumber,
-            List<PdbAtomLine> atoms, List<PdbModresLine> modifiedResidues,
-            List<PdbRemark465Line> missingResidues) throws PdbParsingException {
+    public PdbModel(PdbHeaderLine headerLine, int modelNumber, List<PdbAtomLine> atoms, List<PdbModresLine> modifiedResidues, List<PdbRemark465Line> missingResidues) throws PdbParsingException {
         super();
         this.headerLine = headerLine;
         this.modelNumber = modelNumber;
@@ -110,8 +108,7 @@ public class PdbModel implements Serializable, ResidueCollection {
         }
     }
 
-    private void saveExistingResidueIfValid(List<PdbAtomLine> residueAtoms,
-            PdbResidueIdentifier residueIdentifier) {
+    private void saveExistingResidueIfValid(List<PdbAtomLine> residueAtoms, PdbResidueIdentifier residueIdentifier) {
         assert !isMissing(residueIdentifier);
         assert residueAtoms.size() > 0;
 
@@ -195,11 +192,12 @@ public class PdbModel implements Serializable, ResidueCollection {
         return missingResiduesIdentifiers.contains(residueIdentifier);
     }
 
-    public PdbResidue findResidue(char chainIdentifier, int residueNumber,
-            char insertionCode) {
+    @Override
+    public PdbResidue findResidue(char chainIdentifier, int residueNumber, char insertionCode) {
         return findResidue(new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode));
     }
 
+    @Override
     public PdbResidue findResidue(PdbResidueIdentifier query) {
         if (!identifierToResidue.containsKey(query)) {
             throw new IllegalArgumentException("Failed to find residue: " + query);
@@ -208,8 +206,7 @@ public class PdbModel implements Serializable, ResidueCollection {
         return identifierToResidue.get(query);
     }
 
-    public PdbChain findChainContainingResidue(
-            PdbResidueIdentifier residueIdentifier) {
+    public PdbChain findChainContainingResidue(PdbResidueIdentifier residueIdentifier) {
         return identifierToChain.get(residueIdentifier);
     }
 

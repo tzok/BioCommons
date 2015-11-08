@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
@@ -46,6 +47,21 @@ public class PdbCompactFragment implements ResidueCollection {
     @Override
     public List<PdbResidue> getResidues() {
         return Collections.unmodifiableList(residues);
+    }
+
+    @Override
+    public PdbResidue findResidue(char chainIdentifier, int residueNumber, char insertionCode) {
+        return findResidue(new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode));
+    }
+
+    @Override
+    public PdbResidue findResidue(PdbResidueIdentifier query) {
+        for (PdbResidue residue : residues) {
+            if (query.equals(residue.getChainIdentifier())) {
+                return residue;
+            }
+        }
+        throw new IllegalArgumentException("Failed to find residue: " + query);
     }
 
     @Override
@@ -85,8 +101,7 @@ public class PdbCompactFragment implements ResidueCollection {
         return set;
     }
 
-    public TorsionAngleValue getTorsionAngleValue(PdbResidue residue,
-            MasterTorsionAngleType masterType) {
+    public TorsionAngleValue getTorsionAngleValue(PdbResidue residue, MasterTorsionAngleType masterType) {
         Collection<? extends TorsionAngleType> angleTypes = masterType.getAngleTypes();
         for (TorsionAngleValue angleValue : mapResidueAngleValue.get(residue)) {
             for (TorsionAngleType angleType : angleTypes) {
