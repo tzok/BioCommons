@@ -61,7 +61,7 @@
 		<dependency>
 			<groupId>pl.poznan.put</groupId>
 			<artifactId>TzokCommons</artifactId>
-			<version>1.4</version>
+			<version>1.4.1</version>
 		</dependency>
 
 		<dependency>
