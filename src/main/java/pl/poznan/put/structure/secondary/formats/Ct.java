@@ -136,13 +136,7 @@ public class Ct implements Serializable {
             if (original != other.original) {
                 return false;
             }
-            if (pair != other.pair) {
-                return false;
-            }
-            if (seq != other.seq) {
-                return false;
-            }
-            return true;
+            return pair == other.pair && seq == other.seq;
         }
 
         @Override
@@ -285,12 +279,11 @@ public class Ct implements Serializable {
 
                 int index = symbol.getIndex() + 1;
                 int pairIndex = pair != null ? pair.getIndex() + 1 : 0;
-                int before = i;
                 int after = j == s.getTo() - 1 ? 0 : i + 2;
                 int original = dotBracket.getCtOriginalColumn(symbol);
                 char seq = symbol.getSequence();
 
-                entries.add(new Ct.Entry(index, pairIndex, before, after, original, seq));
+                entries.add(new Ct.Entry(index, pairIndex, i, after, original, seq));
             }
         }
 

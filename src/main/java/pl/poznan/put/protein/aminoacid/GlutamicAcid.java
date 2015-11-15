@@ -17,7 +17,7 @@ public class GlutamicAcid extends ProteinSidechain {
     }
 
     private GlutamicAcid() {
-        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.HG1, AtomName.HG2, AtomName.CD, AtomName.OE1, AtomName.OE2 }), "Glutamic acid", 'E', "GLU");
+        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.HG1, AtomName.HG2, AtomName.CD, AtomName.OE1, AtomName.OE2), "Glutamic acid", 'E', "GLU");
         torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
         torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
         torsionAngleTypes.add(Chi3.getInstance(getChiAtoms(ProteinChiType.CHI3)));

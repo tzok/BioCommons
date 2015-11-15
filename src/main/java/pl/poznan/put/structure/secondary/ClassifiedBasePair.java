@@ -109,10 +109,7 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
         if (leontisWesthof != other.leontisWesthof) {
             return false;
         }
-        if (saenger != other.saenger) {
-            return false;
-        }
-        return true;
+        return saenger == other.saenger;
     }
 
     @Override
@@ -132,9 +129,9 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
     public String generateComment() {
         if (saenger != Saenger.UNKNOWN && leontisWesthof != LeontisWesthof.UNKNOWN) {
             return "S:" + saenger + ", LW:" + leontisWesthof;
-        } else if (saenger != Saenger.UNKNOWN && leontisWesthof == LeontisWesthof.UNKNOWN) {
+        } else if (saenger != Saenger.UNKNOWN) {
             return "S:" + saenger;
-        } else if (saenger == Saenger.UNKNOWN && leontisWesthof != LeontisWesthof.UNKNOWN) {
+        } else if (leontisWesthof != LeontisWesthof.UNKNOWN) {
             return "LW:" + leontisWesthof;
         }
         return "unknown classification";

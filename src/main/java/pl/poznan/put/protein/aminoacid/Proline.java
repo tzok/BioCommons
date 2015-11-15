@@ -16,7 +16,7 @@ public class Proline extends ProteinSidechain {
     }
 
     private Proline() {
-        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CD, AtomName.HD1, AtomName.HD2, AtomName.CG, AtomName.HG1, AtomName.HG2 }), "Proline", 'P', "PRO");
+        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CD, AtomName.HD1, AtomName.HD2, AtomName.CG, AtomName.HG1, AtomName.HG2), "Proline", 'P', "PRO");
         torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
         torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
     }

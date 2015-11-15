@@ -15,8 +15,8 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     private final Quadruplet<Integer> residueRule;
 
     public AtomBasedTorsionAngleType(MoleculeType moleculeType,
-            String displayName, Quadruplet<AtomName> atoms,
-            Quadruplet<Integer> residueRule) {
+                                     String displayName, Quadruplet<AtomName> atoms,
+                                     Quadruplet<Integer> residueRule) {
         super(moleculeType);
         this.displayName = displayName;
         this.atoms = atoms;
@@ -94,7 +94,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
 
     @Override
     public TorsionAngleValue calculate(List<PdbResidue> residues,
-            int currentIndex) throws InvalidCircularValueException {
+                                       int currentIndex) throws InvalidCircularValueException {
         PdbAtomLine[] foundAtoms = new PdbAtomLine[4];
 
         for (int i = 0; i < 4; i++) {
@@ -115,7 +115,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     }
 
     public TorsionAngleValue calculate(PdbAtomLine a1, PdbAtomLine a2,
-            PdbAtomLine a3, PdbAtomLine a4) {
+                                       PdbAtomLine a3, PdbAtomLine a4) {
         return new TorsionAngleValue(this, TorsionAnglesHelper.calculateTorsionAngle(a1, a2, a3, a4));
     }
 }

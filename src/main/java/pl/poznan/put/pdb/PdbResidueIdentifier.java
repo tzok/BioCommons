@@ -59,13 +59,7 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier> {
         if (chainIdentifier != other.chainIdentifier) {
             return false;
         }
-        if (insertionCode != other.insertionCode) {
-            return false;
-        }
-        if (residueNumber != other.residueNumber) {
-            return false;
-        }
-        return true;
+        return insertionCode == other.insertionCode && residueNumber == other.residueNumber;
     }
 
     @Override

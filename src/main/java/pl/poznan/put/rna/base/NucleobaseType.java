@@ -17,7 +17,7 @@ public enum NucleobaseType implements ResidueInformationProvider {
 
     private final Base base;
 
-    private NucleobaseType(Base base) {
+    NucleobaseType(Base base) {
         this.base = base;
     }
 

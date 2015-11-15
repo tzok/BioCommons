@@ -15,7 +15,7 @@ public class Threonine extends ProteinSidechain {
     }
 
     private Threonine() {
-        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB, AtomName.OG1, AtomName.HG1, AtomName.CG2, AtomName.HG21, AtomName.HG22, AtomName.HG23 }), "Threonine", 'T', "THR");
+        super(Arrays.asList(AtomName.CB, AtomName.HB, AtomName.OG1, AtomName.HG1, AtomName.CG2, AtomName.HG21, AtomName.HG22, AtomName.HG23), "Threonine", 'T', "THR");
         torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     }
 

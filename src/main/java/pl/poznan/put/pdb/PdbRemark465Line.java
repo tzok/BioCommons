@@ -55,11 +55,8 @@ public class PdbRemark465Line extends PdbRemarkLine implements ChainNumberICode 
             }
         }
 
-        if (lineTrimmed.startsWith("REMARK 465   MODELS")) {
-            return true;
-        }
+        return lineTrimmed.startsWith("REMARK 465   MODELS");
 
-        return false;
     }
 
     public static PdbRemark465Line parse(String line) throws PdbParsingException {

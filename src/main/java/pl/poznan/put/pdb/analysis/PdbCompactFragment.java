@@ -57,7 +57,7 @@ public class PdbCompactFragment implements ResidueCollection {
     @Override
     public PdbResidue findResidue(PdbResidueIdentifier query) {
         for (PdbResidue residue : residues) {
-            if (query.equals(residue.getChainIdentifier())) {
+            if (query.equals(residue.getResidueIdentifier())) {
                 return residue;
             }
         }

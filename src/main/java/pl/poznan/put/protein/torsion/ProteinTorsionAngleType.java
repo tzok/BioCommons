@@ -22,7 +22,7 @@ public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
 
     private final List<TorsionAngleType> angleTypes;
 
-    private ProteinTorsionAngleType(TorsionAngleType... angleTypes) {
+    ProteinTorsionAngleType(TorsionAngleType... angleTypes) {
         this.angleTypes = Arrays.asList(angleTypes);
     }
 

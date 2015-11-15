@@ -9,10 +9,9 @@ public class InvalidResidueInformationProvider implements ResidueInformationProv
     private final MoleculeType moleculeType;
     private final String pdbName;
 
-    public InvalidResidueInformationProvider(MoleculeType moleculeType,
-            String pdbName) {
+    public InvalidResidueInformationProvider(String pdbName) {
         super();
-        this.moleculeType = moleculeType;
+        this.moleculeType = MoleculeType.UNKNOWN;
         this.pdbName = pdbName;
     }
 

@@ -5,7 +5,7 @@ import pl.poznan.put.utility.AngleFormat;
 
 public class TorsionAngleDelta {
     public enum State {
-        TARGET_INVALID, MODEL_INVALID, BOTH_INVALID, BOTH_VALID;
+        TARGET_INVALID, MODEL_INVALID, BOTH_INVALID, BOTH_VALID
     }
 
     public static TorsionAngleDelta bothInvalidInstance(

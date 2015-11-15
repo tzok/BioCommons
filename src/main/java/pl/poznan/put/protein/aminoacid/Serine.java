@@ -15,7 +15,7 @@ public class Serine extends ProteinSidechain {
     }
 
     private Serine() {
-        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.OG, AtomName.HG1 }), "Serine", 'S', "SER");
+        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.OG, AtomName.HG1), "Serine", 'S', "SER");
         torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     }
 

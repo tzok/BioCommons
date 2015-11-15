@@ -147,13 +147,7 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
         if (index != other.index) {
             return false;
         }
-        if (sequence != other.sequence) {
-            return false;
-        }
-        if (structure != other.structure) {
-            return false;
-        }
-        return true;
+        return sequence == other.sequence && structure == other.structure;
     }
 
     @Override

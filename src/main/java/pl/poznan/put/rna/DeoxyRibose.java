@@ -12,6 +12,6 @@ public class DeoxyRibose extends Sugar {
     }
 
     private DeoxyRibose() {
-        super(Arrays.asList(new AtomName[] { AtomName.C5p, AtomName.H5p, AtomName.H5pp, AtomName.C4p, AtomName.H4p, AtomName.O4p, AtomName.C3p, AtomName.H3p, AtomName.C2p, AtomName.H2p, AtomName.H2pp, AtomName.C1p, AtomName.H1p }));
+        super(Arrays.asList(AtomName.C5p, AtomName.H5p, AtomName.H5pp, AtomName.C4p, AtomName.H4p, AtomName.O4p, AtomName.C3p, AtomName.H3p, AtomName.C2p, AtomName.H2p, AtomName.H2pp, AtomName.C1p, AtomName.H1p));
     }
 }

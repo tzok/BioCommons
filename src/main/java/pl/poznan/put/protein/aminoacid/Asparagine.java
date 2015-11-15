@@ -16,7 +16,7 @@ public class Asparagine extends ProteinSidechain {
     }
 
     private Asparagine() {
-        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.OD1, AtomName.ND2, AtomName.HD21, AtomName.HD22 }), "Asparagine", 'N', "ASN");
+        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.OD1, AtomName.ND2, AtomName.HD21, AtomName.HD22), "Asparagine", 'N', "ASN");
         torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
         torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
     }

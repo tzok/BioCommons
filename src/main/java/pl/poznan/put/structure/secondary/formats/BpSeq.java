@@ -103,13 +103,7 @@ public class BpSeq implements Serializable {
             if (index != other.index) {
                 return false;
             }
-            if (pair != other.pair) {
-                return false;
-            }
-            if (seq != other.seq) {
-                return false;
-            }
-            return true;
+            return pair == other.pair && seq == other.seq;
         }
 
         @Override
@@ -265,7 +259,7 @@ public class BpSeq implements Serializable {
     /*
      * Check if all pairs match.
      */
-    private final void validate() throws InvalidSecondaryStructureException {
+    private void validate() throws InvalidSecondaryStructureException {
         Map<Integer, Integer> map = new HashMap<Integer, Integer>();
 
         for (Entry e : entries) {

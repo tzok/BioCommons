@@ -16,7 +16,7 @@ public class AsparticAcid extends ProteinSidechain {
     }
 
     private AsparticAcid() {
-        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.OD1, AtomName.OD2 }), "Aspartic acid", 'D', "ASP");
+        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.OD1, AtomName.OD2), "Aspartic acid", 'D', "ASP");
         torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
         torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
     }

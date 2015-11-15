@@ -18,7 +18,7 @@ public class Lysine extends ProteinSidechain {
     }
 
     private Lysine() {
-        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.HG1, AtomName.HG2, AtomName.CD, AtomName.HD1, AtomName.HD2, AtomName.CE, AtomName.HE1, AtomName.HE2, AtomName.NZ, AtomName.HZ1, AtomName.HZ2, AtomName.HZ3 }), "Lysine", 'K', "LYS");
+        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.HG1, AtomName.HG2, AtomName.CD, AtomName.HD1, AtomName.HD2, AtomName.CE, AtomName.HE1, AtomName.HE2, AtomName.NZ, AtomName.HZ1, AtomName.HZ2, AtomName.HZ3), "Lysine", 'K', "LYS");
         torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
         torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
         torsionAngleTypes.add(Chi3.getInstance(getChiAtoms(ProteinChiType.CHI3)));

@@ -14,6 +14,6 @@ public class ProteinBackbone extends ResidueComponent {
     }
 
     private ProteinBackbone() {
-        super("backbone", MoleculeType.PROTEIN, Arrays.asList(new AtomName[] { AtomName.N, AtomName.HN, AtomName.CA, AtomName.HA, AtomName.C, AtomName.O }));
+        super("backbone", MoleculeType.PROTEIN, Arrays.asList(AtomName.N, AtomName.HN, AtomName.CA, AtomName.HA, AtomName.C, AtomName.O));
     }
 }

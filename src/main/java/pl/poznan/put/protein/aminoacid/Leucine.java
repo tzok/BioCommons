@@ -16,7 +16,7 @@ public class Leucine extends ProteinSidechain {
     }
 
     private Leucine() {
-        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.HG, AtomName.CD1, AtomName.HD11, AtomName.HD12, AtomName.HD13, AtomName.CD2, AtomName.HD21, AtomName.HD22, AtomName.HD23 }), "Leucine", 'L', "LEU");
+        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.CG, AtomName.HG, AtomName.CD1, AtomName.HD11, AtomName.HD12, AtomName.HD13, AtomName.CD2, AtomName.HD21, AtomName.HD22, AtomName.HD23), "Leucine", 'L', "LEU");
         torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
         torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
     }

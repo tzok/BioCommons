@@ -30,7 +30,7 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
 
     private final List<TorsionAngleType> angleTypes;
 
-    private RNATorsionAngleType(TorsionAngleType... angleTypes) {
+    RNATorsionAngleType(TorsionAngleType... angleTypes) {
         this.angleTypes = Arrays.asList(angleTypes);
     }
 

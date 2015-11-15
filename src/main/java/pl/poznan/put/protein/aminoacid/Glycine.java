@@ -13,7 +13,7 @@ public class Glycine extends ProteinSidechain {
     }
 
     private Glycine() {
-        super(Arrays.asList(new AtomName[] { AtomName.HA1, AtomName.HA2 }), "Glycine", 'G', "GLY");
+        super(Arrays.asList(AtomName.HA1, AtomName.HA2), "Glycine", 'G', "GLY");
     }
 
     @Override

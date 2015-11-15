@@ -95,7 +95,7 @@ public final class StructureManager {
     /**
      * Load a structure and remember it being already cached.
      *
-     * @param path
+     * @param file
      *            Path to the PDB file.
      * @return Structure object..
      * @throws IOException

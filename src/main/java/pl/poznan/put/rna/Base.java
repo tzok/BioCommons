@@ -64,7 +64,7 @@ public abstract class Base extends NucleicAcidResidueComponent implements Residu
         this.oneLetterName = oneLetterName;
         this.pdbNames = Arrays.asList(pdbNames);
 
-        torsionAngleTypes.addAll(Arrays.asList(new TorsionAngleType[] { Alpha.getInstance(), Beta.getInstance(), Gamma.getInstance(), Delta.getInstance(), Epsilon.getInstance(), Zeta.getInstance(), Nu0.getInstance(), Nu1.getInstance(), Nu2.getInstance(), Nu3.getInstance(), Nu4.getInstance(), Eta.getInstance(), Theta.getInstance(), EtaPrim.getInstance(), ThetaPrim.getInstance(), PseudophasePuckerType.getInstance() }));
+        torsionAngleTypes.addAll(Arrays.asList(Alpha.getInstance(), Beta.getInstance(), Gamma.getInstance(), Delta.getInstance(), Epsilon.getInstance(), Zeta.getInstance(), Nu0.getInstance(), Nu1.getInstance(), Nu2.getInstance(), Nu3.getInstance(), Nu4.getInstance(), Eta.getInstance(), Theta.getInstance(), EtaPrim.getInstance(), ThetaPrim.getInstance(), PseudophasePuckerType.getInstance()));
     }
 
     @Override

@@ -33,7 +33,7 @@ public class PdbModel implements Serializable, ResidueCollection {
     private final List<PdbModresLine> modifiedResidues;
 
     public PdbModel(List<PdbAtomLine> atoms) throws PdbParsingException {
-        this(PdbHeaderLine.emptyInstance(), 1, atoms, Collections.<PdbModresLine> emptyList(), Collections.<PdbRemark465Line> emptyList());
+        this(PdbHeaderLine.emptyInstance(), 1, atoms, Collections.<PdbModresLine>emptyList(), Collections.<PdbRemark465Line>emptyList());
     }
 
     public PdbModel(PdbHeaderLine headerLine, int modelNumber, List<PdbAtomLine> atoms, List<PdbModresLine> modifiedResidues, List<PdbRemark465Line> missingResidues) throws PdbParsingException {

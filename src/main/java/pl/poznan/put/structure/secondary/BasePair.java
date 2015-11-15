@@ -91,7 +91,7 @@ public class BasePair implements Serializable, Comparable<BasePair> {
         return n3n1 <= BasePair.CG_DISTANCE_N3_N1 && o2n2 <= BasePair.CG_DISTANCE_O2_N2 && n4o6 <= BasePair.CG_DISTANCE_N4_O6;
     }
 
-    private Pair<PdbResidueIdentifier, PdbResidueIdentifier> pair;
+    private final Pair<PdbResidueIdentifier, PdbResidueIdentifier> pair;
 
     public BasePair(PdbResidueIdentifier left, PdbResidueIdentifier right) {
         super();
