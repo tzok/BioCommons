@@ -239,9 +239,11 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     public final boolean hasAllAtoms() {
         List<AtomName> actual = new ArrayList<AtomName>(atomNames);
         List<AtomName> expected = new ArrayList<AtomName>();
+        List<AtomName> additional = new ArrayList<AtomName>();
 
         for (ResidueComponent component : residueInformationProvider.getAllMoleculeComponents()) {
             expected.addAll(component.getAtoms());
+            additional.addAll(component.getAdditionalAtoms());
         }
 
         Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils.invokerPredicate("isHeavy");
@@ -250,9 +252,10 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
         boolean result = CollectionUtils.isEqualCollection(actual, expected);
 
         if (!result) {
-            ArrayList<AtomName> intersection = new ArrayList<AtomName>(actual);
+            List<AtomName> intersection = new ArrayList<AtomName>(actual);
             intersection.retainAll(expected);
             actual.removeAll(intersection);
+            actual.removeAll(additional);
             expected.removeAll(intersection);
 
             if (!actual.isEmpty()) {
