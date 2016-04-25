@@ -1,35 +1,13 @@
 package pl.poznan.put.utility.svg;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
-
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
+import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
-import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.svggen.SVGGraphics2D;
-import org.apache.batik.transcoder.Transcoder;
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.TranscodingHints;
+import org.apache.batik.transcoder.*;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.stat.StatUtils;
@@ -37,6 +15,18 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Node;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
+import java.io.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class SVGHelper {
     private static class SVGNamespace implements NamespaceContext {
@@ -88,7 +78,7 @@ public class SVGHelper {
     }
 
     public static void export(SVGDocument svgDocument, OutputStream stream,
-            Format format, Map<TranscodingHints.Key, Object> transcodingHints) throws IOException {
+                              Format format, Map<TranscodingHints.Key, Object> transcodingHints) throws IOException {
         if (format == Format.EPS || format == Format.SVG) {
             OutputStreamWriter writer = null;
 
@@ -120,7 +110,7 @@ public class SVGHelper {
     }
 
     private static void export(SVGDocument svgDocument, Writer writer,
-            Format format, Map<TranscodingHints.Key, Object> transcodingHints) throws IOException {
+                               Format format, Map<TranscodingHints.Key, Object> transcodingHints) throws IOException {
         try {
             TranscoderInput input = new TranscoderInput(svgDocument);
             TranscoderOutput output = new TranscoderOutput(writer);
