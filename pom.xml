@@ -4,7 +4,7 @@
 
 	<groupId>pl.poznan.put</groupId>
 	<artifactId>circular</artifactId>
-	<version>1.1.1</version>
+	<version>1.1.2</version>
 	<packaging>jar</packaging>
 
 	<name>circular</name>
