@@ -1,11 +1,11 @@
 package pl.poznan.put.pdb.analysis;
 
+import org.biojava.nbio.structure.Chain;
+import org.biojava.nbio.structure.Group;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.biojava.bio.structure.Chain;
-import org.biojava.bio.structure.Group;
 
 public class PdbChain implements Comparable<PdbChain> {
     public static PdbChain fromBioJavaChain(Chain chain) {
@@ -33,15 +33,15 @@ public class PdbChain implements Comparable<PdbChain> {
 
         for (PdbResidue residue : residues) {
             switch (residue.getMoleculeType()) {
-            case PROTEIN:
-                proteinCounter += 1;
-                break;
-            case RNA:
-                rnaCounter += 1;
-                break;
-            case UNKNOWN:
-            default:
-                break;
+                case PROTEIN:
+                    proteinCounter += 1;
+                    break;
+                case RNA:
+                    rnaCounter += 1;
+                    break;
+                case UNKNOWN:
+                default:
+                    break;
             }
         }
 

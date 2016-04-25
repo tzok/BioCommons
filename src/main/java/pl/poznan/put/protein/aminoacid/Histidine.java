@@ -16,7 +16,7 @@ public class Histidine extends ProteinSidechain {
     }
 
     private Histidine() {
-        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.ND1, AtomName.HD1, AtomName.CG, AtomName.CE1, AtomName.HE1, AtomName.NE2, AtomName.HE2, AtomName.CD2, AtomName.HD2 }), "Histidine", 'H', "HIS", "HSD", "HSE", "HSP");
+        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.ND1, AtomName.HD1, AtomName.CG, AtomName.CE1, AtomName.HE1, AtomName.NE2, AtomName.HE2, AtomName.CD2, AtomName.HD2), "Histidine", 'H', "HIS", "HSD", "HSE", "HSP");
         torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
         torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
     }

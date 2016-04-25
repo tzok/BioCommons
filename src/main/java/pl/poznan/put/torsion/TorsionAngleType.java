@@ -65,10 +65,7 @@ public abstract class TorsionAngleType implements DisplayableExportable {
             return false;
         }
         TorsionAngleType other = (TorsionAngleType) obj;
-        if (moleculeType != other.moleculeType) {
-            return false;
-        }
-        return true;
+        return moleculeType == other.moleculeType;
     }
 
     public abstract TorsionAngleValue calculate(List<PdbResidue> residues,

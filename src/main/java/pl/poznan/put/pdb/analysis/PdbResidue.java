@@ -1,25 +1,24 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.PredicateUtils;
-import org.biojava.bio.structure.Atom;
-import org.biojava.bio.structure.Group;
-import org.biojava.bio.structure.ResidueNumber;
+import org.biojava.nbio.structure.Atom;
+import org.biojava.nbio.structure.Group;
+import org.biojava.nbio.structure.ResidueNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.torsion.TorsionAngleType;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNumberICode {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdbResidue.class);
@@ -51,8 +50,8 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     private final boolean isMissing;
 
     public PdbResidue(PdbResidueIdentifier identifier, String residueName,
-            String modifiedResidueName, List<PdbAtomLine> atoms,
-            boolean isModified, boolean isMissing) {
+                      String modifiedResidueName, List<PdbAtomLine> atoms,
+                      boolean isModified, boolean isMissing) {
         super();
         this.identifier = identifier;
         this.residueName = residueName;
@@ -71,7 +70,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     }
 
     public PdbResidue(PdbResidueIdentifier identifier, String residueName,
-            List<PdbAtomLine> atoms, boolean isMissing) {
+                      List<PdbAtomLine> atoms, boolean isMissing) {
         this(identifier, residueName, residueName, atoms, false, isMissing);
     }
 
@@ -239,9 +238,11 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     public final boolean hasAllAtoms() {
         List<AtomName> actual = new ArrayList<AtomName>(atomNames);
         List<AtomName> expected = new ArrayList<AtomName>();
+        List<AtomName> additional = new ArrayList<AtomName>();
 
         for (ResidueComponent component : residueInformationProvider.getAllMoleculeComponents()) {
             expected.addAll(component.getAtoms());
+            additional.addAll(component.getAdditionalAtoms());
         }
 
         Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils.invokerPredicate("isHeavy");
@@ -250,9 +251,10 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
         boolean result = CollectionUtils.isEqualCollection(actual, expected);
 
         if (!result) {
-            ArrayList<AtomName> intersection = new ArrayList<AtomName>(actual);
+            List<AtomName> intersection = new ArrayList<AtomName>(actual);
             intersection.retainAll(expected);
             actual.removeAll(intersection);
+            actual.removeAll(additional);
             expected.removeAll(intersection);
 
             if (!actual.isEmpty()) {

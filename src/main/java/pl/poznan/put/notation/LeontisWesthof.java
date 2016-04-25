@@ -89,13 +89,11 @@ public enum LeontisWesthof {
 
         char[] cs = name().toCharArray();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(cs[1]);
-        sb.append('/');
-        sb.append(cs[2]);
-        sb.append(' ');
-        sb.append(cs[0] == 'C' ? "cis" : "trans");
-        return sb.toString();
+        return String.valueOf(cs[1]) +
+                '/' +
+                cs[2] +
+                ' ' +
+                (cs[0] == 'C' ? "cis" : "trans");
     }
 
     public String getFullName() {
@@ -105,11 +103,9 @@ public enum LeontisWesthof {
 
         char[] cs = name().toCharArray();
 
-        StringBuilder builder = new StringBuilder();
-        builder.append(cs[0] == 'C' ? "cis " : "trans ");
-        builder.append(cs[1] == 'W' ? "Watson-Crick" : cs[1] == 'H' ? "Hoogsteen" : "Sugar Edge");
-        builder.append('/');
-        builder.append(cs[2] == 'W' ? "Watson-Crick" : cs[2] == 'H' ? "Hoogsteen" : "Sugar Edge");
-        return builder.toString();
+        return (cs[0] == 'C' ? "cis " : "trans ") +
+                (cs[1] == 'W' ? "Watson-Crick" : cs[1] == 'H' ? "Hoogsteen" : "Sugar Edge") +
+                '/' +
+                (cs[2] == 'W' ? "Watson-Crick" : cs[2] == 'H' ? "Hoogsteen" : "Sugar Edge");
     }
 }

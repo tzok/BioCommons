@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.structure.secondary.BasePair;
@@ -102,13 +103,7 @@ public class BpSeq implements Serializable {
             if (index != other.index) {
                 return false;
             }
-            if (pair != other.pair) {
-                return false;
-            }
-            if (seq != other.seq) {
-                return false;
-            }
-            return true;
+            return pair == other.pair && seq == other.seq;
         }
 
         @Override
@@ -194,9 +189,7 @@ public class BpSeq implements Serializable {
         return new BpSeq(entries);
     }
 
-    public static BpSeq fromResidueCollection(
-            ResidueCollection residueCollection,
-            List<ClassifiedBasePair> basePairs) throws InvalidSecondaryStructureException {
+    public static BpSeq fromResidueCollection(ResidueCollection residueCollection, List<ClassifiedBasePair> basePairs) throws InvalidSecondaryStructureException {
         List<BasePair> allBasePairs = new ArrayList<BasePair>();
         Map<BasePair, String> basePairToComment = new HashMap<BasePair, String>();
 
@@ -215,11 +208,10 @@ public class BpSeq implements Serializable {
         return new BpSeq(entries);
     }
 
-    private static List<BpSeq.Entry> generateEntriesForUnpaired(
-            ResidueCollection residueCollection, List<BasePair> allBasePairs) {
+    private static List<BpSeq.Entry> generateEntriesForUnpaired(ResidueCollection residueCollection, List<BasePair> allBasePairs) {
         List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
         List<PdbResidue> residues = residueCollection.getResidues();
-        Set<PdbResidue> paired = new HashSet<PdbResidue>();
+        Set<PdbResidueIdentifier> paired = new HashSet<PdbResidueIdentifier>();
 
         for (BasePair basePair : allBasePairs) {
             paired.add(basePair.getLeft());
@@ -228,7 +220,7 @@ public class BpSeq implements Serializable {
 
         for (int i = 0; i < residues.size(); i++) {
             PdbResidue residue = residues.get(i);
-            if (!paired.contains(residue)) {
+            if (!paired.contains(residue.getResidueIdentifier())) {
                 entries.add(new BpSeq.Entry(i + 1, 0, residue.getOneLetterName()));
             }
         }
@@ -236,16 +228,13 @@ public class BpSeq implements Serializable {
         return entries;
     }
 
-    private static List<BpSeq.Entry> generateEntriesForPaired(
-            ResidueCollection residueCollection,
-            Collection<BasePair> basePairs,
-            Map<BasePair, String> basePairToComment) {
+    private static List<BpSeq.Entry> generateEntriesForPaired(ResidueCollection residueCollection, Collection<BasePair> basePairs, Map<BasePair, String> basePairToComment) {
         List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
         List<PdbResidue> residues = residueCollection.getResidues();
 
         for (BasePair basePair : basePairs) {
-            PdbResidue left = basePair.getLeft();
-            PdbResidue right = basePair.getRight();
+            PdbResidue left = residueCollection.findResidue(basePair.getLeft());
+            PdbResidue right = residueCollection.findResidue(basePair.getRight());
             int indexL = 1 + residues.indexOf(left);
             int indexR = 1 + residues.indexOf(right);
             entries.add(new Entry(indexL, indexR, left.getOneLetterName(), basePairToComment.get(basePair)));
@@ -270,7 +259,7 @@ public class BpSeq implements Serializable {
     /*
      * Check if all pairs match.
      */
-    private final void validate() throws InvalidSecondaryStructureException {
+    private void validate() throws InvalidSecondaryStructureException {
         Map<Integer, Integer> map = new HashMap<Integer, Integer>();
 
         for (Entry e : entries) {

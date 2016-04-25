@@ -43,7 +43,7 @@ public abstract class ProteinSidechain extends ResidueComponent implements Resid
 
     @Override
     public List<ResidueComponent> getAllMoleculeComponents() {
-        return Arrays.asList(new ResidueComponent[] { ProteinBackbone.getInstance(), this });
+        return Arrays.asList(ProteinBackbone.getInstance(), this);
     }
 
     @Override

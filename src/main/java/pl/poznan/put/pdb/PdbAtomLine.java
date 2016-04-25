@@ -1,18 +1,11 @@
 package pl.poznan.put.pdb;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.biojava.nbio.structure.*;
+import pl.poznan.put.atom.AtomName;
+
 import java.io.Serializable;
 import java.util.Locale;
-
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.biojava.bio.structure.Atom;
-import org.biojava.bio.structure.AtomImpl;
-import org.biojava.bio.structure.Element;
-import org.biojava.bio.structure.Group;
-import org.biojava.bio.structure.HetatomImpl;
-import org.biojava.bio.structure.ResidueNumber;
-import org.biojava.bio.structure.io.PDBParseException;
-
-import pl.poznan.put.atom.AtomName;
 
 public class PdbAtomLine implements Serializable, ChainNumberICode {
     // @formatter:off
@@ -66,7 +59,8 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     }
 
     public static PdbAtomLine parse(String line, boolean strictMode) throws PdbParsingException {
-        // in non-strict mode, only up to X, Y, Z fields are required, rest is optional
+        // in non-strict mode, only up to X, Y, Z fields are required, rest is
+        // optional
         if (strictMode && line.length() < 80 || !strictMode && line.length() < 54) {
             throw new PdbParsingException("PDB ATOM line is too short");
         }
@@ -119,11 +113,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     private final String elementSymbol;
     private final String charge;
 
-    public PdbAtomLine(int serialNumber, String atomName,
-            char alternateLocation, String residueName, char chainIdentifier,
-            int residueNumber, char insertionCode, double x, double y,
-            double z, double occupancy, double temperatureFactor,
-            String elementSymbol, String charge) {
+    public PdbAtomLine(int serialNumber, String atomName, char alternateLocation, String residueName, char chainIdentifier, int residueNumber, char insertionCode, double x, double y, double z, double occupancy, double temperatureFactor, String elementSymbol, String charge) {
         super();
         this.serialNumber = serialNumber;
         this.atomName = atomName;
@@ -228,23 +218,17 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     public Atom toBioJavaAtom() {
         Group group = new HetatomImpl();
         group.setResidueNumber(String.valueOf(chainIdentifier), residueNumber, insertionCode == ' ' ? null : insertionCode);
-
-        try {
-            group.setPDBName(residueName);
-        } catch (PDBParseException e) {
-            // do nothing
-        }
+        group.setPDBName(residueName);
 
         Atom atom = new AtomImpl();
         atom.setPDBserial(serialNumber);
         atom.setAltLoc(alternateLocation);
-        atom.setFullName(atomName.length() == 4 ? atomName : String.format(" %-3s", atomName));
-        atom.setName(atomName);
+        atom.setName(atomName.length() == 4 ? atomName : String.format(" %-3s", atomName));
         atom.setX(x);
         atom.setY(y);
         atom.setZ(z);
-        atom.setOccupancy(occupancy);
-        atom.setTempFactor(temperatureFactor);
+        atom.setOccupancy((float) occupancy);
+        atom.setTempFactor((float) temperatureFactor);
         atom.setElement(Element.valueOfIgnoreCase(elementSymbol));
         atom.setGroup(group);
         return atom;

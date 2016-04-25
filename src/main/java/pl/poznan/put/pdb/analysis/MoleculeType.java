@@ -7,7 +7,7 @@ public enum MoleculeType {
 
     private final ResidueBondRule bondRule;
 
-    private MoleculeType(ResidueBondRule bondRule) {
+    MoleculeType(ResidueBondRule bondRule) {
         this.bondRule = bondRule;
     }
 

@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public class RNAInteractionType implements Serializable, Comparable<RNAInteractionType> {
     public static final RNAInteractionType BASE_BASE = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, true);
-    public static final RNAInteractionType BASE_BASE_1H = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, false, "base - base (1H)");
+    public static final RNAInteractionType BASE_BASE_1H = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, "base - base (1H)");
     public static final RNAInteractionType BASE_PHOSPHATE = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.PHOSPHATE, false);
     public static final RNAInteractionType BASE_SUGAR = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.SUGAR, false);
     public static final RNAInteractionType SUGAR_SUGAR = new RNAInteractionType(RNAResidueComponentType.SUGAR, RNAResidueComponentType.SUGAR, false);
-    public static final RNAInteractionType STACKING = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, false, "stacking");
-    public static final RNAInteractionType OTHER = new RNAInteractionType(RNAResidueComponentType.UNKNOWN, RNAResidueComponentType.UNKNOWN, false, "other");
+    public static final RNAInteractionType STACKING = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, "stacking");
+    public static final RNAInteractionType OTHER = new RNAInteractionType(RNAResidueComponentType.UNKNOWN, RNAResidueComponentType.UNKNOWN, "other");
 
     private final RNAResidueComponentType left;
     private final RNAResidueComponentType right;
@@ -24,11 +24,11 @@ public class RNAInteractionType implements Serializable, Comparable<RNAInteracti
         description = left.name().toLowerCase() + " - " + right.name().toLowerCase();
     }
 
-    public RNAInteractionType(RNAResidueComponentType left, RNAResidueComponentType right, boolean isPairing, String description) {
+    public RNAInteractionType(RNAResidueComponentType left, RNAResidueComponentType right, String description) {
         super();
         this.left = left;
         this.right = right;
-        this.isPairing = isPairing;
+        this.isPairing = false;
         this.description = description;
     }
 
@@ -82,13 +82,7 @@ public class RNAInteractionType implements Serializable, Comparable<RNAInteracti
         if (isPairing != other.isPairing) {
             return false;
         }
-        if (left != other.left) {
-            return false;
-        }
-        if (right != other.right) {
-            return false;
-        }
-        return true;
+        return left == other.left && right == other.right;
     }
 
     @Override

@@ -13,7 +13,7 @@ public class Alanine extends ProteinSidechain {
     }
 
     private Alanine() {
-        super(Arrays.asList(new AtomName[] { AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.HB3 }), "Alanine", 'A', "ALA");
+        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2, AtomName.HB3), "Alanine", 'A', "ALA");
     }
 
     @Override

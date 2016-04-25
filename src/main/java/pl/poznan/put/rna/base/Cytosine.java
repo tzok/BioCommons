@@ -15,7 +15,7 @@ public class Cytosine extends Pyrimidine {
     }
 
     private Cytosine() {
-        super(Arrays.asList(new AtomName[] { AtomName.N1, AtomName.C6, AtomName.H6, AtomName.C5, AtomName.H5, AtomName.C2, AtomName.O2, AtomName.N3, AtomName.C4, AtomName.N4, AtomName.H41, AtomName.H42 }), "Cytosine", 'C', "C", "CYT", "DC");
+        super(Arrays.asList(AtomName.N1, AtomName.C6, AtomName.H6, AtomName.C5, AtomName.H5, AtomName.C2, AtomName.O2, AtomName.N3, AtomName.C4, AtomName.N4, AtomName.H41, AtomName.H42), "Cytosine", 'C', "C", "CYT", "DC");
     }
 
     @Override

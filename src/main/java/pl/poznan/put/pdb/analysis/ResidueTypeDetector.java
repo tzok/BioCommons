@@ -1,9 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -18,12 +15,8 @@ public class ResidueTypeDetector {
     private static final Set<ResidueInformationProvider> PROVIDERS = new LinkedHashSet<ResidueInformationProvider>();
 
     static {
-        for (NucleobaseType nucleobase : NucleobaseType.values()) {
-            ResidueTypeDetector.PROVIDERS.add(nucleobase);
-        }
-        for (AminoAcidType aminoAcid : AminoAcidType.values()) {
-            ResidueTypeDetector.PROVIDERS.add(aminoAcid);
-        }
+        Collections.addAll(ResidueTypeDetector.PROVIDERS, NucleobaseType.values());
+        Collections.addAll(ResidueTypeDetector.PROVIDERS, AminoAcidType.values());
     }
 
     public static ResidueInformationProvider detectResidueType(
@@ -42,7 +35,7 @@ public class ResidueTypeDetector {
                 return provider;
             }
         }
-        return new InvalidResidueInformationProvider(MoleculeType.UNKNOWN, residueName);
+        return new InvalidResidueInformationProvider(residueName);
     }
 
     public static ResidueInformationProvider detectResidueTypeFromAtoms(
@@ -84,7 +77,7 @@ public class ResidueTypeDetector {
         if (bestScore < 0.5) {
             return bestProvider;
         }
-        return new InvalidResidueInformationProvider(MoleculeType.UNKNOWN, residueName);
+        return new InvalidResidueInformationProvider(residueName);
     }
 
     private static boolean hasHydrogen(Collection<AtomName> atomNames) {

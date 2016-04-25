@@ -39,7 +39,7 @@ public enum AminoAcidType implements ResidueInformationProvider {
 
     private final ProteinSidechain sidechain;
 
-    private AminoAcidType(ProteinSidechain sidechain) {
+    AminoAcidType(ProteinSidechain sidechain) {
         this.sidechain = sidechain;
     }
 
