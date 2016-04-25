@@ -4,7 +4,7 @@
 
 	<groupId>pl.poznan.put</groupId>
 	<artifactId>circular</artifactId>
-	<version>1.1.1</version>
+	<version>1.1.2</version>
 	<packaging>jar</packaging>
 
 	<name>circular</name>
@@ -24,7 +24,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.5.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -43,25 +43,25 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
-			<version>3.5</version>
+			<version>3.6.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-svg-dom</artifactId>
-			<version>1.7</version>
+			<version>1.8</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-svggen</artifactId>
-			<version>1.7</version>
+			<version>1.8</version>
 		</dependency>
 
 		<dependency>
 			<groupId>pl.poznan.put</groupId>
 			<artifactId>TzokCommons</artifactId>
-			<version>1.4</version>
+			<version>1.4.2</version>
 		</dependency>
 
 		<dependency>
