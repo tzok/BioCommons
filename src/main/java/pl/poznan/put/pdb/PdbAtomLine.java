@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.biojava.nbio.structure.*;
 import pl.poznan.put.atom.AtomName;
@@ -83,8 +84,8 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
             double y = Double.parseDouble(line.substring(38, 46).trim());
             double z = Double.parseDouble(line.substring(46, 54).trim());
 
-            double occupancy = line.length() >= 60 ? Double.parseDouble(line.substring(54, 60).trim()) : 0;
-            double temperatureFactor = line.length() >= 66 ? Double.parseDouble(line.substring(60, 66).trim()) : 0;
+            double occupancy = line.length() >= 60 && StringUtils.isNotBlank(line.substring(54, 60)) ? Double.parseDouble(line.substring(54, 60).trim()) : 0;
+            double temperatureFactor = line.length() >= 66 && StringUtils.isNotBlank(line.substring(60, 66)) ? Double.parseDouble(line.substring(60, 66).trim()) : 0;
             String elementSymbol = line.length() >= 78 ? line.substring(76, 78).trim() : "";
             String charge = line.length() >= 80 ? line.substring(78, 80).trim() : "";
 
