@@ -25,9 +25,9 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
 
     public static PdbResidue fromBioJavaGroup(Group group) {
         ResidueNumber residueNumberObject = group.getResidueNumber();
-        char chainIdentifier = residueNumberObject.getChainId().charAt(0);
+        String chainIdentifier = residueNumberObject.getChainId();
         int residueNumber = residueNumberObject.getSeqNum();
-        char insertionCode = residueNumberObject.getInsCode() == null ? ' ' : residueNumberObject.getInsCode();
+        String insertionCode = residueNumberObject.getInsCode() == null ? " " : Character.toString(residueNumberObject.getInsCode());
         PdbResidueIdentifier residueIdentifier = new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
         String residueName = group.getPDBName();
         List<PdbAtomLine> atoms = new ArrayList<PdbAtomLine>();
@@ -64,7 +64,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
             this.residueInformationProvider = ResidueTypeDetector.detectResidueTypeFromResidueName(residueName);
             this.isModified = false;
         } else {
-            this.residueInformationProvider = ResidueTypeDetector.detectResidueType(residueName, atomNames);
+            this.residueInformationProvider = ResidueTypeDetector.detectResidueType(modifiedResidueName, atomNames);
             this.isModified = isModified || (wasSuccessfullyDetected() && !hasAllAtoms());
         }
     }
@@ -92,7 +92,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     }
 
     @Override
-    public char getChainIdentifier() {
+    public String getChainIdentifier() {
         return identifier.getChainIdentifier();
     }
 
@@ -102,7 +102,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     }
 
     @Override
-    public char getInsertionCode() {
+    public String getInsertionCode() {
         return identifier.getInsertionCode();
     }
 
@@ -145,10 +145,10 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
 
     @Override
     public String toString() {
-        char chainIdentifier = identifier.getChainIdentifier();
+        String chainIdentifier = identifier.getChainIdentifier();
         int residueNumber = identifier.getResidueNumber();
-        char insertionCode = identifier.getInsertionCode();
-        return chainIdentifier + "." + modifiedResidueName + residueNumber + (insertionCode != ' ' ? insertionCode : "");
+        String insertionCode = identifier.getInsertionCode();
+        return chainIdentifier + "." + modifiedResidueName + residueNumber + (" ".equals(insertionCode) ? "" : insertionCode);
     }
 
     @Override

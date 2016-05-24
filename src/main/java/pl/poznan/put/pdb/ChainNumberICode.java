@@ -2,11 +2,11 @@ package pl.poznan.put.pdb;
 
 
 public interface ChainNumberICode {
-    char getChainIdentifier();
+    String getChainIdentifier();
 
     int getResidueNumber();
 
-    char getInsertionCode();
+    String getInsertionCode();
     
     PdbResidueIdentifier getResidueIdentifier();
 }

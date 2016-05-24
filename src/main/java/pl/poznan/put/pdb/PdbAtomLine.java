@@ -3,12 +3,16 @@ package pl.poznan.put.pdb;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.biojava.nbio.structure.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.poznan.put.atom.AtomName;
 
 import java.io.Serializable;
 import java.util.Locale;
 
 public class PdbAtomLine implements Serializable, ChainNumberICode {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PdbAtomLine.class);
+
     // @formatter:off
     /*
         COLUMNS        DATA  TYPE    FIELD        DEFINITION
@@ -38,13 +42,13 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         Group group = atom.getGroup();
         String residueName = group.getPDBName();
         ResidueNumber residueNumberObject = group.getResidueNumber();
-        char chainIdentifier = residueNumberObject.getChainId().charAt(0);
+        String chainIdentifier = residueNumberObject.getChainId();
         int residueNumber = residueNumberObject.getSeqNum();
-        char insertionCode = residueNumberObject.getInsCode() == null ? ' ' : residueNumberObject.getInsCode();
+        String insertionCode = residueNumberObject.getInsCode() == null ? " " : Character.toString(residueNumberObject.getInsCode());
 
         int serialNumber = atom.getPDBserial();
         String atomName = atom.getName();
-        char alternateLocation = atom.getAltLoc() == null ? ' ' : atom.getAltLoc();
+        String alternateLocation = atom.getAltLoc() == null ? " " : Character.toString(atom.getAltLoc());
         double x = atom.getX();
         double y = atom.getY();
         double z = atom.getZ();
@@ -75,11 +79,11 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
 
             int serialNumber = Integer.parseInt(line.substring(6, 11).trim());
             String atomName = line.substring(12, 16).trim();
-            char alternateLocation = line.charAt(16);
+            String alternateLocation = Character.toString(line.charAt(16));
             String residueName = line.substring(17, 20).trim();
-            char chainIdentifier = line.charAt(21);
+            String chainIdentifier = Character.toString(line.charAt(21));
             int residueNumber = Integer.parseInt(line.substring(22, 26).trim());
-            char insertionCode = line.charAt(26);
+            String insertionCode = Character.toString(line.charAt(26));
             double x = Double.parseDouble(line.substring(30, 38).trim());
             double y = Double.parseDouble(line.substring(38, 46).trim());
             double z = Double.parseDouble(line.substring(46, 54).trim());
@@ -101,11 +105,11 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
 
     private final int serialNumber;
     private final String atomName;
-    private final char alternateLocation;
+    private final String alternateLocation;
     private final String residueName;
-    private final char chainIdentifier;
+    private final String chainIdentifier;
     private final int residueNumber;
-    private final char insertionCode;
+    private final String insertionCode;
     private final double x;
     private final double y;
     private final double z;
@@ -114,7 +118,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     private final String elementSymbol;
     private final String charge;
 
-    public PdbAtomLine(int serialNumber, String atomName, char alternateLocation, String residueName, char chainIdentifier, int residueNumber, char insertionCode, double x, double y, double z, double occupancy, double temperatureFactor, String elementSymbol, String charge) {
+    public PdbAtomLine(int serialNumber, String atomName, String alternateLocation, String residueName, String chainIdentifier, int residueNumber, String insertionCode, double x, double y, double z, double occupancy, double temperatureFactor, String elementSymbol, String charge) {
         super();
         this.serialNumber = serialNumber;
         this.atomName = atomName;
@@ -140,7 +144,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         return atomName;
     }
 
-    public char getAlternateLocation() {
+    public String getAlternateLocation() {
         return alternateLocation;
     }
 
@@ -149,7 +153,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     }
 
     @Override
-    public char getChainIdentifier() {
+    public String getChainIdentifier() {
         return chainIdentifier;
     }
 
@@ -159,7 +163,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     }
 
     @Override
-    public char getInsertionCode() {
+    public String getInsertionCode() {
         return insertionCode;
     }
 
@@ -193,8 +197,18 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
 
     @Override
     public String toString() {
+        if (alternateLocation.length() != 1) {
+            PdbAtomLine.LOGGER.error("Field 'alternateLocation' is longer than 1 char. Only first letter will be taken");
+        }
+        if (chainIdentifier.length() != 1) {
+            PdbAtomLine.LOGGER.error("Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
+        }
+        if (insertionCode.length() != 1) {
+            PdbAtomLine.LOGGER.error("Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
+        }
+
         String format = atomName.length() == 4 ? PdbAtomLine.FORMAT_ATOM_4_CHARACTER : PdbAtomLine.FORMAT;
-        return String.format(Locale.US, format, serialNumber, atomName, alternateLocation, residueName, chainIdentifier, residueNumber, insertionCode, x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
+        return String.format(Locale.US, format, serialNumber, atomName, alternateLocation.charAt(0), residueName, chainIdentifier.charAt(0), residueNumber, insertionCode.charAt(0), x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
     }
 
     @Override
@@ -202,7 +216,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         return new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
     }
 
-    public PdbAtomLine replaceChainIdentifier(char chainIdentifierNew) {
+    public PdbAtomLine replaceChainIdentifier(String chainIdentifierNew) {
         return new PdbAtomLine(serialNumber, atomName, alternateLocation, residueName, chainIdentifierNew, residueNumber, insertionCode, x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
     }
 
@@ -216,15 +230,22 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         return v1.distance(v2);
     }
 
-    public Atom toBioJavaAtom() {
+    public Atom toBioJavaAtom() throws MmCifPdbIncompatibilityException {
+        if (alternateLocation.length() != 1) {
+            throw new MmCifPdbIncompatibilityException("Cannot convert to PDB. Field 'alternateLocation' is longer than 1 char");
+        }
+        if (insertionCode.length() != 1) {
+            throw new MmCifPdbIncompatibilityException("Cannot convert to PDB. Field 'insertionCode' is longer than 1 char");
+        }
+
         Group group = new HetatomImpl();
-        group.setResidueNumber(String.valueOf(chainIdentifier), residueNumber, insertionCode == ' ' ? null : insertionCode);
+        group.setResidueNumber(String.valueOf(chainIdentifier), residueNumber, " ".equals(insertionCode) ? null : insertionCode.charAt(0));
         group.setPDBName(residueName);
 
         Atom atom = new AtomImpl();
         atom.setPDBserial(serialNumber);
-        atom.setAltLoc(alternateLocation);
         atom.setName(atomName.length() == 4 ? atomName : String.format(" %-3s", atomName));
+        atom.setAltLoc(alternateLocation.charAt(0));
         atom.setX(x);
         atom.setY(y);
         atom.setZ(z);
@@ -232,6 +253,8 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         atom.setTempFactor((float) temperatureFactor);
         atom.setElement(Element.valueOfIgnoreCase(elementSymbol));
         atom.setGroup(group);
+
+
         return atom;
     }
 }

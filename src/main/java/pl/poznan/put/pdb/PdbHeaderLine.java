@@ -47,8 +47,7 @@ public class PdbHeaderLine {
     private final String depositionDate;
     private final String idCode;
 
-    public PdbHeaderLine(String classification, String depositionDate,
-            String idCode) {
+    public PdbHeaderLine(String classification, String depositionDate, String idCode) {
         super();
         this.classification = classification;
         this.depositionDate = depositionDate;

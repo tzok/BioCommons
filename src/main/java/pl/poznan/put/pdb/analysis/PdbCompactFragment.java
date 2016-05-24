@@ -50,7 +50,7 @@ public class PdbCompactFragment implements ResidueCollection {
     }
 
     @Override
-    public PdbResidue findResidue(char chainIdentifier, int residueNumber, char insertionCode) {
+    public PdbResidue findResidue(String chainIdentifier, int residueNumber, String insertionCode) {
         return findResidue(new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode));
     }
 

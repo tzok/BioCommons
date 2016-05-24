@@ -13,14 +13,14 @@ public class PdbChain implements Comparable<PdbChain> {
         for (Group group : chain.getAtomGroups()) {
             residues.add(PdbResidue.fromBioJavaGroup(group));
         }
-        return new PdbChain(chain.getChainID().charAt(0), residues);
+        return new PdbChain(chain.getChainID(), residues);
     }
 
-    private final char identifier;
+    private final String identifier;
     private final List<PdbResidue> residues;
     private final MoleculeType moleculeType;
 
-    public PdbChain(char identifier, List<PdbResidue> residues) {
+    public PdbChain(String identifier, List<PdbResidue> residues) {
         super();
         this.identifier = identifier;
         this.residues = residues;
@@ -48,7 +48,7 @@ public class PdbChain implements Comparable<PdbChain> {
         return rnaCounter > proteinCounter ? MoleculeType.RNA : MoleculeType.PROTEIN;
     }
 
-    public char getIdentifier() {
+    public String getIdentifier() {
         return identifier;
     }
 
@@ -62,42 +62,29 @@ public class PdbChain implements Comparable<PdbChain> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PdbChain pdbChain = (PdbChain) o;
+
+        if (!identifier.equals(pdbChain.identifier)) return false;
+        if (!residues.equals(pdbChain.residues)) return false;
+        return moleculeType == pdbChain.moleculeType;
+
+    }
+
+    @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + identifier;
-        result = prime * result + (residues == null ? 0 : residues.hashCode());
+        int result = identifier.hashCode();
+        result = 31 * result + residues.hashCode();
+        result = 31 * result + moleculeType.hashCode();
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        PdbChain other = (PdbChain) obj;
-        if (identifier != other.identifier) {
-            return false;
-        }
-        if (residues == null) {
-            if (other.residues != null) {
-                return false;
-            }
-        } else if (!residues.equals(other.residues)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public int compareTo(PdbChain o) {
-        return identifier < o.identifier ? -1 : identifier == o.identifier ? 0 : 1;
+        return identifier.compareTo(o.identifier);
     }
 
     public String getSequence() {

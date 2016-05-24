@@ -1,6 +1,20 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.biojava.nbio.structure.Structure;
+import org.biojava.nbio.structure.io.PDBFileParser;
+import org.junit.Before;
+import org.junit.Test;
+import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.analysis.*;
+import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
+import pl.poznan.put.structure.secondary.formats.BpSeq;
+import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,28 +23,11 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.biojava.nbio.structure.Structure;
-import org.biojava.nbio.structure.io.PDBFileParser;
-import org.junit.Before;
-import org.junit.Test;
-
-import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbParsingException;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.pdb.analysis.PdbChain;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.pdb.analysis.PdbParser;
-import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
-import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestPdbModel {
+    private String pdb148L;
     private String pdb1EHZ;
     private String pdb2Z74;
     private String pdb4A04;
@@ -48,6 +45,7 @@ public class TestPdbModel {
     public void loadPdbFile() throws URISyntaxException, IOException {
         URI uri = getClass().getClassLoader().getResource(".").toURI();
         File dir = new File(uri);
+        pdb148L = FileUtils.readFileToString(new File(dir, "../../src/test/resources/148L.pdb"), "utf-8");
         pdb1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ.pdb"), "utf-8");
         pdb2Z74 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2Z74.pdb"), "utf-8");
         pdb4A04 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/4A04.pdb"), "utf-8");
@@ -92,7 +90,7 @@ public class TestPdbModel {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
-        PdbResidue residue = model.findResidue(new PdbResidueIdentifier('A', 10, ' '));
+        PdbResidue residue = model.findResidue(new PdbResidueIdentifier("A", 10, " "));
         assertEquals("2MG", residue.getOriginalResidueName());
         assertEquals("G", residue.getModifiedResidueName());
         assertEquals("G", residue.getDetectedResidueName());
@@ -103,7 +101,7 @@ public class TestPdbModel {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
-        PdbResidue residue = model.findResidue('A', 74, ' ');
+        PdbResidue residue = model.findResidue("A", 74, " ");
         assertEquals("C", residue.getOriginalResidueName());
         assertEquals("C", residue.getModifiedResidueName());
         assertEquals("C", residue.getDetectedResidueName());
@@ -131,18 +129,18 @@ public class TestPdbModel {
 
         // the H2U (dihydrouridine) is modified by two additional hydrogens
         // which is undetectable in a non-hydrogen PDB file
-        PdbResidue residue = model.findResidue('A', 16, ' ');
+        PdbResidue residue = model.findResidue("A", 16, " ");
         assertEquals(true, residue.isModified());
         assertEquals(true, residue.hasAllAtoms());
 
         // the PSU (pseudouridine) contains the same atoms, but it is an isomer
         // and therefore a modified residue
-        residue = model.findResidue('A', 39, ' ');
+        residue = model.findResidue("A", 39, " ");
         assertEquals(true, residue.isModified());
         assertEquals(true, residue.hasAllAtoms());
 
         // the 5MU (methyluridine) is the RNA counterpart of thymine
-        residue = model.findResidue('A', 54, ' ');
+        residue = model.findResidue("A", 54, " ");
         assertEquals("5MU", residue.getOriginalResidueName());
         assertEquals("U", residue.getModifiedResidueName());
         assertEquals("U", residue.getDetectedResidueName());
@@ -159,7 +157,7 @@ public class TestPdbModel {
         // the PSU (dihydrouridine) is modified by two additional hydrogens
         // which is undetectable in a non-hydrogen PDB file; there can be a
         // mismatch between MODRES entry and hasAllAtoms() call
-        PdbResidue residue = model.findResidue('A', 39, ' ');
+        PdbResidue residue = model.findResidue("A", 39, " ");
         assertEquals(residue.isModified(), residue.hasAllAtoms());
     }
 
@@ -207,9 +205,9 @@ public class TestPdbModel {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb2Z74);
         PdbModel model = models.get(0);
-        PdbResidue residue = model.findResidue('A', 21, ' ');
+        PdbResidue residue = model.findResidue("A", 21, " ");
         assertEquals(true, residue.isMissing());
-        residue = model.findResidue('B', 21, ' ');
+        residue = model.findResidue("B", 21, " ");
         assertEquals(true, residue.isMissing());
     }
 
@@ -380,5 +378,20 @@ public class TestPdbModel {
 
         PdbModel rna = model.filteredNewInstance(MoleculeType.RNA);
         assertEquals(4, rna.getChains().size());
+    }
+
+    @Test
+    public void test148L() throws PdbParsingException {
+        PdbParser parser = new PdbParser();
+        List<PdbModel> models = parser.parse(pdb148L);
+        assertEquals(1, models.size());
+        PdbModel model = models.get(0);
+
+        PdbResidue residue = model.findResidue("E", 164, " ");
+        assertTrue(residue.isMissing());
+
+        residue = model.findResidue("S", 169, " ");
+        assertEquals("API", residue.getOriginalResidueName());
+        assertEquals("LYS", residue.getModifiedResidueName());
     }
 }
