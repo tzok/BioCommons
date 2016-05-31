@@ -46,7 +46,7 @@ public class MmCifConsumer implements MMcifConsumer {
         modifiedResidues.clear();
         experimentalTechniques.clear();
 
-        depositionDate = new Date(0);
+        depositionDate = null;
         classification = null;
         idCode = null;
         resolution = Double.NaN;
@@ -345,7 +345,7 @@ public class MmCifConsumer implements MMcifConsumer {
     }
 
     public List<PdbModel> getModels() throws PdbParsingException {
-        PdbHeaderLine headerLine = new PdbHeaderLine(classification, depositionDate, idCode);
+        PdbHeaderLine headerLine = new PdbHeaderLine(classification, depositionDate == null ? new Date(0) : depositionDate, idCode);
         PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(experimentalTechniques.isEmpty() ? Collections.singletonList(ExperimentalTechnique.UNKNOWN) : experimentalTechniques);
         PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
         List<PdbModel> result = new ArrayList<>();
