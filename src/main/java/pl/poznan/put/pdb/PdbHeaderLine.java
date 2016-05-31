@@ -1,5 +1,9 @@
 package pl.poznan.put.pdb;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class PdbHeaderLine {
@@ -16,7 +20,8 @@ public class PdbHeaderLine {
     // @formatter:on
     private static final String FORMAT = "HEADER    %-40s%9s   %4s              ";
     private final static String RECORD_NAME = "HEADER";
-    private final static PdbHeaderLine EMPTY_INSTANCE = new PdbHeaderLine("", "", "");
+    private final static DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMM-yy", Locale.US);
+    private final static PdbHeaderLine EMPTY_INSTANCE = new PdbHeaderLine("", new Date(0), "");
 
     public static PdbHeaderLine parse(String line) throws PdbParsingException {
         if (line.length() < 66) {
@@ -29,10 +34,14 @@ public class PdbHeaderLine {
             throw new PdbParsingException("PDB line does not start with HEADER");
         }
 
-        String classification = line.substring(10, 50).trim();
-        String depositionDate = line.substring(50, 59).trim();
-        String idCode = line.substring(62, 66).trim();
-        return new PdbHeaderLine(classification, depositionDate, idCode);
+        try {
+            String classification = line.substring(10, 50).trim();
+            Date depositionDate = PdbHeaderLine.DATE_FORMAT.parse(line.substring(50, 59).trim());
+            String idCode = line.substring(62, 66).trim();
+            return new PdbHeaderLine(classification, depositionDate, idCode);
+        } catch (ParseException e) {
+            throw new PdbParsingException("Failed to parse date in line: " + line, e);
+        }
     }
 
     public static PdbHeaderLine emptyInstance() {
@@ -44,10 +53,10 @@ public class PdbHeaderLine {
     }
 
     private final String classification;
-    private final String depositionDate;
+    private final Date depositionDate;
     private final String idCode;
 
-    public PdbHeaderLine(String classification, String depositionDate, String idCode) {
+    public PdbHeaderLine(String classification, Date depositionDate, String idCode) {
         super();
         this.classification = classification;
         this.depositionDate = depositionDate;
@@ -58,7 +67,7 @@ public class PdbHeaderLine {
         return classification;
     }
 
-    public String getDepositionDate() {
+    public Date getDepositionDate() {
         return depositionDate;
     }
 
@@ -68,6 +77,6 @@ public class PdbHeaderLine {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, PdbHeaderLine.FORMAT, classification, depositionDate, idCode);
+        return String.format(Locale.US, PdbHeaderLine.FORMAT, classification, PdbHeaderLine.DATE_FORMAT.format(depositionDate).toUpperCase(), idCode);
     }
 }

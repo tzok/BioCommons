@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.*;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -14,13 +17,14 @@ import java.util.*;
  */
 public class MmCifConsumer implements MMcifConsumer {
     private final static Logger LOGGER = LoggerFactory.getLogger(MMcifConsumer.class);
+    private final static DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
     private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
     private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
 
+    private Date depositionDate;
     private String classification;
-    private String depositionDate;
     private String idCode;
 
     private FileParsingParameters parameters;
@@ -38,8 +42,8 @@ public class MmCifConsumer implements MMcifConsumer {
         missingResidues.clear();
         modifiedResidues.clear();
 
+        depositionDate = new Date(0);
         classification = null;
-        depositionDate = null;
         idCode = null;
     }
 
@@ -68,6 +72,9 @@ public class MmCifConsumer implements MMcifConsumer {
 
             if ("?".equals(insertionCode)) {
                 insertionCode = " ";
+            }
+            if (".".equals(alternateLocation)) {
+                alternateLocation = " ";
             }
 
             PdbAtomLine atomLine = new PdbAtomLine(serialNumber, atomName, alternateLocation, residueName, chainIdentifier, residueNumber, insertionCode, x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
@@ -106,9 +113,12 @@ public class MmCifConsumer implements MMcifConsumer {
 
     @Override
     public void newDatabasePDBrev(DatabasePDBrev databasePDBrev) {
-        // FIXME
-        if (depositionDate == null) {
-            depositionDate = databasePDBrev.getDate_original();
+        try {
+            if (depositionDate == null) {
+                depositionDate = MmCifConsumer.DATE_FORMAT.parse(databasePDBrev.getDate_original());
+            }
+        } catch (ParseException e) {
+            MmCifConsumer.LOGGER.error("Failed to parse date as yyyy-MM-dd: " + databasePDBrev.getDate_original(), e);
         }
     }
 

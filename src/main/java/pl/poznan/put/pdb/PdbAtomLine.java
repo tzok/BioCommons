@@ -216,8 +216,16 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         return new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
     }
 
+    public PdbAtomLine replaceSerialNumber(int serialNumberNew) {
+        return new PdbAtomLine(serialNumberNew, atomName, alternateLocation, residueName, chainIdentifier, residueNumber, insertionCode, x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
+    }
+
     public PdbAtomLine replaceChainIdentifier(String chainIdentifierNew) {
         return new PdbAtomLine(serialNumber, atomName, alternateLocation, residueName, chainIdentifierNew, residueNumber, insertionCode, x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
+    }
+
+    public PdbAtomLine replaceResidueNumber(int residueNumberNew) {
+        return new PdbAtomLine(serialNumber, atomName, alternateLocation, residueName, chainIdentifier, residueNumberNew, insertionCode, x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
     }
 
     public AtomName detectAtomName() {

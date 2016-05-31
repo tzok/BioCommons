@@ -55,10 +55,6 @@ public class PdbModel implements Serializable, ResidueCollection {
         for (PdbAtomLine atom : atoms) {
             PdbResidueIdentifier residueIdentifier = PdbResidueIdentifier.fromChainNumberICode(atom);
 
-            if (residueIdentifier.getResidueNumber() == 169) {
-                System.out.println("");
-            }
-
             if (!residueIdentifier.equals(lastResidueIdentifier)) {
                 saveExistingResidueIfValid(residueAtoms, lastResidueIdentifier);
                 residueAtoms = new ArrayList<PdbAtomLine>();
@@ -153,6 +149,10 @@ public class PdbModel implements Serializable, ResidueCollection {
                 identifierToChain.put(residue.getResidueIdentifier(), chain);
             }
         }
+    }
+
+    public PdbHeaderLine getHeaderLine() {
+        return headerLine;
     }
 
     public int getModelNumber() {

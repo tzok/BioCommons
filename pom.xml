@@ -97,9 +97,6 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
-                    <compilerArguments>
-                        <bootclasspath>${env.JAVA6_HOME}/jre/lib/rt.jar</bootclasspath>
-                    </compilerArguments>
                 </configuration>
             </plugin>
 
