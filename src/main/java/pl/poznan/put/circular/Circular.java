@@ -50,10 +50,7 @@ public abstract class Circular implements Comparable<Circular> {
             return false;
         }
         Circular other = (Circular) obj;
-        if (Double.doubleToLongBits(radians) != Double.doubleToLongBits(other.radians)) {
-            return false;
-        }
-        return true;
+        return Double.doubleToLongBits(radians) == Double.doubleToLongBits(other.radians);
     }
 
     @Override

@@ -1,16 +1,8 @@
 package pl.poznan.put.circular.graphics;
 
-import java.awt.Graphics;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.svg.SVGDocument;
-
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Constants;
@@ -21,18 +13,25 @@ import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class AngularHistogram extends RawDataPlot {
     private final double binRadians;
     private double scalingFactor;
 
     public AngularHistogram(Collection<Circular> data, double binRadians,
-            double diameter, double majorTickSpread, double minorTickSpread) throws InvalidCircularOperationException {
+                            double diameter, double majorTickSpread, double minorTickSpread) throws InvalidCircularOperationException {
         super(data, diameter, majorTickSpread, minorTickSpread);
         this.binRadians = binRadians;
     }
 
     public AngularHistogram(Collection<Circular> data, double binRadians,
-            double diameter) throws InvalidCircularOperationException {
+                            double diameter) throws InvalidCircularOperationException {
         super(data, diameter);
         this.binRadians = binRadians;
     }
@@ -74,7 +73,7 @@ public class AngularHistogram extends RawDataPlot {
     }
 
     private void drawHistogramTriangle(Graphics graphics, double circularValue,
-            double frequency) {
+                                       double frequency) {
         double sectorRadius = Math.sqrt(frequency) * radius * scalingFactor;
 
         // angle as in XY coordinate system
@@ -85,7 +84,7 @@ public class AngularHistogram extends RawDataPlot {
         double x2 = centerX + sectorRadius * Math.cos(t);
         double y2 = centerY + sectorRadius * Math.sin(t);
 
-        graphics.drawPolygon(new int[] { (int) x1, (int) x2, (int) centerX }, new int[] { (int) (diameter - y1), (int) (diameter - y2), (int) (diameter - centerY) }, 3);
+        graphics.drawPolygon(new int[]{(int) x1, (int) x2, (int) centerX}, new int[]{(int) (diameter - y1), (int) (diameter - y2), (int) (diameter - centerY)}, 3);
     }
 
     public static void main(String[] args) throws IOException, InvalidVectorFormatException, InvalidCircularValueException, InvalidCircularOperationException {
