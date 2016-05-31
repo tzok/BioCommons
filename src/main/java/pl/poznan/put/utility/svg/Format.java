@@ -12,23 +12,23 @@ public enum Format {
 
     private final String extension;
 
-    private Format(String extension) {
+    Format(String extension) {
         this.extension = extension;
     }
 
     public Transcoder getTranscoder() {
         switch (this) {
-        case EPS:
-            return new EPSTranscoder();
-        case PDF:
-            return new PDFTranscoder();
-        case PNG:
-            return new PNGTranscoder();
-        case TIFF:
-            return new TIFFTranscoder();
-        default:
-        case SVG:
-            return new SVGTranscoder();
+            case EPS:
+                return new EPSTranscoder();
+            case PDF:
+                return new PDFTranscoder();
+            case PNG:
+                return new PNGTranscoder();
+            case TIFF:
+                return new TIFFTranscoder();
+            default:
+            case SVG:
+                return new SVGTranscoder();
         }
     }
 

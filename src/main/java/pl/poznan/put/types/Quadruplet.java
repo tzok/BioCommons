@@ -98,7 +98,7 @@ public class Quadruplet<T> {
             break;
         }
 
-        throw new IllegalArgumentException("UniTypeQuaduplet.get(index) was called with index < 0 or index > 3");
+        throw new IllegalArgumentException("UniTypeQuadruplet.get(index) was called with index < 0 or index > 3");
     }
 
     @Override
