@@ -1,10 +1,10 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.collections4.CollectionUtils;
 import pl.poznan.put.atom.AtomName;
+
+import java.util.Collections;
+import java.util.List;
 
 public abstract class ResidueComponent {
     private final String residueComponentName;
@@ -52,12 +52,7 @@ public abstract class ResidueComponent {
         if (o == null || getClass() != o.getClass()) return false;
 
         ResidueComponent that = (ResidueComponent) o;
-
-        if (!residueComponentName.equals(that.residueComponentName)) return false;
-        if (moleculeType != that.moleculeType) return false;
-        if (!CollectionUtils.isEqualCollection(atoms, that.atoms)) return false;
-        return CollectionUtils.isEqualCollection(atoms, that.atoms);
-
+        return residueComponentName.equals(that.residueComponentName) && moleculeType == that.moleculeType && CollectionUtils.isEqualCollection(atoms, that.atoms) && CollectionUtils.isEqualCollection(atoms, that.atoms);
     }
 
     @Override

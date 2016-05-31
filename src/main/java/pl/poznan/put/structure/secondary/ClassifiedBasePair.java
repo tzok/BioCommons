@@ -1,10 +1,10 @@
 package pl.poznan.put.structure.secondary;
 
-import java.io.Serializable;
-
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.RNAInteractionType;
+
+import java.io.Serializable;
 
 public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBasePair> {
     private final BasePair basePair;
@@ -103,17 +103,15 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
         } else if (!basePair.equals(other.basePair)) {
             return false;
         }
-        if (interactionType != other.interactionType) {
-            return false;
-        }
-        if (leontisWesthof != other.leontisWesthof) {
-            return false;
-        }
-        return saenger == other.saenger;
+        return interactionType == other.interactionType && leontisWesthof == other.leontisWesthof && saenger == other.saenger;
     }
 
     @Override
     public int compareTo(ClassifiedBasePair o) {
+        if (o == null) {
+            throw new NullPointerException();
+        }
+
         if (equals(o)) {
             return 0;
         }

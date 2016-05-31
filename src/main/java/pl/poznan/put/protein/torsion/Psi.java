@@ -14,6 +14,6 @@ public class Psi extends AtomBasedTorsionAngleType {
     }
 
     private Psi() {
-        super(MoleculeType.PROTEIN, Unicode.PSI, new Quadruplet<AtomName>(AtomName.N, AtomName.CA, AtomName.C, AtomName.N), new Quadruplet<Integer>(0, 0, 0, 1));
+        super(MoleculeType.PROTEIN, Unicode.PSI, new Quadruplet<>(AtomName.N, AtomName.CA, AtomName.C, AtomName.N), new Quadruplet<>(0, 0, 0, 1));
     }
 }

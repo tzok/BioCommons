@@ -1,19 +1,14 @@
 package pl.poznan.put.protein.aminoacid;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.protein.ProteinSidechain;
-import pl.poznan.put.protein.torsion.Chi1;
-import pl.poznan.put.protein.torsion.Chi2;
-import pl.poznan.put.protein.torsion.Chi3;
-import pl.poznan.put.protein.torsion.Chi4;
-import pl.poznan.put.protein.torsion.Chi5;
-import pl.poznan.put.protein.torsion.ProteinChiType;
+import pl.poznan.put.protein.torsion.*;
 import pl.poznan.put.torsion.TorsionAngleType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public enum AminoAcidType implements ResidueInformationProvider {
     ALANINE(Alanine.getInstance()),
@@ -48,7 +43,7 @@ public enum AminoAcidType implements ResidueInformationProvider {
     }
 
     public static TorsionAngleType[] getChiInstances(ProteinChiType chiType) {
-        List<TorsionAngleType> typesList = new ArrayList<TorsionAngleType>();
+        List<TorsionAngleType> typesList = new ArrayList<>();
 
         for (AminoAcidType aminoAcidType : values()) {
             ProteinSidechain residueComponent = aminoAcidType.getProteinSidechainInstance();
@@ -57,23 +52,23 @@ public enum AminoAcidType implements ResidueInformationProvider {
             }
 
             switch (chiType) {
-            case CHI1:
-                typesList.add(Chi1.getInstance(residueComponent.getChiAtoms(chiType)));
-                break;
-            case CHI2:
-                typesList.add(Chi2.getInstance(residueComponent.getChiAtoms(chiType)));
-                break;
-            case CHI3:
-                typesList.add(Chi3.getInstance(residueComponent.getChiAtoms(chiType)));
-                break;
-            case CHI4:
-                typesList.add(Chi4.getInstance(residueComponent.getChiAtoms(chiType)));
-                break;
-            case CHI5:
-                typesList.add(Chi5.getInstance(residueComponent.getChiAtoms(chiType)));
-                break;
-            default:
-                break;
+                case CHI1:
+                    typesList.add(Chi1.getInstance(residueComponent.getChiAtoms(chiType)));
+                    break;
+                case CHI2:
+                    typesList.add(Chi2.getInstance(residueComponent.getChiAtoms(chiType)));
+                    break;
+                case CHI3:
+                    typesList.add(Chi3.getInstance(residueComponent.getChiAtoms(chiType)));
+                    break;
+                case CHI4:
+                    typesList.add(Chi4.getInstance(residueComponent.getChiAtoms(chiType)));
+                    break;
+                case CHI5:
+                    typesList.add(Chi5.getInstance(residueComponent.getChiAtoms(chiType)));
+                    break;
+                default:
+                    break;
             }
         }
 

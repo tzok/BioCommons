@@ -35,11 +35,11 @@ public class DotBracket implements Serializable {
     }
 
     private static String bpSeqToStructure(BpSeq bpSeq) {
-        Stack<Integer> stack = new Stack<Integer>();
+        Stack<Integer> stack = new Stack<>();
 
-        List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>(bpSeq.getEntries());
-        SortedSet<BpSeq.Entry> current = new TreeSet<BpSeq.Entry>();
-        SortedSet<BpSeq.Entry> next = new TreeSet<BpSeq.Entry>(entries);
+        List<BpSeq.Entry> entries = new ArrayList<>(bpSeq.getEntries());
+        SortedSet<BpSeq.Entry> current = new TreeSet<>();
+        SortedSet<BpSeq.Entry> next = new TreeSet<>(entries);
 
         int[] levels = new int[entries.size()];
         int currentLevel = 0;
@@ -95,8 +95,8 @@ public class DotBracket implements Serializable {
     }
 
     public static DotBracket fromString(String data) throws InvalidSecondaryStructureException {
-        List<Pair<Integer, Integer>> pairBeginEnd = new ArrayList<Pair<Integer, Integer>>();
-        List<String> strandNames = new ArrayList<String>();
+        List<Pair<Integer, Integer>> pairBeginEnd = new ArrayList<>();
+        List<String> strandNames = new ArrayList<>();
         StringBuilder sequenceBuilder = new StringBuilder();
         StringBuilder structureBuilder = new StringBuilder();
         int begin = 0;
@@ -135,9 +135,9 @@ public class DotBracket implements Serializable {
     }
 
     // FIXME
-    protected final List<Strand> strands = new ArrayList<Strand>();
+    protected final List<Strand> strands = new ArrayList<>();
 
-    protected final List<DotBracketSymbol> symbols = new ArrayList<DotBracketSymbol>();
+    protected final List<DotBracketSymbol> symbols = new ArrayList<>();
     protected final String sequence;
     protected final String structure;
 
@@ -176,7 +176,7 @@ public class DotBracket implements Serializable {
     }
 
     private void analyzePairing() throws InvalidSecondaryStructureException {
-        BidiMap<Character, Character> parentheses = new TreeBidiMap<Character, Character>();
+        BidiMap<Character, Character> parentheses = new TreeBidiMap<>();
         parentheses.put('(', ')');
         parentheses.put('[', ']');
         parentheses.put('{', '}');
@@ -186,7 +186,7 @@ public class DotBracket implements Serializable {
             parentheses.put(c, Character.toLowerCase(c));
         }
 
-        Map<Character, Stack<DotBracketSymbol>> parenthesesStacks = new HashMap<Character, Stack<DotBracketSymbol>>();
+        Map<Character, Stack<DotBracketSymbol>> parenthesesStacks = new HashMap<>();
         for (char c : parentheses.keySet()) {
             parenthesesStacks.put(c, new Stack<DotBracketSymbol>());
         }
@@ -325,8 +325,8 @@ public class DotBracket implements Serializable {
     }
 
     public List<CombinedStrand> combineStrands() {
-        List<CombinedStrand> result = new ArrayList<CombinedStrand>();
-        List<Strand> toCombine = new ArrayList<Strand>();
+        List<CombinedStrand> result = new ArrayList<>();
+        List<Strand> toCombine = new ArrayList<>();
         int level = 0;
 
         for (Strand strand : strands) {

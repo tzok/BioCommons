@@ -13,9 +13,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * Created by tzok on 24.05.16.
- */
 public class MmCifConsumer implements MMcifConsumer {
     private final static Logger LOGGER = LoggerFactory.getLogger(MMcifConsumer.class);
     private final static DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");

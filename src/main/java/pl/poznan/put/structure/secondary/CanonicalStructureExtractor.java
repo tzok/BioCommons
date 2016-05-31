@@ -19,7 +19,7 @@ public class CanonicalStructureExtractor {
      */
     public static BpSeq getCanonicalSecondaryStructure(ResidueCollection residueCollection) throws InvalidSecondaryStructureException {
         List<PdbResidue> residues = residueCollection.getResidues();
-        List<ClassifiedBasePair> basePairs = new ArrayList<ClassifiedBasePair>();
+        List<ClassifiedBasePair> basePairs = new ArrayList<>();
 
         for (int i = 0; i < residues.size(); i++) {
             PdbResidue left = residues.get(i);

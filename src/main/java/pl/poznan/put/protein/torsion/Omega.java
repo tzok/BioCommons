@@ -14,6 +14,6 @@ public class Omega extends AtomBasedTorsionAngleType {
     }
 
     private Omega() {
-        super(MoleculeType.PROTEIN, Unicode.OMEGA, new Quadruplet<AtomName>(AtomName.CA, AtomName.C, AtomName.N, AtomName.CA), new Quadruplet<Integer>(0, 0, 1, 1));
+        super(MoleculeType.PROTEIN, Unicode.OMEGA, new Quadruplet<>(AtomName.CA, AtomName.C, AtomName.N, AtomName.CA), new Quadruplet<>(0, 0, 1, 1));
     }
 }

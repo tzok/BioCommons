@@ -40,11 +40,7 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier> {
         if (o == null || getClass() != o.getClass()) return false;
 
         PdbResidueIdentifier that = (PdbResidueIdentifier) o;
-
-        if (residueNumber != that.residueNumber) return false;
-        if (!chainIdentifier.equals(that.chainIdentifier)) return false;
-        return insertionCode.equals(that.insertionCode);
-
+        return residueNumber == that.residueNumber && chainIdentifier.equals(that.chainIdentifier) && insertionCode.equals(that.insertionCode);
     }
 
     @Override
@@ -57,6 +53,10 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier> {
 
     @Override
     public int compareTo(PdbResidueIdentifier o) {
+        if (o == null) {
+            throw new NullPointerException();
+        }
+
         if (!chainIdentifier.equals(o.chainIdentifier)) {
             return chainIdentifier.compareTo(o.chainIdentifier);
         }

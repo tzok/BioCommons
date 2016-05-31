@@ -10,9 +10,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
 
-/**
- * Created by tzok on 24.05.16.
- */
 public class MmCifParser {
     private final MMcifParser parser = new SimpleMMcifParser();
     private final MmCifConsumer consumer = new MmCifConsumer();

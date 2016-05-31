@@ -1,24 +1,17 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class Ct implements Serializable {
     public static class Entry implements Serializable, Comparable<Ct.Entry> {
@@ -78,6 +71,10 @@ public class Ct implements Serializable {
 
         @Override
         public int compareTo(Entry e) {
+            if (e == null) {
+                throw new NullPointerException();
+            }
+            
             if (equals(e)) {
                 return 0;
             }
@@ -130,13 +127,7 @@ public class Ct implements Serializable {
             } else if (!comment.equals(other.comment)) {
                 return false;
             }
-            if (index != other.index) {
-                return false;
-            }
-            if (original != other.original) {
-                return false;
-            }
-            return pair == other.pair && seq == other.seq;
+            return index == other.index && original == other.original && pair == other.pair && seq == other.seq;
         }
 
         @Override
@@ -166,7 +157,7 @@ public class Ct implements Serializable {
     private static boolean printComments = true;
 
     public static Ct fromString(String data) throws InvalidSecondaryStructureException {
-        List<Entry> entries = new ArrayList<Entry>();
+        List<Entry> entries = new ArrayList<>();
         boolean firstLine = true;
 
         for (String line : data.split("\n")) {
@@ -221,7 +212,7 @@ public class Ct implements Serializable {
     }
 
     public static Ct fromBpSeq(BpSeq bpSeq) throws InvalidSecondaryStructureException {
-        List<Ct.Entry> ctEntries = new ArrayList<Ct.Entry>();
+        List<Ct.Entry> ctEntries = new ArrayList<>();
         SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
         int size = entries.size();
 
@@ -244,7 +235,7 @@ public class Ct implements Serializable {
             throw new InvalidSecondaryStructureException("Failed to filter RNA chains", e);
         }
 
-        List<Ct.Entry> ctEntries = new ArrayList<Ct.Entry>();
+        List<Ct.Entry> ctEntries = new ArrayList<>();
         List<PdbResidue> residues = rna.getResidues();
         SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
         int i = 0;
@@ -270,7 +261,7 @@ public class Ct implements Serializable {
     }
 
     public static Ct fromDotBracket(DotBracket dotBracket) throws InvalidSecondaryStructureException {
-        List<Ct.Entry> entries = new ArrayList<Ct.Entry>();
+        List<Ct.Entry> entries = new ArrayList<>();
 
         for (Strand s : dotBracket.getStrands()) {
             for (int i = 0, j = s.getFrom(); j < s.getTo(); i++, j++) {
@@ -307,7 +298,7 @@ public class Ct implements Serializable {
     private final SortedSet<Entry> entries;
 
     public Ct(List<Entry> entries) throws InvalidSecondaryStructureException {
-        this.entries = new TreeSet<Entry>(entries);
+        this.entries = new TreeSet<>(entries);
         validate();
     }
 
@@ -319,7 +310,7 @@ public class Ct implements Serializable {
             Ct.LOGGER.trace("CT to be validated:\n" + toString());
         }
 
-        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> map = new HashMap<>();
 
         for (Entry e : entries) {
             map.put(e.index, e.pair);

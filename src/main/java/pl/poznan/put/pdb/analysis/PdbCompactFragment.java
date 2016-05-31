@@ -20,7 +20,7 @@ import pl.poznan.put.torsion.TorsionAngleValue;
 public class PdbCompactFragment implements ResidueCollection {
     private final String name;
     private final List<PdbResidue> residues;
-    private final Map<PdbResidue, List<TorsionAngleValue>> mapResidueAngleValue = new LinkedHashMap<PdbResidue, List<TorsionAngleValue>>();
+    private final Map<PdbResidue, List<TorsionAngleValue>> mapResidueAngleValue = new LinkedHashMap<>();
 
     public PdbCompactFragment(String name, List<PdbResidue> residues) {
         super();
@@ -29,7 +29,7 @@ public class PdbCompactFragment implements ResidueCollection {
 
         for (int i = 0; i < residues.size(); i++) {
             PdbResidue residue = residues.get(i);
-            List<TorsionAngleValue> values = new ArrayList<TorsionAngleValue>();
+            List<TorsionAngleValue> values = new ArrayList<>();
 
             for (TorsionAngleType type : residue.getTorsionAngleTypes()) {
                 TorsionAngleValue value = type.calculate(residues, i);
@@ -92,7 +92,7 @@ public class PdbCompactFragment implements ResidueCollection {
     }
 
     public Set<TorsionAngleType> commonTorsionAngleTypes() {
-        Set<TorsionAngleType> set = new LinkedHashSet<TorsionAngleType>();
+        Set<TorsionAngleType> set = new LinkedHashSet<>();
         for (Entry<PdbResidue, List<TorsionAngleValue>> entry : mapResidueAngleValue.entrySet()) {
             for (TorsionAngleValue angleValue : entry.getValue()) {
                 set.add(angleValue.getAngleType());

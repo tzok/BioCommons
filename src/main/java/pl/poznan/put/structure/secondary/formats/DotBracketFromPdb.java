@@ -11,8 +11,8 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class DotBracketFromPdb extends DotBracket {
-    private final Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue = new HashMap<DotBracketSymbol, PdbResidueIdentifier>();
-    private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<PdbResidueIdentifier, DotBracketSymbol>();
+    private final Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue = new HashMap<>();
+    private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<>();
 
     public DotBracketFromPdb(String sequence, String structure, PdbModel model) throws InvalidSecondaryStructureException {
         super(sequence, DotBracketFromPdb.updateMissingIndices(structure, model));

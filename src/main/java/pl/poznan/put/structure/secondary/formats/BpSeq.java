@@ -1,28 +1,18 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class BpSeq implements Serializable {
     public static class Entry implements Comparable<Entry>, Serializable {
@@ -65,6 +55,10 @@ public class BpSeq implements Serializable {
 
         @Override
         public int compareTo(Entry e) {
+            if (e == null) {
+                throw new NullPointerException();
+            }
+
             if (equals(e)) {
                 return 0;
             }
@@ -100,10 +94,7 @@ public class BpSeq implements Serializable {
                 return false;
             }
             Entry other = (Entry) obj;
-            if (index != other.index) {
-                return false;
-            }
-            return pair == other.pair && seq == other.seq;
+            return index == other.index && pair == other.pair && seq == other.seq;
         }
 
         @Override
@@ -127,7 +118,7 @@ public class BpSeq implements Serializable {
     private static boolean printComments = false;
 
     public static BpSeq fromString(String data) throws InvalidSecondaryStructureException {
-        List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
+        List<BpSeq.Entry> entries = new ArrayList<>();
 
         for (String line : data.split("\n")) {
             line = line.trim();
@@ -165,7 +156,7 @@ public class BpSeq implements Serializable {
     }
 
     public static BpSeq fromCt(Ct ct) throws InvalidSecondaryStructureException {
-        List<BpSeq.Entry> bpseqEntries = new ArrayList<BpSeq.Entry>();
+        List<BpSeq.Entry> bpseqEntries = new ArrayList<>();
 
         for (Ct.Entry e : ct.getEntries()) {
             bpseqEntries.add(new BpSeq.Entry(e.getIndex(), e.getPair(), e.getSeq()));
@@ -175,7 +166,7 @@ public class BpSeq implements Serializable {
     }
 
     public static BpSeq fromDotBracket(DotBracket db) throws InvalidSecondaryStructureException {
-        List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
+        List<BpSeq.Entry> entries = new ArrayList<>();
 
         for (DotBracketSymbol symbol : db.getSymbols()) {
             DotBracketSymbol pair = symbol.getPair();
@@ -190,8 +181,8 @@ public class BpSeq implements Serializable {
     }
 
     public static BpSeq fromResidueCollection(ResidueCollection residueCollection, List<ClassifiedBasePair> basePairs) throws InvalidSecondaryStructureException {
-        List<BasePair> allBasePairs = new ArrayList<BasePair>();
-        Map<BasePair, String> basePairToComment = new HashMap<BasePair, String>();
+        List<BasePair> allBasePairs = new ArrayList<>();
+        Map<BasePair, String> basePairToComment = new HashMap<>();
 
         for (ClassifiedBasePair classifiedBasePair : basePairs) {
             BasePair basePair = classifiedBasePair.getBasePair();
@@ -202,16 +193,16 @@ public class BpSeq implements Serializable {
             basePairToComment.put(basePair.invert(), comment);
         }
 
-        List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
+        List<BpSeq.Entry> entries = new ArrayList<>();
         entries.addAll(BpSeq.generateEntriesForPaired(residueCollection, allBasePairs, basePairToComment));
         entries.addAll(BpSeq.generateEntriesForUnpaired(residueCollection, allBasePairs));
         return new BpSeq(entries);
     }
 
     private static List<BpSeq.Entry> generateEntriesForUnpaired(ResidueCollection residueCollection, List<BasePair> allBasePairs) {
-        List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
+        List<BpSeq.Entry> entries = new ArrayList<>();
         List<PdbResidue> residues = residueCollection.getResidues();
-        Set<PdbResidueIdentifier> paired = new HashSet<PdbResidueIdentifier>();
+        Set<PdbResidueIdentifier> paired = new HashSet<>();
 
         for (BasePair basePair : allBasePairs) {
             paired.add(basePair.getLeft());
@@ -229,7 +220,7 @@ public class BpSeq implements Serializable {
     }
 
     private static List<BpSeq.Entry> generateEntriesForPaired(ResidueCollection residueCollection, Collection<BasePair> basePairs, Map<BasePair, String> basePairToComment) {
-        List<BpSeq.Entry> entries = new ArrayList<BpSeq.Entry>();
+        List<BpSeq.Entry> entries = new ArrayList<>();
         List<PdbResidue> residues = residueCollection.getResidues();
 
         for (BasePair basePair : basePairs) {
@@ -252,7 +243,7 @@ public class BpSeq implements Serializable {
     private final SortedSet<Entry> entries;
 
     public BpSeq(Collection<BpSeq.Entry> entries) throws InvalidSecondaryStructureException {
-        this.entries = new TreeSet<Entry>(entries);
+        this.entries = new TreeSet<>(entries);
         validate();
     }
 
@@ -260,7 +251,7 @@ public class BpSeq implements Serializable {
      * Check if all pairs match.
      */
     private void validate() throws InvalidSecondaryStructureException {
-        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> map = new HashMap<>();
 
         for (Entry e : entries) {
             if (e.index == e.pair) {

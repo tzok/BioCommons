@@ -14,6 +14,6 @@ public class Calpha extends PseudoTorsionAngleType {
     }
 
     private Calpha() {
-        super(MoleculeType.PROTEIN, Unicode.CALPHA, new Quadruplet<AtomName>(AtomName.CA, AtomName.CA, AtomName.CA, AtomName.CA), new Quadruplet<Integer>(0, 1, 2, 3));
+        super(MoleculeType.PROTEIN, Unicode.CALPHA, new Quadruplet<>(AtomName.CA, AtomName.CA, AtomName.CA, AtomName.CA), new Quadruplet<>(0, 1, 2, 3));
     }
 }

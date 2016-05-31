@@ -14,6 +14,6 @@ public class Nu4 extends AtomBasedTorsionAngleType {
     }
 
     private Nu4() {
-        super(MoleculeType.RNA, Unicode.NU4, new Quadruplet<AtomName>(AtomName.C3p, AtomName.C4p, AtomName.O4p, AtomName.C1p), new Quadruplet<Integer>(0, 0, 0, 0));
+        super(MoleculeType.RNA, Unicode.NU4, new Quadruplet<>(AtomName.C3p, AtomName.C4p, AtomName.O4p, AtomName.C1p), new Quadruplet<>(0, 0, 0, 0));
     }
 }

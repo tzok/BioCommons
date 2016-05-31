@@ -14,6 +14,6 @@ public class Gamma extends AtomBasedTorsionAngleType {
     }
 
     private Gamma() {
-        super(MoleculeType.RNA, Unicode.GAMMA, new Quadruplet<AtomName>(AtomName.O5p, AtomName.C5p, AtomName.C4p, AtomName.C3p), new Quadruplet<Integer>(0, 0, 0, 0));
+        super(MoleculeType.RNA, Unicode.GAMMA, new Quadruplet<>(AtomName.O5p, AtomName.C5p, AtomName.C4p, AtomName.C3p), new Quadruplet<>(0, 0, 0, 0));
     }
 }

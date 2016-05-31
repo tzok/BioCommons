@@ -12,22 +12,22 @@ import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
 public class Chi2 extends AtomBasedTorsionAngleType {
-    public static final Quadruplet<AtomName> ARGININE_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
-    public static final Quadruplet<AtomName> ASPARAGINE_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.OD1);
-    public static final Quadruplet<AtomName> ASPARTIC_ACID_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.OD1);
-    public static final Quadruplet<AtomName> GLUTAMIC_ACID_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
-    public static final Quadruplet<AtomName> GLUTAMINE_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
-    public static final Quadruplet<AtomName> HISTIDINE_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.ND1);
-    public static final Quadruplet<AtomName> ISOLEUCINE_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG1, AtomName.CD1);
-    public static final Quadruplet<AtomName> LEUCINE_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
-    public static final Quadruplet<AtomName> LYSINE_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
-    public static final Quadruplet<AtomName> METHIONINE_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.SD);
-    public static final Quadruplet<AtomName> PHENYLALANINE_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
-    public static final Quadruplet<AtomName> PROLINE_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
-    public static final Quadruplet<AtomName> TRYPTOPHAN_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
-    public static final Quadruplet<AtomName> TYROSINE_ATOMS = new Quadruplet<AtomName>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
+    public static final Quadruplet<AtomName> ARGININE_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
+    public static final Quadruplet<AtomName> ASPARAGINE_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.OD1);
+    public static final Quadruplet<AtomName> ASPARTIC_ACID_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.OD1);
+    public static final Quadruplet<AtomName> GLUTAMIC_ACID_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
+    public static final Quadruplet<AtomName> GLUTAMINE_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
+    public static final Quadruplet<AtomName> HISTIDINE_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.ND1);
+    public static final Quadruplet<AtomName> ISOLEUCINE_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG1, AtomName.CD1);
+    public static final Quadruplet<AtomName> LEUCINE_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
+    public static final Quadruplet<AtomName> LYSINE_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
+    public static final Quadruplet<AtomName> METHIONINE_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.SD);
+    public static final Quadruplet<AtomName> PHENYLALANINE_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
+    public static final Quadruplet<AtomName> PROLINE_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
+    public static final Quadruplet<AtomName> TRYPTOPHAN_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
+    public static final Quadruplet<AtomName> TYROSINE_ATOMS = new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
 
-    private static final Map<Quadruplet<AtomName>, Chi2> INSTANCE_CACHE = new HashMap<Quadruplet<AtomName>, Chi2>();
+    private static final Map<Quadruplet<AtomName>, Chi2> INSTANCE_CACHE = new HashMap<>();
 
     public static Chi2 getInstance(Quadruplet<AtomName> atoms) {
         if (!Chi2.INSTANCE_CACHE.containsKey(atoms)) {
@@ -37,11 +37,11 @@ public class Chi2 extends AtomBasedTorsionAngleType {
     }
 
     private Chi2(Quadruplet<AtomName> atoms) {
-        super(MoleculeType.PROTEIN, Unicode.CHI2, atoms, new Quadruplet<Integer>(0, 0, 0, 0));
+        super(MoleculeType.PROTEIN, Unicode.CHI2, atoms, new Quadruplet<>(0, 0, 0, 0));
     }
 
     public static Chi2[] getInstances() {
-        List<Chi2> instances = new ArrayList<Chi2>();
+        List<Chi2> instances = new ArrayList<>();
         instances.add(Chi2.getInstance(Chi2.ARGININE_ATOMS));
         instances.add(Chi2.getInstance(Chi2.ASPARAGINE_ATOMS));
         instances.add(Chi2.getInstance(Chi2.ASPARTIC_ACID_ATOMS));

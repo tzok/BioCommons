@@ -14,6 +14,6 @@ public class Phi extends AtomBasedTorsionAngleType {
     }
 
     private Phi() {
-        super(MoleculeType.PROTEIN, Unicode.PHI, new Quadruplet<AtomName>(AtomName.C, AtomName.N, AtomName.CA, AtomName.C), new Quadruplet<Integer>(-1, 0, 0, 0));
+        super(MoleculeType.PROTEIN, Unicode.PHI, new Quadruplet<>(AtomName.C, AtomName.N, AtomName.CA, AtomName.C), new Quadruplet<>(-1, 0, 0, 0));
     }
 }

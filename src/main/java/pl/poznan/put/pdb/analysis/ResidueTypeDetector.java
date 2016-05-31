@@ -1,18 +1,18 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.util.*;
-
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.PredicateUtils;
-
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.AtomType;
 import pl.poznan.put.protein.aminoacid.AminoAcidType;
 import pl.poznan.put.rna.base.NucleobaseType;
 
+import java.util.*;
+
 public class ResidueTypeDetector {
-    private static final Set<ResidueInformationProvider> PROVIDERS = new LinkedHashSet<ResidueInformationProvider>();
+    private static final Set<ResidueInformationProvider> PROVIDERS = new LinkedHashSet<>();
 
     static {
         Collections.addAll(ResidueTypeDetector.PROVIDERS, NucleobaseType.values());
@@ -42,7 +42,7 @@ public class ResidueTypeDetector {
             Collection<AtomName> atomNames, String residueName) {
         boolean hasHydrogen = ResidueTypeDetector.hasHydrogen(atomNames);
         Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils.invokerPredicate("isHeavy");
-        Set<AtomName> actual = new HashSet<AtomName>(atomNames);
+        Set<AtomName> actual = new HashSet<>(atomNames);
 
         if (!hasHydrogen) {
             CollectionUtils.filter(actual, isHeavyAtomPredicate);
@@ -52,7 +52,7 @@ public class ResidueTypeDetector {
         ResidueInformationProvider bestProvider = null;
 
         for (ResidueInformationProvider provider : ResidueTypeDetector.PROVIDERS) {
-            Set<AtomName> expected = new HashSet<AtomName>();
+            Set<AtomName> expected = new HashSet<>();
 
             for (ResidueComponent component : provider.getAllMoleculeComponents()) {
                 for (AtomName atomName : component.getAtoms()) {
@@ -82,7 +82,7 @@ public class ResidueTypeDetector {
 
     private static boolean hasHydrogen(Collection<AtomName> atomNames) {
         Predicate<AtomName> notIsHeavyPredicate = PredicateUtils.notPredicate(PredicateUtils.invokerPredicate("isHeavy"));
-        return CollectionUtils.exists(atomNames, notIsHeavyPredicate);
+        return IterableUtils.matchesAny(atomNames, notIsHeavyPredicate);
     }
 
     private ResidueTypeDetector() {

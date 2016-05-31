@@ -1,6 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.PredicateUtils;
 import org.biojava.nbio.structure.Atom;
@@ -30,7 +31,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
         String insertionCode = residueNumberObject.getInsCode() == null ? " " : Character.toString(residueNumberObject.getInsCode());
         PdbResidueIdentifier residueIdentifier = new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
         String residueName = group.getPDBName();
-        List<PdbAtomLine> atoms = new ArrayList<PdbAtomLine>();
+        List<PdbAtomLine> atoms = new ArrayList<>();
 
         for (Atom atom : group.getAtoms()) {
             atoms.add(PdbAtomLine.fromBioJavaAtom(atom));
@@ -75,7 +76,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     }
 
     private List<AtomName> detectAtomNames() {
-        List<AtomName> result = new ArrayList<AtomName>();
+        List<AtomName> result = new ArrayList<>();
         for (PdbAtomLine atom : atoms) {
             result.add(atom.detectAtomName());
         }
@@ -223,6 +224,9 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
 
     @Override
     public int compareTo(PdbResidue o) {
+        if (o == null) {
+            throw new NullPointerException();
+        }
         return identifier.compareTo(o.identifier);
     }
 
@@ -232,13 +236,13 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
 
     public final boolean hasHydrogen() {
         Predicate<AtomName> notIsHeavyPredicate = PredicateUtils.notPredicate(PredicateUtils.invokerPredicate("isHeavy"));
-        return CollectionUtils.exists(atomNames, notIsHeavyPredicate);
+        return IterableUtils.matchesAny(atomNames, notIsHeavyPredicate);
     }
 
     public final boolean hasAllAtoms() {
-        List<AtomName> actual = new ArrayList<AtomName>(atomNames);
-        List<AtomName> expected = new ArrayList<AtomName>();
-        List<AtomName> additional = new ArrayList<AtomName>();
+        List<AtomName> actual = new ArrayList<>(atomNames);
+        List<AtomName> expected = new ArrayList<>();
+        List<AtomName> additional = new ArrayList<>();
 
         for (ResidueComponent component : residueInformationProvider.getAllMoleculeComponents()) {
             expected.addAll(component.getAtoms());
@@ -251,7 +255,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
         boolean result = CollectionUtils.isEqualCollection(actual, expected);
 
         if (!result) {
-            List<AtomName> intersection = new ArrayList<AtomName>(actual);
+            List<AtomName> intersection = new ArrayList<>(actual);
             intersection.retainAll(expected);
             actual.removeAll(intersection);
             actual.removeAll(additional);

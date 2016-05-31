@@ -2,9 +2,6 @@ package pl.poznan.put.pdb;
 
 import java.util.Locale;
 
-/**
- * Created by tzok on 31.05.16.
- */
 public class PdbRemark2Line {
     public static final String PROLOGUE = "REMARK   2                                                                      ";
 

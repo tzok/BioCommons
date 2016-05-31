@@ -22,7 +22,7 @@ public class StructureHelper {
     }
 
     public static Atom[] findAtoms(Group residue, AtomName[] atomNames) {
-        List<Atom> atoms = new ArrayList<Atom>();
+        List<Atom> atoms = new ArrayList<>();
         for (AtomName atomName : atomNames) {
             atoms.add(StructureHelper.findAtom(residue, atomName));
         }
@@ -30,7 +30,7 @@ public class StructureHelper {
     }
 
     public static Atom[] findAllAtoms(Chain chain, AtomName atomName) {
-        List<Atom> result = new ArrayList<Atom>();
+        List<Atom> result = new ArrayList<>();
 
         for (Group group : chain.getAtomGroups()) {
             Atom atom = StructureHelper.findAtom(group, atomName);
@@ -43,7 +43,7 @@ public class StructureHelper {
     }
 
     public static Atom[] findAllAtoms(Structure structure, AtomName atomName) {
-        List<Atom> result = new ArrayList<Atom>();
+        List<Atom> result = new ArrayList<>();
         for (Chain chain : structure.getChains()) {
             Atom[] atomsChain = StructureHelper.findAllAtoms(chain, atomName);
             result.addAll(Arrays.asList(atomsChain));
@@ -52,7 +52,7 @@ public class StructureHelper {
     }
 
     public static void mergeAltLocs(Group group) {
-        LinkedHashSet<Atom> atoms = new LinkedHashSet<Atom>();
+        LinkedHashSet<Atom> atoms = new LinkedHashSet<>();
         atoms.addAll(group.getAtoms());
 
         for (Group altloc : group.getAltLocs()) {
@@ -63,7 +63,7 @@ public class StructureHelper {
             }
         }
 
-        group.setAtoms(new ArrayList<Atom>(atoms));
+        group.setAtoms(new ArrayList<>(atoms));
     }
 
     public static boolean isModified(Group group, AtomName[] atomNames) {

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class PdbChain implements Comparable<PdbChain> {
     public static PdbChain fromBioJavaChain(Chain chain) {
-        List<PdbResidue> residues = new ArrayList<PdbResidue>();
+        List<PdbResidue> residues = new ArrayList<>();
         for (Group group : chain.getAtomGroups()) {
             residues.add(PdbResidue.fromBioJavaGroup(group));
         }
@@ -67,11 +67,7 @@ public class PdbChain implements Comparable<PdbChain> {
         if (o == null || getClass() != o.getClass()) return false;
 
         PdbChain pdbChain = (PdbChain) o;
-
-        if (!identifier.equals(pdbChain.identifier)) return false;
-        if (!residues.equals(pdbChain.residues)) return false;
-        return moleculeType == pdbChain.moleculeType;
-
+        return identifier.equals(pdbChain.identifier) && residues.equals(pdbChain.residues) && moleculeType == pdbChain.moleculeType;
     }
 
     @Override
@@ -84,6 +80,9 @@ public class PdbChain implements Comparable<PdbChain> {
 
     @Override
     public int compareTo(PdbChain o) {
+        if (o == null) {
+            throw new NullPointerException();
+        }
         return identifier.compareTo(o.identifier);
     }
 
