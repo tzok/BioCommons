@@ -21,6 +21,7 @@ public class PdbParser {
 
     private PdbHeaderLine headerLine;
     private PdbExpdtaLine experimentalDataLine;
+    private PdbRemark2Line resolutionLine;
     private char currentChainIdentifier;
     private int currentModelNumber;
 
@@ -51,7 +52,9 @@ public class PdbParser {
             } else if (line.startsWith("HEADER")) {
                 handleHeaderLine(line);
             } else if (line.startsWith("EXPDTA")) {
-                handleExpdtaLine(line);
+                handleExperimentalDataLine(line);
+            } else if (line.startsWith("REMARK   2 RESOLUTION.")) {
+                handleResolutionLine(line);
             }
         }
 
@@ -60,7 +63,7 @@ public class PdbParser {
         for (Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
             int modelNumber = entry.getKey();
             List<PdbAtomLine> atoms = entry.getValue();
-            PdbModel pdbModel = new PdbModel(headerLine, experimentalDataLine, modelNumber, atoms, modifiedResidues, missingResidues);
+            PdbModel pdbModel = new PdbModel(headerLine, experimentalDataLine, resolutionLine, modelNumber, atoms, modifiedResidues, missingResidues);
             result.add(pdbModel);
         }
 
@@ -157,11 +160,19 @@ public class PdbParser {
         }
     }
 
-    private void handleExpdtaLine(String line) {
+    private void handleExperimentalDataLine(String line) {
         try {
             experimentalDataLine = PdbExpdtaLine.parse(line);
         } catch (PdbParsingException e) {
             LOGGER.warn("Invalid EXPDTA line: " + line, e);
+        }
+    }
+
+    private void handleResolutionLine(String line) {
+        try {
+            resolutionLine = PdbRemark2Line.parse(line);
+        } catch (PdbParsingException e) {
+            LOGGER.warn("Invalid REMARK   2 RESOLUTION. line: " + line, e);
         }
     }
 }

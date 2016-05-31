@@ -7,28 +7,30 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class PdbModel implements Serializable, ResidueCollection {
-    private final List<PdbChain> chains = new ArrayList<PdbChain>();
-    private final List<PdbResidue> residues = new ArrayList<PdbResidue>();
+    private final List<PdbChain> chains = new ArrayList<>();
+    private final List<PdbResidue> residues = new ArrayList<>();
 
-    private final Set<PdbResidueIdentifier> missingResiduesIdentifiers = new HashSet<PdbResidueIdentifier>();
-    private final Map<PdbResidueIdentifier, PdbModresLine> identifierToModification = new HashMap<PdbResidueIdentifier, PdbModresLine>();
-    private final Map<PdbResidueIdentifier, PdbResidue> identifierToResidue = new HashMap<PdbResidueIdentifier, PdbResidue>();
-    private final Map<PdbResidueIdentifier, PdbChain> identifierToChain = new HashMap<PdbResidueIdentifier, PdbChain>();
+    private final Set<PdbResidueIdentifier> missingResiduesIdentifiers = new HashSet<>();
+    private final Map<PdbResidueIdentifier, PdbModresLine> identifierToModification = new HashMap<>();
+    private final Map<PdbResidueIdentifier, PdbResidue> identifierToResidue = new HashMap<>();
+    private final Map<PdbResidueIdentifier, PdbChain> identifierToChain = new HashMap<>();
 
     private final PdbHeaderLine headerLine;
     private final PdbExpdtaLine experimentalDataLine;
+    private final PdbRemark2Line resolutionLine;
     private final int modelNumber;
     private final List<PdbAtomLine> atoms;
     private final List<PdbModresLine> modifiedResidues;
 
     public PdbModel(List<PdbAtomLine> atoms) throws PdbParsingException {
-        this(PdbHeaderLine.emptyInstance(), PdbExpdtaLine.emptyInstance(), 1, atoms, Collections.<PdbModresLine>emptyList(), Collections.<PdbRemark465Line>emptyList());
+        this(PdbHeaderLine.emptyInstance(), PdbExpdtaLine.emptyInstance(), PdbRemark2Line.emptyInstance(), 1, atoms, Collections.<PdbModresLine>emptyList(), Collections.<PdbRemark465Line>emptyList());
     }
 
-    public PdbModel(PdbHeaderLine headerLine, PdbExpdtaLine experimentalDataLine, int modelNumber, List<PdbAtomLine> atoms, List<PdbModresLine> modifiedResidues, List<PdbRemark465Line> missingResidues) throws PdbParsingException {
+    public PdbModel(PdbHeaderLine headerLine, PdbExpdtaLine experimentalDataLine, PdbRemark2Line resolutionLine, int modelNumber, List<PdbAtomLine> atoms, List<PdbModresLine> modifiedResidues, List<PdbRemark465Line> missingResidues) throws PdbParsingException {
         super();
         this.headerLine = headerLine;
         this.experimentalDataLine = experimentalDataLine;
+        this.resolutionLine = resolutionLine;
         this.modelNumber = modelNumber;
         this.atoms = atoms;
         this.modifiedResidues = modifiedResidues;
@@ -51,7 +53,7 @@ public class PdbModel implements Serializable, ResidueCollection {
     private void analyzeResidues(List<PdbRemark465Line> missingResidues) throws PdbParsingException {
         assert atoms.size() > 0;
 
-        List<PdbAtomLine> residueAtoms = new ArrayList<PdbAtomLine>();
+        List<PdbAtomLine> residueAtoms = new ArrayList<>();
         PdbResidueIdentifier lastResidueIdentifier = PdbResidueIdentifier.fromChainNumberICode(atoms.get(0));
 
         for (PdbAtomLine atom : atoms) {
@@ -59,7 +61,7 @@ public class PdbModel implements Serializable, ResidueCollection {
 
             if (!residueIdentifier.equals(lastResidueIdentifier)) {
                 saveExistingResidueIfValid(residueAtoms, lastResidueIdentifier);
-                residueAtoms = new ArrayList<PdbAtomLine>();
+                residueAtoms = new ArrayList<>();
                 lastResidueIdentifier = residueIdentifier;
             }
 
@@ -128,7 +130,7 @@ public class PdbModel implements Serializable, ResidueCollection {
     private void analyzeChains() {
         assert residues.size() > 0;
 
-        Map<String, List<PdbResidue>> foundChains = new LinkedHashMap<String, List<PdbResidue>>();
+        Map<String, List<PdbResidue>> foundChains = new LinkedHashMap<>();
 
         for (PdbResidue residue : residues) {
             String chainIdentifier = residue.getChainIdentifier();
@@ -159,6 +161,10 @@ public class PdbModel implements Serializable, ResidueCollection {
 
     public PdbExpdtaLine getExperimentalDataLine() {
         return experimentalDataLine;
+    }
+
+    public PdbRemark2Line getResolutionLine() {
+        return resolutionLine;
     }
 
     public int getModelNumber() {
@@ -237,8 +243,8 @@ public class PdbModel implements Serializable, ResidueCollection {
     }
 
     public PdbModel filteredNewInstance(MoleculeType moleculeType) throws PdbParsingException {
-        List<PdbAtomLine> filteredAtoms = new ArrayList<PdbAtomLine>();
-        List<PdbRemark465Line> filteredMissing = new ArrayList<PdbRemark465Line>();
+        List<PdbAtomLine> filteredAtoms = new ArrayList<>();
+        List<PdbRemark465Line> filteredMissing = new ArrayList<>();
 
         for (PdbResidue residue : residues) {
             if (residue.getMoleculeType() == moleculeType) {
@@ -254,6 +260,6 @@ public class PdbModel implements Serializable, ResidueCollection {
             }
         }
 
-        return new PdbModel(headerLine, experimentalDataLine, modelNumber, filteredAtoms, modifiedResidues, filteredMissing);
+        return new PdbModel(headerLine, experimentalDataLine, resolutionLine, modelNumber, filteredAtoms, modifiedResidues, filteredMissing);
     }
 }

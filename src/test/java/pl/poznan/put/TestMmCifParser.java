@@ -44,6 +44,7 @@ public class TestMmCifParser {
         List<ExperimentalTechnique> experimentalTechniques = model.getExperimentalDataLine().getExperimentalTechniques();
         Assert.assertEquals(1, experimentalTechniques.size());
         Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION, experimentalTechniques.get(0));
+        Assert.assertEquals(1.9, model.getResolutionLine().getResolution(), 0.001);
     }
 
     @Test
@@ -63,6 +64,7 @@ public class TestMmCifParser {
         List<ExperimentalTechnique> experimentalTechniques = model.getExperimentalDataLine().getExperimentalTechniques();
         Assert.assertEquals(1, experimentalTechniques.size());
         Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION, experimentalTechniques.get(0));
+        Assert.assertEquals(1.9, model.getResolutionLine().getResolution(), 0.001);
     }
 
     @Test
@@ -79,5 +81,6 @@ public class TestMmCifParser {
         Assert.assertEquals(2, experimentalTechniques.size());
         Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION, experimentalTechniques.get(0));
         Assert.assertEquals(ExperimentalTechnique.NEUTRON_DIFFRACTION, experimentalTechniques.get(1));
+        Assert.assertEquals(2.2, model.getResolutionLine().getResolution(), 0.001);
     }
 }

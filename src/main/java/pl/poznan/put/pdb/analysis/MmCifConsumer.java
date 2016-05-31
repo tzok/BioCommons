@@ -28,6 +28,7 @@ public class MmCifConsumer implements MMcifConsumer {
     private Date depositionDate;
     private String classification;
     private String idCode;
+    private double resolution;
 
     private FileParsingParameters parameters;
 
@@ -48,6 +49,7 @@ public class MmCifConsumer implements MMcifConsumer {
         depositionDate = new Date(0);
         classification = null;
         idCode = null;
+        resolution = Double.NaN;
     }
 
     @Override
@@ -79,6 +81,9 @@ public class MmCifConsumer implements MMcifConsumer {
             if (".".equals(alternateLocation)) {
                 alternateLocation = " ";
             }
+            if ("?".equals(charge)) {
+                charge = " ";
+            }
 
             PdbAtomLine atomLine = new PdbAtomLine(serialNumber, atomName, alternateLocation, residueName, chainIdentifier, residueNumber, insertionCode, x, y, z, occupancy, temperatureFactor, elementSymbol, charge);
             int modelNumber = Integer.parseInt(atomSite.getPdbx_PDB_model_num());
@@ -90,7 +95,7 @@ public class MmCifConsumer implements MMcifConsumer {
             List<PdbAtomLine> atomLines = modelAtoms.get(modelNumber);
             atomLines.add(atomLine);
         } catch (NumberFormatException e) {
-            MmCifConsumer.LOGGER.warn("Failed to parse AtomSite line", e);
+            MmCifConsumer.LOGGER.warn("Failed to parse _atom_site", e);
         }
     }
 
@@ -121,7 +126,7 @@ public class MmCifConsumer implements MMcifConsumer {
                 depositionDate = MmCifConsumer.DATE_FORMAT.parse(databasePDBrev.getDate_original());
             }
         } catch (ParseException e) {
-            MmCifConsumer.LOGGER.warn("Failed to parse date as yyyy-MM-dd: " + databasePDBrev.getDate_original(), e);
+            MmCifConsumer.LOGGER.warn("Failed to parse _database_PDB_rev.date_original as yyyy-MM-dd: " + databasePDBrev.getDate_original(), e);
         }
     }
 
@@ -139,7 +144,7 @@ public class MmCifConsumer implements MMcifConsumer {
     public void newExptl(Exptl exptl) {
         ExperimentalTechnique technique = ExperimentalTechnique.fromFullName(exptl.getMethod());
         if (technique == ExperimentalTechnique.UNKNOWN) {
-            LOGGER.warn("Failed to parse Exptl: " + exptl.getMethod());
+            LOGGER.warn("Failed to parse _exptl.method: " + exptl.getMethod());
         } else {
             experimentalTechniques.add(technique);
         }
@@ -208,7 +213,11 @@ public class MmCifConsumer implements MMcifConsumer {
 
     @Override
     public void newRefine(Refine refine) {
-        // do nothing
+        try {
+            resolution = Double.parseDouble(refine.getLs_d_res_high());
+        } catch (NumberFormatException e) {
+            LOGGER.warn("Failed to parse _refine.ls_d_res_high: " + refine.getLs_d_res_high());
+        }
     }
 
     @Override
@@ -337,13 +346,14 @@ public class MmCifConsumer implements MMcifConsumer {
 
     public List<PdbModel> getModels() throws PdbParsingException {
         PdbHeaderLine headerLine = new PdbHeaderLine(classification, depositionDate, idCode);
-        PdbExpdtaLine expdtaLine = new PdbExpdtaLine(experimentalTechniques.isEmpty() ? Collections.singletonList(ExperimentalTechnique.UNKNOWN) : experimentalTechniques);
+        PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(experimentalTechniques.isEmpty() ? Collections.singletonList(ExperimentalTechnique.UNKNOWN) : experimentalTechniques);
+        PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
         List<PdbModel> result = new ArrayList<>();
 
         for (Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
             int modelNumber = entry.getKey();
             List<PdbAtomLine> atoms = entry.getValue();
-            PdbModel pdbModel = new PdbModel(headerLine, expdtaLine, modelNumber, atoms, modifiedResidues, missingResidues);
+            PdbModel pdbModel = new PdbModel(headerLine, experimentalDataLine, resolutionLine, modelNumber, atoms, modifiedResidues, missingResidues);
             result.add(pdbModel);
         }
 
