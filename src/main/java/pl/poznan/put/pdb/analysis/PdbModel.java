@@ -16,17 +16,19 @@ public class PdbModel implements Serializable, ResidueCollection {
     private final Map<PdbResidueIdentifier, PdbChain> identifierToChain = new HashMap<PdbResidueIdentifier, PdbChain>();
 
     private final PdbHeaderLine headerLine;
+    private final PdbExpdtaLine experimentalDataLine;
     private final int modelNumber;
     private final List<PdbAtomLine> atoms;
     private final List<PdbModresLine> modifiedResidues;
 
     public PdbModel(List<PdbAtomLine> atoms) throws PdbParsingException {
-        this(PdbHeaderLine.emptyInstance(), 1, atoms, Collections.<PdbModresLine>emptyList(), Collections.<PdbRemark465Line>emptyList());
+        this(PdbHeaderLine.emptyInstance(), PdbExpdtaLine.emptyInstance(), 1, atoms, Collections.<PdbModresLine>emptyList(), Collections.<PdbRemark465Line>emptyList());
     }
 
-    public PdbModel(PdbHeaderLine headerLine, int modelNumber, List<PdbAtomLine> atoms, List<PdbModresLine> modifiedResidues, List<PdbRemark465Line> missingResidues) throws PdbParsingException {
+    public PdbModel(PdbHeaderLine headerLine, PdbExpdtaLine experimentalDataLine, int modelNumber, List<PdbAtomLine> atoms, List<PdbModresLine> modifiedResidues, List<PdbRemark465Line> missingResidues) throws PdbParsingException {
         super();
         this.headerLine = headerLine;
+        this.experimentalDataLine = experimentalDataLine;
         this.modelNumber = modelNumber;
         this.atoms = atoms;
         this.modifiedResidues = modifiedResidues;
@@ -155,6 +157,10 @@ public class PdbModel implements Serializable, ResidueCollection {
         return headerLine;
     }
 
+    public PdbExpdtaLine getExperimentalDataLine() {
+        return experimentalDataLine;
+    }
+
     public int getModelNumber() {
         return modelNumber;
     }
@@ -248,6 +254,6 @@ public class PdbModel implements Serializable, ResidueCollection {
             }
         }
 
-        return new PdbModel(headerLine, modelNumber, filteredAtoms, modifiedResidues, filteredMissing);
+        return new PdbModel(headerLine, experimentalDataLine, modelNumber, filteredAtoms, modifiedResidues, filteredMissing);
     }
 }

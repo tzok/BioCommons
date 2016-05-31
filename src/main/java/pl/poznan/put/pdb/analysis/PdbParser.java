@@ -20,6 +20,7 @@ public class PdbParser {
     private final boolean strictMode;
 
     private PdbHeaderLine headerLine;
+    private PdbExpdtaLine experimentalDataLine;
     private char currentChainIdentifier;
     private int currentModelNumber;
 
@@ -49,6 +50,8 @@ public class PdbParser {
                 handleModifiedResidueLine(line);
             } else if (line.startsWith("HEADER")) {
                 handleHeaderLine(line);
+            } else if (line.startsWith("EXPDTA")) {
+                handleExpdtaLine(line);
             }
         }
 
@@ -57,7 +60,7 @@ public class PdbParser {
         for (Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
             int modelNumber = entry.getKey();
             List<PdbAtomLine> atoms = entry.getValue();
-            PdbModel pdbModel = new PdbModel(headerLine, modelNumber, atoms, modifiedResidues, missingResidues);
+            PdbModel pdbModel = new PdbModel(headerLine, experimentalDataLine, modelNumber, atoms, modifiedResidues, missingResidues);
             result.add(pdbModel);
         }
 
@@ -75,6 +78,7 @@ public class PdbParser {
         terminatedChainIdentifiers.add(" ");
 
         headerLine = PdbHeaderLine.emptyInstance();
+        experimentalDataLine = PdbExpdtaLine.emptyInstance();
         currentChainIdentifier = 'a';
         currentModelNumber = 0;
     }
@@ -150,6 +154,14 @@ public class PdbParser {
             headerLine = PdbHeaderLine.parse(line);
         } catch (PdbParsingException e) {
             LOGGER.warn("Invalid HEADER line: " + line, e);
+        }
+    }
+
+    private void handleExpdtaLine(String line) {
+        try {
+            experimentalDataLine = PdbExpdtaLine.parse(line);
+        } catch (PdbParsingException e) {
+            LOGGER.warn("Invalid EXPDTA line: " + line, e);
         }
     }
 }

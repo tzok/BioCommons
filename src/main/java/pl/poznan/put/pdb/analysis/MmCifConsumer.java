@@ -6,6 +6,7 @@ import org.biojava.nbio.structure.io.mmcif.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.*;
+import pl.poznan.put.pdb.PdbExpdtaLine.ExperimentalTechnique;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -22,6 +23,7 @@ public class MmCifConsumer implements MMcifConsumer {
     private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
     private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
     private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
+    private final List<ExperimentalTechnique> experimentalTechniques = new ArrayList<>();
 
     private Date depositionDate;
     private String classification;
@@ -41,6 +43,7 @@ public class MmCifConsumer implements MMcifConsumer {
         modelAtoms.clear();
         missingResidues.clear();
         modifiedResidues.clear();
+        experimentalTechniques.clear();
 
         depositionDate = new Date(0);
         classification = null;
@@ -118,7 +121,7 @@ public class MmCifConsumer implements MMcifConsumer {
                 depositionDate = MmCifConsumer.DATE_FORMAT.parse(databasePDBrev.getDate_original());
             }
         } catch (ParseException e) {
-            MmCifConsumer.LOGGER.error("Failed to parse date as yyyy-MM-dd: " + databasePDBrev.getDate_original(), e);
+            MmCifConsumer.LOGGER.warn("Failed to parse date as yyyy-MM-dd: " + databasePDBrev.getDate_original(), e);
         }
     }
 
@@ -134,7 +137,12 @@ public class MmCifConsumer implements MMcifConsumer {
 
     @Override
     public void newExptl(Exptl exptl) {
-        // do nothing
+        ExperimentalTechnique technique = ExperimentalTechnique.fromFullName(exptl.getMethod());
+        if (technique == ExperimentalTechnique.UNKNOWN) {
+            LOGGER.warn("Failed to parse Exptl: " + exptl.getMethod());
+        } else {
+            experimentalTechniques.add(technique);
+        }
     }
 
     @Override
@@ -329,12 +337,13 @@ public class MmCifConsumer implements MMcifConsumer {
 
     public List<PdbModel> getModels() throws PdbParsingException {
         PdbHeaderLine headerLine = new PdbHeaderLine(classification, depositionDate, idCode);
+        PdbExpdtaLine expdtaLine = new PdbExpdtaLine(experimentalTechniques.isEmpty() ? Collections.singletonList(ExperimentalTechnique.UNKNOWN) : experimentalTechniques);
         List<PdbModel> result = new ArrayList<>();
 
         for (Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
             int modelNumber = entry.getKey();
             List<PdbAtomLine> atoms = entry.getValue();
-            PdbModel pdbModel = new PdbModel(headerLine, modelNumber, atoms, modifiedResidues, missingResidues);
+            PdbModel pdbModel = new PdbModel(headerLine, expdtaLine, modelNumber, atoms, modifiedResidues, missingResidues);
             result.add(pdbModel);
         }
 
