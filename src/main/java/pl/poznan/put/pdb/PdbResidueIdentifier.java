@@ -58,7 +58,7 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier> {
     @Override
     public int compareTo(PdbResidueIdentifier o) {
         if (!chainIdentifier.equals(o.chainIdentifier)) {
-            return chainIdentifier.compareTo(chainIdentifier);
+            return chainIdentifier.compareTo(o.chainIdentifier);
         }
 
         if (residueNumber != o.residueNumber) {
