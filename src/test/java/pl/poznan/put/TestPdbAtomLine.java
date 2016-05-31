@@ -13,6 +13,7 @@ public class TestPdbAtomLine {
     private final String tooShortLine = validLine.substring(0, validLine.length() - 10);
     private final String misalignedLine = StringUtils.normalizeSpace(validLine);
     private final String validLineWithOneLetterAtom = "ATOM      2  P     G A   1      50.626  49.730  50.573  1.00100.19           P  ";
+    private final String missingTempFactor = "ATOM      1  N   GLU     1      42.189  22.849  47.437  1.00                 N  ";
 
     @Test
     public void testParseToString() throws PdbParsingException {
@@ -36,5 +37,10 @@ public class TestPdbAtomLine {
     @Test(expected = PdbParsingException.class)
     public void testMisalignedLine() throws PdbParsingException {
         PdbAtomLine.parse(misalignedLine);
+    }
+
+    @Test
+    public void testMissingTempFactor() throws PdbParsingException {
+        PdbAtomLine.parse(missingTempFactor);
     }
 }

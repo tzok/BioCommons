@@ -19,8 +19,8 @@ import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
 public abstract class ProteinSidechain extends ResidueComponent implements ResidueInformationProvider {
-    protected final Map<ProteinChiType, Quadruplet<AtomName>> chiAtoms = new HashMap<ProteinChiType, Quadruplet<AtomName>>();
-    protected final List<TorsionAngleType> torsionAngleTypes = new ArrayList<TorsionAngleType>();
+    protected final Map<ProteinChiType, Quadruplet<AtomName>> chiAtoms = new HashMap<>();
+    protected final List<TorsionAngleType> torsionAngleTypes = new ArrayList<>();
 
     private final String longName;
     private final char oneLetterName;

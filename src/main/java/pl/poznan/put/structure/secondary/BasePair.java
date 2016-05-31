@@ -1,13 +1,12 @@
 package pl.poznan.put.structure.secondary;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.tuple.Pair;
-
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+
+import java.io.Serializable;
 
 public class BasePair implements Serializable, Comparable<BasePair> {
     private static final double GU_DISTANCE_O6_N3 = 2.83 + 0.13 * 3;
@@ -147,6 +146,10 @@ public class BasePair implements Serializable, Comparable<BasePair> {
 
     @Override
     public int compareTo(BasePair o) {
+        if (o == null) {
+            throw new NullPointerException();
+        }
+
         if (equals(o)) {
             return 0;
         }

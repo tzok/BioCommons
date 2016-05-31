@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializable {
-    private static final List<Character> OPENING = new ArrayList<Character>();
-    private static final List<Character> CLOSING = new ArrayList<Character>();
+    private static final List<Character> OPENING = new ArrayList<>();
+    private static final List<Character> CLOSING = new ArrayList<>();
 
     static {
         for (char c : "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
@@ -144,14 +144,15 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
             return false;
         }
         DotBracketSymbol other = (DotBracketSymbol) obj;
-        if (index != other.index) {
-            return false;
-        }
-        return sequence == other.sequence && structure == other.structure;
+        return index == other.index && sequence == other.sequence && structure == other.structure;
     }
 
     @Override
     public int compareTo(DotBracketSymbol o) {
+        if (o == null) {
+            throw new NullPointerException();
+        }
+
         if (equals(o)) {
             return 0;
         }

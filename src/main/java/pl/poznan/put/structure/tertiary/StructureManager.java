@@ -1,25 +1,21 @@
 package pl.poznan.put.structure.tertiary;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.lang3.StringUtils;
+import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbParser;
+
+import java.io.*;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.lang3.StringUtils;
-
-import pl.poznan.put.pdb.PdbParsingException;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.pdb.analysis.PdbParser;
 
 /**
  * A common manager of loaded PDB files shared between all classes.
@@ -28,11 +24,11 @@ import pl.poznan.put.pdb.analysis.PdbParser;
  */
 public final class StructureManager {
     private static final String ENCODING_UTF_8 = "UTF-8";
-    private static final List<StructureInfo> STRUCTURES = new ArrayList<StructureInfo>();
+    private static final List<StructureInfo> STRUCTURES = new ArrayList<>();
     private static final PdbParser PDB_READER = new PdbParser(false);
 
     public static List<PdbModel> getAllStructures() {
-        List<PdbModel> result = new ArrayList<PdbModel>();
+        List<PdbModel> result = new ArrayList<>();
         for (StructureInfo si : StructureManager.STRUCTURES) {
             result.add(si.getStructure());
         }
@@ -40,7 +36,7 @@ public final class StructureManager {
     }
 
     public static List<String> getAllNames() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (StructureInfo si : StructureManager.STRUCTURES) {
             result.add(si.getName());
         }
@@ -75,7 +71,7 @@ public final class StructureManager {
     }
 
     public static List<PdbModel> getModels(File file) {
-        List<PdbModel> result = new ArrayList<PdbModel>();
+        List<PdbModel> result = new ArrayList<>();
         for (StructureInfo si : StructureManager.STRUCTURES) {
             if (si.getPath().equals(file)) {
                 result.add(si.getStructure());
@@ -85,7 +81,7 @@ public final class StructureManager {
     }
 
     public static List<String> getNames(List<PdbModel> structures) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (PdbModel s : structures) {
             result.add(StructureManager.getName(s));
         }
@@ -95,8 +91,7 @@ public final class StructureManager {
     /**
      * Load a structure and remember it being already cached.
      *
-     * @param file
-     *            Path to the PDB file.
+     * @param file Path to the PDB file.
      * @return Structure object..
      * @throws IOException
      * @throws PdbParsingException
@@ -155,7 +150,7 @@ public final class StructureManager {
         try {
             inputStream = new ByteArrayInputStream(byteArray);
             gzipInputStream = new GZIPInputStream(inputStream);
-            return IOUtils.toString(gzipInputStream);
+            return IOUtils.toString(gzipInputStream, Charset.defaultCharset());
         } finally {
             IOUtils.closeQuietly(gzipInputStream);
             IOUtils.closeQuietly(inputStream);
@@ -191,7 +186,7 @@ public final class StructureManager {
     }
 
     public static void remove(File path) {
-        List<Integer> toRemove = new ArrayList<Integer>();
+        List<Integer> toRemove = new ArrayList<>();
 
         for (int i = 0; i < StructureManager.STRUCTURES.size(); i++) {
             StructureInfo si = StructureManager.STRUCTURES.get(i);

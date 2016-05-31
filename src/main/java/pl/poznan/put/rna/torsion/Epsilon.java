@@ -14,6 +14,6 @@ public class Epsilon extends AtomBasedTorsionAngleType {
     }
 
     private Epsilon() {
-        super(MoleculeType.RNA, Unicode.EPSILON, new Quadruplet<AtomName>(AtomName.C4p, AtomName.C3p, AtomName.O3p, AtomName.P), new Quadruplet<Integer>(0, 0, 0, 1));
+        super(MoleculeType.RNA, Unicode.EPSILON, new Quadruplet<>(AtomName.C4p, AtomName.C3p, AtomName.O3p, AtomName.P), new Quadruplet<>(0, 0, 0, 1));
     }
 }

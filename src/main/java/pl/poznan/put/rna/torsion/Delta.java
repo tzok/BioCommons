@@ -14,6 +14,6 @@ public class Delta extends AtomBasedTorsionAngleType {
     }
 
     private Delta() {
-        super(MoleculeType.RNA, Unicode.DELTA, new Quadruplet<AtomName>(AtomName.C5p, AtomName.C4p, AtomName.C3p, AtomName.O3p), new Quadruplet<Integer>(0, 0, 0, 0));
+        super(MoleculeType.RNA, Unicode.DELTA, new Quadruplet<>(AtomName.C5p, AtomName.C4p, AtomName.C3p, AtomName.O3p), new Quadruplet<>(0, 0, 0, 0));
     }
 }

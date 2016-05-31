@@ -14,6 +14,6 @@ public class Beta extends AtomBasedTorsionAngleType {
     }
 
     private Beta() {
-        super(MoleculeType.RNA, Unicode.BETA, new Quadruplet<AtomName>(AtomName.P, AtomName.O5p, AtomName.C5p, AtomName.C4p), new Quadruplet<Integer>(0, 0, 0, 0));
+        super(MoleculeType.RNA, Unicode.BETA, new Quadruplet<>(AtomName.P, AtomName.O5p, AtomName.C5p, AtomName.C4p), new Quadruplet<>(0, 0, 0, 0));
     }
 }

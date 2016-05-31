@@ -79,14 +79,15 @@ public class RNAInteractionType implements Serializable, Comparable<RNAInteracti
         } else if (!description.equals(other.description)) {
             return false;
         }
-        if (isPairing != other.isPairing) {
-            return false;
-        }
-        return left == other.left && right == other.right;
+        return isPairing == other.isPairing && left == other.left && right == other.right;
     }
 
     @Override
     public int compareTo(RNAInteractionType o) {
+        if (o == null) {
+            throw new NullPointerException();
+        }
+
         if (equals(o)) {
             return 0;
         }
@@ -118,15 +119,15 @@ public class RNAInteractionType implements Serializable, Comparable<RNAInteracti
 
     private static int getNucleotideFragmentInternalValue(RNAResidueComponentType type) {
         switch (type) {
-        case BASE:
-            return 1;
-        case SUGAR:
-            return 10;
-        case PHOSPHATE:
-            return 100;
-        case UNKNOWN:
-        default:
-            return 1000;
+            case BASE:
+                return 1;
+            case SUGAR:
+                return 10;
+            case PHOSPHATE:
+                return 100;
+            case UNKNOWN:
+            default:
+                return 1000;
 
         }
     }

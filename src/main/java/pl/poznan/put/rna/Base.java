@@ -29,7 +29,7 @@ import pl.poznan.put.types.Quadruplet;
 
 public abstract class Base extends NucleicAcidResidueComponent implements ResidueInformationProvider {
     private static final Base INVALID = new Base(Collections.<AtomName> emptyList(), "UNK", 'X', "UNK") {
-        private final Quadruplet<AtomName> chiAtoms = new Quadruplet<AtomName>(AtomName.UNKNOWN, AtomName.UNKNOWN, AtomName.UNKNOWN, AtomName.UNKNOWN);
+        private final Quadruplet<AtomName> chiAtoms = new Quadruplet<>(AtomName.UNKNOWN, AtomName.UNKNOWN, AtomName.UNKNOWN, AtomName.UNKNOWN);
 
         @Override
         public Quadruplet<AtomName> getChiAtoms() {
@@ -51,7 +51,7 @@ public abstract class Base extends NucleicAcidResidueComponent implements Residu
         return Base.INVALID;
     }
 
-    protected final List<TorsionAngleType> torsionAngleTypes = new ArrayList<TorsionAngleType>();
+    protected final List<TorsionAngleType> torsionAngleTypes = new ArrayList<>();
 
     private final String longName;
     private final char oneLetterName;

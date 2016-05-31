@@ -6,18 +6,18 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier> {
         return new PdbResidueIdentifier(chainNumberICode.getChainIdentifier(), chainNumberICode.getResidueNumber(), chainNumberICode.getInsertionCode());
     }
 
-    private final char chainIdentifier;
+    private final String chainIdentifier;
     private final int residueNumber;
-    private final char insertionCode;
+    private final String insertionCode;
 
-    public PdbResidueIdentifier(char chainIdentifier, int residueNumber, char insertionCode) {
+    public PdbResidueIdentifier(String chainIdentifier, int residueNumber, String insertionCode) {
         super();
         this.chainIdentifier = chainIdentifier;
         this.residueNumber = residueNumber;
         this.insertionCode = insertionCode;
     }
 
-    public char getChainIdentifier() {
+    public String getChainIdentifier() {
         return chainIdentifier;
     }
 
@@ -25,53 +25,46 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier> {
         return residueNumber;
     }
 
-    public char getInsertionCode() {
+    public String getInsertionCode() {
         return insertionCode;
     }
 
     @Override
     public String toString() {
-        return chainIdentifier + "." + residueNumber + (insertionCode != ' ' ? insertionCode : "");
+        return chainIdentifier + "." + residueNumber + (" ".equals(insertionCode) ? "" : insertionCode);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PdbResidueIdentifier that = (PdbResidueIdentifier) o;
+        return residueNumber == that.residueNumber && chainIdentifier.equals(that.chainIdentifier) && insertionCode.equals(that.insertionCode);
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + chainIdentifier;
-        result = prime * result + insertionCode;
-        result = prime * result + residueNumber;
+        int result = chainIdentifier.hashCode();
+        result = 31 * result + residueNumber;
+        result = 31 * result + insertionCode.hashCode();
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        PdbResidueIdentifier other = (PdbResidueIdentifier) obj;
-        if (chainIdentifier != other.chainIdentifier) {
-            return false;
-        }
-        return insertionCode == other.insertionCode && residueNumber == other.residueNumber;
-    }
-
-    @Override
     public int compareTo(PdbResidueIdentifier o) {
-        if (chainIdentifier != o.chainIdentifier) {
-            return chainIdentifier < o.chainIdentifier ? -1 : 1;
+        if (o == null) {
+            throw new NullPointerException();
+        }
+
+        if (!chainIdentifier.equals(o.chainIdentifier)) {
+            return chainIdentifier.compareTo(o.chainIdentifier);
         }
 
         if (residueNumber != o.residueNumber) {
             return residueNumber < o.residueNumber ? -1 : 1;
         }
 
-        return insertionCode < o.insertionCode ? -1 : (insertionCode == o.insertionCode ? 0 : 1);
+        return insertionCode.compareTo(o.insertionCode);
     }
 }

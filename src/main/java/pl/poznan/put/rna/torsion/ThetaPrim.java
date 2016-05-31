@@ -14,6 +14,6 @@ public class ThetaPrim extends PseudoTorsionAngleType {
     }
 
     private ThetaPrim() {
-        super(MoleculeType.RNA, Unicode.THETA_PRIM, new Quadruplet<AtomName>(AtomName.P, AtomName.C1p, AtomName.P, AtomName.C1p), new Quadruplet<Integer>(0, 0, 1, 1));
+        super(MoleculeType.RNA, Unicode.THETA_PRIM, new Quadruplet<>(AtomName.P, AtomName.C1p, AtomName.P, AtomName.C1p), new Quadruplet<>(0, 0, 1, 1));
     }
 }

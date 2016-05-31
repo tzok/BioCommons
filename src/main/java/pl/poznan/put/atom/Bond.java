@@ -31,7 +31,7 @@ public class Bond {
         }
     }
 
-    private static final MultiKeyMap<AtomType, Bond.Length> MAP = new MultiKeyMap<AtomType, Length>();
+    private static final MultiKeyMap<AtomType, Bond.Length> MAP = new MultiKeyMap<>();
     private static final Bond.Length INVALID = new Length(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 
     static {

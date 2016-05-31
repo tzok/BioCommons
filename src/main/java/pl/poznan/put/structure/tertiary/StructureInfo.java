@@ -1,8 +1,8 @@
 package pl.poznan.put.structure.tertiary;
 
-import java.io.File;
-
 import pl.poznan.put.pdb.analysis.PdbModel;
+
+import java.io.File;
 
 public class StructureInfo implements Comparable<StructureInfo> {
     private final PdbModel structure;
@@ -30,6 +30,9 @@ public class StructureInfo implements Comparable<StructureInfo> {
 
     @Override
     public int compareTo(StructureInfo o) {
+        if (o == null) {
+            throw new NullPointerException();
+        }
         return name.compareTo(o.name);
     }
 }

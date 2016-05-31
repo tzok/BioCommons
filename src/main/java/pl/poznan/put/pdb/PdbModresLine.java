@@ -1,8 +1,12 @@
 package pl.poznan.put.pdb;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Locale;
 
 public class PdbModresLine implements ChainNumberICode {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PdbModresLine.class);
     // @formatter:off
     /*
        COLUMNS        DATA TYPE     FIELD       DEFINITION
@@ -34,9 +38,9 @@ public class PdbModresLine implements ChainNumberICode {
 
             String idCode = line.substring(7, 11).trim();
             String residueName = line.substring(12, 15).trim();
-            char chainIdentifier = line.charAt(16);
+            String chainIdentifier = Character.toString(line.charAt(16));
             int residueNumber = Integer.parseInt(line.substring(18, 22).trim());
-            char insertionCode = line.charAt(22);
+            String insertionCode = Character.toString(line.charAt(22));
             String standardResidueName = line.substring(24, 27).trim();
             String comment = line.substring(29, 70);
             return new PdbModresLine(idCode, residueName, chainIdentifier, residueNumber, insertionCode, standardResidueName, comment);
@@ -51,15 +55,15 @@ public class PdbModresLine implements ChainNumberICode {
 
     private final String idCode;
     private final String residueName;
-    private final char chainIdentifier;
+    private final String chainIdentifier;
     private final int residueNumber;
-    private final char insertionCode;
+    private final String insertionCode;
     private final String standardResidueName;
     private final String comment;
 
     public PdbModresLine(String idCode, String residueName,
-            char chainIdentifier, int residueNumber, char insertionCode,
-            String standardResidueName, String comment) {
+                         String chainIdentifier, int residueNumber, String insertionCode,
+                         String standardResidueName, String comment) {
         super();
         this.idCode = idCode;
         this.residueName = residueName;
@@ -79,7 +83,7 @@ public class PdbModresLine implements ChainNumberICode {
     }
 
     @Override
-    public char getChainIdentifier() {
+    public String getChainIdentifier() {
         return chainIdentifier;
     }
 
@@ -89,7 +93,7 @@ public class PdbModresLine implements ChainNumberICode {
     }
 
     @Override
-    public char getInsertionCode() {
+    public String getInsertionCode() {
         return insertionCode;
     }
 
@@ -103,7 +107,13 @@ public class PdbModresLine implements ChainNumberICode {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, PdbModresLine.FORMAT, idCode, residueName, chainIdentifier, residueNumber, insertionCode, standardResidueName, comment);
+        if (chainIdentifier.length() != 1) {
+            PdbModresLine.LOGGER.error("Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
+        }
+        if (insertionCode.length() != 1) {
+            PdbModresLine.LOGGER.error("Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
+        }
+        return String.format(Locale.US, PdbModresLine.FORMAT, idCode, residueName, chainIdentifier.charAt(0), residueNumber, insertionCode.charAt(0), standardResidueName, comment);
     }
 
     @Override

@@ -1,35 +1,27 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-
 import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.poznan.put.pdb.*;
 
-import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbHeaderLine;
-import pl.poznan.put.pdb.PdbModresLine;
-import pl.poznan.put.pdb.PdbParsingException;
-import pl.poznan.put.pdb.PdbRemark465Line;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class PdbParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdbParser.class);
 
-    private final List<PdbModresLine> modifiedResidues = new ArrayList<PdbModresLine>();
-    private final List<PdbRemark465Line> missingResidues = new ArrayList<PdbRemark465Line>();
-    private final Set<Character> terminatedChainIdentifiers = new HashSet<Character>();
-    private final Set<Integer> endedModelNumbers = new HashSet<Integer>();
-    private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<Integer, List<PdbAtomLine>>();
+    private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
+    private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
+    private final Set<String> terminatedChainIdentifiers = new HashSet<>();
+    private final Set<Integer> endedModelNumbers = new HashSet<>();
+    private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
 
     private final boolean strictMode;
 
     private PdbHeaderLine headerLine;
+    private PdbExpdtaLine experimentalDataLine;
+    private PdbRemark2Line resolutionLine;
     private char currentChainIdentifier;
     private int currentModelNumber;
 
@@ -59,15 +51,19 @@ public class PdbParser {
                 handleModifiedResidueLine(line);
             } else if (line.startsWith("HEADER")) {
                 handleHeaderLine(line);
+            } else if (line.startsWith("EXPDTA")) {
+                handleExperimentalDataLine(line);
+            } else if (line.startsWith("REMARK   2 RESOLUTION.")) {
+                handleResolutionLine(line);
             }
         }
 
-        List<PdbModel> result = new ArrayList<PdbModel>();
+        List<PdbModel> result = new ArrayList<>();
 
         for (Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
             int modelNumber = entry.getKey();
             List<PdbAtomLine> atoms = entry.getValue();
-            PdbModel pdbModel = new PdbModel(headerLine, modelNumber, atoms, modifiedResidues, missingResidues);
+            PdbModel pdbModel = new PdbModel(headerLine, experimentalDataLine, resolutionLine, modelNumber, atoms, modifiedResidues, missingResidues);
             result.add(pdbModel);
         }
 
@@ -82,9 +78,10 @@ public class PdbParser {
         modelAtoms.clear();
 
         // on default, the ' ' chain id is terminated
-        terminatedChainIdentifiers.add(' ');
+        terminatedChainIdentifiers.add(" ");
 
         headerLine = PdbHeaderLine.emptyInstance();
+        experimentalDataLine = PdbExpdtaLine.emptyInstance();
         currentChainIdentifier = 'a';
         currentModelNumber = 0;
     }
@@ -105,10 +102,10 @@ public class PdbParser {
     }
 
     private void handleTerLine(String line) {
-        char chain = line.length() > 21 ? line.charAt(21) : ' ';
+        String chain = line.length() > 21 ? Character.toString(line.charAt(21)) : " ";
 
         if (terminatedChainIdentifiers.contains(chain)) {
-            chain = currentChainIdentifier++;
+            chain = Character.toString(currentChainIdentifier++);
         }
 
         terminatedChainIdentifiers.add(chain);
@@ -119,7 +116,7 @@ public class PdbParser {
             PdbAtomLine atomLine = PdbAtomLine.parse(line, strictMode);
 
             if (terminatedChainIdentifiers.contains(atomLine.getChainIdentifier())) {
-                atomLine = atomLine.replaceChainIdentifier(currentChainIdentifier);
+                atomLine = atomLine.replaceChainIdentifier(Character.toString(currentChainIdentifier));
             }
 
             if (!modelAtoms.containsKey(currentModelNumber)) {
@@ -160,6 +157,22 @@ public class PdbParser {
             headerLine = PdbHeaderLine.parse(line);
         } catch (PdbParsingException e) {
             LOGGER.warn("Invalid HEADER line: " + line, e);
+        }
+    }
+
+    private void handleExperimentalDataLine(String line) {
+        try {
+            experimentalDataLine = PdbExpdtaLine.parse(line);
+        } catch (PdbParsingException e) {
+            LOGGER.warn("Invalid EXPDTA line: " + line, e);
+        }
+    }
+
+    private void handleResolutionLine(String line) {
+        try {
+            resolutionLine = PdbRemark2Line.parse(line);
+        } catch (PdbParsingException e) {
+            LOGGER.warn("Invalid REMARK   2 RESOLUTION. line: " + line, e);
         }
     }
 }

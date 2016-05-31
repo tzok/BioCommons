@@ -14,6 +14,6 @@ public class Zeta extends AtomBasedTorsionAngleType {
     }
 
     private Zeta() {
-        super(MoleculeType.RNA, Unicode.ZETA, new Quadruplet<AtomName>(AtomName.C3p, AtomName.O3p, AtomName.P, AtomName.O5p), new Quadruplet<Integer>(0, 0, 1, 1));
+        super(MoleculeType.RNA, Unicode.ZETA, new Quadruplet<>(AtomName.C3p, AtomName.O3p, AtomName.P, AtomName.O5p), new Quadruplet<>(0, 0, 1, 1));
     }
 }

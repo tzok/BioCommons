@@ -38,7 +38,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
 
     private static String toDisplayName(
             List<MasterTorsionAngleType> consideredAngles) {
-        Set<String> angleNames = new LinkedHashSet<String>();
+        Set<String> angleNames = new LinkedHashSet<>();
         for (MasterTorsionAngleType angleType : consideredAngles) {
             angleNames.add(angleType.getShortDisplayName());
         }
@@ -58,7 +58,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
 
     private static String toExportName(
             List<MasterTorsionAngleType> consideredAngles) {
-        Set<String> angleNames = new LinkedHashSet<String>();
+        Set<String> angleNames = new LinkedHashSet<>();
         for (MasterTorsionAngleType angleType : consideredAngles) {
             angleNames.add(angleType.getExportName());
         }
@@ -112,7 +112,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     public TorsionAngleValue calculate(List<PdbResidue> residues,
             int currentIndex) throws InvalidCircularValueException {
         PdbResidue residue = residues.get(currentIndex);
-        List<Angle> angles = new ArrayList<Angle>();
+        List<Angle> angles = new ArrayList<>();
 
         for (TorsionAngleType type : residue.getTorsionAngleTypes()) {
             for (MasterTorsionAngleType masterType : consideredAngles) {
@@ -128,7 +128,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     }
 
     public TorsionAngleValue calculate(Collection<TorsionAngleValue> values) {
-        List<Angle> angles = new ArrayList<Angle>();
+        List<Angle> angles = new ArrayList<>();
 
         for (MasterTorsionAngleType masterType : consideredAngles) {
             for (TorsionAngleValue angleValue : values) {
