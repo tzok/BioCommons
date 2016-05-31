@@ -21,6 +21,7 @@ public class PdbModel implements Serializable, ResidueCollection {
     private final int modelNumber;
     private final List<PdbAtomLine> atoms;
     private final List<PdbModresLine> modifiedResidues;
+    private final List<PdbRemark465Line> missingResidues;
 
     public PdbModel(List<PdbAtomLine> atoms) throws PdbParsingException {
         this(PdbHeaderLine.emptyInstance(), PdbExpdtaLine.emptyInstance(), PdbRemark2Line.emptyInstance(), 1, atoms, Collections.<PdbModresLine>emptyList(), Collections.<PdbRemark465Line>emptyList());
@@ -34,6 +35,7 @@ public class PdbModel implements Serializable, ResidueCollection {
         this.modelNumber = modelNumber;
         this.atoms = atoms;
         this.modifiedResidues = modifiedResidues;
+        this.missingResidues = missingResidues;
 
         for (PdbRemark465Line missing : missingResidues) {
             missingResiduesIdentifiers.add(missing.getResidueIdentifier());
@@ -169,6 +171,14 @@ public class PdbModel implements Serializable, ResidueCollection {
 
     public int getModelNumber() {
         return modelNumber;
+    }
+
+    public List<PdbModresLine> getModifiedResidues() {
+        return Collections.unmodifiableList(modifiedResidues);
+    }
+
+    public List<PdbRemark465Line> getMissingResidues() {
+        return Collections.unmodifiableList(missingResidues);
     }
 
     public List<PdbAtomLine> getAtoms() {

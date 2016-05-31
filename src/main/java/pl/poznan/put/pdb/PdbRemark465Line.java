@@ -8,6 +8,16 @@ import java.util.Locale;
 
 public class PdbRemark465Line implements ChainNumberICode {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdbRemark465Line.class);
+
+    public static final String PROLOGUE = ""
+            + "REMARK 465                                                                      \n"
+            + "REMARK 465 MISSING RESIDUES                                                     \n"
+            + "REMARK 465 THE FOLLOWING RESIDUES WERE NOT LOCATED IN THE                       \n"
+            + "REMARK 465 EXPERIMENT. (M=MODEL NUMBER; RES=RESIDUE NAME; C=CHAIN               \n"
+            + "REMARK 465 IDENTIFIER; SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)                \n"
+            + "REMARK 465                                                                      \n"
+            + "REMARK 465   M RES C SSSEQI                                                     ";
+
     // @formatter:off
     /*
         REMARK 465                                                                       
@@ -45,6 +55,7 @@ public class PdbRemark465Line implements ChainNumberICode {
             "REMARK 465 SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)",
             "REMARK 465 RES C SSSEQI"
     };
+
     // @formatter:on
     private static final String REMARK_FORMAT = "  %1s %3s %c %5d%c                                                     ";
     private static final String FORMAT = "REMARK 465 " + PdbRemark465Line.REMARK_FORMAT;
