@@ -152,4 +152,8 @@ public class PdbRemark465Line implements ChainNumberICode {
     public PdbResidueIdentifier getResidueIdentifier() {
         return new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
     }
+
+    public PdbRemark465Line replaceChainIdentifier(String chainIdentifierNew) {
+        return new PdbRemark465Line(modelNumber, residueName, chainIdentifierNew, residueNumber, insertionCode);
+    }
 }
