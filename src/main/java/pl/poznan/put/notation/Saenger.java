@@ -40,6 +40,13 @@ public enum Saenger {
         return UNKNOWN;
     }
 
+    public static Saenger fromOrdinal(int ordinal) {
+        if (ordinal >= 1 && ordinal <= 28) {
+            return Saenger.values()[ordinal];
+        }
+        return Saenger.UNKNOWN;
+    }
+
     public static boolean isCanonical(Saenger s) {
         return s == XIX || s == XX || s == XXVIII;
     }
