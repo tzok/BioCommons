@@ -5,8 +5,12 @@ import org.biojava.nbio.structure.io.mmcif.MMcifConsumer;
 import org.biojava.nbio.structure.io.mmcif.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.poznan.put.notation.LeontisWesthof;
+import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.*;
 import pl.poznan.put.pdb.PdbExpdtaLine.ExperimentalTechnique;
+import pl.poznan.put.structure.secondary.BasePair;
+import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -21,6 +25,7 @@ public class MmCifConsumer implements MMcifConsumer {
     private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
     private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
     private final List<ExperimentalTechnique> experimentalTechniques = new ArrayList<>();
+    private final List<QuantifiedBasePair> basePairs = new ArrayList<>();
 
     private Date depositionDate;
     private String classification;
@@ -42,6 +47,7 @@ public class MmCifConsumer implements MMcifConsumer {
         missingResidues.clear();
         modifiedResidues.clear();
         experimentalTechniques.clear();
+        basePairs.clear();
 
         depositionDate = null;
         classification = null;
@@ -320,7 +326,44 @@ public class MmCifConsumer implements MMcifConsumer {
 
             PdbRemark465Line remark465Line = new PdbRemark465Line(modelNumber, residueName, chainIdentifier, residueNumber, insertionCode);
             missingResidues.add(remark465Line);
+        } else if ("_ndb_struct_na_base_pair".equals(category)) {
+            Map<String, String> map = convertToMap(loopFields, lineData);
+
+            String chainL = map.get("i_auth_asym_id");
+            int resiL = Integer.parseInt(map.get("i_auth_seq_id"));
+            String icodeL = map.get("i_PDB_ins_code");
+            if ("?".equals(icodeL)) {
+                icodeL = " ";
+            }
+            PdbResidueIdentifier left = new PdbResidueIdentifier(chainL, resiL, icodeL);
+
+            String chainR = map.get("j_auth_asym_id");
+            int resiR = Integer.parseInt(map.get("j_auth_seq_id"));
+            String icodeR = map.get("j_PDB_ins_code");
+            if ("?".equals(icodeR)) {
+                icodeR = " ";
+            }
+            PdbResidueIdentifier right = new PdbResidueIdentifier(chainR, resiR, icodeR);
+            BasePair basePair = new BasePair(left, right);
+
+            String saengerString = map.get("hbond_type_28");
+            Saenger saenger = "?".equals(saengerString) ? Saenger.UNKNOWN : Saenger.fromOrdinal(Integer.parseInt(saengerString));
+            String leontisWesthofString = map.get("hbond_type_12");
+            LeontisWesthof leontisWesthof = "?".equals(leontisWesthofString) ? LeontisWesthof.UNKNOWN : LeontisWesthof.fromOrdinal(Integer.parseInt(leontisWesthofString));
+
+            double shear = MmCifConsumer.getDoubleWithDefaultNaN(map, "shear");
+            double stretch = MmCifConsumer.getDoubleWithDefaultNaN(map, "stretch");
+            double stagger = MmCifConsumer.getDoubleWithDefaultNaN(map, "stagger");
+            double buckle = MmCifConsumer.getDoubleWithDefaultNaN(map, "buckle");
+            double propeller = MmCifConsumer.getDoubleWithDefaultNaN(map, "propeller");
+            double opening = MmCifConsumer.getDoubleWithDefaultNaN(map, "opening");
+            QuantifiedBasePair quantifiedBasePair = new QuantifiedBasePair(basePair, saenger, leontisWesthof, shear, stretch, stagger, buckle, propeller, opening);
+            basePairs.add(quantifiedBasePair);
         }
+    }
+
+    private static double getDoubleWithDefaultNaN(Map<String, String> map, String key) {
+        return map.containsKey(key) ? Double.parseDouble(map.get(key)) : Double.NaN;
     }
 
     private Map<String, String> convertToMap(List<String> loopFields, List<String> lineData) {
@@ -341,16 +384,16 @@ public class MmCifConsumer implements MMcifConsumer {
         return parameters;
     }
 
-    public List<PdbModel> getModels() throws PdbParsingException {
+    public List<CifModel> getModels() throws PdbParsingException {
         PdbHeaderLine headerLine = new PdbHeaderLine(classification, depositionDate == null ? new Date(0) : depositionDate, idCode);
         PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(experimentalTechniques.isEmpty() ? Collections.singletonList(ExperimentalTechnique.UNKNOWN) : experimentalTechniques);
         PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
-        List<PdbModel> result = new ArrayList<>();
+        List<CifModel> result = new ArrayList<>();
 
         for (Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
             int modelNumber = entry.getKey();
             List<PdbAtomLine> atoms = entry.getValue();
-            PdbModel pdbModel = new PdbModel(headerLine, experimentalDataLine, resolutionLine, modelNumber, atoms, modifiedResidues, missingResidues);
+            CifModel pdbModel = new CifModel(headerLine, experimentalDataLine, resolutionLine, modelNumber, atoms, modifiedResidues, missingResidues, basePairs);
             result.add(pdbModel);
         }
 

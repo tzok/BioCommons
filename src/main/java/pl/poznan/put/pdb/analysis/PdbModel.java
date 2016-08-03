@@ -15,12 +15,12 @@ public class PdbModel implements Serializable, ResidueCollection {
     private final Map<PdbResidueIdentifier, PdbResidue> identifierToResidue = new HashMap<>();
     private final Map<PdbResidueIdentifier, PdbChain> identifierToChain = new HashMap<>();
 
-    private final PdbHeaderLine headerLine;
-    private final PdbExpdtaLine experimentalDataLine;
-    private final PdbRemark2Line resolutionLine;
-    private final int modelNumber;
+    protected final PdbHeaderLine headerLine;
+    protected final PdbExpdtaLine experimentalDataLine;
+    protected final PdbRemark2Line resolutionLine;
+    protected final int modelNumber;
     private final List<PdbAtomLine> atoms;
-    private final List<PdbModresLine> modifiedResidues;
+    protected final List<PdbModresLine> modifiedResidues;
     private final List<PdbRemark465Line> missingResidues;
 
     public PdbModel(List<PdbAtomLine> atoms) throws PdbParsingException {
@@ -253,23 +253,36 @@ public class PdbModel implements Serializable, ResidueCollection {
     }
 
     public PdbModel filteredNewInstance(MoleculeType moleculeType) throws PdbParsingException {
-        List<PdbAtomLine> filteredAtoms = new ArrayList<>();
+        List<PdbAtomLine> filteredAtoms = filterAtoms(moleculeType);
+        List<PdbRemark465Line> filteredMissing = filterMissing(moleculeType);
+        return new PdbModel(headerLine, experimentalDataLine, resolutionLine, modelNumber, filteredAtoms, modifiedResidues, filteredMissing);
+    }
+
+    protected List<PdbRemark465Line> filterMissing(MoleculeType moleculeType) {
         List<PdbRemark465Line> filteredMissing = new ArrayList<>();
 
         for (PdbResidue residue : residues) {
-            if (residue.getMoleculeType() == moleculeType) {
-                if (!residue.isMissing()) {
-                    filteredAtoms.addAll(residue.getAtoms());
-                } else {
-                    String residueName = residue.getOriginalResidueName();
-                    String chainIdentifier = residue.getChainIdentifier();
-                    int residueNumber = residue.getResidueNumber();
-                    String insertionCode = residue.getInsertionCode();
-                    filteredMissing.add(new PdbRemark465Line(modelNumber, residueName, chainIdentifier, residueNumber, insertionCode));
-                }
+            if (residue.getMoleculeType() == moleculeType && residue.isMissing()) {
+                String residueName = residue.getOriginalResidueName();
+                String chainIdentifier = residue.getChainIdentifier();
+                int residueNumber = residue.getResidueNumber();
+                String insertionCode = residue.getInsertionCode();
+                filteredMissing.add(new PdbRemark465Line(modelNumber, residueName, chainIdentifier, residueNumber, insertionCode));
             }
         }
 
-        return new PdbModel(headerLine, experimentalDataLine, resolutionLine, modelNumber, filteredAtoms, modifiedResidues, filteredMissing);
+        return filteredMissing;
+    }
+
+    protected List<PdbAtomLine> filterAtoms(MoleculeType moleculeType) {
+        List<PdbAtomLine> filteredAtoms = new ArrayList<>();
+
+        for (PdbResidue residue : residues) {
+            if (residue.getMoleculeType() == moleculeType && !residue.isMissing()) {
+                filteredAtoms.addAll(residue.getAtoms());
+            }
+        }
+
+        return filteredAtoms;
     }
 }
