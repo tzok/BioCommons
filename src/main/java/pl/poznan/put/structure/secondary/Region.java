@@ -1,70 +1,61 @@
 package pl.poznan.put.structure.secondary;
 
+import org.apache.commons.collections4.CollectionUtils;
+import pl.poznan.put.structure.secondary.formats.BpSeq;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
-// Class that contains compressed connections
 public class Region {
+    private final List<BpSeq.Entry> entries;
+    private boolean isRemoved;
 
-  private ArrayList<Pair> contain = null;
-  public int ID, start, end, length;
-  private boolean isRemoved;
+    public Region(final List<BpSeq.Entry> pairs) {
+        super();
+        this.entries = new ArrayList<>(pairs);
+        isRemoved = false;
+    }
 
-  // Create a region
-  public Region(ArrayList<Pair> currentRegions, int regionID){
-    contain = new ArrayList<Pair>(currentRegions);
-    start = currentRegions.get(0).getFirst();
-    end = currentRegions.get(0).getSecond();
-    length = currentRegions.size();
-    ID = regionID;
-    isRemoved = false;
-  }
+    public final List<BpSeq.Entry> getEntries() {
+        return Collections.unmodifiableList(entries);
+    }
 
-  // Create Array of Regions from connections stored in RNAStructure
-  public ArrayList<Region> Regions (RNAStructure structure) {
+    public final boolean isRemoved() {
+        return isRemoved;
+    }
 
-    ArrayList<Region> regions = new ArrayList<Region>();
-    ArrayList<Pair> currentRegion = new ArrayList<Pair>();
-    int regionID = -1;
+    public final void setRemoved(final boolean removed) {
+        isRemoved = removed;
+    }
 
-    for (int i = 0; i < structure.connections.size(); i++) {
-      if (currentRegion.isEmpty()) {
-        currentRegion.add(structure.connections.get(i));
-      }
-      else {
-        if (structure.connections.get(i).getFirst()  == currentRegion.get(currentRegion.size()-1).getFirst()+1 &&
-            structure.connections.get(i).getSecond() == currentRegion.get(currentRegion.size()-1).getSecond()-1){
-          currentRegion.add(structure.connections.get(i));
-            }
-        else {
-          regionID++;
-          regions.add(new Region(currentRegion, regionID));
-          currentRegion.clear();
-          currentRegion.add(structure.connections.get(i));
+    public final int getBegin() {
+        return entries.get(0).getIndex();
+    }
+
+    public final int getEnd() {
+        return entries.get(0).getPair();
+    }
+
+    public final int getLength() {
+        return entries.size();
+    }
+
+    @Override
+    public final boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
         }
-      }
+        if ((obj == null) || (getClass() != obj.getClass())) {
+            return false;
+        }
+        Region region = (Region) obj;
+        return CollectionUtils.isEqualCollection(entries, region.entries);
     }
-    if(!currentRegion.isEmpty()){
-      regionID++;
-      regions.add(new Region(currentRegion, regionID));
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(entries);
     }
-
-    return regions;
-  }
-
-  public ArrayList<Pair> getPairs(){
-    return contain;
-  }
-
-  public boolean isRemoved(){
-    return isRemoved;
-  }
-
-  public void remove(){
-    isRemoved = true;
-  }
-
-  public void restore(){
-    isRemoved = false;
-  }
-
 }
