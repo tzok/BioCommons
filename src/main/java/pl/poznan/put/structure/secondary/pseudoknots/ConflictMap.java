@@ -1,4 +1,4 @@
-package pl.poznan.put.structure.secondary;
+package pl.poznan.put.structure.secondary.pseudoknots;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -63,13 +63,15 @@ public class ConflictMap {
 
     // Remove Region and all associated conflicts with it
     public final void remove(final Region region) {
-        for (Region conflicted : conflicts.get(region)) {
-            conflicts.get(conflicted).remove(region);
-            if (conflicts.get(conflicted).isEmpty()) {
-                conflicts.remove(conflicted);
+        if (conflicts.containsKey(region)) {
+            for (Region conflicted : conflicts.get(region)) {
+                conflicts.get(conflicted).remove(region);
+                if (conflicts.get(conflicted).isEmpty()) {
+                    conflicts.remove(conflicted);
+                }
             }
+            conflicts.remove(region);
         }
-        conflicts.remove(region);
     }
 
     // Return all Regions that conflicts with given Region
@@ -82,7 +84,7 @@ public class ConflictMap {
         return Collections.unmodifiableSet(conflicts.keySet());
     }
 
-    public boolean hasConflicts() {
+    public final boolean hasConflicts() {
         return !conflicts.isEmpty();
     }
 }

@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 public class BpSeq implements Serializable {
     private static final long serialVersionUID = 7463893480150381692L;
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+    private static final boolean WRITE_COMMENTS = false;
 
     public static class Entry implements Comparable<BpSeq.Entry>, Serializable {
         private static final long serialVersionUID = -2263073800915995485L;
@@ -70,6 +71,14 @@ public class BpSeq implements Serializable {
 
         public final boolean isPaired() {
             return pair != 0;
+        }
+
+        public final boolean contains(final int node) {
+            return (node > index) && (node < pair);
+        }
+
+        public final int length() {
+            return (pair == 0) ? 0 : (pair - index);
         }
 
         @Override
@@ -116,7 +125,7 @@ public class BpSeq implements Serializable {
         @Override
         public final String toString() {
             StringBuilder builder = new StringBuilder(10 + comment.length());
-            if (StringUtils.isNotBlank(comment)) {
+            if (BpSeq.WRITE_COMMENTS && StringUtils.isNotBlank(comment)) {
                 builder.append('#');
                 builder.append(comment);
                 builder.append(System.lineSeparator());
