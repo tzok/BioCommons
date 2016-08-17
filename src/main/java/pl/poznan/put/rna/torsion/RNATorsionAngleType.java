@@ -1,13 +1,13 @@
 package pl.poznan.put.rna.torsion;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AverageTorsionAngleType;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public enum RNATorsionAngleType implements MasterTorsionAngleType {
     ALPHA(Alpha.getInstance()),
@@ -28,19 +28,17 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
     CHI(Chi.getPurineInstance(), Chi.getPyrimidineInstance()),
     PSEUDOPHASE_PUCKER(PseudophasePuckerType.getInstance());
 
+    private static final MasterTorsionAngleType[] MAIN =
+            new MasterTorsionAngleType[]{ALPHA, BETA, GAMMA, DELTA, EPSILON,
+                                         ZETA, CHI, PSEUDOPHASE_PUCKER};
+    private static final AverageTorsionAngleType AVERAGE_TORSION_INSTANCE =
+            new AverageTorsionAngleType(MoleculeType.RNA,
+                                        RNATorsionAngleType.MAIN);
     private final List<TorsionAngleType> angleTypes;
 
     RNATorsionAngleType(TorsionAngleType... angleTypes) {
         this.angleTypes = Arrays.asList(angleTypes);
     }
-
-    @Override
-    public Collection<? extends TorsionAngleType> getAngleTypes() {
-        return angleTypes;
-    }
-
-    private static final MasterTorsionAngleType[] MAIN = new MasterTorsionAngleType[] { ALPHA, BETA, GAMMA, DELTA, EPSILON, ZETA, CHI, PSEUDOPHASE_PUCKER };
-    private static final AverageTorsionAngleType AVERAGE_TORSION_INSTANCE = new AverageTorsionAngleType(MoleculeType.RNA, RNATorsionAngleType.MAIN);
 
     public static MasterTorsionAngleType[] mainAngles() {
         return RNATorsionAngleType.MAIN;
@@ -48,6 +46,11 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
 
     public static AverageTorsionAngleType getAverageOverMainAngles() {
         return RNATorsionAngleType.AVERAGE_TORSION_INSTANCE;
+    }
+
+    @Override
+    public Collection<? extends TorsionAngleType> getAngleTypes() {
+        return angleTypes;
     }
 
     @Override

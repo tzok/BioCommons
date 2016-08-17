@@ -8,8 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TestPdbRemark2ResolutionLine {
-    private final String validXrayLine = "REMARK   2 RESOLUTION.    1.89 ANGSTROMS.                                       ";
-    private final String validNmrLine = "REMARK   2 RESOLUTION. NOT APPLICABLE.                                          ";
+    private final String validXrayLine =
+            "REMARK   2 RESOLUTION.    1.89 ANGSTROMS.                       "
+            + "                ";
+    private final String validNmrLine =
+            "REMARK   2 RESOLUTION. NOT APPLICABLE.                          "
+            + "                ";
 
     @Test
     public void testParseXray() throws PdbParsingException {

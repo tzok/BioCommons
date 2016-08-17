@@ -12,22 +12,26 @@ public abstract class ResidueComponent {
     private final List<AtomName> atoms;
 
     /**
-     * These atoms may or may not be present. Their lack is OK, but if they are present it is good to know.
+     * These atoms may or may not be present. Their lack is OK, but if they are
+     * present it is good to know.
      */
     private final List<AtomName> additionalAtoms;
 
     protected ResidueComponent(String residueComponentName,
-                               MoleculeType moleculeType, List<AtomName> atoms, List<AtomName> additionalAtoms) {
+                               MoleculeType moleculeType,
+                               List<AtomName> atoms) {
+        this(residueComponentName, moleculeType, atoms,
+             Collections.<AtomName>emptyList());
+    }
+
+    protected ResidueComponent(String residueComponentName,
+                               MoleculeType moleculeType, List<AtomName> atoms,
+                               List<AtomName> additionalAtoms) {
         super();
         this.residueComponentName = residueComponentName;
         this.moleculeType = moleculeType;
         this.atoms = atoms;
         this.additionalAtoms = additionalAtoms;
-    }
-
-    protected ResidueComponent(String residueComponentName,
-                               MoleculeType moleculeType, List<AtomName> atoms) {
-        this(residueComponentName, moleculeType, atoms, Collections.<AtomName>emptyList());
     }
 
     public String getResidueComponentName() {
@@ -47,20 +51,27 @@ public abstract class ResidueComponent {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ResidueComponent that = (ResidueComponent) o;
-        return residueComponentName.equals(that.residueComponentName) && moleculeType == that.moleculeType && CollectionUtils.isEqualCollection(atoms, that.atoms) && CollectionUtils.isEqualCollection(atoms, that.atoms);
-    }
-
-    @Override
     public int hashCode() {
         int result = residueComponentName.hashCode();
         result = 31 * result + moleculeType.hashCode();
         result = 31 * result + atoms.hashCode();
         result = 31 * result + additionalAtoms.hashCode();
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ResidueComponent that = (ResidueComponent) o;
+        return residueComponentName.equals(that.residueComponentName)
+               && moleculeType == that.moleculeType && CollectionUtils
+                       .isEqualCollection(atoms, that.atoms) && CollectionUtils
+                       .isEqualCollection(atoms, that.atoms);
     }
 }

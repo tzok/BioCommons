@@ -9,11 +9,13 @@ import pl.poznan.put.types.Quadruplet;
 public class Eta extends PseudoTorsionAngleType {
     private static final Eta INSTANCE = new Eta();
 
-    public static Eta getInstance() {
-        return Eta.INSTANCE;
+    private Eta() {
+        super(MoleculeType.RNA, Unicode.ETA,
+              new Quadruplet<>(AtomName.C4p, AtomName.P, AtomName.C4p,
+                               AtomName.P), new Quadruplet<>(-1, 0, 0, 1));
     }
 
-    private Eta() {
-        super(MoleculeType.RNA, Unicode.ETA, new Quadruplet<>(AtomName.C4p, AtomName.P, AtomName.C4p, AtomName.P), new Quadruplet<>(-1, 0, 0, 1));
+    public static Eta getInstance() {
+        return Eta.INSTANCE;
     }
 }

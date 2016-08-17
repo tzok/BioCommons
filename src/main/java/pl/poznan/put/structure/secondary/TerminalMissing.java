@@ -10,14 +10,6 @@ public class TerminalMissing {
         this.symbols = symbols;
     }
 
-    public DotBracketSymbol getFirst() {
-        return symbols.size() > 0 ? symbols.get(0) : null;
-    }
-
-    public DotBracketSymbol getLast() {
-        return symbols.size() > 0 ? symbols.get(symbols.size() - 1) : null;
-    }
-
     public int getLength() {
         return symbols.size();
     }
@@ -29,5 +21,13 @@ public class TerminalMissing {
     @Override
     public String toString() {
         return "TerminalMissing, first " + getFirst() + ", last " + getLast();
+    }
+
+    public DotBracketSymbol getFirst() {
+        return symbols.size() > 0 ? symbols.get(0) : null;
+    }
+
+    public DotBracketSymbol getLast() {
+        return symbols.size() > 0 ? symbols.get(symbols.size() - 1) : null;
     }
 }

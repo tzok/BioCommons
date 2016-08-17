@@ -1,16 +1,18 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbParsingException;
 
+import static org.junit.Assert.assertEquals;
+
 public class TestPdbModresLine {
-    private final String validLine = "MODRES 1EHZ 2MG A   10    G  2N-METHYLGUANOSINE-5'-MONOPHOSPHATE                ";
-    private final String tooShortLine = validLine.substring(0, validLine.length() - 20);
+    private final String validLine =
+            "MODRES 1EHZ 2MG A   10    G  2N-METHYLGUANOSINE-5'-MONOPHOSPHATE"
+            + "                ";
+    private final String tooShortLine =
+            validLine.substring(0, validLine.length() - 20);
     private final String misalignedLine = StringUtils.normalizeSpace(validLine);
 
     @Test

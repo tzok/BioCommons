@@ -11,10 +11,14 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.pdb.analysis.*;
+import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbChain;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbParser;
+import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
+import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,19 +49,35 @@ public class TestPdbModel {
     public void loadPdbFile() throws URISyntaxException, IOException {
         URI uri = getClass().getClassLoader().getResource(".").toURI();
         File dir = new File(uri);
-        pdb148L = FileUtils.readFileToString(new File(dir, "../../src/test/resources/148L.pdb"), "utf-8");
-        pdb1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ.pdb"), "utf-8");
-        pdb2Z74 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2Z74.pdb"), "utf-8");
-        pdb4A04 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/4A04.pdb"), "utf-8");
-        pdbPKB300 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/PKB300.pdb"), "utf-8");
-        pdbAmber = FileUtils.readFileToString(new File(dir, "../../src/test/resources/amber.pdb"), "utf-8");
-        pdb2MIY = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2MIY.pdb"), "utf-8");
-        pdbFrabaseExport = FileUtils.readFileToString(new File(dir, "../../src/test/resources/FrabaseExport.pdb"), "utf-8");
-        pdb3KFU = FileUtils.readFileToString(new File(dir, "../../src/test/resources/3KFU.pdb"), "utf-8");
+        pdb148L = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/148L.pdb"), "utf-8");
+        pdb1EHZ = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/1EHZ.pdb"), "utf-8");
+        pdb2Z74 = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/2Z74.pdb"), "utf-8");
+        pdb4A04 = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/4A04.pdb"), "utf-8");
+        pdbPKB300 = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/PKB300.pdb"), "utf-8");
+        pdbAmber = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/amber.pdb"), "utf-8");
+        pdb2MIY = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/2MIY.pdb"), "utf-8");
+        pdbFrabaseExport = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/FrabaseExport.pdb"),
+                "utf-8");
+        pdb3KFU = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/3KFU.pdb"), "utf-8");
 
-        bpseq1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ-2D-bpseq.txt"), "utf-8");
-        bpseq2Z74 = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2Z74-2D-bpseq.txt"), "utf-8");
-        bpseq2MIY = FileUtils.readFileToString(new File(dir, "../../src/test/resources/2MIY-2D-bpseq.txt"), "utf-8");
+        bpseq1EHZ = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/1EHZ-2D-bpseq.txt"),
+                "utf-8");
+        bpseq2Z74 = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/2Z74-2D-bpseq.txt"),
+                "utf-8");
+        bpseq2MIY = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/2MIY-2D-bpseq.txt"),
+                "utf-8");
     }
 
     @Test
@@ -90,7 +110,8 @@ public class TestPdbModel {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
-        PdbResidue residue = model.findResidue(new PdbResidueIdentifier("A", 10, " "));
+        PdbResidue residue =
+                model.findResidue(new PdbResidueIdentifier("A", 10, " "));
         assertEquals("2MG", residue.getOriginalResidueName());
         assertEquals("G", residue.getModifiedResidueName());
         assertEquals("G", residue.getDetectedResidueName());
@@ -175,7 +196,8 @@ public class TestPdbModel {
             if (residue.hasAtom(AtomName.O3P)) {
                 assertEquals(true, residue.isModified());
                 assertEquals(false, residue.hasAllAtoms());
-            } else if (residue.getOriginalResidueName().equals("H2U") || residue.getOriginalResidueName().equals("PSU")) {
+            } else if (residue.getOriginalResidueName().equals("H2U") || residue
+                    .getOriginalResidueName().equals("PSU")) {
                 assertEquals(true, residue.isModified());
                 assertEquals(true, residue.hasAllAtoms());
             } else if (residue.getOriginalResidueName().equals("5MU")) {
@@ -185,7 +207,12 @@ public class TestPdbModel {
                 assertEquals(true, residue.isModified());
                 assertEquals(false, residue.hasAllAtoms());
             } else {
-                assertEquals("Detected " + residue.getDetectedResidueName() + " for " + residue.getOriginalResidueName() + "/" + residue.getModifiedResidueName(), residue.getModifiedResidueName(), residue.getDetectedResidueName());
+                assertEquals(
+                        "Detected " + residue.getDetectedResidueName() + " for "
+                        + residue.getOriginalResidueName() + "/" + residue
+                                .getModifiedResidueName(),
+                        residue.getModifiedResidueName(),
+                        residue.getDetectedResidueName());
                 assertEquals(residue.isModified(), !residue.hasAllAtoms());
             }
         }
@@ -197,7 +224,10 @@ public class TestPdbModel {
         List<PdbModel> models = parser.parse(pdb2Z74);
         PdbModel model = models.get(0);
         List<PdbChain> chains = model.getChains();
-        assertEquals("Found chains (expected [A, B]): " + Arrays.toString(chains.toArray(new PdbChain[chains.size()])), 2, chains.size());
+        assertEquals("Found chains (expected [A, B]): " + Arrays
+                             .toString(chains.toArray(new PdbChain[chains
+                                     .size()])), 2,
+                     chains.size());
     }
 
     @Test
@@ -229,13 +259,15 @@ public class TestPdbModel {
     }
 
     @Test
-    public void testOutputParsableByBioJava() throws IOException, PdbParsingException {
+    public void testOutputParsableByBioJava()
+            throws IOException, PdbParsingException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
 
         PDBFileParser fileParser = new PDBFileParser();
-        Structure structure = fileParser.parsePDBFile(IOUtils.toInputStream(model.toPdbString()));
+        Structure structure = fileParser
+                .parsePDBFile(IOUtils.toInputStream(model.toPdbString()));
 
         assertEquals(1, structure.getChains().size());
         assertEquals(1, model.getChains().size());
@@ -250,7 +282,9 @@ public class TestPdbModel {
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
         String sequence = model.getSequence();
-        assertEquals("GCGGAUUUAGCUCAGUUGGGAGAGCGCCAGACUGAAGAUCUGGAGGUCCUGUGUUCGAUCCACAGAAUUCGCACCA", sequence.toUpperCase());
+        assertEquals(
+                "GCGGAUUUAGCUCAGUUGGGAGAGCGCCAGACUGAAGAUCUGGAGGUCCUGUGUUCGAUCCACAGAAUUCGCACCA",
+                sequence.toUpperCase());
 
         models = parser.parse(pdb2Z74);
         model = models.get(0);
@@ -258,17 +292,25 @@ public class TestPdbModel {
         sequence = chains.get(0).getSequence();
         assertEquals("AGCGCCUGGACUUAAAGCCAUUGCACU", sequence.toUpperCase());
         sequence = chains.get(1).getSequence();
-        assertEquals("CCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA", sequence.toUpperCase());
+        assertEquals(
+                "CCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA",
+                sequence.toUpperCase());
         sequence = model.getSequence();
-        assertEquals("AGCGCCUGGACUUAAAGCCAUUGCACUCCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA", sequence.toUpperCase());
+        assertEquals(
+                "AGCGCCUGGACUUAAAGCCAUUGCACUCCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA",
+                sequence.toUpperCase());
 
         models = parser.parse(pdb4A04);
         model = models.get(0);
         chains = model.getChains();
         sequence = chains.get(0).getSequence();
-        assertEquals("MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD", sequence.toUpperCase());
+        assertEquals(
+                "MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD",
+                sequence.toUpperCase());
         sequence = chains.get(1).getSequence();
-        assertEquals("MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD", sequence.toUpperCase());
+        assertEquals(
+                "MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD",
+                sequence.toUpperCase());
         sequence = chains.get(2).getSequence();
         assertEquals("AATTTCACACCTAGGTGTGAAATT", sequence.toUpperCase());
         sequence = chains.get(2).getSequence();
@@ -326,18 +368,21 @@ public class TestPdbModel {
     }
 
     @Test
-    public void testCanonicalSecondaryStructure() throws PdbParsingException, InvalidSecondaryStructureException {
+    public void testCanonicalSecondaryStructure()
+            throws PdbParsingException, InvalidStructureException {
         assertBpSeqEquals(pdb1EHZ, bpseq1EHZ);
         assertBpSeqEquals(pdb2Z74, bpseq2Z74);
         assertBpSeqEquals(pdb2MIY, bpseq2MIY);
     }
 
-    private static void assertBpSeqEquals(String pdbString, String bpSeqString) throws PdbParsingException, InvalidSecondaryStructureException {
+    private static void assertBpSeqEquals(String pdbString, String bpSeqString)
+            throws PdbParsingException, InvalidStructureException {
         PdbParser parser = new PdbParser(false);
         List<PdbModel> models = parser.parse(pdbString);
         PdbModel model = models.get(0);
 
-        BpSeq bpSeqFromModel = CanonicalStructureExtractor.getCanonicalSecondaryStructure(model);
+        BpSeq bpSeqFromModel = CanonicalStructureExtractor
+                .getCanonicalSecondaryStructure(model);
         assertEquals(bpSeqString, bpSeqFromModel.toString());
 
         BpSeq bpSeqFromString = BpSeq.fromString(bpSeqString);

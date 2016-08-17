@@ -12,6 +12,17 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 public class StructureHelper {
+    private StructureHelper() {
+    }
+
+    public static Atom[] findAtoms(Group residue, AtomName[] atomNames) {
+        List<Atom> atoms = new ArrayList<>();
+        for (AtomName atomName : atomNames) {
+            atoms.add(StructureHelper.findAtom(residue, atomName));
+        }
+        return atoms.toArray(new Atom[atoms.size()]);
+    }
+
     public static Atom findAtom(Group residue, AtomName atomName) {
         for (Atom atom : residue.getAtoms()) {
             if (atomName.matchesName(atom.getName())) {
@@ -21,12 +32,13 @@ public class StructureHelper {
         return null;
     }
 
-    public static Atom[] findAtoms(Group residue, AtomName[] atomNames) {
-        List<Atom> atoms = new ArrayList<>();
-        for (AtomName atomName : atomNames) {
-            atoms.add(StructureHelper.findAtom(residue, atomName));
+    public static Atom[] findAllAtoms(Structure structure, AtomName atomName) {
+        List<Atom> result = new ArrayList<>();
+        for (Chain chain : structure.getChains()) {
+            Atom[] atomsChain = StructureHelper.findAllAtoms(chain, atomName);
+            result.addAll(Arrays.asList(atomsChain));
         }
-        return atoms.toArray(new Atom[atoms.size()]);
+        return result.toArray(new Atom[result.size()]);
     }
 
     public static Atom[] findAllAtoms(Chain chain, AtomName atomName) {
@@ -39,15 +51,6 @@ public class StructureHelper {
             }
         }
 
-        return result.toArray(new Atom[result.size()]);
-    }
-
-    public static Atom[] findAllAtoms(Structure structure, AtomName atomName) {
-        List<Atom> result = new ArrayList<>();
-        for (Chain chain : structure.getChains()) {
-            Atom[] atomsChain = StructureHelper.findAllAtoms(chain, atomName);
-            result.addAll(Arrays.asList(atomsChain));
-        }
         return result.toArray(new Atom[result.size()]);
     }
 
@@ -68,13 +71,11 @@ public class StructureHelper {
 
     public static boolean isModified(Group group, AtomName[] atomNames) {
         for (AtomName atomName : atomNames) {
-            if (atomName.getType().isHeavy() && StructureHelper.findAtom(group, atomName) == null) {
+            if (atomName.getType().isHeavy()
+                && StructureHelper.findAtom(group, atomName) == null) {
                 return true;
             }
         }
         return false;
-    }
-
-    private StructureHelper() {
     }
 }

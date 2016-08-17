@@ -12,16 +12,279 @@ import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 public class BpSeq implements Serializable {
-    public static class Entry implements Comparable<Entry>, Serializable {
+    private static final long serialVersionUID = 7463893480150381692L;
+    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+    private static final boolean WRITE_COMMENTS = false;
+    private static final Logger LOGGER = LoggerFactory.getLogger(BpSeq.class);
+    private final SortedSet<BpSeq.Entry> entries;
+
+    public BpSeq(final Collection<BpSeq.Entry> entries)
+            throws InvalidStructureException {
+        super();
+        this.entries = new TreeSet<>(entries);
+        validate();
+    }
+
+    /*
+     * Check if all pairs match.
+     */
+    private void validate() throws InvalidStructureException {
+        Map<Integer, Integer> map = new HashMap<>();
+
+        for (BpSeq.Entry e : entries) {
+            if (e.getIndex() == e.getPair()) {
+                throw new InvalidStructureException(String.format(
+                        "Invalid line in BPSEQ data, a residue cannot be "
+                        + "paired with itself! Line: %s", e));
+            }
+
+            map.put(e.getIndex(), e.getPair());
+        }
+
+        int previous = 0;
+
+        for (BpSeq.Entry e : entries) {
+            if ((e.getIndex() - previous) != 1) {
+                throw new InvalidStructureException(String.format(
+                        "Inconsistent numbering in BPSEQ format: previous=%d,"
+                        + " current=%d", previous, e.getIndex()));
+            }
+            previous = e.getIndex();
+
+            int pair = map.get(e.getIndex());
+            if (pair != 0) {
+                if (!map.containsKey(pair)) {
+                    throw new InvalidStructureException(String.format(
+                            "Inconsistency in BPSEQ format: (%d -> %d)",
+                            e.getIndex(), pair));
+                }
+                if (map.get(pair) != e.getIndex()) {
+                    throw new InvalidStructureException(String.format(
+                            "Inconsistency in BPSEQ format: (%d -> %d) and "
+                            + "(%d -> %d)", e.getIndex(), pair, pair,
+                            map.get(pair)));
+                }
+            }
+        }
+    }
+
+    public static BpSeq fromString(final String data)
+            throws InvalidStructureException {
+        List<BpSeq.Entry> entries = new ArrayList<>();
+
+        for (String line : data.split(System.lineSeparator())) {
+            line = line.trim();
+
+            int hash = line.indexOf('#');
+            if (hash != -1) {
+                line = line.substring(0, hash);
+            }
+
+            if (line.isEmpty()) {
+                continue;
+            }
+
+            String[] split = BpSeq.WHITESPACE.split(line);
+
+            if ((split.length != 3) || (split[1].length() != 1)) {
+                throw new InvalidStructureException(String.format(
+                        "Line does not conform to BPSEQ format: %s", line));
+            }
+
+            int index;
+            int pair;
+            char seq;
+
+            try {
+                index = Integer.valueOf(split[0]);
+                seq = split[1].charAt(0);
+                pair = Integer.valueOf(split[2]);
+            } catch (NumberFormatException e) {
+                throw new InvalidStructureException(String.format(
+                        "Line does not conform to BPSEQ format: %s", line), e);
+            }
+
+            entries.add(new BpSeq.Entry(index, pair, seq));
+        }
+
+        return new BpSeq(entries);
+    }
+
+    public static BpSeq fromCt(final Ct ct) throws InvalidStructureException {
+        List<BpSeq.Entry> bpseqEntries = new ArrayList<>();
+
+        for (Ct.Entry e : ct.getEntries()) {
+            bpseqEntries.add(new BpSeq.Entry(e.getIndex(), e.getPair(),
+                                             e.getSeq()));
+        }
+
+        return new BpSeq(bpseqEntries);
+    }
+
+    public static BpSeq fromDotBracket(final DotBracket db)
+            throws InvalidStructureException {
+        List<BpSeq.Entry> entries = new ArrayList<>();
+
+        for (DotBracketSymbol symbol : db.getSymbols()) {
+            DotBracketSymbol pair = symbol.getPair();
+            int index = symbol.getIndex() + 1;
+            int pairIndex = (pair != null) ? (pair.getIndex() + 1) : 0;
+            char sequence = symbol.getSequence();
+
+            entries.add(new BpSeq.Entry(index, pairIndex, sequence));
+        }
+
+        return new BpSeq(entries);
+    }
+
+    public static BpSeq fromResidueCollection(
+            final ResidueCollection residueCollection,
+            final Iterable<ClassifiedBasePair> basePairs)
+            throws InvalidStructureException {
+        Collection<BasePair> allBasePairs = new ArrayList<>();
+        Map<BasePair, String> basePairToComment = new HashMap<>();
+
+        for (ClassifiedBasePair classifiedBasePair : basePairs) {
+            BasePair basePair = classifiedBasePair.getBasePair();
+            allBasePairs.add(basePair);
+
+            String comment = classifiedBasePair.isCanonical() ? ""
+                                                              :
+                             classifiedBasePair
+                                     .generateComment();
+            basePairToComment.put(basePair, comment);
+            basePairToComment.put(basePair.invert(), comment);
+        }
+
+        List<BpSeq.Entry> entries = new ArrayList<>();
+        entries.addAll(
+                BpSeq.generateEntriesForPaired(residueCollection, allBasePairs,
+                                               basePairToComment));
+        entries.addAll(BpSeq.generateEntriesForUnpaired(residueCollection,
+                                                        allBasePairs));
+        return new BpSeq(entries);
+    }
+
+    private static Collection<BpSeq.Entry> generateEntriesForPaired(
+            final ResidueCollection residueCollection,
+            final Iterable<BasePair> basePairs,
+            final Map<BasePair, String> basePairToComment) {
+        Collection<BpSeq.Entry> entries = new ArrayList<>();
+        List<PdbResidue> residues = residueCollection.getResidues();
+
+        for (BasePair basePair : basePairs) {
+            PdbResidue left = residueCollection.findResidue(basePair.getLeft());
+            PdbResidue right =
+                    residueCollection.findResidue(basePair.getRight());
+            int indexL = 1 + residues.indexOf(left);
+            int indexR = 1 + residues.indexOf(right);
+            entries.add(new BpSeq.Entry(indexL, indexR, left.getOneLetterName(),
+                                        basePairToComment.get(basePair)));
+            entries.add(
+                    new BpSeq.Entry(indexR, indexL, right.getOneLetterName(),
+                                    basePairToComment.get(basePair)));
+            BpSeq.LOGGER.trace("Storing pair ({} -> {}) which is ({} -> {})",
+                               indexL, indexR, left, right);
+        }
+
+        return entries;
+    }
+
+    private static Collection<BpSeq.Entry> generateEntriesForUnpaired(
+            final ResidueCollection residueCollection,
+            final Iterable<BasePair> allBasePairs) {
+        List<PdbResidue> residues = residueCollection.getResidues();
+        Collection<PdbResidueIdentifier> paired = new HashSet<>();
+
+        for (BasePair basePair : allBasePairs) {
+            paired.add(basePair.getLeft());
+            paired.add(basePair.getRight());
+        }
+
+        Collection<BpSeq.Entry> entries = new ArrayList<>();
+        for (int i = 0; i < residues.size(); i++) {
+            PdbResidue residue = residues.get(i);
+            if (!paired.contains(residue.getResidueIdentifier())) {
+                entries.add(
+                        new BpSeq.Entry(i + 1, 0, residue.getOneLetterName()));
+            }
+        }
+
+        return entries;
+    }
+
+    public final SortedSet<BpSeq.Entry> getEntries() {
+        return Collections.unmodifiableSortedSet(entries);
+    }
+
+    public final String getSequence() {
+        StringBuilder builder = new StringBuilder(entries.size());
+        for (BpSeq.Entry e : entries) {
+            builder.append(e.getSeq());
+        }
+        return builder.toString();
+    }
+
+    public final SortedSet<BpSeq.Entry> getPaired() {
+        SortedSet<BpSeq.Entry> sortedSet = new TreeSet<>();
+        for (BpSeq.Entry entry : entries) {
+            if (entry.getIndex() < entry.getPair()) {
+                sortedSet.add(entry);
+            }
+        }
+        return sortedSet;
+    }
+
+    public final void removePair(final BpSeq.Entry toRemove) {
+        if (!toRemove.isPaired()) {
+            return;
+        }
+
+        for (BpSeq.Entry entry : entries) {
+            if (entry.getIndex() == toRemove.getPair()) {
+                entries.remove(toRemove);
+                entries.remove(entry);
+                entries.add(new BpSeq.Entry(toRemove.index, 0, toRemove.seq));
+                entries.add(new BpSeq.Entry(entry.index, 0, entry.seq));
+                return;
+            }
+        }
+    }
+
+    public final int size() {
+        return entries.size();
+    }
+
+    public final boolean hasAnyPair() {
+        for (BpSeq.Entry entry : entries) {
+            if (entry.isPaired()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static class Entry implements Comparable<BpSeq.Entry>, Serializable {
+        private static final long serialVersionUID = -2263073800915995485L;
         private final int index;
         private final int pair;
         private final char seq;
         private final String comment;
 
-        public Entry(int index, int pair, char seq) {
+        public Entry(final int index, final int pair, final char seq) {
             super();
             this.index = index;
             this.pair = pair;
@@ -29,7 +292,8 @@ public class BpSeq implements Serializable {
             comment = "";
         }
 
-        public Entry(int index, int pair, char seq, String comment) {
+        public Entry(final int index, final int pair, final char seq,
+                     final String comment) {
             super();
             this.index = index;
             this.pair = pair;
@@ -37,53 +301,61 @@ public class BpSeq implements Serializable {
             this.comment = comment;
         }
 
-        public int getIndex() {
+        public final int getIndex() {
             return index;
         }
 
-        public int getPair() {
+        public final int getPair() {
             return pair;
         }
 
-        public char getSeq() {
+        public final char getSeq() {
             return seq;
         }
 
-        public String getComment() {
+        public final String getComment() {
             return comment;
         }
 
-        @Override
-        public int compareTo(Entry e) {
-            if (e == null) {
-                throw new NullPointerException();
-            }
+        public final boolean isPaired() {
+            return pair != 0;
+        }
 
-            if (equals(e)) {
+        public final boolean contains(final int node) {
+            return (node > index) && (node < pair);
+        }
+
+        public final int length() {
+            return (pair == 0) ? 0 : (pair - index);
+        }
+
+        @Override
+        public final int compareTo(final BpSeq.Entry t) {
+            if (equals(t)) {
                 return 0;
             }
 
-            if (index < e.index) {
+            if (index < t.index) {
                 return -1;
             }
-            if (index > e.index) {
+            if (index > t.index) {
                 return 1;
             }
             return 0;
         }
 
         @Override
-        public int hashCode() {
+        public final int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + index;
-            result = prime * result + pair;
-            result = prime * result + seq;
+            result = (prime * result) + index;
+            result = (prime * result) + pair;
+            result = (prime * result) + seq;
             return result;
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public final boolean equals(final Object obj) {
             if (this == obj) {
                 return true;
             }
@@ -93,17 +365,19 @@ public class BpSeq implements Serializable {
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            Entry other = (Entry) obj;
-            return index == other.index && pair == other.pair && seq == other.seq;
+            BpSeq.Entry other = (BpSeq.Entry) obj;
+            return (index == other.index) && (pair == other.pair) && (seq
+                                                                      ==
+                                                                      other.seq);
         }
 
         @Override
-        public String toString() {
-            StringBuilder builder = new StringBuilder();
-            if (BpSeq.printComments && !StringUtils.isBlank(comment)) {
+        public final String toString() {
+            StringBuilder builder = new StringBuilder(10 + comment.length());
+            if (BpSeq.WRITE_COMMENTS && StringUtils.isNotBlank(comment)) {
                 builder.append('#');
                 builder.append(comment);
-                builder.append('\n');
+                builder.append(System.lineSeparator());
             }
             builder.append(index);
             builder.append(' ');
@@ -114,222 +388,30 @@ public class BpSeq implements Serializable {
         }
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BpSeq.class);
-    private static boolean printComments = false;
-
-    public static BpSeq fromString(String data) throws InvalidSecondaryStructureException {
-        List<BpSeq.Entry> entries = new ArrayList<>();
-
-        for (String line : data.split("\n")) {
-            line = line.trim();
-
-            int hash = line.indexOf('#');
-            if (hash != -1) {
-                line = line.substring(0, hash);
-            }
-
-            if (line.length() == 0) {
-                continue;
-            }
-
-            String[] split = line.split("\\s+");
-
-            if (split.length != 3 || split[1].length() != 1) {
-                throw new InvalidSecondaryStructureException("Line does not conform to BPSEQ format: " + line);
-            }
-
-            int index, pair;
-            char seq;
-
-            try {
-                index = Integer.valueOf(split[0]);
-                seq = split[1].charAt(0);
-                pair = Integer.valueOf(split[2]);
-            } catch (NumberFormatException e) {
-                throw new InvalidSecondaryStructureException("Line does not conform to BPSEQ format: " + line, e);
-            }
-
-            entries.add(new Entry(index, pair, seq));
-        }
-
-        return new BpSeq(entries);
-    }
-
-    public static BpSeq fromCt(Ct ct) throws InvalidSecondaryStructureException {
-        List<BpSeq.Entry> bpseqEntries = new ArrayList<>();
-
-        for (Ct.Entry e : ct.getEntries()) {
-            bpseqEntries.add(new BpSeq.Entry(e.getIndex(), e.getPair(), e.getSeq()));
-        }
-
-        return new BpSeq(bpseqEntries);
-    }
-
-    public static BpSeq fromDotBracket(DotBracket db) throws InvalidSecondaryStructureException {
-        List<BpSeq.Entry> entries = new ArrayList<>();
-
-        for (DotBracketSymbol symbol : db.getSymbols()) {
-            DotBracketSymbol pair = symbol.getPair();
-            int index = symbol.getIndex() + 1;
-            int pairIndex = pair != null ? pair.getIndex() + 1 : 0;
-            char sequence = symbol.getSequence();
-
-            entries.add(new Entry(index, pairIndex, sequence));
-        }
-
-        return new BpSeq(entries);
-    }
-
-    public static BpSeq fromResidueCollection(ResidueCollection residueCollection, List<ClassifiedBasePair> basePairs) throws InvalidSecondaryStructureException {
-        List<BasePair> allBasePairs = new ArrayList<>();
-        Map<BasePair, String> basePairToComment = new HashMap<>();
-
-        for (ClassifiedBasePair classifiedBasePair : basePairs) {
-            BasePair basePair = classifiedBasePair.getBasePair();
-            allBasePairs.add(basePair);
-
-            String comment = classifiedBasePair.isCanonical() ? "" : classifiedBasePair.generateComment();
-            basePairToComment.put(basePair, comment);
-            basePairToComment.put(basePair.invert(), comment);
-        }
-
-        List<BpSeq.Entry> entries = new ArrayList<>();
-        entries.addAll(BpSeq.generateEntriesForPaired(residueCollection, allBasePairs, basePairToComment));
-        entries.addAll(BpSeq.generateEntriesForUnpaired(residueCollection, allBasePairs));
-        return new BpSeq(entries);
-    }
-
-    private static List<BpSeq.Entry> generateEntriesForUnpaired(ResidueCollection residueCollection, List<BasePair> allBasePairs) {
-        List<BpSeq.Entry> entries = new ArrayList<>();
-        List<PdbResidue> residues = residueCollection.getResidues();
-        Set<PdbResidueIdentifier> paired = new HashSet<>();
-
-        for (BasePair basePair : allBasePairs) {
-            paired.add(basePair.getLeft());
-            paired.add(basePair.getRight());
-        }
-
-        for (int i = 0; i < residues.size(); i++) {
-            PdbResidue residue = residues.get(i);
-            if (!paired.contains(residue.getResidueIdentifier())) {
-                entries.add(new BpSeq.Entry(i + 1, 0, residue.getOneLetterName()));
-            }
-        }
-
-        return entries;
-    }
-
-    private static List<BpSeq.Entry> generateEntriesForPaired(ResidueCollection residueCollection, Collection<BasePair> basePairs, Map<BasePair, String> basePairToComment) {
-        List<BpSeq.Entry> entries = new ArrayList<>();
-        List<PdbResidue> residues = residueCollection.getResidues();
-
-        for (BasePair basePair : basePairs) {
-            PdbResidue left = residueCollection.findResidue(basePair.getLeft());
-            PdbResidue right = residueCollection.findResidue(basePair.getRight());
-            int indexL = 1 + residues.indexOf(left);
-            int indexR = 1 + residues.indexOf(right);
-            entries.add(new Entry(indexL, indexR, left.getOneLetterName(), basePairToComment.get(basePair)));
-            entries.add(new Entry(indexR, indexL, right.getOneLetterName(), basePairToComment.get(basePair)));
-            BpSeq.LOGGER.trace("Storing pair (" + indexL + " -> " + indexR + ") which is (" + left + " -> " + right + ")");
-        }
-
-        return entries;
-    }
-
-    public static void setPrintComments(boolean printComments) {
-        BpSeq.printComments = printComments;
-    }
-
-    private final SortedSet<Entry> entries;
-
-    public BpSeq(Collection<BpSeq.Entry> entries) throws InvalidSecondaryStructureException {
-        this.entries = new TreeSet<>(entries);
-        validate();
-    }
-
-    /*
-     * Check if all pairs match.
-     */
-    private void validate() throws InvalidSecondaryStructureException {
-        Map<Integer, Integer> map = new HashMap<>();
-
-        for (Entry e : entries) {
-            if (e.index == e.pair) {
-                throw new InvalidSecondaryStructureException("Invalid line in BPSEQ data, a residue cannot be paired with itself! Line: " + e);
-            }
-
-            map.put(e.index, e.pair);
-        }
-
-        int previous = 0;
-
-        for (Entry e : entries) {
-            if (e.index - previous != 1) {
-                throw new InvalidSecondaryStructureException("Inconsistent numbering in BPSEQ format: previous=" + previous + ", current=" + e.index);
-            }
-            previous = e.index;
-
-            int pair = map.get(e.index);
-            if (pair != 0) {
-                if (!map.containsKey(pair)) {
-                    throw new InvalidSecondaryStructureException("Inconsistency in BPSEQ format: (" + e.index + " -> " + pair + ")");
-                }
-                if (map.get(pair) != e.index) {
-                    throw new InvalidSecondaryStructureException("Inconsistency in BPSEQ format: (" + e.index + " -> " + pair + ") and (" + pair + " -> " + map.get(pair) + ")");
-                }
-            }
-        }
-    }
-
-    public SortedSet<Entry> getEntries() {
-        return Collections.unmodifiableSortedSet(entries);
-    }
-
-    public String getSequence() {
-        StringBuilder builder = new StringBuilder();
-        for (Entry e : entries) {
-            builder.append(e.seq);
-        }
-        return builder.toString();
-    }
-
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (entries == null ? 0 : entries.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
+        if ((obj == null) || (getClass() != obj.getClass())) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        BpSeq other = (BpSeq) obj;
-        if (entries == null) {
-            if (other.entries != null) {
-                return false;
-            }
-        } else if (!CollectionUtils.isEqualCollection(entries, other.entries)) {
-            return false;
-        }
-        return true;
+        BpSeq bpSeq = (BpSeq) obj;
+        return CollectionUtils.isEqualCollection(entries, bpSeq.entries);
     }
 
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
+    public final int hashCode() {
+        return Objects.hash(entries);
+    }
 
-        for (Entry e : entries) {
-            builder.append(e.toString());
-            builder.append('\n');
+    @Override
+    public final String toString() {
+        StringBuilder builder = new StringBuilder(10 * entries.size());
+
+        for (BpSeq.Entry e : entries) {
+            builder.append(e);
+            builder.append(System.lineSeparator());
         }
 
         return builder.toString();

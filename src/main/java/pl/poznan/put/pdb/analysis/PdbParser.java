@@ -3,13 +3,25 @@ package pl.poznan.put.pdb.analysis;
 import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.poznan.put.pdb.*;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbExpdtaLine;
+import pl.poznan.put.pdb.PdbHeaderLine;
+import pl.poznan.put.pdb.PdbModresLine;
+import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.PdbRemark2Line;
+import pl.poznan.put.pdb.PdbRemark465Line;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class PdbParser {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PdbParser.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(PdbParser.class);
 
     private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
     private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
@@ -35,7 +47,8 @@ public class PdbParser {
         this.strictMode = true;
     }
 
-    public synchronized List<PdbModel> parse(String pdbFileContent) throws PdbParsingException {
+    public synchronized List<PdbModel> parse(String pdbFileContent)
+            throws PdbParsingException {
         resetState();
 
         for (String line : pdbFileContent.split("\n")) {
@@ -63,7 +76,9 @@ public class PdbParser {
         for (Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
             int modelNumber = entry.getKey();
             List<PdbAtomLine> atoms = entry.getValue();
-            PdbModel pdbModel = new PdbModel(headerLine, experimentalDataLine, resolutionLine, modelNumber, atoms, modifiedResidues, missingResidues);
+            PdbModel pdbModel = new PdbModel(headerLine, experimentalDataLine,
+                                             resolutionLine, modelNumber, atoms,
+                                             modifiedResidues, missingResidues);
             result.add(pdbModel);
         }
 
@@ -89,7 +104,9 @@ public class PdbParser {
     private void handleModelLine(String line) {
         endedModelNumbers.add(currentModelNumber);
 
-        String modelNumberString = line.length() > 14 ? line.substring(10, 14).trim() : line.substring(5).trim();
+        String modelNumberString =
+                line.length() > 14 ? line.substring(10, 14).trim()
+                                   : line.substring(5).trim();
         int modelNumber = Integer.parseInt(modelNumberString);
 
         while (endedModelNumbers.contains(modelNumber)) {
@@ -101,26 +118,19 @@ public class PdbParser {
         terminatedChainIdentifiers.clear();
     }
 
-    private void handleTerLine(String line) {
-        String chain = line.length() > 21 ? Character.toString(line.charAt(21)) : " ";
-
-        if (terminatedChainIdentifiers.contains(chain)) {
-            chain = Character.toString(currentChainIdentifier++);
-        }
-
-        terminatedChainIdentifiers.add(chain);
-    }
-
     private void handleAtomLine(String line) {
         try {
             PdbAtomLine atomLine = PdbAtomLine.parse(line, strictMode);
 
-            if (terminatedChainIdentifiers.contains(atomLine.getChainIdentifier())) {
-                atomLine = atomLine.replaceChainIdentifier(Character.toString(currentChainIdentifier));
+            if (terminatedChainIdentifiers
+                    .contains(atomLine.getChainIdentifier())) {
+                atomLine = atomLine.replaceChainIdentifier(
+                        Character.toString(currentChainIdentifier));
             }
 
             if (!modelAtoms.containsKey(currentModelNumber)) {
-                modelAtoms.put(currentModelNumber, new ArrayList<PdbAtomLine>());
+                modelAtoms
+                        .put(currentModelNumber, new ArrayList<PdbAtomLine>());
             }
 
             List<PdbAtomLine> atomList = modelAtoms.get(currentModelNumber);
@@ -128,6 +138,17 @@ public class PdbParser {
         } catch (PdbParsingException e) {
             LOGGER.warn("Invalid ATOM line: " + line, e);
         }
+    }
+
+    private void handleTerLine(String line) {
+        String chain =
+                line.length() > 21 ? Character.toString(line.charAt(21)) : " ";
+
+        if (terminatedChainIdentifiers.contains(chain)) {
+            chain = Character.toString(currentChainIdentifier++);
+        }
+
+        terminatedChainIdentifiers.add(chain);
     }
 
     private void handleMissingResidueLine(String line) {

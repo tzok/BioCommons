@@ -1,5 +1,11 @@
 package pl.poznan.put.torsion;
 
+import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.exception.InvalidCircularValueException;
+import pl.poznan.put.circular.samples.AngleSample;
+import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbResidue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,31 +15,20 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.exception.InvalidCircularValueException;
-import pl.poznan.put.circular.samples.AngleSample;
-import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.pdb.analysis.PdbResidue;
-
-public class AverageTorsionAngleType extends TorsionAngleType implements MasterTorsionAngleType {
+public class AverageTorsionAngleType extends TorsionAngleType
+        implements MasterTorsionAngleType {
     private final String displayName;
     private final String exportName;
     private final List<MasterTorsionAngleType> consideredAngles;
 
     public AverageTorsionAngleType(MoleculeType moleculeType,
-            MasterTorsionAngleType... masterTypes) {
+                                   MasterTorsionAngleType... masterTypes) {
         super(moleculeType);
         this.consideredAngles = Arrays.asList(masterTypes);
-        this.displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
-        this.exportName = AverageTorsionAngleType.toExportName(consideredAngles);
-    }
-
-    public AverageTorsionAngleType(MoleculeType moleculeType,
-            List<MasterTorsionAngleType> consideredAngles) {
-        super(moleculeType);
-        this.consideredAngles = consideredAngles;
-        this.displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
-        this.exportName = AverageTorsionAngleType.toExportName(consideredAngles);
+        this.displayName =
+                AverageTorsionAngleType.toDisplayName(consideredAngles);
+        this.exportName =
+                AverageTorsionAngleType.toExportName(consideredAngles);
     }
 
     private static String toDisplayName(
@@ -75,9 +70,21 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
         return builder.toString();
     }
 
+    public AverageTorsionAngleType(MoleculeType moleculeType,
+                                   List<MasterTorsionAngleType>
+                                           consideredAngles) {
+        super(moleculeType);
+        this.consideredAngles = consideredAngles;
+        this.displayName =
+                AverageTorsionAngleType.toDisplayName(consideredAngles);
+        this.exportName =
+                AverageTorsionAngleType.toExportName(consideredAngles);
+    }
+
     private AverageTorsionAngleType(MoleculeType moleculeType,
-            List<MasterTorsionAngleType> consideredAngles, String displayName,
-            String exportName) {
+                                    List<MasterTorsionAngleType>
+                                            consideredAngles,
+                                    String displayName, String exportName) {
         super(moleculeType);
         this.consideredAngles = consideredAngles;
         this.displayName = displayName;
@@ -110,14 +117,16 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
 
     @Override
     public TorsionAngleValue calculate(List<PdbResidue> residues,
-            int currentIndex) throws InvalidCircularValueException {
+                                       int currentIndex)
+            throws InvalidCircularValueException {
         PdbResidue residue = residues.get(currentIndex);
         List<Angle> angles = new ArrayList<>();
 
         for (TorsionAngleType type : residue.getTorsionAngleTypes()) {
             for (MasterTorsionAngleType masterType : consideredAngles) {
                 if (masterType.getAngleTypes().contains(type)) {
-                    TorsionAngleValue angleValue = type.calculate(residues, currentIndex);
+                    TorsionAngleValue angleValue =
+                            type.calculate(residues, currentIndex);
                     angles.add(angleValue.getValue());
                 }
             }
@@ -132,7 +141,8 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
 
         for (MasterTorsionAngleType masterType : consideredAngles) {
             for (TorsionAngleValue angleValue : values) {
-                if (masterType.getAngleTypes().contains(angleValue.getAngleType())) {
+                if (masterType.getAngleTypes()
+                              .contains(angleValue.getAngleType())) {
                     if (angleValue.isValid()) {
                         angles.add(angleValue.getValue());
                     }

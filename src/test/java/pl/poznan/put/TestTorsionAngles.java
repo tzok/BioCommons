@@ -1,16 +1,15 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
-
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.rna.torsion.Beta;
 import pl.poznan.put.torsion.TorsionAngleValue;
 import pl.poznan.put.torsion.TorsionAnglesHelper;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestTorsionAngles {
     private static final double EPSILON_E6 = 1e-6;
@@ -45,29 +44,42 @@ public class TestTorsionAngles {
         Vector3D v2 = TorsionAnglesHelper.atomDistance(a2, a3);
         Vector3D v3 = TorsionAnglesHelper.atomDistance(a3, a4);
 
-        assertEquals(0.0, v1.distance(TestTorsionAngles.V1), TestTorsionAngles.EPSILON_E6);
-        assertEquals(0.0, v2.distance(TestTorsionAngles.V2), TestTorsionAngles.EPSILON_E6);
-        assertEquals(0.0, v3.distance(TestTorsionAngles.V3), TestTorsionAngles.EPSILON_E6);
+        assertEquals(0.0, v1.distance(TestTorsionAngles.V1),
+                     TestTorsionAngles.EPSILON_E6);
+        assertEquals(0.0, v2.distance(TestTorsionAngles.V2),
+                     TestTorsionAngles.EPSILON_E6);
+        assertEquals(0.0, v3.distance(TestTorsionAngles.V3),
+                     TestTorsionAngles.EPSILON_E6);
 
         Vector3D tmp1 = v1.crossProduct(v2);
         Vector3D tmp2 = v2.crossProduct(v3);
         Vector3D tmp3 = v1.scalarMultiply(v2.getNorm());
 
-        assertEquals(0.0, tmp1.distance(TestTorsionAngles.TMP1), TestTorsionAngles.EPSILON_E6);
-        assertEquals(0.0, tmp2.distance(TestTorsionAngles.TMP2), TestTorsionAngles.EPSILON_E6);
-        assertEquals(0.0, tmp3.distance(TestTorsionAngles.TMP3), TestTorsionAngles.EPSILON_E6);
+        assertEquals(0.0, tmp1.distance(TestTorsionAngles.TMP1),
+                     TestTorsionAngles.EPSILON_E6);
+        assertEquals(0.0, tmp2.distance(TestTorsionAngles.TMP2),
+                     TestTorsionAngles.EPSILON_E6);
+        assertEquals(0.0, tmp3.distance(TestTorsionAngles.TMP3),
+                     TestTorsionAngles.EPSILON_E6);
 
-        double torsionAngleRadians = FastMath.atan2(tmp3.dotProduct(tmp2), tmp1.dotProduct(tmp2));
+        double torsionAngleRadians =
+                FastMath.atan2(tmp3.dotProduct(tmp2), tmp1.dotProduct(tmp2));
         double torsionAngleDegrees = Math.toDegrees(torsionAngleRadians);
 
-        assertEquals(TestTorsionAngles.RADIANS, torsionAngleRadians, TestTorsionAngles.EPSILON_E6);
-        assertEquals(TestTorsionAngles.DEGREES, torsionAngleDegrees, TestTorsionAngles.EPSILON_E6);
+        assertEquals(TestTorsionAngles.RADIANS, torsionAngleRadians,
+                     TestTorsionAngles.EPSILON_E6);
+        assertEquals(TestTorsionAngles.DEGREES, torsionAngleDegrees,
+                     TestTorsionAngles.EPSILON_E6);
 
         Beta beta = Beta.getInstance();
         TorsionAngleValue angleValue = beta.calculate(a1, a2, a3, a4);
 
         assertEquals(true, angleValue.isValid());
-        assertEquals(TestTorsionAngles.RADIANS, angleValue.getValue().getRadians(), TestTorsionAngles.EPSILON_E6);
-        assertEquals(TestTorsionAngles.DEGREES, angleValue.getValue().getDegrees(), TestTorsionAngles.EPSILON_E6);
+        assertEquals(TestTorsionAngles.RADIANS,
+                     angleValue.getValue().getRadians(),
+                     TestTorsionAngles.EPSILON_E6);
+        assertEquals(TestTorsionAngles.DEGREES,
+                     angleValue.getValue().getDegrees(),
+                     TestTorsionAngles.EPSILON_E6);
     }
 }

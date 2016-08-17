@@ -16,6 +16,12 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     private static final double CG_DISTANCE_N4_O6 = 2.96 + 0.17 * 3;
     private static final double CG_DISTANCE_O2_N2 = 2.77 + 0.15 * 3;
     private static final double CG_DISTANCE_N3_N1 = 2.89 + 0.11 * 3;
+    private final Pair<PdbResidueIdentifier, PdbResidueIdentifier> pair;
+
+    public BasePair(PdbResidueIdentifier left, PdbResidueIdentifier right) {
+        super();
+        pair = Pair.of(left, right);
+    }
 
     public static boolean isCanonicalPair(PdbResidue left, PdbResidue right) {
         char leftName = Character.toUpperCase(left.getOneLetterName());
@@ -50,7 +56,8 @@ public class BasePair implements Serializable, Comparable<BasePair> {
         PdbAtomLine n3 = uracil.findAtom(AtomName.N3);
         double n1o2 = n1.distanceTo(o2);
         double o6n3 = o6.distanceTo(n3);
-        return n1o2 <= BasePair.GU_DISTANCE_N1_O2 && o6n3 <= BasePair.GU_DISTANCE_O6_N3;
+        return n1o2 <= BasePair.GU_DISTANCE_N1_O2
+               && o6n3 <= BasePair.GU_DISTANCE_O6_N3;
     }
 
     public static boolean isCanonicalAU(PdbResidue adenine, PdbResidue uracil) {
@@ -67,14 +74,18 @@ public class BasePair implements Serializable, Comparable<BasePair> {
         PdbAtomLine o4 = uracil.findAtom(AtomName.O4);
         double n1n3 = n1.distanceTo(n3);
         double n6o4 = n6.distanceTo(o4);
-        return n1n3 <= BasePair.AU_DISTANCE_N1_N3 && n6o4 <= BasePair.AU_DISTANCE_N6_O4;
+        return n1n3 <= BasePair.AU_DISTANCE_N1_N3
+               && n6o4 <= BasePair.AU_DISTANCE_N6_O4;
     }
 
-    public static boolean isCanonicalCG(PdbResidue cytosine, PdbResidue guanine) {
-        if (!cytosine.hasAtom(AtomName.N3) || !cytosine.hasAtom(AtomName.O2) || !cytosine.hasAtom(AtomName.N4)) {
+    public static boolean isCanonicalCG(PdbResidue cytosine,
+                                        PdbResidue guanine) {
+        if (!cytosine.hasAtom(AtomName.N3) || !cytosine.hasAtom(AtomName.O2)
+            || !cytosine.hasAtom(AtomName.N4)) {
             return false;
         }
-        if (!guanine.hasAtom(AtomName.N1) || !guanine.hasAtom(AtomName.N2) || !guanine.hasAtom(AtomName.O6)) {
+        if (!guanine.hasAtom(AtomName.N1) || !guanine.hasAtom(AtomName.N2)
+            || !guanine.hasAtom(AtomName.O6)) {
             return false;
         }
 
@@ -87,14 +98,9 @@ public class BasePair implements Serializable, Comparable<BasePair> {
         double n3n1 = n3.distanceTo(n1);
         double o2n2 = o2.distanceTo(n2);
         double n4o6 = n4.distanceTo(o6);
-        return n3n1 <= BasePair.CG_DISTANCE_N3_N1 && o2n2 <= BasePair.CG_DISTANCE_O2_N2 && n4o6 <= BasePair.CG_DISTANCE_N4_O6;
-    }
-
-    private final Pair<PdbResidueIdentifier, PdbResidueIdentifier> pair;
-
-    public BasePair(PdbResidueIdentifier left, PdbResidueIdentifier right) {
-        super();
-        pair = Pair.of(left, right);
+        return n3n1 <= BasePair.CG_DISTANCE_N3_N1
+               && o2n2 <= BasePair.CG_DISTANCE_O2_N2
+               && n4o6 <= BasePair.CG_DISTANCE_N4_O6;
     }
 
     public PdbResidueIdentifier getLeft() {
@@ -107,11 +113,6 @@ public class BasePair implements Serializable, Comparable<BasePair> {
 
     public BasePair invert() {
         return new BasePair(pair.getRight(), pair.getLeft());
-    }
-
-    @Override
-    public String toString() {
-        return pair.getLeft() + " - " + pair.getRight();
     }
 
     @Override
@@ -142,6 +143,11 @@ public class BasePair implements Serializable, Comparable<BasePair> {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return pair.getLeft() + " - " + pair.getRight();
     }
 
     @Override

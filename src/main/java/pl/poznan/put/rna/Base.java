@@ -1,10 +1,5 @@
 package pl.poznan.put.rna;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
@@ -27,49 +22,69 @@ import pl.poznan.put.rna.torsion.Zeta;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-public abstract class Base extends NucleicAcidResidueComponent implements ResidueInformationProvider {
-    private static final Base INVALID = new Base(Collections.<AtomName> emptyList(), "UNK", 'X', "UNK") {
-        private final Quadruplet<AtomName> chiAtoms = new Quadruplet<>(AtomName.UNKNOWN, AtomName.UNKNOWN, AtomName.UNKNOWN, AtomName.UNKNOWN);
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-        @Override
-        public Quadruplet<AtomName> getChiAtoms() {
-            return chiAtoms;
-        }
+public abstract class Base extends NucleicAcidResidueComponent
+        implements ResidueInformationProvider {
+    private static final Base INVALID =
+            new Base(Collections.<AtomName>emptyList(), "UNK", 'X', "UNK") {
+                private final Quadruplet<AtomName> chiAtoms =
+                        new Quadruplet<>(AtomName.UNKNOWN, AtomName.UNKNOWN,
+                                         AtomName.UNKNOWN, AtomName.UNKNOWN);
 
-        @Override
-        public Sugar getDefaultSugarInstance() {
-            return Sugar.invalidInstance();
-        }
+                @Override
+                public List<TorsionAngleType> getTorsionAngleTypes() {
+                    return Collections.emptyList();
+                }
 
-        @Override
-        public List<TorsionAngleType> getTorsionAngleTypes() {
-            return Collections.emptyList();
-        }
-    };
+                @Override
+                public Sugar getDefaultSugarInstance() {
+                    return Sugar.invalidInstance();
+                }
 
-    public static Base invalidInstance() {
-        return Base.INVALID;
-    }
-
-    protected final List<TorsionAngleType> torsionAngleTypes = new ArrayList<>();
-
+                @Override
+                public Quadruplet<AtomName> getChiAtoms() {
+                    return chiAtoms;
+                }
+            };
+    protected final List<TorsionAngleType> torsionAngleTypes =
+            new ArrayList<>();
     private final String longName;
     private final char oneLetterName;
     private final List<String> pdbNames;
 
     protected Base(List<AtomName> atoms, String longName, char oneLetterName,
-            String... pdbNames) {
+                   String... pdbNames) {
         super(RNAResidueComponentType.BASE, atoms);
         this.longName = longName;
         this.oneLetterName = oneLetterName;
         this.pdbNames = Arrays.asList(pdbNames);
 
-        torsionAngleTypes.addAll(Arrays.asList(Alpha.getInstance(), Beta.getInstance(), Gamma.getInstance(), Delta.getInstance(), Epsilon.getInstance(), Zeta.getInstance(), Nu0.getInstance(), Nu1.getInstance(), Nu2.getInstance(), Nu3.getInstance(), Nu4.getInstance(), Eta.getInstance(), Theta.getInstance(), EtaPrim.getInstance(), ThetaPrim.getInstance(), PseudophasePuckerType.getInstance()));
+        torsionAngleTypes
+                .addAll(Arrays.asList(Alpha.getInstance(), Beta.getInstance(),
+                                      Gamma.getInstance(), Delta.getInstance(),
+                                      Epsilon.getInstance(), Zeta.getInstance(),
+                                      Nu0.getInstance(), Nu1.getInstance(),
+                                      Nu2.getInstance(), Nu3.getInstance(),
+                                      Nu4.getInstance(), Eta.getInstance(),
+                                      Theta.getInstance(),
+                                      EtaPrim.getInstance(),
+                                      ThetaPrim.getInstance(),
+                                      PseudophasePuckerType.getInstance()));
+    }
+
+    public static Base invalidInstance() {
+        return Base.INVALID;
     }
 
     @Override
     public List<ResidueComponent> getAllMoleculeComponents() {
-        return Arrays.asList(new ResidueComponent[] { Phosphate.getInstance(), getDefaultSugarInstance(), this });
+        return Arrays.asList(new ResidueComponent[]{Phosphate.getInstance(),
+                                                    getDefaultSugarInstance(),
+                                                    this});
     }
 
     @Override
@@ -84,7 +99,7 @@ public abstract class Base extends NucleicAcidResidueComponent implements Residu
 
     @Override
     public String getDefaultPdbName() {
-        assert pdbNames.size() > 0;
+        assert !pdbNames.isEmpty();
         return pdbNames.get(0);
     }
 
@@ -98,7 +113,7 @@ public abstract class Base extends NucleicAcidResidueComponent implements Residu
         return torsionAngleTypes;
     }
 
-    public abstract Quadruplet<AtomName> getChiAtoms();
-
     public abstract Sugar getDefaultSugarInstance();
+
+    public abstract Quadruplet<AtomName> getChiAtoms();
 }

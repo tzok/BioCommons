@@ -9,11 +9,13 @@ import pl.poznan.put.types.Quadruplet;
 public class ThetaPrim extends PseudoTorsionAngleType {
     private static final ThetaPrim INSTANCE = new ThetaPrim();
 
-    public static ThetaPrim getInstance() {
-        return ThetaPrim.INSTANCE;
+    private ThetaPrim() {
+        super(MoleculeType.RNA, Unicode.THETA_PRIM,
+              new Quadruplet<>(AtomName.P, AtomName.C1p, AtomName.P,
+                               AtomName.C1p), new Quadruplet<>(0, 0, 1, 1));
     }
 
-    private ThetaPrim() {
-        super(MoleculeType.RNA, Unicode.THETA_PRIM, new Quadruplet<>(AtomName.P, AtomName.C1p, AtomName.P, AtomName.C1p), new Quadruplet<>(0, 0, 1, 1));
+    public static ThetaPrim getInstance() {
+        return ThetaPrim.INSTANCE;
     }
 }

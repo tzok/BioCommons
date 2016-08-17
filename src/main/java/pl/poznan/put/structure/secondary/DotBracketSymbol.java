@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializable {
+public class DotBracketSymbol
+        implements Comparable<DotBracketSymbol>, Serializable {
     private static final List<Character> OPENING = new ArrayList<>();
     private static final List<Character> CLOSING = new ArrayList<>();
 
@@ -15,18 +16,6 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
         for (char c : ")]}>abcdefghijklmnopqrstuvwxyz".toCharArray()) {
             DotBracketSymbol.CLOSING.add(c);
         }
-    }
-
-    public static boolean isOpening(char c) {
-        return DotBracketSymbol.OPENING.contains(c);
-    }
-
-    public static boolean isClosing(char c) {
-        return DotBracketSymbol.CLOSING.contains(c);
-    }
-
-    public static boolean isPairing(char c) {
-        return DotBracketSymbol.isOpening(c) || DotBracketSymbol.isClosing(c);
     }
 
     private final char sequence;
@@ -42,6 +31,18 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
         this.sequence = sequence;
         this.structure = structure;
         this.index = index;
+    }
+
+    public static boolean isPairing(char c) {
+        return DotBracketSymbol.isOpening(c) || DotBracketSymbol.isClosing(c);
+    }
+
+    public static boolean isOpening(char c) {
+        return DotBracketSymbol.OPENING.contains(c);
+    }
+
+    public static boolean isClosing(char c) {
+        return DotBracketSymbol.CLOSING.contains(c);
     }
 
     public char getSequence() {
@@ -101,16 +102,16 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
         return structure == '-';
     }
 
+    public boolean isPairing() {
+        return isOpening() || isClosing();
+    }
+
     public boolean isOpening() {
         return DotBracketSymbol.isOpening(structure);
     }
 
     public boolean isClosing() {
         return DotBracketSymbol.isClosing(structure);
-    }
-
-    public boolean isPairing() {
-        return isOpening() || isClosing();
     }
 
     public int getOrder() {
@@ -144,7 +145,13 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
             return false;
         }
         DotBracketSymbol other = (DotBracketSymbol) obj;
-        return index == other.index && sequence == other.sequence && structure == other.structure;
+        return index == other.index && sequence == other.sequence
+               && structure == other.structure;
+    }
+
+    @Override
+    public String toString() {
+        return index + " " + sequence + " " + structure;
     }
 
     @Override
@@ -158,10 +165,5 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
         }
 
         return index < o.index ? -1 : (index == o.index ? 0 : 1);
-    }
-
-    @Override
-    public String toString() {
-        return index + " " + sequence + " " + structure;
     }
 }

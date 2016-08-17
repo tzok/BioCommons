@@ -6,7 +6,8 @@ import pl.poznan.put.rna.RNAInteractionType;
 
 import java.io.Serializable;
 
-public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBasePair> {
+public class ClassifiedBasePair
+        implements Serializable, Comparable<ClassifiedBasePair> {
     private final BasePair basePair;
     private final RNAInteractionType interactionType;
     private final Saenger saenger;
@@ -14,7 +15,10 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
     private HelixOrigin helixOrigin;
     private boolean isRepresented;
 
-    public ClassifiedBasePair(BasePair basePair, RNAInteractionType interactionType, Saenger saenger, LeontisWesthof leontisWesthof, HelixOrigin helixOrigin) {
+    public ClassifiedBasePair(BasePair basePair,
+                              RNAInteractionType interactionType,
+                              Saenger saenger, LeontisWesthof leontisWesthof,
+                              HelixOrigin helixOrigin) {
         super();
         this.basePair = basePair;
         this.interactionType = interactionType;
@@ -51,13 +55,13 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
         return isRepresented;
     }
 
+    public void setRepresented(boolean isRepresented) {
+        this.isRepresented = isRepresented;
+    }
+
     // required for Spring to get "isRepresented" field
     public boolean getIsRepresented() {
         return isRepresented;
-    }
-
-    public void setRepresented(boolean isRepresented) {
-        this.isRepresented = isRepresented;
     }
 
     public boolean canUseInSecondaryStructure() {
@@ -69,17 +73,14 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
     }
 
     @Override
-    public String toString() {
-        return "ClassifiedBasePair [basePair=" + basePair + ", interactionType=" + interactionType + ", saenger=" + saenger + ", leontisWesthof=" + leontisWesthof + ", helixOrigin=" + helixOrigin + ", isRepresented=" + isRepresented + "]";
-    }
-
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + (basePair == null ? 0 : basePair.hashCode());
-        result = prime * result + (interactionType == null ? 0 : interactionType.hashCode());
-        result = prime * result + (leontisWesthof == null ? 0 : leontisWesthof.hashCode());
+        result = prime * result + (interactionType == null ? 0 : interactionType
+                .hashCode());
+        result = prime * result + (leontisWesthof == null ? 0 : leontisWesthof
+                .hashCode());
         result = prime * result + (saenger == null ? 0 : saenger.hashCode());
         return result;
     }
@@ -103,7 +104,17 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
         } else if (!basePair.equals(other.basePair)) {
             return false;
         }
-        return interactionType == other.interactionType && leontisWesthof == other.leontisWesthof && saenger == other.saenger;
+        return interactionType == other.interactionType
+               && leontisWesthof == other.leontisWesthof
+               && saenger == other.saenger;
+    }
+
+    @Override
+    public String toString() {
+        return "ClassifiedBasePair [basePair=" + basePair + ", interactionType="
+               + interactionType + ", saenger=" + saenger + ", leontisWesthof="
+               + leontisWesthof + ", helixOrigin=" + helixOrigin
+               + ", isRepresented=" + isRepresented + "]";
     }
 
     @Override
@@ -116,7 +127,8 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
             return 0;
         }
 
-        int interactionComparison = interactionType.compareTo(o.interactionType);
+        int interactionComparison =
+                interactionType.compareTo(o.interactionType);
         if (interactionComparison != 0) {
             return interactionComparison;
         }
@@ -125,7 +137,8 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
     }
 
     public String generateComment() {
-        if (saenger != Saenger.UNKNOWN && leontisWesthof != LeontisWesthof.UNKNOWN) {
+        if (saenger != Saenger.UNKNOWN
+            && leontisWesthof != LeontisWesthof.UNKNOWN) {
             return "S:" + saenger + ", LW:" + leontisWesthof;
         } else if (saenger != Saenger.UNKNOWN) {
             return "S:" + saenger;

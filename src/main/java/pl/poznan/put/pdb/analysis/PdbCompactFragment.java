@@ -1,5 +1,11 @@
 package pl.poznan.put.pdb.analysis;
 
+import org.apache.commons.collections4.CollectionUtils;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.torsion.MasterTorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleValue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,17 +16,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
-
-import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.torsion.MasterTorsionAngleType;
-import pl.poznan.put.torsion.TorsionAngleType;
-import pl.poznan.put.torsion.TorsionAngleValue;
-
 public class PdbCompactFragment implements ResidueCollection {
     private final String name;
     private final List<PdbResidue> residues;
-    private final Map<PdbResidue, List<TorsionAngleValue>> mapResidueAngleValue = new LinkedHashMap<>();
+    private final Map<PdbResidue, List<TorsionAngleValue>>
+            mapResidueAngleValue = new LinkedHashMap<>();
 
     public PdbCompactFragment(String name, List<PdbResidue> residues) {
         super();
@@ -50,8 +50,11 @@ public class PdbCompactFragment implements ResidueCollection {
     }
 
     @Override
-    public PdbResidue findResidue(String chainIdentifier, int residueNumber, String insertionCode) {
-        return findResidue(new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode));
+    public PdbResidue findResidue(String chainIdentifier, int residueNumber,
+                                  String insertionCode) {
+        return findResidue(
+                new PdbResidueIdentifier(chainIdentifier, residueNumber,
+                                         insertionCode));
     }
 
     @Override
@@ -62,13 +65,6 @@ public class PdbCompactFragment implements ResidueCollection {
             }
         }
         throw new IllegalArgumentException("Failed to find residue: " + query);
-    }
-
-    @Override
-    public String toString() {
-        PdbResidue first = residues.get(0);
-        PdbResidue last = residues.get(residues.size() - 1);
-        return first + " - " + last + " (count: " + residues.size() + ")";
     }
 
     public String toPdb() {
@@ -88,12 +84,15 @@ public class PdbCompactFragment implements ResidueCollection {
     }
 
     public PdbCompactFragment shift(int shift, int size) {
-        return new PdbCompactFragment(name, residues.subList(shift, shift + size));
+        return new PdbCompactFragment(name,
+                                      residues.subList(shift, shift + size));
     }
 
     public Set<TorsionAngleType> commonTorsionAngleTypes() {
         Set<TorsionAngleType> set = new LinkedHashSet<>();
-        for (Entry<PdbResidue, List<TorsionAngleValue>> entry : mapResidueAngleValue.entrySet()) {
+        for (Entry<PdbResidue, List<TorsionAngleValue>> entry :
+                mapResidueAngleValue
+                .entrySet()) {
             for (TorsionAngleValue angleValue : entry.getValue()) {
                 set.add(angleValue.getAngleType());
             }
@@ -101,8 +100,11 @@ public class PdbCompactFragment implements ResidueCollection {
         return set;
     }
 
-    public TorsionAngleValue getTorsionAngleValue(PdbResidue residue, MasterTorsionAngleType masterType) {
-        Collection<? extends TorsionAngleType> angleTypes = masterType.getAngleTypes();
+    public TorsionAngleValue getTorsionAngleValue(PdbResidue residue,
+                                                  MasterTorsionAngleType
+                                                          masterType) {
+        Collection<? extends TorsionAngleType> angleTypes =
+                masterType.getAngleTypes();
         for (TorsionAngleValue angleValue : mapResidueAngleValue.get(residue)) {
             for (TorsionAngleType angleType : angleTypes) {
                 if (angleType.equals(angleValue.getAngleType())) {
@@ -156,9 +158,17 @@ public class PdbCompactFragment implements ResidueCollection {
             if (other.residues != null) {
                 return false;
             }
-        } else if (!CollectionUtils.isEqualCollection(residues, other.residues)) {
+        } else if (!CollectionUtils
+                .isEqualCollection(residues, other.residues)) {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        PdbResidue first = residues.get(0);
+        PdbResidue last = residues.get(residues.size() - 1);
+        return first + " - " + last + " (count: " + residues.size() + ")";
     }
 }

@@ -3,7 +3,9 @@ package pl.poznan.put.pdb;
 import java.util.Locale;
 
 public class PdbRemark2Line {
-    public static final String PROLOGUE = "REMARK   2                                                                      ";
+    public static final String PROLOGUE =
+            "REMARK   2                                                      "
+            + "                ";
 
     // @formatter:off
     // COLUMNS        DATA TYPE     FIELD          DEFINITION
@@ -15,7 +17,9 @@ public class PdbRemark2Line {
     // 32 - 41        LString(10)   "ANGSTROMS."
     //
     // @formatter:on
-    private static final String FORMAT = "REMARK   2 RESOLUTION. %7.2f ANGSTROMS.                                       ";
+    private static final String FORMAT =
+            "REMARK   2 RESOLUTION. %7.2f ANGSTROMS.                         "
+            + "              ";
 
     // @formatter:off
     // COLUMNS        DATA TYPE     FIELD          DEFINITION
@@ -24,9 +28,17 @@ public class PdbRemark2Line {
     // 10             LString(1)    "2"
     // 12 - 38        LString(28)   "RESOLUTION.  NOT APPLICABLE."
     // @formatter:on
-    private static final String NOT_APPLICABLE = "REMARK   2 RESOLUTION. NOT APPLICABLE.                                          ";
+    private static final String NOT_APPLICABLE =
+            "REMARK   2 RESOLUTION. NOT APPLICABLE.                          "
+            + "                ";
 
-    private static final PdbRemark2Line EMPTY_INSTANCE = new PdbRemark2Line(Double.NaN);
+    private static final PdbRemark2Line EMPTY_INSTANCE =
+            new PdbRemark2Line(Double.NaN);
+    private final double resolution;
+
+    public PdbRemark2Line(double resolution) {
+        this.resolution = resolution;
+    }
 
     public static PdbRemark2Line emptyInstance() {
         return PdbRemark2Line.EMPTY_INSTANCE;
@@ -34,7 +46,8 @@ public class PdbRemark2Line {
 
     public static PdbRemark2Line parse(String line) throws PdbParsingException {
         if (!line.startsWith("REMARK   2 RESOLUTION.")) {
-            throw new PdbParsingException("Failed to parse REMARK   2 RESOLUTION. line: " + line);
+            throw new PdbParsingException(
+                    "Failed to parse REMARK   2 RESOLUTION. line: " + line);
         }
 
         try {
@@ -47,14 +60,9 @@ public class PdbRemark2Line {
 
             return new PdbRemark2Line(resolution);
         } catch (NumberFormatException e) {
-            throw new PdbParsingException("Failed to parse REMARK   2 RESOLUTION. line", e);
+            throw new PdbParsingException(
+                    "Failed to parse REMARK   2 RESOLUTION. line", e);
         }
-    }
-
-    private final double resolution;
-
-    public PdbRemark2Line(double resolution) {
-        this.resolution = resolution;
     }
 
     public double getResolution() {

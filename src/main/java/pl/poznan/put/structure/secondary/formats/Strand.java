@@ -1,9 +1,9 @@
 package pl.poznan.put.structure.secondary.formats;
 
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
 import java.io.Serializable;
 import java.util.List;
-
-import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class Strand implements Serializable {
     private final DotBracket parent;
@@ -26,6 +26,14 @@ public class Strand implements Serializable {
         return ">strand_" + name + "\n" + getSequence() + "\n" + getStructure();
     }
 
+    public String getSequence() {
+        return parent.getSequence().substring(from, to);
+    }
+
+    public String getStructure() {
+        return parent.getStructure().substring(from, to);
+    }
+
     public String getName() {
         return name;
     }
@@ -40,26 +48,6 @@ public class Strand implements Serializable {
 
     public int getLength() {
         return to - from;
-    }
-
-    public String getSequence() {
-        return parent.getSequence().substring(from, to);
-    }
-
-    public String getRSequence() {
-        char[] cs = getSequence().toCharArray();
-        for (int i = 0; i < cs.length; i++) {
-            cs[i] = cs[i] == 'A' || cs[i] == 'G' ? 'R' : 'Y';
-        }
-        return new String(cs);
-    }
-
-    public String getStructure() {
-        return parent.getStructure().substring(from, to);
-    }
-
-    public List<DotBracketSymbol> getSymbols() {
-        return parent.getSymbols().subList(from, to);
     }
 
     public TerminalMissing getMissingBegin() {
@@ -92,6 +80,10 @@ public class Strand implements Serializable {
         return order;
     }
 
+    public List<DotBracketSymbol> getSymbols() {
+        return parent.getSymbols().subList(from, to);
+    }
+
     public boolean contains(DotBracketSymbol symbol) {
         return getSymbols().contains(symbol);
     }
@@ -101,8 +93,8 @@ public class Strand implements Serializable {
      * any base-pair embedded inside its structure.
      *
      * @return True if there is no base-pair inside of this strand. An opening
-     *         or closing bracket is allowed as long as it points somewhere
-     *         outside this strand.
+     * or closing bracket is allowed as long as it points somewhere outside this
+     * strand.
      */
     public boolean isSingleStrand() {
         List<DotBracketSymbol> symbols = getSymbols();
@@ -132,6 +124,15 @@ public class Strand implements Serializable {
     }
 
     public String getDescription() {
-        return from + 1 + " " + to + " " + getSequence() + " " + getStructure() + " " + getRSequence();
+        return from + 1 + " " + to + " " + getSequence() + " " + getStructure()
+               + " " + getRSequence();
+    }
+
+    public String getRSequence() {
+        char[] cs = getSequence().toCharArray();
+        for (int i = 0; i < cs.length; i++) {
+            cs[i] = cs[i] == 'A' || cs[i] == 'G' ? 'R' : 'Y';
+        }
+        return new String(cs);
     }
 }
