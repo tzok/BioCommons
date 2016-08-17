@@ -11,6 +11,7 @@ public class PdbChain implements Comparable<PdbChain> {
     private final String identifier;
     private final List<PdbResidue> residues;
     private final MoleculeType moleculeType;
+
     public PdbChain(String identifier, List<PdbResidue> residues) {
         super();
         this.identifier = identifier;

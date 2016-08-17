@@ -61,6 +61,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     private final double temperatureFactor;
     private final String elementSymbol;
     private final String charge;
+
     public PdbAtomLine(int serialNumber, String atomName,
                        String alternateLocation, String residueName,
                        String chainIdentifier, int residueNumber,
@@ -296,11 +297,13 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     public Atom toBioJavaAtom() throws MmCifPdbIncompatibilityException {
         if (alternateLocation.length() != 1) {
             throw new MmCifPdbIncompatibilityException(
-                    "Cannot convert to PDB. Field 'alternateLocation' is longer than 1 char");
+                    "Cannot convert to PDB. Field 'alternateLocation' is "
+                    + "longer than 1 char");
         }
         if (insertionCode.length() != 1) {
             throw new MmCifPdbIncompatibilityException(
-                    "Cannot convert to PDB. Field 'insertionCode' is longer than 1 char");
+                    "Cannot convert to PDB. Field 'insertionCode' is longer "
+                    + "than 1 char");
         }
 
         Group group = new HetatomImpl();

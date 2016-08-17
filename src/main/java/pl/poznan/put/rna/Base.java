@@ -41,13 +41,13 @@ public abstract class Base extends NucleicAcidResidueComponent
                 }
 
                 @Override
-                public Quadruplet<AtomName> getChiAtoms() {
-                    return chiAtoms;
+                public Sugar getDefaultSugarInstance() {
+                    return Sugar.invalidInstance();
                 }
 
                 @Override
-                public Sugar getDefaultSugarInstance() {
-                    return Sugar.invalidInstance();
+                public Quadruplet<AtomName> getChiAtoms() {
+                    return chiAtoms;
                 }
             };
     protected final List<TorsionAngleType> torsionAngleTypes =
@@ -55,6 +55,7 @@ public abstract class Base extends NucleicAcidResidueComponent
     private final String longName;
     private final char oneLetterName;
     private final List<String> pdbNames;
+
     protected Base(List<AtomName> atoms, String longName, char oneLetterName,
                    String... pdbNames) {
         super(RNAResidueComponentType.BASE, atoms);

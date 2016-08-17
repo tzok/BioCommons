@@ -230,10 +230,9 @@ public final class StructureManager {
         InputStream stream = null;
 
         try {
-            URL url =
-                    new URL("http://www.rcsb.org/pdb/download/downloadFile"
-                            + ".do?fileFormat=pdb&compression=NO&structureId="
-                            + pdbId);
+            URL url = new URL("http://www.rcsb.org/pdb/download/downloadFile"
+                              + ".do?fileFormat=pdb&compression=NO&structureId="
+                              + pdbId);
             stream = url.openStream();
             String pdbContent =
                     IOUtils.toString(stream, StructureManager.ENCODING_UTF_8);

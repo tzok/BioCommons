@@ -189,8 +189,8 @@ public class MmCifConsumer implements MMcifConsumer {
         } catch (ParseException e) {
             MmCifConsumer.LOGGER
                     .warn("Failed to parse _database_PDB_rev.date_original as"
-                          + " yyyy-MM-dd: "
-                          + databasePDBrev.getDate_original(), e);
+                          + " yyyy-MM-dd: " + databasePDBrev.getDate_original(),
+                          e);
         }
     }
 
@@ -492,7 +492,9 @@ public class MmCifConsumer implements MMcifConsumer {
         }
 
         return result;
-    }    @Override
+    }
+
+    @Override
     public void setFileParsingParameters(FileParsingParameters parameters) {
         this.parameters = parameters;
     }

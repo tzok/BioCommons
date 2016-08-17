@@ -78,15 +78,13 @@ public class Ct implements Serializable {
             if (e.before < 0 || e.before >= previous) {
                 throw new InvalidStructureException(
                         "Inconsistency in CT format. Third column has invalid"
-                        + " value in entry: "
-                        + e);
+                        + " value in entry: " + e);
             }
 
             if (e.after == 1 || e.after < 0 || e.after > previous + 1) {
                 throw new InvalidStructureException(
                         "Inconsistency in CT format. Fourth column has "
-                        + "invalid value in entry: "
-                        + e);
+                        + "invalid value in entry: " + e);
             }
         }
 
@@ -101,8 +99,7 @@ public class Ct implements Serializable {
                 || e.getBefore() == 0 && !expectNewStrand) {
                 throw new InvalidStructureException(
                         "Inconsistency in CT format. The field 'before' is "
-                        + "non-zero for the first entry in a strand: "
-                        + e);
+                        + "non-zero for the first entry in a strand: " + e);
             }
 
             if (prevEntry != null && (

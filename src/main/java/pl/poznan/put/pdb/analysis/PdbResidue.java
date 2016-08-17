@@ -33,6 +33,7 @@ public class PdbResidue
     private final List<PdbAtomLine> atoms;
     private final boolean isModified;
     private final boolean isMissing;
+
     public PdbResidue(PdbResidueIdentifier identifier, String residueName,
                       List<PdbAtomLine> atoms, boolean isMissing) {
         this(identifier, residueName, residueName, atoms, false, isMissing);

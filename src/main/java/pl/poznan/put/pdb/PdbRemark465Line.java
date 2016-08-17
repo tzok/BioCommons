@@ -7,29 +7,20 @@ import org.slf4j.LoggerFactory;
 import java.util.Locale;
 
 public class PdbRemark465Line implements ChainNumberICode {
-    public static final String PROLOGUE = ""
-                                          + "REMARK 465                      "
-                                          + "                                "
-                                          + "                \n"
-                                          + "REMARK 465 MISSING RESIDUES     "
-                                          + "                                "
-                                          + "                \n"
-                                          + "REMARK 465 THE FOLLOWING "
-                                          + "RESIDUES WERE NOT LOCATED IN THE"
-                                          + "                       \n"
-                                          + "REMARK 465 EXPERIMENT. (M=MODEL "
-                                          + "NUMBER; RES=RESIDUE NAME; "
-                                          + "C=CHAIN               \n"
-                                          + "REMARK 465 IDENTIFIER; "
-                                          + "SSSEQ=SEQUENCE NUMBER; "
-                                          + "I=INSERTION CODE.)              "
-                                          + "  \n"
-                                          + "REMARK 465                      "
-                                          + "                                "
-                                          + "                \n"
-                                          + "REMARK 465   M RES C SSSEQI     "
-                                          + "                                "
-                                          + "                ";
+    public static final String PROLOGUE =
+            "" + "REMARK 465                      "
+            + "                                " + "                \n"
+            + "REMARK 465 MISSING RESIDUES     "
+            + "                                " + "                \n"
+            + "REMARK 465 THE FOLLOWING " + "RESIDUES WERE NOT LOCATED IN THE"
+            + "                       \n" + "REMARK 465 EXPERIMENT. (M=MODEL "
+            + "NUMBER; RES=RESIDUE NAME; " + "C=CHAIN               \n"
+            + "REMARK 465 IDENTIFIER; " + "SSSEQ=SEQUENCE NUMBER; "
+            + "I=INSERTION CODE.)              " + "  \n"
+            + "REMARK 465                      "
+            + "                                " + "                \n"
+            + "REMARK 465   M RES C SSSEQI     "
+            + "                                " + "                ";
     private static final Logger LOGGER =
             LoggerFactory.getLogger(PdbRemark465Line.class);
 
@@ -81,6 +72,7 @@ public class PdbRemark465Line implements ChainNumberICode {
     private final String chainIdentifier;
     private final int residueNumber;
     private final String insertionCode;
+
     public PdbRemark465Line(int modelNumber, String residueName,
                             String chainIdentifier, int residueNumber,
                             String insertionCode) {
@@ -182,7 +174,8 @@ public class PdbRemark465Line implements ChainNumberICode {
         }
         if (insertionCode.length() != 1) {
             PdbRemark465Line.LOGGER
-                    .error("Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
+                    .error("Field 'insertionCode' is longer than 1 char. Only"
+                           + " first letter will be taken");
         }
         return String.format(Locale.US, PdbRemark465Line.FORMAT,
                              modelNumber == 0 ? " "

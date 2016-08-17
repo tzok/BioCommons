@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -126,77 +125,6 @@ public class DotBracket implements Serializable {
             DotBracket.LOGGER
                     .error("Unknown symbol in dot-bracket string: {}", str);
         }
-    }
-
-    /*
-     * This is just a simple and naive implementation (a greedy heuristic). For
-     * a robust solution, go check RNApdbee http://rnapdbee.cs.put.poznan.pl
-     */
-    public static DotBracket fromBpSeq(final BpSeq bpSeq)
-            throws InvalidStructureException {
-        String sequence = bpSeq.getSequence();
-        String structure = DotBracket.bpSeqToStructure(bpSeq);
-        return new DotBracket(sequence, structure);
-    }
-
-    private static String bpSeqToStructure(final BpSeq bpSeq) {
-        Stack<Integer> stack = new Stack<>();
-
-        List<BpSeq.Entry> entries = new ArrayList<>(bpSeq.getEntries());
-        Collection<BpSeq.Entry> current = new TreeSet<>();
-        Collection<BpSeq.Entry> next = new TreeSet<>(entries);
-
-        int[] levels = new int[entries.size()];
-        int currentLevel = 0;
-
-        while (!next.isEmpty()) {
-            current.clear();
-            current.addAll(next);
-            next.clear();
-
-            for (BpSeq.Entry entry : current) {
-                int index = entry.getIndex();
-                int pair = entry.getPair();
-
-                if (pair == 0) {
-                    levels[index - 1] = -1;
-                } else if (index < pair) {
-                    stack.push(index);
-                } else if (index > pair) {
-                    if (stack.contains(pair)) {
-                        while (stack.peek() != pair) {
-                            next.add(entries.get(stack.pop() - 1));
-                        }
-                        stack.pop();
-                        levels[index - 1] = currentLevel;
-                        levels[pair - 1] = currentLevel;
-                    } else {
-                        next.add(entry);
-                    }
-                }
-            }
-
-            currentLevel += 1;
-        }
-
-        StringBuilder builder = new StringBuilder(bpSeq.size());
-        char[] bracketsOpening = "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-        char[] bracketsClosing = ")]}>abcdefghijklmnopqrstuvwxyz".toCharArray();
-
-        for (BpSeq.Entry entry : entries) {
-            int index = entry.getIndex();
-            int pair = entry.getPair();
-
-            if (pair == 0) {
-                builder.append('.');
-            } else if (index < pair) {
-                builder.append(bracketsOpening[levels[index - 1]]);
-            } else {
-                builder.append(bracketsClosing[levels[index - 1]]);
-            }
-        }
-
-        return builder.toString();
     }
 
     public static DotBracket fromString(final CharSequence data)

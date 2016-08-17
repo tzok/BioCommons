@@ -32,6 +32,7 @@ public class PdbModresLine implements ChainNumberICode {
     private final String insertionCode;
     private final String standardResidueName;
     private final String comment;
+
     public PdbModresLine(String idCode, String residueName,
                          String chainIdentifier, int residueNumber,
                          String insertionCode, String standardResidueName,

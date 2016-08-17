@@ -25,6 +25,7 @@ public class DotBracketSymbol
     private DotBracketSymbol next;
     private DotBracketSymbol pair;
     private boolean isNonCanonical = false;
+
     public DotBracketSymbol(char sequence, char structure, int index) {
         super();
         this.sequence = sequence;

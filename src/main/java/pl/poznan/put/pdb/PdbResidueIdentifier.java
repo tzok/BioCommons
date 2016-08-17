@@ -5,6 +5,7 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier> {
     private final String chainIdentifier;
     private final int residueNumber;
     private final String insertionCode;
+
     public PdbResidueIdentifier(String chainIdentifier, int residueNumber,
                                 String insertionCode) {
         super();
