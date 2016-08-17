@@ -6,40 +6,42 @@ import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 /**
  * A class of measurements where one can distinguish a direction (i.e. [0..360)
  * degrees)
- * 
+ *
  * @author tzok
  */
 public class Angle extends Circular {
     private static final Angle INVALID = new Angle(Double.NaN);
     private static final int MINUTES_IN_DAY = 24 * 60;
 
-    public static Angle invalidInstance() {
-        return Angle.INVALID;
+    public Angle(double radians) {
+        super(radians);
     }
 
-    public static double subtract(double radians1, double radians2) {
-        double d = Math.abs(radians1 - radians2);
-        return Math.min(d, 2 * Math.PI - d);
+    public static Angle invalidInstance() {
+        return Angle.INVALID;
     }
 
     /**
      * Parse string in format HH.MM as a vector on a circular clock. For 'm'
      * minutes after midnight, the vector has value of '360 * m / (24 * 60)'.
-     * 
-     * @param hourMinute
-     *            String in format HH.MM.
+     *
+     * @param hourMinute String in format HH.MM.
+     *
      * @return A vector representation of time on a circular clock.
-     * @throws InvalidVectorFormatException
-     *             If the input string has an invalid format.
-     * @throws InvalidCircularValueException
-     *             If the input string is parsed to a value outside the range
-     *             [0..360)
+     *
+     * @throws InvalidVectorFormatException  If the input string has an invalid
+     *                                       format.
+     * @throws InvalidCircularValueException If the input string is parsed to a
+     *                                       value outside the range [0..360)
      */
-    public static Angle fromHourMinuteString(String hourMinute) throws InvalidVectorFormatException, InvalidCircularValueException {
+    public static Angle fromHourMinuteString(String hourMinute)
+            throws InvalidVectorFormatException, InvalidCircularValueException {
         String[] split = hourMinute.split("\\.");
 
         if (split.length != 2) {
-            throw new InvalidVectorFormatException("Required format is HH.MM eg. 02.40. The input given was: " + hourMinute);
+            throw new InvalidVectorFormatException(
+                    "Required format is HH.MM eg. 02.40. The input given was: "
+                    + hourMinute);
         }
 
         try {
@@ -48,12 +50,10 @@ public class Angle extends Circular {
             minutes += hours * 60;
             return new Angle(2 * Math.PI * minutes / MINUTES_IN_DAY);
         } catch (NumberFormatException e) {
-            throw new InvalidVectorFormatException("Required format is HH.MM eg. 02.40. The input given was: " + hourMinute, e);
+            throw new InvalidVectorFormatException(
+                    "Required format is HH.MM eg. 02.40. The input given was: "
+                    + hourMinute, e);
         }
-    }
-
-    public Angle(double radians) {
-        super(radians);
     }
 
     public Angle multiply(double n) throws InvalidCircularValueException {
@@ -62,5 +62,10 @@ public class Angle extends Circular {
 
     public Angle subtract(Angle other) throws InvalidCircularValueException {
         return new Angle(Angle.subtract(radians, other.radians));
+    }
+
+    public static double subtract(double radians1, double radians2) {
+        double d = Math.abs(radians1 - radians2);
+        return Math.min(d, 2 * Math.PI - d);
     }
 }

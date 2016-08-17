@@ -1,13 +1,12 @@
 package pl.poznan.put.circular.graphics;
 
-import java.awt.geom.Rectangle2D;
-
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
-
 import pl.poznan.put.utility.svg.SVGHelper;
+
+import java.awt.geom.Rectangle2D;
 
 public abstract class AbstractDrawable implements Drawable {
     protected SVGDocument svgDocument = SVGHelper.emptyDocument();
@@ -17,7 +16,9 @@ public abstract class AbstractDrawable implements Drawable {
         SVGSVGElement rootElement = svgDocument.getRootElement();
         svgGraphics.getRoot(rootElement);
         Rectangle2D box = SVGHelper.calculateBoundingBox(svgDocument);
-        rootElement.setAttributeNS(null, SVGConstants.SVG_VIEW_BOX_ATTRIBUTE, box.getX() + " " + box.getY() + " " + box.getWidth() + " " + box.getHeight());
+        rootElement.setAttributeNS(null, SVGConstants.SVG_VIEW_BOX_ATTRIBUTE,
+                                   box.getX() + " " + box.getY() + " " + box
+                                           .getWidth() + " " + box.getHeight());
         return svgDocument;
     }
 }

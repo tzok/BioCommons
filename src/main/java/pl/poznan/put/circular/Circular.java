@@ -16,16 +16,12 @@ public abstract class Circular implements Comparable<Circular> {
         return Math.toDegrees(radians);
     }
 
-    public double getRadians2PI() {
-        return radians < 0.0 ? radians + 2 * Math.PI : radians;
-    }
-
     public double getDegrees360() {
         return Math.toDegrees(getRadians2PI());
     }
 
-    public boolean isValid() {
-        return !Double.isNaN(radians);
+    public double getRadians2PI() {
+        return radians < 0.0 ? radians + 2 * Math.PI : radians;
     }
 
     @Override
@@ -50,7 +46,19 @@ public abstract class Circular implements Comparable<Circular> {
             return false;
         }
         Circular other = (Circular) obj;
-        return Double.doubleToLongBits(radians) == Double.doubleToLongBits(other.radians);
+        return Double.doubleToLongBits(radians) == Double
+                .doubleToLongBits(other.radians);
+    }
+
+    @Override
+    public String toString() {
+        return !isValid() ? "invalid"
+                          : radians + " rad\t" + Math.toDegrees(radians)
+                            + " deg";
+    }
+
+    public boolean isValid() {
+        return !Double.isNaN(radians);
     }
 
     @Override
@@ -60,10 +68,5 @@ public abstract class Circular implements Comparable<Circular> {
         }
 
         return Double.compare(radians, other.radians);
-    }
-
-    @Override
-    public String toString() {
-        return !isValid() ? "invalid" : radians + " rad\t" + Math.toDegrees(radians) + " deg";
     }
 }
