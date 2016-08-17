@@ -1,18 +1,17 @@
 package pl.poznan.put;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-
 import pl.poznan.put.structure.secondary.formats.Ct;
 import pl.poznan.put.structure.secondary.formats.DotBracket;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class TestCt {
     //@formatter:off
@@ -142,7 +141,9 @@ public class TestCt {
 
     @Before
     public void prepare() throws IOException {
-        dbn4UG0 = IOUtils.toString(TestCt.class.getClassLoader().getResourceAsStream("4UG0-dotbracket.txt"));
+        dbn4UG0 = IOUtils.toString(TestCt.class.getClassLoader()
+                                               .getResourceAsStream(
+                                                       "4UG0-dotbracket.txt"));
     }
 
     @SuppressWarnings("static-method")
@@ -158,7 +159,8 @@ public class TestCt {
     }
 
     @Test
-    public void testRnaStrand() throws InvalidStructureException, URISyntaxException, IOException {
+    public void testRnaStrand()
+            throws InvalidStructureException, URISyntaxException, IOException {
         URI uri = getClass().getClassLoader().getResource(".").toURI();
         File dir = new File(uri);
         File ctFile = new File(dir, "../../src/test/resources/CRW_00528.ct");
@@ -168,7 +170,8 @@ public class TestCt {
     }
 
     @Test
-    public void testX3Dna() throws InvalidStructureException, URISyntaxException, IOException {
+    public void testX3Dna()
+            throws InvalidStructureException, URISyntaxException, IOException {
         URI uri = getClass().getClassLoader().getResource(".").toURI();
         File dir = new File(uri);
         File ctFile = new File(dir, "../../src/test/resources/3CC2-x3dna.ct");

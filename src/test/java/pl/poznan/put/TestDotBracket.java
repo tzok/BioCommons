@@ -1,19 +1,18 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Test;
+import pl.poznan.put.structure.secondary.formats.BpSeq;
+import pl.poznan.put.structure.secondary.formats.DotBracket;
+import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
-
-import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.DotBracket;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
+import static org.junit.Assert.assertEquals;
 
 public class TestDotBracket {
     // @formatter:off
@@ -51,8 +50,12 @@ public class TestDotBracket {
     public void loadPdbFile() throws URISyntaxException, IOException {
         URI uri = getClass().getClassLoader().getResource(".").toURI();
         File dir = new File(uri);
-        bpseq1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ-2D-bpseq.txt"), "utf-8");
-        dotBracket1EHZ = FileUtils.readFileToString(new File(dir, "../../src/test/resources/1EHZ-2D-dotbracket.txt"), "utf-8");
+        bpseq1EHZ = FileUtils.readFileToString(
+                new File(dir, "../../src/test/resources/1EHZ-2D-bpseq.txt"),
+                "utf-8");
+        dotBracket1EHZ = FileUtils.readFileToString(new File(dir,
+                                                             "../../src/test/resources/1EHZ-2D-dotbracket.txt"),
+                                                    "utf-8");
     }
 
     @SuppressWarnings("static-method")
@@ -67,7 +70,8 @@ public class TestDotBracket {
     public void fromBpSeq() throws InvalidStructureException {
         BpSeq bpSeq = BpSeq.fromString(TestDotBracket.BPSEQ);
         DotBracket dotBracketFromBpSeq = DotBracket.fromBpSeq(bpSeq);
-        DotBracket dotBracketFromString = DotBracket.fromString(TestDotBracket.DOTBRACKET);
+        DotBracket dotBracketFromString =
+                DotBracket.fromString(TestDotBracket.DOTBRACKET);
         assertEquals(dotBracketFromString, dotBracketFromBpSeq);
     }
 

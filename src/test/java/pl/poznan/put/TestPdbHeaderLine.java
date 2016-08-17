@@ -1,16 +1,18 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-
 import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbParsingException;
 
+import static org.junit.Assert.assertEquals;
+
 public class TestPdbHeaderLine {
-    private final String validLine = "HEADER    RNA                                     23-FEB-00   1EHZ              ";
-    private final String tooShortLine = validLine.substring(0, validLine.length() - 20);
+    private final String validLine =
+            "HEADER    RNA                                     23-FEB-00   "
+            + "1EHZ              ";
+    private final String tooShortLine =
+            validLine.substring(0, validLine.length() - 20);
     private final String misalignedLine = StringUtils.normalizeSpace(validLine);
 
     @Test
