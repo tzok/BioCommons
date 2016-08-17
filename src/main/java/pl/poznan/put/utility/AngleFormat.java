@@ -1,15 +1,19 @@
 package pl.poznan.put.utility;
 
+import org.apache.commons.math3.fraction.ProperFractionFormat;
+import pl.poznan.put.constant.Unicode;
+
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 
-import org.apache.commons.math3.fraction.ProperFractionFormat;
-
-import pl.poznan.put.constant.Unicode;
-
 public class AngleFormat extends NumberFormat {
     private static final AngleFormat INSTANCE = new AngleFormat();
+    private final ProperFractionFormat fractionFormat =
+            new ProperFractionFormat();
+
+    private AngleFormat() {
+    }
 
     public static AngleFormat createInstance() {
         return AngleFormat.INSTANCE;
@@ -32,18 +36,17 @@ public class AngleFormat extends NumberFormat {
         if (Double.isInfinite(radians)) {
             return Unicode.INFINITY;
         }
-        return CommonNumberFormat.formatDouble(Math.toDegrees(radians)) + Unicode.DEGREE;
+        return CommonNumberFormat.formatDouble(Math.toDegrees(radians))
+               + Unicode.DEGREE;
     }
 
     public static String formatExport(double radians) {
         return Double.toString(Math.toDegrees(radians));
     }
 
-    private final ProperFractionFormat fractionFormat = new ProperFractionFormat();
-
     @Override
     public StringBuffer format(double number, StringBuffer toAppendTo,
-            FieldPosition pos) {
+                               FieldPosition pos) {
         if (number == 0) {
             return toAppendTo.append("0");
         } else if (number == Math.PI) {
@@ -64,15 +67,12 @@ public class AngleFormat extends NumberFormat {
 
     @Override
     public StringBuffer format(long number, StringBuffer toAppendTo,
-            FieldPosition pos) {
+                               FieldPosition pos) {
         return fractionFormat.format(number, toAppendTo, pos);
     }
 
     @Override
     public Number parse(String source, ParsePosition parsePosition) {
         return fractionFormat.parse(source, parsePosition);
-    }
-
-    private AngleFormat() {
     }
 }

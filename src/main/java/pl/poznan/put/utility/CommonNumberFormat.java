@@ -9,11 +9,18 @@ import java.text.ParsePosition;
 /**
  * A NumberFormat extension and a suitable static method to format numbers
  * leaving at most three digits in the fractional part.
- * 
+ *
  * @author tzok
  */
 public class CommonNumberFormat extends NumberFormat {
     private static final CommonNumberFormat INSTANCE = new CommonNumberFormat();
+    private final NumberFormat numberFormat;
+
+    private CommonNumberFormat() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        numberFormat = new DecimalFormat("###.##", symbols);
+    }
 
     public static CommonNumberFormat createInstance() {
         return CommonNumberFormat.INSTANCE;
@@ -27,28 +34,20 @@ public class CommonNumberFormat extends NumberFormat {
         return CommonNumberFormat.INSTANCE.numberFormat.format(value);
     }
 
-    private final NumberFormat numberFormat;
-
     @Override
     public StringBuffer format(double number, StringBuffer toAppendTo,
-            FieldPosition pos) {
+                               FieldPosition pos) {
         return numberFormat.format(number, toAppendTo, pos);
     }
 
     @Override
     public StringBuffer format(long number, StringBuffer toAppendTo,
-            FieldPosition pos) {
+                               FieldPosition pos) {
         return numberFormat.format(number, toAppendTo, pos);
     }
 
     @Override
     public Number parse(String source, ParsePosition parsePosition) {
         return numberFormat.parse(source, parsePosition);
-    }
-
-    private CommonNumberFormat() {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setDecimalSeparator('.');
-        numberFormat = new DecimalFormat("###.##", symbols);
     }
 }

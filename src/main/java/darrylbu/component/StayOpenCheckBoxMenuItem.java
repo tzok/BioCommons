@@ -1,21 +1,17 @@
 package darrylbu.component;
 
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.MenuElement;
-import javax.swing.MenuSelectionManager;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
  * An extension of JCheckBoxMenuItem that doesn't close the menu when selected.
- * 
+ *
  * @author Darryl
  */
 public class StayOpenCheckBoxMenuItem extends JCheckBoxMenuItem {
-    static MenuElement[] path;
     private static final long serialVersionUID = 1L;
+    static MenuElement[] path;
 
     {
         getModel().addChangeListener(new ChangeListener() {
@@ -24,7 +20,8 @@ public class StayOpenCheckBoxMenuItem extends JCheckBoxMenuItem {
             public void stateChanged(ChangeEvent e) {
                 if (getModel().isArmed() && isShowing()) {
                     StayOpenCheckBoxMenuItem.path =
-                            MenuSelectionManager.defaultManager().getSelectedPath();
+                            MenuSelectionManager.defaultManager()
+                                                .getSelectedPath();
                 }
             }
         });
@@ -81,14 +78,13 @@ public class StayOpenCheckBoxMenuItem extends JCheckBoxMenuItem {
 
     /**
      * Overridden to reopen the menu.
-     * 
-     * @param pressTime
-     *            the time to "hold down" the button, in milliseconds
+     *
+     * @param pressTime the time to "hold down" the button, in milliseconds
      */
     @Override
     public void doClick(int pressTime) {
         super.doClick(pressTime);
-        MenuSelectionManager.defaultManager().setSelectedPath(
-                StayOpenCheckBoxMenuItem.path);
+        MenuSelectionManager.defaultManager()
+                            .setSelectedPath(StayOpenCheckBoxMenuItem.path);
     }
 }
