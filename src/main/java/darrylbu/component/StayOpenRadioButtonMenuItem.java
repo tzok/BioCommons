@@ -1,22 +1,18 @@
 package darrylbu.component;
 
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.MenuElement;
-import javax.swing.MenuSelectionManager;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
  * An extension of JRadioButtonMenuItem that doesn't close the menu when
  * selected.
- * 
+ *
  * @author Darryl
  */
 public class StayOpenRadioButtonMenuItem extends JRadioButtonMenuItem {
-    static MenuElement[] path;
     private static final long serialVersionUID = 1L;
+    static MenuElement[] path;
 
     {
         getModel().addChangeListener(new ChangeListener() {
@@ -25,7 +21,8 @@ public class StayOpenRadioButtonMenuItem extends JRadioButtonMenuItem {
             public void stateChanged(ChangeEvent e) {
                 if (getModel().isArmed() && isShowing()) {
                     StayOpenRadioButtonMenuItem.path =
-                            MenuSelectionManager.defaultManager().getSelectedPath();
+                            MenuSelectionManager.defaultManager()
+                                                .getSelectedPath();
                 }
             }
         });
@@ -83,20 +80,20 @@ public class StayOpenRadioButtonMenuItem extends JRadioButtonMenuItem {
     /**
      * @see JRadioButtonMenuItem#JRadioButtonMenuItem(String, Icon, boolean)
      */
-    public StayOpenRadioButtonMenuItem(String text, Icon icon, boolean selected) {
+    public StayOpenRadioButtonMenuItem(String text, Icon icon,
+                                       boolean selected) {
         super(text, icon, selected);
     }
 
     /**
      * Overridden to reopen the menu.
-     * 
-     * @param pressTime
-     *            the time to "hold down" the button, in milliseconds
+     *
+     * @param pressTime the time to "hold down" the button, in milliseconds
      */
     @Override
     public void doClick(int pressTime) {
         super.doClick(pressTime);
-        MenuSelectionManager.defaultManager().setSelectedPath(
-                StayOpenRadioButtonMenuItem.path);
+        MenuSelectionManager.defaultManager()
+                            .setSelectedPath(StayOpenRadioButtonMenuItem.path);
     }
 }

@@ -8,7 +8,11 @@ import org.apache.fop.render.ps.EPSTranscoder;
 import org.apache.fop.svg.PDFTranscoder;
 
 public enum Format {
-    SVG("svg"), EPS("eps"), PDF("pdf"), PNG("png"), TIFF("tiff");
+    SVG("svg"),
+    EPS("eps"),
+    PDF("pdf"),
+    PNG("png"),
+    TIFF("tiff");
 
     private final String extension;
 

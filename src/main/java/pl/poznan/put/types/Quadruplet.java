@@ -34,6 +34,43 @@ public class Quadruplet<T> {
         d = array[3];
     }
 
+    public T get(int index) {
+        assert index >= 0 && index <= 3;
+
+        switch (index) {
+            case 0:
+                return a;
+            case 1:
+                return b;
+            case 2:
+                return c;
+            case 3:
+                return d;
+            default:
+                break;
+        }
+
+        throw new IllegalArgumentException(
+                "UniTypeQuadruplet.get(index) was called with index < 0 or "
+                + "index > 3");
+    }
+
+    @Override
+    public int hashCode() {
+        T a1 = a;
+        T b1 = b;
+        T c1 = c;
+        T d1 = d;
+
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (a1 == null ? 0 : a1.hashCode());
+        result = prime * result + (b1 == null ? 0 : b1.hashCode());
+        result = prime * result + (c1 == null ? 0 : c1.hashCode());
+        result = prime * result + (d1 == null ? 0 : d1.hashCode());
+        return result;
+    }
+
     @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object obj) {
@@ -80,40 +117,5 @@ public class Quadruplet<T> {
             return false;
         }
         return true;
-    }
-
-    public T get(int index) {
-        assert index >= 0 && index <= 3;
-
-        switch (index) {
-        case 0:
-            return a;
-        case 1:
-            return b;
-        case 2:
-            return c;
-        case 3:
-            return d;
-        default:
-            break;
-        }
-
-        throw new IllegalArgumentException("UniTypeQuadruplet.get(index) was called with index < 0 or index > 3");
-    }
-
-    @Override
-    public int hashCode() {
-        T a1 = a;
-        T b1 = b;
-        T c1 = c;
-        T d1 = d;
-
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (a1 == null ? 0 : a1.hashCode());
-        result = prime * result + (b1 == null ? 0 : b1.hashCode());
-        result = prime * result + (c1 == null ? 0 : c1.hashCode());
-        result = prime * result + (d1 == null ? 0 : d1.hashCode());
-        return result;
     }
 }
