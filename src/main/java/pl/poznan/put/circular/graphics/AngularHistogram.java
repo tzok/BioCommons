@@ -25,69 +25,36 @@ public class AngularHistogram extends RawDataPlot {
     private double scalingFactor;
 
     public AngularHistogram(Collection<Circular> data, double binRadians,
-                            double diameter, double majorTickSpread, double minorTickSpread) throws InvalidCircularOperationException {
+                            double diameter, double majorTickSpread,
+                            double minorTickSpread)
+            throws InvalidCircularOperationException {
         super(data, diameter, majorTickSpread, minorTickSpread);
         this.binRadians = binRadians;
     }
 
     public AngularHistogram(Collection<Circular> data, double binRadians,
-                            double diameter) throws InvalidCircularOperationException {
+                            double diameter)
+            throws InvalidCircularOperationException {
         super(data, diameter);
         this.binRadians = binRadians;
     }
 
-    public AngularHistogram(Collection<Circular> data, double binRadians) throws InvalidCircularOperationException {
+    public AngularHistogram(Collection<Circular> data, double binRadians)
+            throws InvalidCircularOperationException {
         super(data);
         this.binRadians = binRadians;
     }
 
-    public AngularHistogram(Collection<? extends Circular> data) throws InvalidCircularOperationException {
+    public AngularHistogram(Collection<? extends Circular> data)
+            throws InvalidCircularOperationException {
         super(data);
         this.binRadians = Math.PI / 12;
     }
 
-    @Override
-    public void draw() throws InvalidCircularValueException {
-        super.draw();
-
-        Histogram histogram = new Histogram(data, binRadians);
-        double maxFrequency = Double.NEGATIVE_INFINITY;
-
-        for (double d = 0; Math.abs(d - 2 * Math.PI) > Constants.EPSILON; d += binRadians) {
-            double frequency = (double) histogram.getBinSize(d) / (double) data.size();
-            maxFrequency = Math.max(frequency, maxFrequency);
-        }
-
-        // the 0.8 is here because up to 0.85 the majorTick can be drawn and we
-        // do not want overlaps
-        scalingFactor = 0.8 / Math.sqrt(maxFrequency);
-
-        for (double d = 0; Math.abs(d - 2 * Math.PI) > Constants.EPSILON; d += binRadians) {
-            double frequency = (double) histogram.getBinSize(d) / (double) data.size();
-            drawHistogramTriangle(svgGraphics, d, frequency);
-
-            if (isAxes) {
-                drawHistogramTriangle(svgGraphics, (d + Math.PI) % (2 * Math.PI), frequency);
-            }
-        }
-    }
-
-    private void drawHistogramTriangle(Graphics graphics, double circularValue,
-                                       double frequency) {
-        double sectorRadius = Math.sqrt(frequency) * radius * scalingFactor;
-
-        // angle as in XY coordinate system
-        double t = -(circularValue + Math.PI * 3 / 2) % (2 * Math.PI);
-        double x1 = centerX + sectorRadius * Math.cos(t);
-        double y1 = centerY + sectorRadius * Math.sin(t);
-        t = -(circularValue + binRadians + Math.PI * 3 / 2) % (2 * Math.PI);
-        double x2 = centerX + sectorRadius * Math.cos(t);
-        double y2 = centerY + sectorRadius * Math.sin(t);
-
-        graphics.drawPolygon(new int[]{(int) x1, (int) x2, (int) centerX}, new int[]{(int) (diameter - y1), (int) (diameter - y2), (int) (diameter - centerY)}, 3);
-    }
-
-    public static void main(String[] args) throws IOException, InvalidVectorFormatException, InvalidCircularValueException, InvalidCircularOperationException {
+    public static void main(String[] args)
+            throws IOException, InvalidVectorFormatException,
+                   InvalidCircularValueException,
+                   InvalidCircularOperationException {
         if (args.length != 1) {
             System.err.println("Usage: angular-histogram <FILE>");
             return;
@@ -107,5 +74,54 @@ public class AngularHistogram extends RawDataPlot {
         plot.draw();
         SVGDocument svgDocument = plot.finalizeDrawingAndGetSVG();
         SVGHelper.export(svgDocument, System.out, Format.SVG, null);
+    }
+
+    @Override
+    public void draw() throws InvalidCircularValueException {
+        super.draw();
+
+        Histogram histogram = new Histogram(data, binRadians);
+        double maxFrequency = Double.NEGATIVE_INFINITY;
+
+        for (double d = 0; Math.abs(d - 2 * Math.PI) > Constants.EPSILON;
+             d += binRadians) {
+            double frequency =
+                    (double) histogram.getBinSize(d) / (double) data.size();
+            maxFrequency = Math.max(frequency, maxFrequency);
+        }
+
+        // the 0.8 is here because up to 0.85 the majorTick can be drawn and we
+        // do not want overlaps
+        scalingFactor = 0.8 / Math.sqrt(maxFrequency);
+
+        for (double d = 0; Math.abs(d - 2 * Math.PI) > Constants.EPSILON;
+             d += binRadians) {
+            double frequency =
+                    (double) histogram.getBinSize(d) / (double) data.size();
+            drawHistogramTriangle(svgGraphics, d, frequency);
+
+            if (isAxes) {
+                drawHistogramTriangle(svgGraphics,
+                                      (d + Math.PI) % (2 * Math.PI), frequency);
+            }
+        }
+    }
+
+    private void drawHistogramTriangle(Graphics graphics, double circularValue,
+                                       double frequency) {
+        double sectorRadius = Math.sqrt(frequency) * radius * scalingFactor;
+
+        // angle as in XY coordinate system
+        double t = -(circularValue + Math.PI * 3 / 2) % (2 * Math.PI);
+        double x1 = centerX + sectorRadius * Math.cos(t);
+        double y1 = centerY + sectorRadius * Math.sin(t);
+        t = -(circularValue + binRadians + Math.PI * 3 / 2) % (2 * Math.PI);
+        double x2 = centerX + sectorRadius * Math.cos(t);
+        double y2 = centerY + sectorRadius * Math.sin(t);
+
+        graphics.drawPolygon(new int[]{(int) x1, (int) x2, (int) centerX},
+                             new int[]{(int) (diameter - y1),
+                                       (int) (diameter - y2),
+                                       (int) (diameter - centerY)}, 3);
     }
 }

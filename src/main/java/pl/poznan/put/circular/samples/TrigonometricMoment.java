@@ -6,7 +6,8 @@ public class TrigonometricMoment {
     private final Angle meanDirection;
     private final double meanResultantLength;
 
-    public TrigonometricMoment(Angle meanDirection, double meanResultantLength) {
+    public TrigonometricMoment(Angle meanDirection,
+                               double meanResultantLength) {
         super();
         this.meanDirection = meanDirection;
         this.meanResultantLength = meanResultantLength;
@@ -22,6 +23,7 @@ public class TrigonometricMoment {
 
     @Override
     public String toString() {
-        return "TrigonometricMoment [meanDirection=" + meanDirection + ", meanResultantLength=" + meanResultantLength + "]";
+        return "TrigonometricMoment [meanDirection=" + meanDirection
+               + ", meanResultantLength=" + meanResultantLength + "]";
     }
 }

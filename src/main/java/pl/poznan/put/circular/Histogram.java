@@ -1,40 +1,33 @@
 package pl.poznan.put.circular;
 
+import pl.poznan.put.circular.exception.InvalidCircularValueException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import pl.poznan.put.circular.exception.InvalidCircularValueException;
-
 public class Histogram {
-    public class Bin {
-        private final double radiansStart;
-        private final List<Circular> data;
-
-        public Bin(double radiansStart, List<Circular> data) {
-            super();
-            this.radiansStart = radiansStart;
-            this.data = data;
-        }
-    }
-
     private final List<Bin> histogram = new ArrayList<Bin>();
 
-    public Histogram(Collection<? extends Circular> data, double binWidth) throws InvalidCircularValueException {
+    public Histogram(Collection<? extends Circular> data, double binWidth)
+            throws InvalidCircularValueException {
         super();
 
         if (binWidth < 0 || binWidth >= Math.PI) {
-            throw new InvalidCircularValueException("A histogram bin size must be in range [0..180)");
+            throw new InvalidCircularValueException(
+                    "A histogram bin size must be in range [0..180)");
         }
 
-        for (double radiansStart = 0; radiansStart < 2 * Math.PI; radiansStart += binWidth) {
+        for (double radiansStart = 0; radiansStart < 2 * Math.PI;
+             radiansStart += binWidth) {
             List<Circular> binData = new ArrayList<Circular>();
 
             for (Circular circular : data) {
                 double radians = circular.getRadians2PI();
 
-                if (radians >= radiansStart && radians < radiansStart + binWidth) {
+                if (radians >= radiansStart
+                    && radians < radiansStart + binWidth) {
                     binData.add(circular);
                 }
             }
@@ -55,5 +48,16 @@ public class Histogram {
         }
 
         return Collections.emptyList();
+    }
+
+    public class Bin {
+        private final double radiansStart;
+        private final List<Circular> data;
+
+        public Bin(double radiansStart, List<Circular> data) {
+            super();
+            this.radiansStart = radiansStart;
+            this.data = data;
+        }
     }
 }
