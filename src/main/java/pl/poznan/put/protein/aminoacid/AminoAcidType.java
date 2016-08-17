@@ -4,7 +4,12 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.protein.ProteinSidechain;
-import pl.poznan.put.protein.torsion.*;
+import pl.poznan.put.protein.torsion.Chi1;
+import pl.poznan.put.protein.torsion.Chi2;
+import pl.poznan.put.protein.torsion.Chi3;
+import pl.poznan.put.protein.torsion.Chi4;
+import pl.poznan.put.protein.torsion.Chi5;
+import pl.poznan.put.protein.torsion.ProteinChiType;
 import pl.poznan.put.torsion.TorsionAngleType;
 
 import java.util.ArrayList;
@@ -38,34 +43,36 @@ public enum AminoAcidType implements ResidueInformationProvider {
         this.sidechain = sidechain;
     }
 
-    public ProteinSidechain getProteinSidechainInstance() {
-        return sidechain;
-    }
-
     public static TorsionAngleType[] getChiInstances(ProteinChiType chiType) {
         List<TorsionAngleType> typesList = new ArrayList<>();
 
         for (AminoAcidType aminoAcidType : values()) {
-            ProteinSidechain residueComponent = aminoAcidType.getProteinSidechainInstance();
+            ProteinSidechain residueComponent =
+                    aminoAcidType.getProteinSidechainInstance();
             if (!residueComponent.hasChiDefined(chiType)) {
                 continue;
             }
 
             switch (chiType) {
                 case CHI1:
-                    typesList.add(Chi1.getInstance(residueComponent.getChiAtoms(chiType)));
+                    typesList.add(Chi1.getInstance(
+                            residueComponent.getChiAtoms(chiType)));
                     break;
                 case CHI2:
-                    typesList.add(Chi2.getInstance(residueComponent.getChiAtoms(chiType)));
+                    typesList.add(Chi2.getInstance(
+                            residueComponent.getChiAtoms(chiType)));
                     break;
                 case CHI3:
-                    typesList.add(Chi3.getInstance(residueComponent.getChiAtoms(chiType)));
+                    typesList.add(Chi3.getInstance(
+                            residueComponent.getChiAtoms(chiType)));
                     break;
                 case CHI4:
-                    typesList.add(Chi4.getInstance(residueComponent.getChiAtoms(chiType)));
+                    typesList.add(Chi4.getInstance(
+                            residueComponent.getChiAtoms(chiType)));
                     break;
                 case CHI5:
-                    typesList.add(Chi5.getInstance(residueComponent.getChiAtoms(chiType)));
+                    typesList.add(Chi5.getInstance(
+                            residueComponent.getChiAtoms(chiType)));
                     break;
                 default:
                     break;
@@ -73,6 +80,10 @@ public enum AminoAcidType implements ResidueInformationProvider {
         }
 
         return typesList.toArray(new TorsionAngleType[typesList.size()]);
+    }
+
+    public ProteinSidechain getProteinSidechainInstance() {
+        return sidechain;
     }
 
     @Override

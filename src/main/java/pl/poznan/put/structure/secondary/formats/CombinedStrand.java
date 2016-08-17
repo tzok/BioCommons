@@ -1,10 +1,10 @@
 package pl.poznan.put.structure.secondary.formats;
 
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class CombinedStrand {
     private final List<Strand> strands;
@@ -24,22 +24,6 @@ public class CombinedStrand {
             length += strand.getLength();
         }
         return length;
-    }
-
-    public String getSequence() {
-        StringBuilder builder = new StringBuilder();
-        for (Strand strand : strands) {
-            builder.append(strand.getSequence());
-        }
-        return builder.toString();
-    }
-
-    public String getStructure() {
-        StringBuilder builder = new StringBuilder();
-        for (Strand strand : strands) {
-            builder.append(strand.getStructure());
-        }
-        return builder.toString();
     }
 
     public List<DotBracketSymbol> getSymbols() {
@@ -67,8 +51,13 @@ public class CombinedStrand {
             TerminalMissing missingEnd = strand.getMissingEnd();
             List<DotBracketSymbol> symbols = strand.getSymbols();
 
-            DotBracketSymbol symbol = missingBegin.getLength() > 0 ? missingBegin.getLast().getNext() : symbols.get(0);
-            DotBracketSymbol lastSymbol = missingEnd.getLength() > 0 ? missingEnd.getFirst() : symbols.get(symbols.size() - 1);
+            DotBracketSymbol symbol =
+                    missingBegin.getLength() > 0 ? missingBegin.getLast()
+                                                               .getNext()
+                                                 : symbols.get(0);
+            DotBracketSymbol lastSymbol =
+                    missingEnd.getLength() > 0 ? missingEnd.getFirst() : symbols
+                            .get(symbols.size() - 1);
 
             while (symbol != null && !symbol.equals(lastSymbol)) {
                 if (symbol.isMissing()) {
@@ -106,7 +95,24 @@ public class CombinedStrand {
             builder.append(strand.getName());
         }
 
-        return ">strand_" + builder.toString() + "\n" + getSequence() + "\n" + getStructure();
+        return ">strand_" + builder.toString() + "\n" + getSequence() + "\n"
+               + getStructure();
+    }
+
+    public String getSequence() {
+        StringBuilder builder = new StringBuilder();
+        for (Strand strand : strands) {
+            builder.append(strand.getSequence());
+        }
+        return builder.toString();
+    }
+
+    public String getStructure() {
+        StringBuilder builder = new StringBuilder();
+        for (Strand strand : strands) {
+            builder.append(strand.getStructure());
+        }
+        return builder.toString();
     }
 
     /**

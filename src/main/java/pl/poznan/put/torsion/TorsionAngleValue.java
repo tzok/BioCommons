@@ -5,17 +5,16 @@ import pl.poznan.put.interfaces.DisplayableExportable;
 import pl.poznan.put.utility.AngleFormat;
 
 public class TorsionAngleValue implements DisplayableExportable {
-    public static TorsionAngleValue invalidInstance(TorsionAngleType type) {
-        return new TorsionAngleValue(type, Angle.invalidInstance());
-    }
-
     private final TorsionAngleType angleType;
     private final Angle value;
-
     public TorsionAngleValue(TorsionAngleType angleType, Angle value) {
         super();
         this.angleType = angleType;
         this.value = value;
+    }
+
+    public static TorsionAngleValue invalidInstance(TorsionAngleType type) {
+        return new TorsionAngleValue(type, Angle.invalidInstance());
     }
 
     public TorsionAngleType getAngleType() {
@@ -27,23 +26,26 @@ public class TorsionAngleValue implements DisplayableExportable {
     }
 
     @Override
+    public String toString() {
+        return getLongDisplayName();
+    }
+
+    @Override
     public String getLongDisplayName() {
-        return angleType.getLongDisplayName() + " " + AngleFormat.formatDisplayLong(value.getRadians());
+        return angleType.getLongDisplayName() + " " + AngleFormat
+                .formatDisplayLong(value.getRadians());
     }
 
     @Override
     public String getShortDisplayName() {
-        return angleType.getShortDisplayName() + " " + AngleFormat.formatDisplayShort(value.getRadians());
+        return angleType.getShortDisplayName() + " " + AngleFormat
+                .formatDisplayShort(value.getRadians());
     }
 
     @Override
     public String getExportName() {
-        return angleType.getExportName() + " " + AngleFormat.formatExport(value.getRadians());
-    }
-
-    @Override
-    public String toString() {
-        return getLongDisplayName();
+        return angleType.getExportName() + " " + AngleFormat
+                .formatExport(value.getRadians());
     }
 
     public boolean isValid() {

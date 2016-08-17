@@ -18,7 +18,8 @@ public class MmCifParser {
         parser.addMMcifConsumer(consumer);
     }
 
-    public synchronized List<CifModel> parse(String mmCifContent) throws IOException, PdbParsingException {
+    public synchronized List<CifModel> parse(String mmCifContent)
+            throws IOException, PdbParsingException {
         Reader reader = null;
 
         try {

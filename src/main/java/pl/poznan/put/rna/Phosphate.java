@@ -7,10 +7,6 @@ import java.util.Arrays;
 public class Phosphate extends NucleicAcidResidueComponent {
     private static final Phosphate INSTANCE = new Phosphate();
 
-    public static Phosphate getInstance() {
-        return Phosphate.INSTANCE;
-    }
-
     private Phosphate() {
         super(RNAResidueComponentType.PHOSPHATE,
               Arrays.asList(AtomName.P, AtomName.O1P, AtomName.O2P,
@@ -21,5 +17,9 @@ public class Phosphate extends NucleicAcidResidueComponent {
                             AtomName.PC, AtomName.O1C, AtomName.O2C,
                             AtomName.O3C, AtomName.PG, AtomName.O1G,
                             AtomName.O2G, AtomName.O3G));
+    }
+
+    public static Phosphate getInstance() {
+        return Phosphate.INSTANCE;
     }
 }

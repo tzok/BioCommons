@@ -9,11 +9,13 @@ import pl.poznan.put.types.Quadruplet;
 public class Epsilon extends AtomBasedTorsionAngleType {
     private static final Epsilon INSTANCE = new Epsilon();
 
-    public static Epsilon getInstance() {
-        return Epsilon.INSTANCE;
+    private Epsilon() {
+        super(MoleculeType.RNA, Unicode.EPSILON,
+              new Quadruplet<>(AtomName.C4p, AtomName.C3p, AtomName.O3p,
+                               AtomName.P), new Quadruplet<>(0, 0, 0, 1));
     }
 
-    private Epsilon() {
-        super(MoleculeType.RNA, Unicode.EPSILON, new Quadruplet<>(AtomName.C4p, AtomName.C3p, AtomName.O3p, AtomName.P), new Quadruplet<>(0, 0, 0, 1));
+    public static Epsilon getInstance() {
+        return Epsilon.INSTANCE;
     }
 }

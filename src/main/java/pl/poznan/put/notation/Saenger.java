@@ -40,6 +40,14 @@ public enum Saenger {
         return UNKNOWN;
     }
 
+    @Override
+    public String toString() {
+        if (this == UNKNOWN) {
+            return "n/a";
+        }
+        return name();
+    }
+
     public static Saenger fromOrdinal(int ordinal) {
         if (ordinal >= 1 && ordinal <= 28) {
             return Saenger.values()[ordinal];
@@ -47,19 +55,11 @@ public enum Saenger {
         return Saenger.UNKNOWN;
     }
 
-    public static boolean isCanonical(Saenger s) {
-        return s == XIX || s == XX || s == XXVIII;
-    }
-
     public boolean isCanonical() {
         return Saenger.isCanonical(this);
     }
 
-    @Override
-    public String toString() {
-        if (this == UNKNOWN) {
-            return "n/a";
-        }
-        return name();
+    public static boolean isCanonical(Saenger s) {
+        return s == XIX || s == XX || s == XXVIII;
     }
 }

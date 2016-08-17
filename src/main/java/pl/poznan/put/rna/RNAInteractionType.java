@@ -66,11 +66,6 @@ public class RNAInteractionType
     }
 
     @Override
-    public String toString() {
-        return description;
-    }
-
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -103,6 +98,11 @@ public class RNAInteractionType
         }
         return isPairing == other.isPairing && left == other.left
                && right == other.right;
+    }
+
+    @Override
+    public String toString() {
+        return description;
     }
 
     @Override

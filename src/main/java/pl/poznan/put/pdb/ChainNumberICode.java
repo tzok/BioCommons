@@ -7,6 +7,6 @@ public interface ChainNumberICode {
     int getResidueNumber();
 
     String getInsertionCode();
-    
+
     PdbResidueIdentifier getResidueIdentifier();
 }

@@ -5,7 +5,7 @@ import pl.poznan.put.structure.secondary.pseudoknots.elimination.RegionRemover;
 /**
  * A serial implementation (matrix is filled piece by piece).
  */
-public class SerialDynamicProgramming extends AbstractDynamicProgramming {
+public class DynamicProgrammingAll extends AbstractDynamicProgramming {
     /**
      * Construct an instance of dynamic solver for all solutions. The
      * regionRemover will be used only until any clique has size bigger then
@@ -17,12 +17,12 @@ public class SerialDynamicProgramming extends AbstractDynamicProgramming {
      *                      cliques are getting bigger, so it is advisable to
      *                      use heuristic to remove single regions prior to a
      */
-    public SerialDynamicProgramming(final RegionRemover regionRemover,
-                                    final int maxCliqueSize) {
+    public DynamicProgrammingAll(final RegionRemover regionRemover,
+                                 final int maxCliqueSize) {
         super(regionRemover, maxCliqueSize);
     }
 
-    public SerialDynamicProgramming() {
+    public DynamicProgrammingAll() {
         super(null, Integer.MAX_VALUE);
     }
 

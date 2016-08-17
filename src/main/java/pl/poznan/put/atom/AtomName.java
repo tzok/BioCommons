@@ -1,10 +1,10 @@
 package pl.poznan.put.atom;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.List;
 
 public enum AtomName {
     C(AtomType.C, "C"),
@@ -236,7 +236,8 @@ public enum AtomName {
     SG2(AtomType.S, "SG2", "2SG"),
     UNKNOWN(AtomType.OTHER, "");
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AtomName.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(AtomName.class);
 
     private final AtomType type;
     private final List<String> names;
@@ -244,22 +245,6 @@ public enum AtomName {
     AtomName(AtomType type, String... names) {
         this.type = type;
         this.names = Arrays.asList(names);
-    }
-
-    public AtomType getType() {
-        return type;
-    }
-
-    public boolean isHeavy() {
-        return type.isHeavy();
-    }
-
-    public String getName() {
-        return names.get(0);
-    }
-
-    public boolean matchesName(String pdbName) {
-        return names.contains(pdbName.trim());
     }
 
     public static AtomName fromString(String pdbName) {
@@ -275,5 +260,21 @@ public enum AtomName {
 
         AtomName.LOGGER.trace("Unknown atom name: " + pdbName);
         return AtomName.UNKNOWN;
+    }
+
+    public boolean matchesName(String pdbName) {
+        return names.contains(pdbName.trim());
+    }
+
+    public AtomType getType() {
+        return type;
+    }
+
+    public boolean isHeavy() {
+        return type.isHeavy();
+    }
+
+    public String getName() {
+        return names.get(0);
     }
 }

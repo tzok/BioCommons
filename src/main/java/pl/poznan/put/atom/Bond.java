@@ -6,33 +6,11 @@ import org.apache.commons.collections4.map.MultiKeyMap;
  * Values are taken from Charm36 parameters file
  */
 public class Bond {
-    public static class Length {
-        private final double min;
-        private final double max;
-        private final double avg;
-
-        Length(double min, double max, double avg) {
-            super();
-            this.min = min;
-            this.max = max;
-            this.avg = avg;
-        }
-
-        public double getMin() {
-            return min;
-        }
-
-        public double getMax() {
-            return max;
-        }
-
-        public double getAvg() {
-            return avg;
-        }
-    }
-
-    private static final MultiKeyMap<AtomType, Bond.Length> MAP = new MultiKeyMap<>();
-    private static final Bond.Length INVALID = new Length(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    private static final MultiKeyMap<AtomType, Bond.Length> MAP =
+            new MultiKeyMap<>();
+    private static final Bond.Length INVALID =
+            new Length(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
+                       Double.POSITIVE_INFINITY);
 
     static {
         Bond.MAP.put(AtomType.C, AtomType.C, new Length(1.320, 1.538, 1.463));
@@ -67,5 +45,30 @@ public class Bond {
         }
 
         return length;
+    }
+
+    public static class Length {
+        private final double min;
+        private final double max;
+        private final double avg;
+
+        Length(double min, double max, double avg) {
+            super();
+            this.min = min;
+            this.max = max;
+            this.avg = avg;
+        }
+
+        public double getMin() {
+            return min;
+        }
+
+        public double getMax() {
+            return max;
+        }
+
+        public double getAvg() {
+            return avg;
+        }
     }
 }

@@ -1,7 +1,13 @@
 package pl.poznan.put.atom;
 
 public enum AtomType {
-    C(true), H(false), N(true), O(true), P(true), S(true), OTHER(true);
+    C(true),
+    H(false),
+    N(true),
+    O(true),
+    P(true),
+    S(true),
+    OTHER(true);
 
     private final boolean isHeavy;
 

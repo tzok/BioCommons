@@ -16,19 +16,19 @@ import java.util.TreeMap;
  * et al., 2008. From knotted to nested RNA structures: A variety of
  * computational methods for pseudoknot removal. RNA, 14, pp.410–416.
  */
-public class EliminationGain extends AbstractRegionRemover {
+public class MinGain extends AbstractRegionRemover {
     @Override
     public final Region selectRegionToRemove(final ConflictMap conflictMap) {
         Set<Region> regions = conflictMap.getRegionsWithConflicts();
 
         List<Region> minGainRegions =
-                EliminationGain.minGainRegions(conflictMap, regions);
+                MinGain.minGainRegions(conflictMap, regions);
         if (minGainRegions.size() == 1) {
             return minGainRegions.get(0);
         }
 
-        List<Region> maxConflictsRegions = EliminationConflicts
-                .maxConflictRegions(conflictMap, minGainRegions);
+        List<Region> maxConflictsRegions =
+                MaxConflicts.maxConflictRegions(conflictMap, minGainRegions);
         if (maxConflictsRegions.size() == 1) {
             return maxConflictsRegions.get(0);
         }

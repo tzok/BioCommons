@@ -4,13 +4,22 @@ import pl.poznan.put.circular.Angle;
 import pl.poznan.put.utility.AngleFormat;
 
 public class TorsionAngleDelta {
-    public enum State {
-        TARGET_INVALID, MODEL_INVALID, BOTH_INVALID, BOTH_VALID
+    private final MasterTorsionAngleType masterTorsionAngleType;
+    private final State state;
+    private final Angle delta;
+
+    public TorsionAngleDelta(MasterTorsionAngleType masterTorsionAngleType,
+                             State state, Angle delta) {
+        super();
+        this.masterTorsionAngleType = masterTorsionAngleType;
+        this.state = state;
+        this.delta = delta;
     }
 
     public static TorsionAngleDelta bothInvalidInstance(
             MasterTorsionAngleType masterType) {
-        return new TorsionAngleDelta(masterType, State.BOTH_INVALID, Angle.invalidInstance());
+        return new TorsionAngleDelta(masterType, State.BOTH_INVALID,
+                                     Angle.invalidInstance());
     }
 
     public static TorsionAngleDelta subtractTorsionAngleValues(
@@ -31,18 +40,6 @@ public class TorsionAngleDelta {
         }
 
         return new TorsionAngleDelta(masterType, state, delta);
-    }
-
-    private final MasterTorsionAngleType masterTorsionAngleType;
-    private final State state;
-    private final Angle delta;
-
-    public TorsionAngleDelta(MasterTorsionAngleType masterTorsionAngleType,
-            State state, Angle delta) {
-        super();
-        this.masterTorsionAngleType = masterTorsionAngleType;
-        this.state = state;
-        this.delta = delta;
     }
 
     public State getState() {
@@ -67,10 +64,27 @@ public class TorsionAngleDelta {
      * fraction point and no UNICODE_DEGREE sign).
      *
      * @return String representation of this delta object understandable by
-     *         external tools.
+     * external tools.
      */
     public String toExportString() {
         return toString(false);
+    }
+
+    public String toString(boolean isDisplayable) {
+        switch (state) {
+            case BOTH_INVALID:
+                return isDisplayable ? "" : null;
+            case BOTH_VALID:
+                return isDisplayable ? AngleFormat
+                        .formatDisplayShort(delta.getRadians()) : AngleFormat
+                               .formatExport(delta.getRadians());
+            case TARGET_INVALID:
+                return "Missing atoms in target";
+            case MODEL_INVALID:
+                return "Missing atoms in model";
+            default:
+                return "Error";
+        }
     }
 
     /**
@@ -82,18 +96,10 @@ public class TorsionAngleDelta {
         return toString(true);
     }
 
-    public String toString(boolean isDisplayable) {
-        switch (state) {
-        case BOTH_INVALID:
-            return isDisplayable ? "" : null;
-        case BOTH_VALID:
-            return isDisplayable ? AngleFormat.formatDisplayShort(delta.getRadians()) : AngleFormat.formatExport(delta.getRadians());
-        case TARGET_INVALID:
-            return "Missing atoms in target";
-        case MODEL_INVALID:
-            return "Missing atoms in model";
-        default:
-            return "Error";
-        }
+    public enum State {
+        TARGET_INVALID,
+        MODEL_INVALID,
+        BOTH_INVALID,
+        BOTH_VALID
     }
 }

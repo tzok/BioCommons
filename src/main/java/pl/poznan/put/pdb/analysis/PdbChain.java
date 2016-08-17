@@ -8,18 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class PdbChain implements Comparable<PdbChain> {
-    public static PdbChain fromBioJavaChain(Chain chain) {
-        List<PdbResidue> residues = new ArrayList<>();
-        for (Group group : chain.getAtomGroups()) {
-            residues.add(PdbResidue.fromBioJavaGroup(group));
-        }
-        return new PdbChain(chain.getChainID(), residues);
-    }
-
     private final String identifier;
     private final List<PdbResidue> residues;
     private final MoleculeType moleculeType;
-
     public PdbChain(String identifier, List<PdbResidue> residues) {
         super();
         this.identifier = identifier;
@@ -45,7 +36,16 @@ public class PdbChain implements Comparable<PdbChain> {
             }
         }
 
-        return rnaCounter > proteinCounter ? MoleculeType.RNA : MoleculeType.PROTEIN;
+        return rnaCounter > proteinCounter ? MoleculeType.RNA
+                                           : MoleculeType.PROTEIN;
+    }
+
+    public static PdbChain fromBioJavaChain(Chain chain) {
+        List<PdbResidue> residues = new ArrayList<>();
+        for (Group group : chain.getAtomGroups()) {
+            residues.add(PdbResidue.fromBioJavaGroup(group));
+        }
+        return new PdbChain(chain.getChainID(), residues);
     }
 
     public String getIdentifier() {
@@ -57,25 +57,31 @@ public class PdbChain implements Comparable<PdbChain> {
     }
 
     @Override
-    public String toString() {
-        return String.valueOf(identifier);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        PdbChain pdbChain = (PdbChain) o;
-        return identifier.equals(pdbChain.identifier) && residues.equals(pdbChain.residues) && moleculeType == pdbChain.moleculeType;
-    }
-
-    @Override
     public int hashCode() {
         int result = identifier.hashCode();
         result = 31 * result + residues.hashCode();
         result = 31 * result + moleculeType.hashCode();
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        PdbChain pdbChain = (PdbChain) o;
+        return identifier.equals(pdbChain.identifier) && residues
+                .equals(pdbChain.residues)
+               && moleculeType == pdbChain.moleculeType;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(identifier);
     }
 
     @Override

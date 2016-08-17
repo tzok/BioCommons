@@ -64,6 +64,13 @@ public class SubSolution {
         return Objects.equals(regions, other.regions);
     }
 
+    @Override
+    public final String toString() {
+        return String.format("SubSolution{regionCount=%d, lowestEndpoint=%d, "
+                             + "highestEndpoint=%d, score=%d}", regions.size(),
+                             lowestEndpoint, highestEndpoint, score);
+    }
+
     public final List<Region> getRegions() {
         return Collections.unmodifiableList(regions);
     }
@@ -78,12 +85,5 @@ public class SubSolution {
 
     public final int getScore() {
         return score;
-    }
-
-    @Override
-    public final String toString() {
-        return String.format("SubSolution{regionCount=%d, lowestEndpoint=%d, "
-                             + "highestEndpoint=%d, score=%d}", regions.size(),
-                             lowestEndpoint, highestEndpoint, score);
     }
 }

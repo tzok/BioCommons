@@ -14,6 +14,7 @@ public class RNABondRule implements ResidueBondRule {
 
         PdbAtomLine o3p = r1.findAtom(AtomName.O3p);
         PdbAtomLine p = r2.findAtom(AtomName.P);
-        return o3p.distanceTo(p) <= Bond.length(AtomType.O, AtomType.P).getMax() * 1.5;
+        return o3p.distanceTo(p)
+               <= Bond.length(AtomType.O, AtomType.P).getMax() * 1.5;
     }
 }

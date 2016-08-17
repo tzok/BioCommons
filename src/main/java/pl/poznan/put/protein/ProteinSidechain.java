@@ -1,11 +1,5 @@
 package pl.poznan.put.protein;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
@@ -18,16 +12,25 @@ import pl.poznan.put.protein.torsion.Psi;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-public abstract class ProteinSidechain extends ResidueComponent implements ResidueInformationProvider {
-    protected final Map<ProteinChiType, Quadruplet<AtomName>> chiAtoms = new HashMap<>();
-    protected final List<TorsionAngleType> torsionAngleTypes = new ArrayList<>();
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public abstract class ProteinSidechain extends ResidueComponent
+        implements ResidueInformationProvider {
+    protected final Map<ProteinChiType, Quadruplet<AtomName>> chiAtoms =
+            new HashMap<>();
+    protected final List<TorsionAngleType> torsionAngleTypes =
+            new ArrayList<>();
 
     private final String longName;
     private final char oneLetterName;
     private final List<String> pdbNames;
 
     public ProteinSidechain(List<AtomName> atoms, String longName,
-            char oneLetterName, String... pdbNames) {
+                            char oneLetterName, String... pdbNames) {
         super("sidechain", MoleculeType.PROTEIN, atoms);
         this.longName = longName;
         this.oneLetterName = oneLetterName;
@@ -40,6 +43,8 @@ public abstract class ProteinSidechain extends ResidueComponent implements Resid
         torsionAngleTypes.add(Omega.getInstance());
         torsionAngleTypes.add(Calpha.getInstance());
     }
+
+    protected abstract void fillChiAtomsMap();
 
     @Override
     public List<ResidueComponent> getAllMoleculeComponents() {
@@ -67,22 +72,21 @@ public abstract class ProteinSidechain extends ResidueComponent implements Resid
         return pdbNames;
     }
 
-    protected abstract void fillChiAtomsMap();
-
-    public boolean hasChiDefined(ProteinChiType chiType) {
-        return chiAtoms.containsKey(chiType);
+    @Override
+    public List<TorsionAngleType> getTorsionAngleTypes() {
+        return torsionAngleTypes;
     }
 
     public Quadruplet<AtomName> getChiAtoms(ProteinChiType chiType) {
         if (!hasChiDefined(chiType)) {
-            throw new IllegalArgumentException("Invalid " + chiType + " angle for " + getDescription());
+            throw new IllegalArgumentException(
+                    "Invalid " + chiType + " angle for " + getDescription());
         }
 
         return chiAtoms.get(chiType);
     }
 
-    @Override
-    public List<TorsionAngleType> getTorsionAngleTypes() {
-        return torsionAngleTypes;
+    public boolean hasChiDefined(ProteinChiType chiType) {
+        return chiAtoms.containsKey(chiType);
     }
 }

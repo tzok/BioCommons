@@ -30,6 +30,103 @@ public class DotBracket implements Serializable {
             Pattern.compile("[ACGUTRYNacgutryn]+");
     private static final Pattern STRUCTURE_PATTERN =
             Pattern.compile("[-.()\\[\\]{}<>A-Za-z]+");
+    // FIXME
+    protected final List<Strand> strands = new ArrayList<>();
+    protected final List<DotBracketSymbol> symbols = new ArrayList<>();
+    protected final String sequence;
+    protected final String structure;
+
+    public DotBracket(final String sequence, final String structure)
+            throws InvalidStructureException {
+        super();
+        this.sequence = sequence;
+        this.structure = structure;
+
+        if (!DotBracket.SEQUENCE_PATTERN.matcher(sequence).matches()
+            || !DotBracket.STRUCTURE_PATTERN.matcher(structure).matches()) {
+            throw new InvalidStructureException(
+                    "Invalid dot-bracket:\n" + sequence + '\n' + structure);
+        }
+
+        buildSymbolList();
+        analyzePairing();
+
+        strands.add(new Strand(this, "", 0, structure.length()));
+    }
+
+    private void buildSymbolList() {
+        char[] seq = sequence.toCharArray();
+        char[] str = structure.toCharArray();
+        assert seq.length == str.length;
+
+        DotBracketSymbol current = new DotBracketSymbol(seq[0], str[0], 0);
+
+        for (int i = 1; i < seq.length; i++) {
+            DotBracketSymbol next = new DotBracketSymbol(seq[i], str[i], i);
+            current.setNext(next);
+            next.setPrevious(current);
+            symbols.add(current);
+            current = next;
+        }
+        symbols.add(current);
+
+        assert symbols.size() == seq.length;
+    }
+
+    private void analyzePairing() throws InvalidStructureException {
+        BidiMap<Character, Character> parentheses = new TreeBidiMap<>();
+        parentheses.put('(', ')');
+        parentheses.put('[', ']');
+        parentheses.put('{', '}');
+        parentheses.put('<', '>');
+
+        for (char c : "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
+            parentheses.put(c, Character.toLowerCase(c));
+        }
+
+        Map<Character, Stack<DotBracketSymbol>> parenthesesStacks =
+                new HashMap<>();
+        for (char c : parentheses.keySet()) {
+            parenthesesStacks.put(c, new Stack<DotBracketSymbol>());
+        }
+
+        for (DotBracketSymbol symbol : symbols) {
+            char str = symbol.getStructure();
+
+            // catch dot '.'
+            if ((str == '.') || (str == '-')) {
+                symbol.setPair(null);
+                continue;
+            }
+
+            // catch opening '(', '[', etc.
+            if (parentheses.containsKey(str)) {
+                Stack<DotBracketSymbol> stack = parenthesesStacks.get(str);
+                stack.push(symbol);
+                continue;
+            }
+
+            // catch closing ')', ']', etc.
+            if (parentheses.containsValue(str)) {
+                char opening = parentheses.getKey(str);
+                Stack<DotBracketSymbol> stack = parenthesesStacks.get(opening);
+
+                if (stack.empty()) {
+                    throw new InvalidStructureException(
+                            "Invalid dot-bracket input:\n" + sequence + '\n'
+                            + structure);
+                }
+
+                DotBracketSymbol pair = stack.pop();
+                symbol.setPair(pair);
+                pair.setPair(symbol);
+                continue;
+            }
+
+            DotBracket.LOGGER
+                    .error("Unknown symbol in dot-bracket string: {}", str);
+        }
+    }
 
     /*
      * This is just a simple and naive implementation (a greedy heuristic). For
@@ -154,110 +251,6 @@ public class DotBracket implements Serializable {
         return dotBracket;
     }
 
-    // FIXME
-    protected final List<Strand> strands = new ArrayList<>();
-
-    protected final List<DotBracketSymbol> symbols = new ArrayList<>();
-    protected final String sequence;
-    protected final String structure;
-
-    public DotBracket(final String sequence, final String structure)
-            throws InvalidStructureException {
-        super();
-        this.sequence = sequence;
-        this.structure = structure;
-
-        if (!DotBracket.SEQUENCE_PATTERN.matcher(sequence).matches()
-            || !DotBracket.STRUCTURE_PATTERN.matcher(structure).matches()) {
-            throw new InvalidStructureException(
-                    "Invalid dot-bracket:\n" + sequence + '\n' + structure);
-        }
-
-        buildSymbolList();
-        analyzePairing();
-
-        strands.add(new Strand(this, "", 0, structure.length()));
-    }
-
-    private void buildSymbolList() {
-        char[] seq = sequence.toCharArray();
-        char[] str = structure.toCharArray();
-        assert seq.length == str.length;
-
-        DotBracketSymbol current = new DotBracketSymbol(seq[0], str[0], 0);
-
-        for (int i = 1; i < seq.length; i++) {
-            DotBracketSymbol next = new DotBracketSymbol(seq[i], str[i], i);
-            current.setNext(next);
-            next.setPrevious(current);
-            symbols.add(current);
-            current = next;
-        }
-        symbols.add(current);
-
-        assert symbols.size() == seq.length;
-    }
-
-    private void analyzePairing() throws InvalidStructureException {
-        BidiMap<Character, Character> parentheses = new TreeBidiMap<>();
-        parentheses.put('(', ')');
-        parentheses.put('[', ']');
-        parentheses.put('{', '}');
-        parentheses.put('<', '>');
-
-        for (char c : "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
-            parentheses.put(c, Character.toLowerCase(c));
-        }
-
-        Map<Character, Stack<DotBracketSymbol>> parenthesesStacks =
-                new HashMap<>();
-        for (char c : parentheses.keySet()) {
-            parenthesesStacks.put(c, new Stack<DotBracketSymbol>());
-        }
-
-        for (DotBracketSymbol symbol : symbols) {
-            char str = symbol.getStructure();
-
-            // catch dot '.'
-            if ((str == '.') || (str == '-')) {
-                symbol.setPair(null);
-                continue;
-            }
-
-            // catch opening '(', '[', etc.
-            if (parentheses.containsKey(str)) {
-                Stack<DotBracketSymbol> stack = parenthesesStacks.get(str);
-                stack.push(symbol);
-                continue;
-            }
-
-            // catch closing ')', ']', etc.
-            if (parentheses.containsValue(str)) {
-                char opening = parentheses.getKey(str);
-                Stack<DotBracketSymbol> stack = parenthesesStacks.get(opening);
-
-                if (stack.empty()) {
-                    throw new InvalidStructureException(
-                            "Invalid dot-bracket input:\n" + sequence + '\n'
-                            + structure);
-                }
-
-                DotBracketSymbol pair = stack.pop();
-                symbol.setPair(pair);
-                pair.setPair(symbol);
-                continue;
-            }
-
-            DotBracket.LOGGER
-                    .error("Unknown symbol in dot-bracket string: {}", str);
-        }
-    }
-
-    @Override
-    public final String toString() {
-        return ">strand\n" + sequence + '\n' + structure;
-    }
-
     public final String toStringWithStrands() {
         StringBuilder builder =
                 new StringBuilder(sequence.length() + structure.length());
@@ -306,6 +299,11 @@ public class DotBracket implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public final String toString() {
+        return ">strand\n" + sequence + '\n' + structure;
     }
 
     public final String getSequence() {

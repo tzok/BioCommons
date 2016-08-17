@@ -11,11 +11,11 @@ public abstract class Sugar extends NucleicAcidResidueComponent {
                 // empty block
             };
 
-    public static Sugar invalidInstance() {
-        return Sugar.INVALID;
-    }
-
     protected Sugar(List<AtomName> atoms) {
         super(RNAResidueComponentType.SUGAR, atoms);
+    }
+
+    public static Sugar invalidInstance() {
+        return Sugar.INVALID;
     }
 }

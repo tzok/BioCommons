@@ -16,7 +16,7 @@ import java.util.Objects;
  * A class optimizes inclusion of pairs in the nested structure directly without
  * regions nomenclature.
  */
-public class DirectDynamicProgramming implements PseudoknotFinder {
+public class DynamicProgrammingBest implements PseudoknotFinder {
     // Create idMap to access connections and Array of connections
     private static List<Integer> filterNotConnected(
             final List<Integer> originalConnections,
@@ -86,10 +86,10 @@ public class DirectDynamicProgramming implements PseudoknotFinder {
             appendTo.add(left);
             appendTo.add(right);
 
-            DirectDynamicProgramming
+            DynamicProgrammingBest
                     .appendCorrectConnections(left + 1, right - 1, connections,
                                               dpPosition, appendTo);
-            DirectDynamicProgramming
+            DynamicProgrammingBest
                     .appendCorrectConnections(i, left - 1, connections,
                                               dpPosition, appendTo);
         }
@@ -157,14 +157,14 @@ public class DirectDynamicProgramming implements PseudoknotFinder {
         }
 
         Map<Integer, Integer> idMap = new HashMap<>(bpSeq.size());
-        List<Integer> connections = DirectDynamicProgramming
+        List<Integer> connections = DynamicProgrammingBest
                 .filterNotConnected(originalConnections, idMap);
 
-        connections = DirectDynamicProgramming.addOuterRange(connections);
+        connections = DynamicProgrammingBest.addOuterRange(connections);
         int size = connections.size();
 
         // Create array of ranges and sort them
-        List<Range> ranges = DirectDynamicProgramming.createRanges(connections);
+        List<Range> ranges = DynamicProgrammingBest.createRanges(connections);
         Collections.sort(ranges);
 
         // Initialize arrays needed for dynamic programming (it takes
@@ -213,16 +213,16 @@ public class DirectDynamicProgramming implements PseudoknotFinder {
 
 
         List<Integer> correctConnections = new ArrayList<>(connections.size());
-        DirectDynamicProgramming
+        DynamicProgrammingBest
                 .appendCorrectConnections(1, size - 2, connections, dpPosition,
                                           correctConnections);
 
-        List<Integer> nonConflicting = DirectDynamicProgramming
+        List<Integer> nonConflicting = DynamicProgrammingBest
                 .keepSelected(connections, correctConnections);
         nonConflicting =
-                DirectDynamicProgramming.removeOuterRange(nonConflicting);
+                DynamicProgrammingBest.removeOuterRange(nonConflicting);
 
-        List<Integer> structureCorrectConnections = DirectDynamicProgramming
+        List<Integer> structureCorrectConnections = DynamicProgrammingBest
                 .mapBack(originalConnections, nonConflicting, idMap);
 
         for (int i = 0; i < structureCorrectConnections.size(); i++) {

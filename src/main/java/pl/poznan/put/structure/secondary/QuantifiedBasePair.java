@@ -12,8 +12,12 @@ public class QuantifiedBasePair extends ClassifiedBasePair {
     private final double propeller;
     private final double opening;
 
-    public QuantifiedBasePair(BasePair basePair, Saenger saenger, LeontisWesthof leontisWesthof, double shear, double stretch, double stagger, double buckle, double propeller, double opening) {
-        super(basePair, RNAInteractionType.BASE_BASE, saenger, leontisWesthof, HelixOrigin.UNKNOWN);
+    public QuantifiedBasePair(BasePair basePair, Saenger saenger,
+                              LeontisWesthof leontisWesthof, double shear,
+                              double stretch, double stagger, double buckle,
+                              double propeller, double opening) {
+        super(basePair, RNAInteractionType.BASE_BASE, saenger, leontisWesthof,
+              HelixOrigin.UNKNOWN);
         this.shear = shear;
         this.stretch = stretch;
         this.stagger = stagger;
@@ -47,23 +51,6 @@ public class QuantifiedBasePair extends ClassifiedBasePair {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
-        QuantifiedBasePair that = (QuantifiedBasePair) o;
-
-        if (Double.compare(that.shear, shear) != 0) return false;
-        if (Double.compare(that.stretch, stretch) != 0) return false;
-        if (Double.compare(that.stagger, stagger) != 0) return false;
-        if (Double.compare(that.buckle, buckle) != 0) return false;
-        if (Double.compare(that.propeller, propeller) != 0) return false;
-        return Double.compare(that.opening, opening) == 0;
-
-    }
-
-    @Override
     public int hashCode() {
         int result = super.hashCode();
         long temp;
@@ -83,17 +70,44 @@ public class QuantifiedBasePair extends ClassifiedBasePair {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        QuantifiedBasePair that = (QuantifiedBasePair) o;
+
+        if (Double.compare(that.shear, shear) != 0) {
+            return false;
+        }
+        if (Double.compare(that.stretch, stretch) != 0) {
+            return false;
+        }
+        if (Double.compare(that.stagger, stagger) != 0) {
+            return false;
+        }
+        if (Double.compare(that.buckle, buckle) != 0) {
+            return false;
+        }
+        if (Double.compare(that.propeller, propeller) != 0) {
+            return false;
+        }
+        return Double.compare(that.opening, opening) == 0;
+
+    }
+
+    @Override
     public String toString() {
-        return "QuantifiedBasePair{" +
-                "basePair=" + getBasePair() +
-                ", saenger=" + getSaenger() +
-                ", leontisWesthof=" + getLeontisWesthof() +
-                ", shear=" + shear +
-                ", stretch=" + stretch +
-                ", stagger=" + stagger +
-                ", buckle=" + buckle +
-                ", propeller=" + propeller +
-                ", opening=" + opening +
-                '}';
+        return "QuantifiedBasePair{" + "basePair=" + getBasePair()
+               + ", saenger=" + getSaenger() + ", leontisWesthof="
+               + getLeontisWesthof() + ", shear=" + shear + ", stretch="
+               + stretch + ", stagger=" + stagger + ", buckle=" + buckle
+               + ", propeller=" + propeller + ", opening=" + opening + '}';
     }
 }

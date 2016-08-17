@@ -36,6 +36,11 @@ public abstract class Base extends NucleicAcidResidueComponent
                                          AtomName.UNKNOWN, AtomName.UNKNOWN);
 
                 @Override
+                public List<TorsionAngleType> getTorsionAngleTypes() {
+                    return Collections.emptyList();
+                }
+
+                @Override
                 public Quadruplet<AtomName> getChiAtoms() {
                     return chiAtoms;
                 }
@@ -44,24 +49,12 @@ public abstract class Base extends NucleicAcidResidueComponent
                 public Sugar getDefaultSugarInstance() {
                     return Sugar.invalidInstance();
                 }
-
-                @Override
-                public List<TorsionAngleType> getTorsionAngleTypes() {
-                    return Collections.emptyList();
-                }
             };
-
-    public static Base invalidInstance() {
-        return Base.INVALID;
-    }
-
     protected final List<TorsionAngleType> torsionAngleTypes =
             new ArrayList<>();
-
     private final String longName;
     private final char oneLetterName;
     private final List<String> pdbNames;
-
     protected Base(List<AtomName> atoms, String longName, char oneLetterName,
                    String... pdbNames) {
         super(RNAResidueComponentType.BASE, atoms);
@@ -80,6 +73,10 @@ public abstract class Base extends NucleicAcidResidueComponent
                                       EtaPrim.getInstance(),
                                       ThetaPrim.getInstance(),
                                       PseudophasePuckerType.getInstance()));
+    }
+
+    public static Base invalidInstance() {
+        return Base.INVALID;
     }
 
     @Override
@@ -115,7 +112,7 @@ public abstract class Base extends NucleicAcidResidueComponent
         return torsionAngleTypes;
     }
 
-    public abstract Quadruplet<AtomName> getChiAtoms();
-
     public abstract Sugar getDefaultSugarInstance();
+
+    public abstract Quadruplet<AtomName> getChiAtoms();
 }

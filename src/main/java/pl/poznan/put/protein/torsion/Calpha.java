@@ -9,11 +9,13 @@ import pl.poznan.put.types.Quadruplet;
 public class Calpha extends PseudoTorsionAngleType {
     private static final Calpha INSTANCE = new Calpha();
 
-    public static Calpha getInstance() {
-        return Calpha.INSTANCE;
+    private Calpha() {
+        super(MoleculeType.PROTEIN, Unicode.CALPHA,
+              new Quadruplet<>(AtomName.CA, AtomName.CA, AtomName.CA,
+                               AtomName.CA), new Quadruplet<>(0, 1, 2, 3));
     }
 
-    private Calpha() {
-        super(MoleculeType.PROTEIN, Unicode.CALPHA, new Quadruplet<>(AtomName.CA, AtomName.CA, AtomName.CA, AtomName.CA), new Quadruplet<>(0, 1, 2, 3));
+    public static Calpha getInstance() {
+        return Calpha.INSTANCE;
     }
 }
