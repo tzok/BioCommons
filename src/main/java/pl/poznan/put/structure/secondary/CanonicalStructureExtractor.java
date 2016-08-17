@@ -10,14 +10,16 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.rna.RNAInteractionType;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
+import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 
 public class CanonicalStructureExtractor {
     /*
      * This is just a simple implementation. For a robust solution, see RNApdbee
      * http://rnapdbee.cs.put.poznan.pl
      */
-    public static BpSeq getCanonicalSecondaryStructure(ResidueCollection residueCollection) throws InvalidSecondaryStructureException {
+    public static BpSeq getCanonicalSecondaryStructure(ResidueCollection residueCollection) throws
+
+                                                                                            InvalidStructureException {
         List<PdbResidue> residues = residueCollection.getResidues();
         List<ClassifiedBasePair> basePairs = new ArrayList<>();
 

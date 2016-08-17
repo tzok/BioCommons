@@ -2,29 +2,50 @@ package pl.poznan.put.rna;
 
 import java.io.Serializable;
 
-public class RNAInteractionType implements Serializable, Comparable<RNAInteractionType> {
-    public static final RNAInteractionType BASE_BASE = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, true);
-    public static final RNAInteractionType BASE_BASE_1H = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, "base - base (1H)");
-    public static final RNAInteractionType BASE_PHOSPHATE = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.PHOSPHATE, false);
-    public static final RNAInteractionType BASE_SUGAR = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.SUGAR, false);
-    public static final RNAInteractionType SUGAR_SUGAR = new RNAInteractionType(RNAResidueComponentType.SUGAR, RNAResidueComponentType.SUGAR, false);
-    public static final RNAInteractionType STACKING = new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, "stacking");
-    public static final RNAInteractionType OTHER = new RNAInteractionType(RNAResidueComponentType.UNKNOWN, RNAResidueComponentType.UNKNOWN, "other");
+public class RNAInteractionType
+        implements Serializable, Comparable<RNAInteractionType> {
+    public static final RNAInteractionType BASE_BASE =
+            new RNAInteractionType(RNAResidueComponentType.BASE,
+                                   RNAResidueComponentType.BASE, true);
+    public static final RNAInteractionType BASE_BASE_1H =
+            new RNAInteractionType(RNAResidueComponentType.BASE,
+                                   RNAResidueComponentType.BASE,
+                                   "base - base (1H)");
+    public static final RNAInteractionType BASE_PHOSPHATE =
+            new RNAInteractionType(RNAResidueComponentType.BASE,
+                                   RNAResidueComponentType.PHOSPHATE, false);
+    public static final RNAInteractionType BASE_SUGAR =
+            new RNAInteractionType(RNAResidueComponentType.BASE,
+                                   RNAResidueComponentType.SUGAR, false);
+    public static final RNAInteractionType SUGAR_SUGAR =
+            new RNAInteractionType(RNAResidueComponentType.SUGAR,
+                                   RNAResidueComponentType.SUGAR, false);
+    public static final RNAInteractionType STACKING =
+            new RNAInteractionType(RNAResidueComponentType.BASE,
+                                   RNAResidueComponentType.BASE, "stacking");
+    public static final RNAInteractionType OTHER =
+            new RNAInteractionType(RNAResidueComponentType.UNKNOWN,
+                                   RNAResidueComponentType.UNKNOWN, "other");
 
     private final RNAResidueComponentType left;
     private final RNAResidueComponentType right;
     private final boolean isPairing;
     private final String description;
 
-    public RNAInteractionType(RNAResidueComponentType left, RNAResidueComponentType right, boolean isPairing) {
+    public RNAInteractionType(RNAResidueComponentType left,
+                              RNAResidueComponentType right,
+                              boolean isPairing) {
         super();
         this.left = left;
         this.right = right;
         this.isPairing = isPairing;
-        description = left.name().toLowerCase() + " - " + right.name().toLowerCase();
+        description =
+                left.name().toLowerCase() + " - " + right.name().toLowerCase();
     }
 
-    public RNAInteractionType(RNAResidueComponentType left, RNAResidueComponentType right, String description) {
+    public RNAInteractionType(RNAResidueComponentType left,
+                              RNAResidueComponentType right,
+                              String description) {
         super();
         this.left = left;
         this.right = right;
@@ -53,7 +74,8 @@ public class RNAInteractionType implements Serializable, Comparable<RNAInteracti
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (description == null ? 0 : description.hashCode());
+        result = prime * result + (description == null ? 0 : description
+                .hashCode());
         result = prime * result + (isPairing ? 1231 : 1237);
         result = prime * result + (left == null ? 0 : left.hashCode());
         result = prime * result + (right == null ? 0 : right.hashCode());
@@ -79,7 +101,8 @@ public class RNAInteractionType implements Serializable, Comparable<RNAInteracti
         } else if (!description.equals(other.description)) {
             return false;
         }
-        return isPairing == other.isPairing && left == other.left && right == other.right;
+        return isPairing == other.isPairing && left == other.left
+               && right == other.right;
     }
 
     @Override
@@ -117,7 +140,8 @@ public class RNAInteractionType implements Serializable, Comparable<RNAInteracti
         return value;
     }
 
-    private static int getNucleotideFragmentInternalValue(RNAResidueComponentType type) {
+    private static int getNucleotideFragmentInternalValue(
+            RNAResidueComponentType type) {
         switch (type) {
             case BASE:
                 return 1;

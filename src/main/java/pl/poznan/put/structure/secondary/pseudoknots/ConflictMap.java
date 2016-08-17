@@ -1,5 +1,10 @@
 package pl.poznan.put.structure.secondary.pseudoknots;
 
+import org.apache.commons.collections4.CollectionUtils;
+import pl.poznan.put.structure.secondary.pseudoknots.dp.Clique;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A map of conflicts between regions. A conflict is when one region starts/end
+ * in the middle of another region.
+ */
 public class ConflictMap {
     private final Map<Region, Set<Region>> conflicts;
 
@@ -84,7 +93,53 @@ public class ConflictMap {
         return Collections.unmodifiableSet(conflicts.keySet());
     }
 
-    public final boolean hasConflicts() {
+    public final boolean hasAnyConflicts() {
         return !conflicts.isEmpty();
+    }
+
+    public final boolean hasConflicts(final Region region) {
+        return conflicts.containsKey(region);
+    }
+
+    public final List<Clique> getConflictCliques(boolean isSingleton) {
+        if (conflicts.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        if (isSingleton) {
+            return Collections.singletonList(new Clique(conflicts.keySet()));
+        }
+
+        List<Clique> cliques = new ArrayList<>();
+        Collection<Region> seen = new HashSet<>();
+
+        for (Region region : conflicts.keySet()) {
+            if (seen.contains(region)) {
+                continue;
+            }
+
+            Collection<Region> todo = new HashSet<>();
+            todo.add(region);
+            Set<Region> done = new HashSet<>();
+
+            while (!CollectionUtils.isEqualCollection(todo, done)) {
+                Collection<Region> next = new ArrayList<>();
+                for (Region r : todo) {
+                    next.addAll(conflicts.get(r));
+                    done.add(r);
+                }
+                todo.addAll(next);
+            }
+
+            if (done.size() > 1) {
+                cliques.add(new Clique(done));
+            }
+
+            for (Region r : done) {
+                seen.add(r);
+            }
+        }
+
+        return cliques;
     }
 }

@@ -1,5 +1,8 @@
 package pl.poznan.put.rna;
 
 public enum RNAResidueComponentType {
-    BASE, SUGAR, PHOSPHATE, UNKNOWN
+    BASE,
+    SUGAR,
+    PHOSPHATE,
+    UNKNOWN
 }

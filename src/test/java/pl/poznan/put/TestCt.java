@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import pl.poznan.put.structure.secondary.formats.Ct;
 import pl.poznan.put.structure.secondary.formats.DotBracket;
-import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
+import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 
 public class TestCt {
     //@formatter:off
@@ -147,18 +147,18 @@ public class TestCt {
 
     @SuppressWarnings("static-method")
     @Test
-    public void testGood() throws InvalidSecondaryStructureException {
+    public void testGood() throws InvalidStructureException {
         Ct.fromString(TestCt.inputGood);
     }
 
     @SuppressWarnings("static-method")
     @Test
-    public void testGoodMulti() throws InvalidSecondaryStructureException {
+    public void testGoodMulti() throws InvalidStructureException {
         Ct.fromString(TestCt.inputGoodMulti);
     }
 
     @Test
-    public void testRnaStrand() throws InvalidSecondaryStructureException, URISyntaxException, IOException {
+    public void testRnaStrand() throws InvalidStructureException, URISyntaxException, IOException {
         URI uri = getClass().getClassLoader().getResource(".").toURI();
         File dir = new File(uri);
         File ctFile = new File(dir, "../../src/test/resources/CRW_00528.ct");
@@ -168,7 +168,7 @@ public class TestCt {
     }
 
     @Test
-    public void testX3Dna() throws InvalidSecondaryStructureException, URISyntaxException, IOException {
+    public void testX3Dna() throws InvalidStructureException, URISyntaxException, IOException {
         URI uri = getClass().getClassLoader().getResource(".").toURI();
         File dir = new File(uri);
         File ctFile = new File(dir, "../../src/test/resources/3CC2-x3dna.ct");
@@ -178,121 +178,121 @@ public class TestCt {
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidFirstLine1() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidFirstLine1() throws InvalidStructureException {
         Ct.fromString(TestCt.inputBadFirstLine1);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidFirstLine2() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidFirstLine2() throws InvalidStructureException {
         Ct.fromString(TestCt.inputBadFirstLine2);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidTooFew() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidTooFew() throws InvalidStructureException {
         Ct.fromString(TestCt.inputBadTooFew);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidTooMany() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidTooMany() throws InvalidStructureException {
         Ct.fromString(TestCt.inputBadTooMany);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadIndex1() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadIndex1() throws InvalidStructureException {
         Ct.fromString(inputBadIndex1);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadIndex2() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadIndex2() throws InvalidStructureException {
         Ct.fromString(inputBadIndex2);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadBefore1() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadBefore1() throws InvalidStructureException {
         Ct.fromString(inputBadBefore1);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadBefore2() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadBefore2() throws InvalidStructureException {
         Ct.fromString(inputBadBefore2);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadBefore3() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadBefore3() throws InvalidStructureException {
         Ct.fromString(inputBadBefore3);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadBefore4() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadBefore4() throws InvalidStructureException {
         Ct.fromString(inputBadBefore4);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadAfter1() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadAfter1() throws InvalidStructureException {
         Ct.fromString(inputBadAfter1);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadAfter2() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadAfter2() throws InvalidStructureException {
         Ct.fromString(inputBadAfter2);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadAfter3() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadAfter3() throws InvalidStructureException {
         Ct.fromString(inputBadAfter3);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadPair1() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadPair1() throws InvalidStructureException {
         Ct.fromString(inputBadPair1);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadPair2() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadPair2() throws InvalidStructureException {
         Ct.fromString(inputBadPair2);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadOriginal() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadOriginal() throws InvalidStructureException {
         Ct.fromString(inputBadOriginal);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadNumbering() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadNumbering() throws InvalidStructureException {
         Ct.fromString(inputBadNumbering);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testInvalidBadMapping() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testInvalidBadMapping() throws InvalidStructureException {
         Ct.fromString(inputBadMapping);
     }
 
     @SuppressWarnings("static-method")
     @Test
-    public void fromDotBracket() throws InvalidSecondaryStructureException {
+    public void fromDotBracket() throws InvalidStructureException {
         Ct.fromDotBracket(DotBracket.fromString(TestDotBracket.FROM_2Z74));
     }
 
     @Test
-    public void test4UG0() throws InvalidSecondaryStructureException {
+    public void test4UG0() throws InvalidStructureException {
         DotBracket dotBracket = DotBracket.fromString(dbn4UG0);
         Ct.fromDotBracket(dotBracket);
     }

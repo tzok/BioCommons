@@ -14,14 +14,17 @@ public class DotBracketFromPdb extends DotBracket {
     private final Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue = new HashMap<>();
     private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<>();
 
-    public DotBracketFromPdb(String sequence, String structure, PdbModel model) throws InvalidSecondaryStructureException {
+    public DotBracketFromPdb(String sequence, String structure, PdbModel model) throws
+
+                                                                                InvalidStructureException {
         super(sequence, DotBracketFromPdb.updateMissingIndices(structure, model));
 
         mapSymbolsAndResidues(model);
         splitStrands(model);
     }
 
-    public DotBracketFromPdb(DotBracket dotBracket, PdbModel model) throws InvalidSecondaryStructureException {
+    public DotBracketFromPdb(DotBracket dotBracket, PdbModel model) throws
+                                                                    InvalidStructureException {
         this(dotBracket.sequence, dotBracket.structure, model);
     }
 

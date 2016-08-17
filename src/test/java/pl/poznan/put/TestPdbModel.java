@@ -14,7 +14,7 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.*;
 import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
+import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 
 import java.io.File;
 import java.io.IOException;
@@ -326,13 +326,15 @@ public class TestPdbModel {
     }
 
     @Test
-    public void testCanonicalSecondaryStructure() throws PdbParsingException, InvalidSecondaryStructureException {
+    public void testCanonicalSecondaryStructure() throws PdbParsingException,
+                                                         InvalidStructureException {
         assertBpSeqEquals(pdb1EHZ, bpseq1EHZ);
         assertBpSeqEquals(pdb2Z74, bpseq2Z74);
         assertBpSeqEquals(pdb2MIY, bpseq2MIY);
     }
 
-    private static void assertBpSeqEquals(String pdbString, String bpSeqString) throws PdbParsingException, InvalidSecondaryStructureException {
+    private static void assertBpSeqEquals(String pdbString, String bpSeqString) throws PdbParsingException,
+                                                                                       InvalidStructureException {
         PdbParser parser = new PdbParser(false);
         List<PdbModel> models = parser.parse(pdbString);
         PdbModel model = models.get(0);

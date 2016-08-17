@@ -118,8 +118,9 @@ public class BpSeq implements Serializable {
                 return false;
             }
             BpSeq.Entry other = (BpSeq.Entry) obj;
-            return (index == other.index) && (pair == other.pair) &&
-                   (seq == other.seq);
+            return (index == other.index) && (pair == other.pair) && (seq
+                                                                      ==
+                                                                      other.seq);
         }
 
         @Override
@@ -142,7 +143,7 @@ public class BpSeq implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(BpSeq.class);
 
     public static BpSeq fromString(final String data)
-            throws InvalidSecondaryStructureException {
+            throws InvalidStructureException {
         List<BpSeq.Entry> entries = new ArrayList<>();
 
         for (String line : data.split(System.lineSeparator())) {
@@ -160,7 +161,7 @@ public class BpSeq implements Serializable {
             String[] split = BpSeq.WHITESPACE.split(line);
 
             if ((split.length != 3) || (split[1].length() != 1)) {
-                throw new InvalidSecondaryStructureException(String.format(
+                throw new InvalidStructureException(String.format(
                         "Line does not conform to BPSEQ format: %s", line));
             }
 
@@ -173,7 +174,7 @@ public class BpSeq implements Serializable {
                 seq = split[1].charAt(0);
                 pair = Integer.valueOf(split[2]);
             } catch (NumberFormatException e) {
-                throw new InvalidSecondaryStructureException(String.format(
+                throw new InvalidStructureException(String.format(
                         "Line does not conform to BPSEQ format: %s", line), e);
             }
 
@@ -183,20 +184,19 @@ public class BpSeq implements Serializable {
         return new BpSeq(entries);
     }
 
-    public static BpSeq fromCt(final Ct ct)
-            throws InvalidSecondaryStructureException {
+    public static BpSeq fromCt(final Ct ct) throws InvalidStructureException {
         List<BpSeq.Entry> bpseqEntries = new ArrayList<>();
 
         for (Ct.Entry e : ct.getEntries()) {
-            bpseqEntries.add(
-                    new BpSeq.Entry(e.getIndex(), e.getPair(), e.getSeq()));
+            bpseqEntries.add(new BpSeq.Entry(e.getIndex(), e.getPair(),
+                                             e.getSeq()));
         }
 
         return new BpSeq(bpseqEntries);
     }
 
     public static BpSeq fromDotBracket(final DotBracket db)
-            throws InvalidSecondaryStructureException {
+            throws InvalidStructureException {
         List<BpSeq.Entry> entries = new ArrayList<>();
 
         for (DotBracketSymbol symbol : db.getSymbols()) {
@@ -214,7 +214,7 @@ public class BpSeq implements Serializable {
     public static BpSeq fromResidueCollection(
             final ResidueCollection residueCollection,
             final Iterable<ClassifiedBasePair> basePairs)
-            throws InvalidSecondaryStructureException {
+            throws InvalidStructureException {
         Collection<BasePair> allBasePairs = new ArrayList<>();
         Map<BasePair, String> basePairToComment = new HashMap<>();
 
@@ -271,8 +271,8 @@ public class BpSeq implements Serializable {
 
         for (BasePair basePair : basePairs) {
             PdbResidue left = residueCollection.findResidue(basePair.getLeft());
-            PdbResidue right = residueCollection.findResidue(
-                    basePair.getRight());
+            PdbResidue right =
+                    residueCollection.findResidue(basePair.getRight());
             int indexL = 1 + residues.indexOf(left);
             int indexR = 1 + residues.indexOf(right);
             entries.add(new BpSeq.Entry(indexL, indexR, left.getOneLetterName(),
@@ -290,7 +290,7 @@ public class BpSeq implements Serializable {
     private final SortedSet<BpSeq.Entry> entries;
 
     public BpSeq(final Collection<BpSeq.Entry> entries)
-            throws InvalidSecondaryStructureException {
+            throws InvalidStructureException {
         super();
         this.entries = new TreeSet<>(entries);
         validate();
@@ -299,14 +299,14 @@ public class BpSeq implements Serializable {
     /*
      * Check if all pairs match.
      */
-    private void validate() throws InvalidSecondaryStructureException {
+    private void validate() throws InvalidStructureException {
         Map<Integer, Integer> map = new HashMap<>();
 
         for (BpSeq.Entry e : entries) {
             if (e.getIndex() == e.getPair()) {
-                throw new InvalidSecondaryStructureException(String.format(
-                        "Invalid line in BPSEQ data, a residue cannot be " +
-                        "paired with itself! Line: %s", e));
+                throw new InvalidStructureException(String.format(
+                        "Invalid line in BPSEQ data, a residue cannot be "
+                        + "paired with itself! Line: %s", e));
             }
 
             map.put(e.getIndex(), e.getPair());
@@ -316,23 +316,23 @@ public class BpSeq implements Serializable {
 
         for (BpSeq.Entry e : entries) {
             if ((e.getIndex() - previous) != 1) {
-                throw new InvalidSecondaryStructureException(String.format(
-                        "Inconsistent numbering in BPSEQ format: previous=%d," +
-                        " current=%d", previous, e.getIndex()));
+                throw new InvalidStructureException(String.format(
+                        "Inconsistent numbering in BPSEQ format: previous=%d,"
+                        + " current=%d", previous, e.getIndex()));
             }
             previous = e.getIndex();
 
             int pair = map.get(e.getIndex());
             if (pair != 0) {
                 if (!map.containsKey(pair)) {
-                    throw new InvalidSecondaryStructureException(String.format(
+                    throw new InvalidStructureException(String.format(
                             "Inconsistency in BPSEQ format: (%d -> %d)",
                             e.getIndex(), pair));
                 }
                 if (map.get(pair) != e.getIndex()) {
-                    throw new InvalidSecondaryStructureException(String.format(
-                            "Inconsistency in BPSEQ format: (%d -> %d) and " +
-                            "(%d -> %d)", e.getIndex(), pair, pair,
+                    throw new InvalidStructureException(String.format(
+                            "Inconsistency in BPSEQ format: (%d -> %d) and "
+                            + "(%d -> %d)", e.getIndex(), pair, pair,
                             map.get(pair)));
                 }
             }

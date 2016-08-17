@@ -18,7 +18,7 @@ import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.Ct;
 import pl.poznan.put.structure.secondary.formats.DotBracket;
-import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
+import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 
 public class TestBpSeq {
     private static final String INPUT_GOOD_1 = "1 A 0\n" + "2 C 3\n" + "3 G 2\n" + "4 U 0";
@@ -48,86 +48,87 @@ public class TestBpSeq {
 
     @SuppressWarnings("static-method")
     @Test
-    public void testGood() throws InvalidSecondaryStructureException {
+    public void testGood() throws InvalidStructureException {
         BpSeq.fromString(INPUT_GOOD_1);
         BpSeq.fromString(INPUT_GOOD_2);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testFew() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testFew() throws InvalidStructureException {
         BpSeq.fromString(INPUT_TOO_FEW);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testMany() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testMany() throws InvalidStructureException {
         BpSeq.fromString(INPUT_TOO_MANY);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testLongSeq() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testLongSeq() throws InvalidStructureException {
         BpSeq.fromString(INPUT_TOO_LONG_SEQ);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testIndex1() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testIndex1() throws InvalidStructureException {
         BpSeq.fromString(INPUT_INDEX_1);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testIndex2() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testIndex2() throws InvalidStructureException {
         BpSeq.fromString(INPUT_INDEX_2);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testPair1() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testPair1() throws InvalidStructureException {
         BpSeq.fromString(INPUT_PAIR_1);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testPair2() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testPair2() throws InvalidStructureException {
         BpSeq.fromString(INPUT_PAIR_2);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testNumbering() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testNumbering() throws InvalidStructureException {
         BpSeq.fromString(INPUT_NUMBERING);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testSelfPaired() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testSelfPaired() throws InvalidStructureException {
         BpSeq.fromString(INPUT_SELF_PAIRED);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testMapping1() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testMapping1() throws InvalidStructureException {
         BpSeq.fromString(INPUT_MAPPING_1);
     }
 
     @SuppressWarnings("static-method")
-    @Test(expected = InvalidSecondaryStructureException.class)
-    public void testMapping2() throws InvalidSecondaryStructureException {
+    @Test(expected = InvalidStructureException.class)
+    public void testMapping2() throws InvalidStructureException {
         BpSeq.fromString(INPUT_MAPPING_2);
     }
 
     @SuppressWarnings("static-method")
     @Test
-    public void fromDotBracket() throws InvalidSecondaryStructureException {
+    public void fromDotBracket() throws InvalidStructureException {
         DotBracket db = DotBracket.fromString(TestDotBracket.FROM_2Z74);
         BpSeq.fromDotBracket(db);
     }
 
     @Test
-    public void testManyChainsWithMissingResidues() throws PdbParsingException, InvalidSecondaryStructureException {
+    public void testManyChainsWithMissingResidues() throws PdbParsingException,
+                                                           InvalidStructureException {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1XPO);
         assertEquals(1, models.size());

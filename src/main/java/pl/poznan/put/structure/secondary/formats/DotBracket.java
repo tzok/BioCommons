@@ -1,45 +1,53 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.Stack;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.TreeBidiMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class DotBracket implements Serializable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DotBracket.class);
-    private static final Pattern DOTBRACKET_PATTERN = Pattern.compile("(>(strand_)?(.+)\n)?([ACGUTRYNacgutryn]+)\n([-.()\\[\\]{}<>A-Za-z]+)");
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(DotBracket.class);
+    private static final Pattern DOTBRACKET_PATTERN = Pattern.compile(
+            "(>(strand_)?(.+)\n)?([ACGUTRYNacgutryn]+)\n([-.()"
+            + "\\[\\]{}<>A-Za-z]+)");
+    private static final long serialVersionUID = -517503434874402102L;
+    private static final Pattern SEQUENCE_PATTERN =
+            Pattern.compile("[ACGUTRYNacgutryn]+");
+    private static final Pattern STRUCTURE_PATTERN =
+            Pattern.compile("[-.()\\[\\]{}<>A-Za-z]+");
 
     /*
      * This is just a simple and naive implementation (a greedy heuristic). For
      * a robust solution, go check RNApdbee http://rnapdbee.cs.put.poznan.pl
      */
-    public static DotBracket fromBpSeq(BpSeq bpSeq) throws InvalidSecondaryStructureException {
+    public static DotBracket fromBpSeq(final BpSeq bpSeq)
+            throws InvalidStructureException {
         String sequence = bpSeq.getSequence();
         String structure = DotBracket.bpSeqToStructure(bpSeq);
         return new DotBracket(sequence, structure);
     }
 
-    private static String bpSeqToStructure(BpSeq bpSeq) {
+    private static String bpSeqToStructure(final BpSeq bpSeq) {
         Stack<Integer> stack = new Stack<>();
 
         List<BpSeq.Entry> entries = new ArrayList<>(bpSeq.getEntries());
-        SortedSet<BpSeq.Entry> current = new TreeSet<>();
-        SortedSet<BpSeq.Entry> next = new TreeSet<>(entries);
+        Collection<BpSeq.Entry> current = new TreeSet<>();
+        Collection<BpSeq.Entry> next = new TreeSet<>(entries);
 
         int[] levels = new int[entries.size()];
         int currentLevel = 0;
@@ -74,7 +82,7 @@ public class DotBracket implements Serializable {
             currentLevel += 1;
         }
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(bpSeq.size());
         char[] bracketsOpening = "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
         char[] bracketsClosing = ")]}>abcdefghijklmnopqrstuvwxyz".toCharArray();
 
@@ -94,23 +102,26 @@ public class DotBracket implements Serializable {
         return builder.toString();
     }
 
-    public static DotBracket fromString(String data) throws InvalidSecondaryStructureException {
-        List<Pair<Integer, Integer>> pairBeginEnd = new ArrayList<>();
+    public static DotBracket fromString(final CharSequence data)
+            throws InvalidStructureException {
+        Matcher matcher = DotBracket.DOTBRACKET_PATTERN.matcher(data);
+
+        Collection<Pair<Integer, Integer>> pairBeginEnd = new ArrayList<>();
         List<String> strandNames = new ArrayList<>();
-        StringBuilder sequenceBuilder = new StringBuilder();
-        StringBuilder structureBuilder = new StringBuilder();
+        StringBuilder sequenceBuilder = new StringBuilder(data.length());
+        StringBuilder structureBuilder = new StringBuilder(data.length());
         int begin = 0;
         int end = 0;
 
-        Matcher matcher = DotBracket.DOTBRACKET_PATTERN.matcher(data);
-
         while (matcher.find()) {
-            String strandName = matcher.group(3) != null ? matcher.group(3) : "";
+            String strandName =
+                    (matcher.group(3) != null) ? matcher.group(3) : "";
             String sequence = matcher.group(4);
             String structure = matcher.group(5);
 
             if (sequence.length() != structure.length()) {
-                throw new InvalidSecondaryStructureException("Invalid dot-bracket string:\n" + data);
+                throw new InvalidStructureException(
+                        "Invalid dot-bracket string:\n" + data);
             }
 
             strandNames.add(strandName);
@@ -122,12 +133,21 @@ public class DotBracket implements Serializable {
             begin = end;
         }
 
-        DotBracket dotBracket = new DotBracket(sequenceBuilder.toString(), structureBuilder.toString());
+        if ((sequenceBuilder.length() == 0) || (structureBuilder.length()
+                                                == 0)) {
+            throw new InvalidStructureException(
+                    "Cannot parse dot-bracket:\n" + data);
+        }
+
+        DotBracket dotBracket = new DotBracket(sequenceBuilder.toString(),
+                                               structureBuilder.toString());
         dotBracket.strands.clear();
 
         int index = 0;
         for (Pair<Integer, Integer> pair : pairBeginEnd) {
-            dotBracket.strands.add(new Strand(dotBracket, strandNames.get(index), pair.getLeft(), pair.getRight()));
+            dotBracket.strands
+                    .add(new Strand(dotBracket, strandNames.get(index),
+                                    pair.getLeft(), pair.getRight()));
             index += 1;
         }
 
@@ -141,13 +161,16 @@ public class DotBracket implements Serializable {
     protected final String sequence;
     protected final String structure;
 
-    public DotBracket(String sequence, String structure) throws InvalidSecondaryStructureException {
+    public DotBracket(final String sequence, final String structure)
+            throws InvalidStructureException {
         super();
         this.sequence = sequence;
         this.structure = structure;
 
-        if (!sequence.matches("[ACGUTRYNacgutryn]+") || !structure.matches("[-.()\\[\\]{}<>A-Za-z]+")) {
-            throw new InvalidSecondaryStructureException("Invalid dot-bracket:\n" + sequence + "\n" + structure);
+        if (!DotBracket.SEQUENCE_PATTERN.matcher(sequence).matches()
+            || !DotBracket.STRUCTURE_PATTERN.matcher(structure).matches()) {
+            throw new InvalidStructureException(
+                    "Invalid dot-bracket:\n" + sequence + '\n' + structure);
         }
 
         buildSymbolList();
@@ -175,7 +198,7 @@ public class DotBracket implements Serializable {
         assert symbols.size() == seq.length;
     }
 
-    private void analyzePairing() throws InvalidSecondaryStructureException {
+    private void analyzePairing() throws InvalidStructureException {
         BidiMap<Character, Character> parentheses = new TreeBidiMap<>();
         parentheses.put('(', ')');
         parentheses.put('[', ']');
@@ -186,7 +209,8 @@ public class DotBracket implements Serializable {
             parentheses.put(c, Character.toLowerCase(c));
         }
 
-        Map<Character, Stack<DotBracketSymbol>> parenthesesStacks = new HashMap<>();
+        Map<Character, Stack<DotBracketSymbol>> parenthesesStacks =
+                new HashMap<>();
         for (char c : parentheses.keySet()) {
             parenthesesStacks.put(c, new Stack<DotBracketSymbol>());
         }
@@ -195,7 +219,7 @@ public class DotBracket implements Serializable {
             char str = symbol.getStructure();
 
             // catch dot '.'
-            if (str == '.' || str == '-') {
+            if ((str == '.') || (str == '-')) {
                 symbol.setPair(null);
                 continue;
             }
@@ -213,7 +237,9 @@ public class DotBracket implements Serializable {
                 Stack<DotBracketSymbol> stack = parenthesesStacks.get(opening);
 
                 if (stack.empty()) {
-                    throw new InvalidSecondaryStructureException("Invalid dot-bracket input:\n" + sequence + "\n" + structure);
+                    throw new InvalidStructureException(
+                            "Invalid dot-bracket input:\n" + sequence + '\n'
+                            + structure);
                 }
 
                 DotBracketSymbol pair = stack.pop();
@@ -222,17 +248,19 @@ public class DotBracket implements Serializable {
                 continue;
             }
 
-            DotBracket.LOGGER.error("Unknown symbol in dot-bracket string: " + str);
+            DotBracket.LOGGER
+                    .error("Unknown symbol in dot-bracket string: {}", str);
         }
     }
 
     @Override
-    public String toString() {
-        return ">strand\n" + sequence + "\n" + structure;
+    public final String toString() {
+        return ">strand\n" + sequence + '\n' + structure;
     }
 
-    public String toStringWithStrands() {
-        StringBuilder builder = new StringBuilder();
+    public final String toStringWithStrands() {
+        StringBuilder builder =
+                new StringBuilder(sequence.length() + structure.length());
         for (Strand strand : strands) {
             builder.append(strand);
             builder.append('\n');
@@ -241,16 +269,18 @@ public class DotBracket implements Serializable {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (sequence == null ? 0 : sequence.hashCode());
-        result = prime * result + (structure == null ? 0 : structure.hashCode());
+        result = (prime * result) + ((sequence == null) ? 0
+                                                        : sequence.hashCode());
+        result = (prime * result) + ((structure == null) ? 0 : structure
+                .hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -278,36 +308,36 @@ public class DotBracket implements Serializable {
         return true;
     }
 
-    public String getSequence() {
+    public final String getSequence() {
         return sequence;
     }
 
-    public String getStructure() {
+    public final String getStructure() {
         return structure;
     }
 
-    public int getLength() {
+    public final int getLength() {
         return structure.length();
     }
 
-    public DotBracketSymbol getSymbol(int index) {
+    public final DotBracketSymbol getSymbol(final int index) {
         assert index < symbols.size();
         return symbols.get(index);
     }
 
-    public List<DotBracketSymbol> getSymbols() {
+    public final List<DotBracketSymbol> getSymbols() {
         return Collections.unmodifiableList(symbols);
     }
 
-    public List<Strand> getStrands() {
+    public final List<Strand> getStrands() {
         return Collections.unmodifiableList(strands);
     }
 
-    public int getStrandCount() {
+    public final int getStrandCount() {
         return strands.size();
     }
 
-    public void splitStrands(Ct ct) {
+    public final void splitStrands(final Ct ct) {
         strands.clear();
 
         int start = 0;
@@ -324,7 +354,7 @@ public class DotBracket implements Serializable {
         }
     }
 
-    public List<CombinedStrand> combineStrands() {
+    public final List<CombinedStrand> combineStrands() {
         List<CombinedStrand> result = new ArrayList<>();
         List<Strand> toCombine = new ArrayList<>();
         int level = 0;
@@ -346,8 +376,7 @@ public class DotBracket implements Serializable {
         return result;
     }
 
-    @SuppressWarnings("static-method")
-    protected int getCtOriginalColumn(DotBracketSymbol symbol) {
+    protected int getCtOriginalColumn(final DotBracketSymbol symbol) {
         return symbol.getIndex() + 1;
     }
 }

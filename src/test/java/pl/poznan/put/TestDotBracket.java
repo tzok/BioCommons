@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.DotBracket;
-import pl.poznan.put.structure.secondary.formats.InvalidSecondaryStructureException;
+import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 
 public class TestDotBracket {
     // @formatter:off
@@ -57,14 +57,14 @@ public class TestDotBracket {
 
     @SuppressWarnings("static-method")
     @Test
-    public void from2Z74() throws InvalidSecondaryStructureException {
+    public void from2Z74() throws InvalidStructureException {
         DotBracket dotBracket = DotBracket.fromString(TestDotBracket.FROM_2Z74);
         assertEquals(2, dotBracket.getStrands().size());
     }
 
     @SuppressWarnings("static-method")
     @Test
-    public void fromBpSeq() throws InvalidSecondaryStructureException {
+    public void fromBpSeq() throws InvalidStructureException {
         BpSeq bpSeq = BpSeq.fromString(TestDotBracket.BPSEQ);
         DotBracket dotBracketFromBpSeq = DotBracket.fromBpSeq(bpSeq);
         DotBracket dotBracketFromString = DotBracket.fromString(TestDotBracket.DOTBRACKET);
@@ -72,7 +72,7 @@ public class TestDotBracket {
     }
 
     @Test
-    public void fromBpSeq1EHZ() throws InvalidSecondaryStructureException {
+    public void fromBpSeq1EHZ() throws InvalidStructureException {
         BpSeq bpSeq = BpSeq.fromString(bpseq1EHZ);
         DotBracket dotBracketFromBpSeq = DotBracket.fromBpSeq(bpSeq);
         DotBracket dotBracketFromString = DotBracket.fromString(dotBracket1EHZ);

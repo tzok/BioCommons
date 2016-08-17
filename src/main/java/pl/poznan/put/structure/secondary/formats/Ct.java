@@ -156,7 +156,7 @@ public class Ct implements Serializable {
     private static final boolean FIX_LAST_ENTRY = true;
     private static boolean printComments = true;
 
-    public static Ct fromString(String data) throws InvalidSecondaryStructureException {
+    public static Ct fromString(String data) throws InvalidStructureException {
         List<Entry> entries = new ArrayList<>();
         boolean firstLine = true;
 
@@ -178,17 +178,17 @@ public class Ct implements Serializable {
                 try {
                     int lineCount = Integer.parseInt(split[0]);
                     if (lineCount < 0) {
-                        throw new InvalidSecondaryStructureException("Invalid CT format. Line count < 0 detected: " + line);
+                        throw new InvalidStructureException("Invalid CT format. Line count < 0 detected: " + line);
                     }
                 } catch (NumberFormatException e) {
-                    throw new InvalidSecondaryStructureException("Invalid CT format. Failed to parse line count: " + line, e);
+                    throw new InvalidStructureException("Invalid CT format. Failed to parse line count: " + line, e);
                 }
                 firstLine = false;
                 continue;
             }
 
             if (split.length != 6) {
-                throw new InvalidSecondaryStructureException("Invalid CT format. Six columns not found in line: " + line);
+                throw new InvalidStructureException("Invalid CT format. Six columns not found in line: " + line);
             }
 
             int index, pair, before, after, original;
@@ -202,7 +202,7 @@ public class Ct implements Serializable {
                 pair = Integer.valueOf(split[4]);
                 original = Integer.valueOf(split[5]);
             } catch (NumberFormatException e) {
-                throw new InvalidSecondaryStructureException("Invalid CT format. Failed to parse column values: " + line, e);
+                throw new InvalidStructureException("Invalid CT format. Failed to parse column values: " + line, e);
             }
 
             entries.add(new Entry(index, pair, before, after, original, seq));
@@ -211,7 +211,7 @@ public class Ct implements Serializable {
         return new Ct(entries);
     }
 
-    public static Ct fromBpSeq(BpSeq bpSeq) throws InvalidSecondaryStructureException {
+    public static Ct fromBpSeq(BpSeq bpSeq) throws InvalidStructureException {
         List<Ct.Entry> ctEntries = new ArrayList<>();
         SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
         int size = entries.size();
@@ -227,12 +227,13 @@ public class Ct implements Serializable {
         return new Ct(ctEntries);
     }
 
-    public static Ct fromBpSeqAndPdbModel(BpSeq bpSeq, PdbModel model) throws InvalidSecondaryStructureException {
+    public static Ct fromBpSeqAndPdbModel(BpSeq bpSeq, PdbModel model) throws
+                                                                       InvalidStructureException {
         PdbModel rna;
         try {
             rna = model.filteredNewInstance(MoleculeType.RNA);
         } catch (PdbParsingException e) {
-            throw new InvalidSecondaryStructureException("Failed to filter RNA chains", e);
+            throw new InvalidStructureException("Failed to filter RNA chains", e);
         }
 
         List<Ct.Entry> ctEntries = new ArrayList<>();
@@ -260,7 +261,8 @@ public class Ct implements Serializable {
         return new Ct(ctEntries);
     }
 
-    public static Ct fromDotBracket(DotBracket dotBracket) throws InvalidSecondaryStructureException {
+    public static Ct fromDotBracket(DotBracket dotBracket) throws
+                                                           InvalidStructureException {
         List<Ct.Entry> entries = new ArrayList<>();
 
         for (Strand s : dotBracket.getStrands()) {
@@ -297,7 +299,7 @@ public class Ct implements Serializable {
 
     private final SortedSet<Entry> entries;
 
-    public Ct(List<Entry> entries) throws InvalidSecondaryStructureException {
+    public Ct(List<Entry> entries) throws InvalidStructureException {
         this.entries = new TreeSet<>(entries);
         validate();
     }
@@ -305,7 +307,7 @@ public class Ct implements Serializable {
     /*
      * Check if all pairs match.
      */
-    private void validate() throws InvalidSecondaryStructureException {
+    private void validate() throws InvalidStructureException {
         if (Ct.LOGGER.isTraceEnabled()) {
             Ct.LOGGER.trace("CT to be validated:\n" + toString());
         }
@@ -320,7 +322,7 @@ public class Ct implements Serializable {
 
         for (Entry e : entries) {
             if (e.index - previous != 1) {
-                throw new InvalidSecondaryStructureException("Inconsistent numbering in CT format: previous=" + previous + ", current" + e.index);
+                throw new InvalidStructureException("Inconsistent numbering in CT format: previous=" + previous + ", current" + e.index);
             }
 
             previous = e.index;
@@ -328,11 +330,11 @@ public class Ct implements Serializable {
 
             if (pair != 0) {
                 if (!map.containsKey(pair)) {
-                    throw new InvalidSecondaryStructureException("Inconsistency in CT format: (" + e.index + " -> " + pair + ")");
+                    throw new InvalidStructureException("Inconsistency in CT format: (" + e.index + " -> " + pair + ")");
                 }
 
                 if (map.get(pair) != e.index) {
-                    throw new InvalidSecondaryStructureException("Inconsistency in CT format: (" + e.index + " -> " + pair + ") and (" + pair + " -> " + map.get(pair) + ")");
+                    throw new InvalidStructureException("Inconsistency in CT format: (" + e.index + " -> " + pair + ") and (" + pair + " -> " + map.get(pair) + ")");
                 }
             }
         }
@@ -341,11 +343,11 @@ public class Ct implements Serializable {
 
         for (Entry e : entries) {
             if (e.before < 0 || e.before >= previous) {
-                throw new InvalidSecondaryStructureException("Inconsistency in CT format. Third column has invalid value in entry: " + e);
+                throw new InvalidStructureException("Inconsistency in CT format. Third column has invalid value in entry: " + e);
             }
 
             if (e.after == 1 || e.after < 0 || e.after > previous + 1) {
-                throw new InvalidSecondaryStructureException("Inconsistency in CT format. Fourth column has invalid value in entry: " + e);
+                throw new InvalidStructureException("Inconsistency in CT format. Fourth column has invalid value in entry: " + e);
             }
         }
 
@@ -357,11 +359,11 @@ public class Ct implements Serializable {
 
         for (Entry e : entries) {
             if (e.getBefore() != 0 && expectNewStrand || e.getBefore() == 0 && !expectNewStrand) {
-                throw new InvalidSecondaryStructureException("Inconsistency in CT format. The field 'before' is non-zero for the first entry in a strand: " + e);
+                throw new InvalidStructureException("Inconsistency in CT format. The field 'before' is non-zero for the first entry in a strand: " + e);
             }
 
             if (prevEntry != null && (prevEntry.getAfter() != 0 && expectNewStrand || prevEntry.getAfter() == 0 && !expectNewStrand)) {
-                throw new InvalidSecondaryStructureException("Inconsistency in CT format. The field 'after' is non-zero for the last entry in a strand: " + prevEntry);
+                throw new InvalidStructureException("Inconsistency in CT format. The field 'after' is non-zero for the last entry in a strand: " + prevEntry);
             }
 
             expectNewStrand = e.getAfter() == 0;
@@ -375,7 +377,7 @@ public class Ct implements Serializable {
                 entries.remove(lastEntry);
                 entries.add(new Entry(lastEntry.index, lastEntry.pair, lastEntry.before, 0, lastEntry.original, lastEntry.seq));
             } else {
-                throw new InvalidSecondaryStructureException("The field 'after' in the last entry is non-zero: " + lastEntry);
+                throw new InvalidStructureException("The field 'after' in the last entry is non-zero: " + lastEntry);
             }
         }
     }
