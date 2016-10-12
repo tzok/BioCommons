@@ -5,8 +5,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.analysis.MmCifParser;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
+import pl.poznan.put.pdb.analysis.StructureParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -29,7 +31,8 @@ import java.util.zip.GZIPInputStream;
 public final class StructureManager {
     private static final String ENCODING_UTF_8 = "UTF-8";
     private static final List<StructureInfo> STRUCTURES = new ArrayList<>();
-    private static final PdbParser PDB_READER = new PdbParser(false);
+    private static final PdbParser PDB_PARSER = new PdbParser(false);
+    private static final MmCifParser MM_CIF_PARSER = new MmCifParser();
 
     private StructureManager() {
     }
@@ -95,13 +98,14 @@ public final class StructureManager {
      * @throws IOException
      * @throws PdbParsingException
      */
-    public static List<PdbModel> loadStructure(File file)
+    public static List<? extends PdbModel> loadStructure(File file)
             throws IOException, PdbParsingException {
         List<PdbModel> models = StructureManager.getModels(file);
-        if (models.size() > 0) {
+        if (!models.isEmpty()) {
             return models;
         }
 
+        StructureParser parser;
         String fileContent = StructureManager.readFileUnzipIfNeeded(file);
         String name = file.getName();
 
@@ -109,17 +113,15 @@ public final class StructureManager {
             if (!StructureManager.isMmCif(fileContent)) {
                 throw new IOException("File is not a mmCIF structure: " + file);
             }
-            // TODO: Implement a parser for mmCIF format
-            throw new UnsupportedOperationException(
-                    "Sorry, mmCIF parsing is currently unavailable");
+            parser = StructureManager.MM_CIF_PARSER;
+        } else {
+            if (!StructureManager.isPdb(fileContent)) {
+                throw new IOException("File is not a PDB structure: " + file);
+            }
+            parser = StructureManager.PDB_PARSER;
         }
 
-        if (!StructureManager.isPdb(fileContent)) {
-            throw new IOException("File is not a PDB structure: " + file);
-        }
-
-        List<PdbModel> structures =
-                StructureManager.PDB_READER.parse(fileContent);
+        List<? extends PdbModel> structures = parser.parse(fileContent);
         StructureManager.storeStructureInfo(file, structures);
         return structures;
     }
@@ -166,7 +168,8 @@ public final class StructureManager {
     }
 
     private static void storeStructureInfo(File file,
-                                           List<PdbModel> structures) {
+                                           List<? extends PdbModel>
+                                                   structures) {
         String format = "%s";
 
         if (structures.size() > 1) {
@@ -242,7 +245,7 @@ public final class StructureManager {
                                         StructureManager.ENCODING_UTF_8);
 
             List<PdbModel> models =
-                    StructureManager.PDB_READER.parse(pdbContent);
+                    StructureManager.PDB_PARSER.parse(pdbContent);
             StructureManager.storeStructureInfo(pdbFile, models);
             return models;
         } finally {

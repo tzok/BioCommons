@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class PdbParser {
+public class PdbParser implements StructureParser {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(PdbParser.class);
 
@@ -44,9 +44,10 @@ public class PdbParser {
 
     public PdbParser() {
         super();
-        this.strictMode = true;
+        strictMode = true;
     }
 
+    @Override
     public synchronized List<PdbModel> parse(String pdbFileContent)
             throws PdbParsingException {
         resetState();
