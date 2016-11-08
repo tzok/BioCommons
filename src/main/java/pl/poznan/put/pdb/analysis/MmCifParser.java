@@ -19,7 +19,7 @@ public class MmCifParser implements StructureParser {
     }
 
     @Override
-    public synchronized List<CifModel> parse(String mmCifContent)
+    public synchronized List<MmCifModel> parse(String mmCifContent)
             throws IOException, PdbParsingException {
         Reader reader = null;
 

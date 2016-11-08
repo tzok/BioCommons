@@ -28,14 +28,14 @@ public class PdbModel implements Serializable, ResidueCollection {
     protected final List<PdbModresLine> modifiedResidues;
     private final List<PdbChain> chains = new ArrayList<>();
     private final List<PdbResidue> residues = new ArrayList<>();
-    private final Set<PdbResidueIdentifier> missingResiduesIdentifiers =
-            new HashSet<>();
+    private final Set<PdbResidueIdentifier> missingResiduesIdentifiers
+            = new HashSet<>();
     private final Map<PdbResidueIdentifier, PdbModresLine>
             identifierToModification = new HashMap<>();
-    private final Map<PdbResidueIdentifier, PdbResidue> identifierToResidue =
-            new HashMap<>();
-    private final Map<PdbResidueIdentifier, PdbChain> identifierToChain =
-            new HashMap<>();
+    private final Map<PdbResidueIdentifier, PdbResidue> identifierToResidue
+            = new HashMap<>();
+    private final Map<PdbResidueIdentifier, PdbChain> identifierToChain
+            = new HashMap<>();
     private final List<PdbAtomLine> atoms;
     private final List<PdbRemark465Line> missingResidues;
 
@@ -83,12 +83,12 @@ public class PdbModel implements Serializable, ResidueCollection {
         assert atoms.size() > 0;
 
         List<PdbAtomLine> residueAtoms = new ArrayList<>();
-        PdbResidueIdentifier lastResidueIdentifier =
-                PdbResidueIdentifier.fromChainNumberICode(atoms.get(0));
+        PdbResidueIdentifier lastResidueIdentifier = PdbResidueIdentifier
+                .fromChainNumberICode(atoms.get(0));
 
         for (PdbAtomLine atom : atoms) {
-            PdbResidueIdentifier residueIdentifier =
-                    PdbResidueIdentifier.fromChainNumberICode(atom);
+            PdbResidueIdentifier residueIdentifier = PdbResidueIdentifier
+                    .fromChainNumberICode(atom);
 
             if (!residueIdentifier.equals(lastResidueIdentifier)) {
                 saveExistingResidueIfValid(residueAtoms, lastResidueIdentifier);
@@ -199,7 +199,7 @@ public class PdbModel implements Serializable, ResidueCollection {
         if (!identifierToModification.containsKey(residueIdentifier)) {
             throw new IllegalArgumentException(
                     "Failed to find information about modification of: "
-                    + residueIdentifier);
+                            + residueIdentifier);
         }
 
         return identifierToModification.get(residueIdentifier)
@@ -282,10 +282,23 @@ public class PdbModel implements Serializable, ResidueCollection {
         StringBuilder builder = new StringBuilder();
         for (PdbResidue residue : residues) {
             for (PdbAtomLine atom : residue.getAtoms()) {
-                builder.append(atom);
-                builder.append('\n');
+                builder.append(atom).append('\n');
             }
         }
+        return builder.toString();
+    }
+
+    public String toMmCifString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("data_").append(getIdCode()).append('\n');
+        builder.append(PdbAtomLine.MMCIF_LOOP).append('\n');
+
+        for (PdbResidue residue : residues) {
+            for (PdbAtomLine atom : residue.getAtoms()) {
+                builder.append(atom.toMmCif()).append('\n');
+            }
+        }
+
         return builder.toString();
     }
 

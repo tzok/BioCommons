@@ -16,8 +16,8 @@ import java.io.Serializable;
 import java.util.Locale;
 
 public class PdbAtomLine implements Serializable, ChainNumberICode {
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(PdbAtomLine.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(PdbAtomLine.class);
 
     // @formatter:off
     /*
@@ -39,13 +39,28 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         77 - 78        LString(2)    element      Element symbol, right-justified.
         79 - 80        LString(2)    charge       Charge  on the atom.
      */
+    private static final String FORMAT_ATOM_4_CHARACTER
+            = "ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f         %2s%2s";
+    private static final String FORMAT
+            = "ATOM  %5d  %-3s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f        %2s%2s";
+    public static final String MMCIF_LOOP
+            = "loop_\n" +
+              "_atom_site.id\n" +
+              "_atom_site.auth_atom_id\n" +
+              "_atom_site.label_alt_id\n" +
+              "_atom_site.auth_comp_id\n" +
+              "_atom_site.auth_asym_id\n" +
+              "_atom_site.auth_seq_id\n" +
+              "_atom_site.pdbx_PDB_ins_code\n" +
+              "_atom_site.Cartn_x\n" +
+              "_atom_site.Cartn_y\n" +
+              "_atom_site.Cartn_z\n" +
+              "_atom_site.occupancy\n" +
+              "_atom_site.B_iso_or_equiv\n" +
+              "_atom_site.type_symbol\n" +
+              "_atom_site.pdbx_formal_charge";
     // @formatter:on
-    private static final String FORMAT_ATOM_4_CHARACTER =
-            "ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f         "
-            + " %2s%2s";
-    private static final String FORMAT =
-            "ATOM  %5d  %-3s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f        "
-            + "  %2s%2s";
+
     private static final String RECORD_NAME = "ATOM";
     private final int serialNumber;
     private final String atomName;
@@ -123,7 +138,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         // in non-strict mode, only up to X, Y, Z fields are required, rest is
         // optional
         if (strictMode && line.length() < 80
-            || !strictMode && line.length() < 54) {
+                || !strictMode && line.length() < 54) {
             throw new PdbParsingException("PDB ATOM line is too short");
         }
 
@@ -152,10 +167,10 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
             double temperatureFactor = line.length() >= 66 && StringUtils
                     .isNotBlank(line.substring(60, 66)) ? Double.parseDouble(
                     line.substring(60, 66).trim()) : 0;
-            String elementSymbol =
-                    line.length() >= 78 ? line.substring(76, 78).trim() : "";
-            String charge =
-                    line.length() >= 80 ? line.substring(78, 80).trim() : "";
+            String elementSymbol = line.length() >= 78 ? line.substring(76, 78)
+                                                             .trim() : "";
+            String charge = line.length() >= 80 ? line.substring(78, 80).trim()
+                                                : "";
 
             return new PdbAtomLine(serialNumber, atomName, alternateLocation,
                                    residueName, chainIdentifier, residueNumber,
@@ -240,22 +255,22 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         if (alternateLocation.length() != 1) {
             PdbAtomLine.LOGGER
                     .error("Field 'alternateLocation' is longer than 1 char. "
-                           + "Only first letter will be taken");
+                                   + "Only first letter will be taken");
         }
         if (chainIdentifier.length() != 1) {
             PdbAtomLine.LOGGER
                     .error("Field 'chainIdentifier' is longer than 1 char. "
-                           + "Only first letter will be taken");
+                                   + "Only first letter will be taken");
         }
         if (insertionCode.length() != 1) {
             PdbAtomLine.LOGGER
                     .error("Field 'insertionCode' is longer than 1 char. Only"
-                           + " first letter will be taken");
+                                   + " first letter will be taken");
         }
 
-        String format =
-                atomName.length() == 4 ? PdbAtomLine.FORMAT_ATOM_4_CHARACTER
-                                       : PdbAtomLine.FORMAT;
+        String format = atomName.length() == 4
+                        ? PdbAtomLine.FORMAT_ATOM_4_CHARACTER
+                        : PdbAtomLine.FORMAT;
         return String.format(Locale.US, format, serialNumber, atomName,
                              alternateLocation.charAt(0), residueName,
                              chainIdentifier.charAt(0), residueNumber,
@@ -298,12 +313,12 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         if (alternateLocation.length() != 1) {
             throw new MmCifPdbIncompatibilityException(
                     "Cannot convert to PDB. Field 'alternateLocation' is "
-                    + "longer than 1 char");
+                            + "longer than 1 char");
         }
         if (insertionCode.length() != 1) {
             throw new MmCifPdbIncompatibilityException(
                     "Cannot convert to PDB. Field 'insertionCode' is longer "
-                    + "than 1 char");
+                            + "than 1 char");
         }
 
         Group group = new HetatomImpl();
@@ -324,8 +339,30 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         atom.setTempFactor((float) temperatureFactor);
         atom.setElement(Element.valueOfIgnoreCase(elementSymbol));
         atom.setGroup(group);
-
-
         return atom;
+    }
+
+    public String toMmCif() {
+        // these three fields are stored differently in PDB and mmCIF if missing
+        String altloc = alternateLocation.equals(" ") ? "." : alternateLocation;
+        String icode = insertionCode.equals(" ") ? "?" : insertionCode;
+        String chargeMmCif = charge.equals(" ") ? "?" : charge;
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(serialNumber).append(' ');
+        builder.append(atomName).append(' ');
+        builder.append(altloc).append(' ');
+        builder.append(residueName).append(' ');
+        builder.append(chainIdentifier).append(' ');
+        builder.append(residueNumber).append(' ');
+        builder.append(icode).append(' ');
+        builder.append(x).append(' ');
+        builder.append(y).append(' ');
+        builder.append(z).append(' ');
+        builder.append(occupancy).append(' ');
+        builder.append(temperatureFactor).append(' ');
+        builder.append(elementSymbol).append(' ');
+        builder.append(chargeMmCif);
+        return builder.toString();
     }
 }

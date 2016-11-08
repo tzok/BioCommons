@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.pdb.PdbParsingException;
-import pl.poznan.put.pdb.analysis.CifModel;
+import pl.poznan.put.pdb.analysis.MmCifModel;
 import pl.poznan.put.pdb.analysis.MmCifParser;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbResidue;
@@ -34,10 +34,10 @@ public class TestMmCifParser {
     @Test
     public void test100D() throws IOException, PdbParsingException {
         MmCifParser parser = new MmCifParser();
-        List<CifModel> models = parser.parse(cif100D);
+        List<MmCifModel> models = parser.parse(cif100D);
         Assert.assertEquals(1, models.size());
 
-        CifModel model = models.get(0);
+        MmCifModel model = models.get(0);
         List<PdbChain> chains = model.getChains();
         Assert.assertEquals(2, chains.size());
 
@@ -53,9 +53,9 @@ public class TestMmCifParser {
     @Test
     public void test148L() throws IOException, PdbParsingException {
         MmCifParser parser = new MmCifParser();
-        List<CifModel> models = parser.parse(cif148L);
+        List<MmCifModel> models = parser.parse(cif148L);
         Assert.assertEquals(1, models.size());
-        CifModel model = models.get(0);
+        MmCifModel model = models.get(0);
 
         PdbResidue residue = model.findResidue("E", 164, " ");
         Assert.assertTrue(residue.isMissing());
@@ -76,10 +76,10 @@ public class TestMmCifParser {
     @Test
     public void test5A93() throws IOException, PdbParsingException {
         MmCifParser parser = new MmCifParser();
-        List<CifModel> models = parser.parse(cif5A93);
+        List<MmCifModel> models = parser.parse(cif5A93);
         Assert.assertEquals(1, models.size());
 
-        CifModel model = models.get(0);
+        MmCifModel model = models.get(0);
         List<PdbChain> chains = model.getChains();
         Assert.assertEquals(1, chains.size());
 
