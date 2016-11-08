@@ -23,8 +23,8 @@ import java.util.List;
 
 public class PdbResidue
         implements Serializable, Comparable<PdbResidue>, ChainNumberICode {
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(PdbResidue.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(PdbResidue.class);
     private final List<AtomName> atomNames;
     private final ResidueInformationProvider residueInformationProvider;
     private final PdbResidueIdentifier identifier;
@@ -57,8 +57,8 @@ public class PdbResidue
         } else {
             this.residueInformationProvider = ResidueTypeDetector
                     .detectResidueType(modifiedResidueName, atomNames);
-            this.isModified =
-                    isModified || (wasSuccessfullyDetected() && !hasAllAtoms());
+            this.isModified = isModified || (wasSuccessfullyDetected()
+                    && !hasAllAtoms());
         }
     }
 
@@ -86,8 +86,8 @@ public class PdbResidue
             additional.addAll(component.getAdditionalAtoms());
         }
 
-        Predicate<AtomName> isHeavyAtomPredicate =
-                PredicateUtils.invokerPredicate("isHeavy");
+        Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils
+                .invokerPredicate("isHeavy");
         CollectionUtils.filter(actual, isHeavyAtomPredicate);
         CollectionUtils.filter(expected, isHeavyAtomPredicate);
         boolean result = CollectionUtils.isEqualCollection(actual, expected);
@@ -101,18 +101,17 @@ public class PdbResidue
 
             if (!actual.isEmpty()) {
                 PdbResidue.LOGGER.debug("Residue " + this + " ("
-                                        + getDetectedResidueName()
-                                        + ") contains additional atoms: "
-                                        + Arrays.toString(
-                        actual.toArray(new AtomName[actual.size()])));
+                                                + getDetectedResidueName()
+                                                + ") contains additional "
+                                                + "atoms: " + Arrays
+                        .toString(actual.toArray(new AtomName[actual.size()])));
             }
             if (!expected.isEmpty()) {
                 PdbResidue.LOGGER.debug("Residue " + this + " ("
-                                        + getDetectedResidueName()
-                                        + ") has missing atoms: " + Arrays
-                                                .toString(expected.toArray(
-                                                        new AtomName[expected
-                                                                .size()])));
+                                                + getDetectedResidueName()
+                                                + ") has missing atoms: "
+                                                + Arrays.toString(
+                        expected.toArray(new AtomName[expected.size()])));
             }
         }
 
@@ -132,9 +131,8 @@ public class PdbResidue
                                Character
                                        .toString(residueNumberObject
                                                          .getInsCode());
-        PdbResidueIdentifier residueIdentifier =
-                new PdbResidueIdentifier(chainIdentifier, residueNumber,
-                                         insertionCode);
+        PdbResidueIdentifier residueIdentifier = new PdbResidueIdentifier(
+                chainIdentifier, residueNumber, insertionCode);
         String residueName = group.getPDBName();
         List<PdbAtomLine> atoms = new ArrayList<>();
 
@@ -203,8 +201,8 @@ public class PdbResidue
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-                prime * result + (atomNames == null ? 0 : atomNames.hashCode());
+        result = prime * result + (atomNames == null ? 0
+                                                     : atomNames.hashCode());
         result = prime * result + (atoms == null ? 0 : atoms.hashCode());
         result = prime * result + (identifier == null ? 0
                                                       : identifier.hashCode());
@@ -313,14 +311,14 @@ public class PdbResidue
     }
 
     public boolean isConnectedTo(PdbResidue other) {
-        MoleculeType moleculeType =
-                residueInformationProvider.getMoleculeType();
+        MoleculeType moleculeType = residueInformationProvider
+                .getMoleculeType();
         return moleculeType.areConnected(this, other);
     }
 
     public int findConnectedResidueIndex(List<PdbResidue> candidates) {
-        MoleculeType moleculeType =
-                residueInformationProvider.getMoleculeType();
+        MoleculeType moleculeType = residueInformationProvider
+                .getMoleculeType();
         for (int i = 0; i < candidates.size(); i++) {
             PdbResidue candidate = candidates.get(i);
             if (moleculeType.areConnected(this, candidate)) {

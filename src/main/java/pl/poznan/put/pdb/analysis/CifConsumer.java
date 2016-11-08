@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
+import org.apache.commons.lang3.StringUtils;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.io.mmcif.MMcifConsumer;
 import org.biojava.nbio.structure.io.mmcif.model.AtomSite;
@@ -65,7 +66,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class MmCifConsumer implements MMcifConsumer {
+public class CifConsumer implements MMcifConsumer {
     private final static Logger LOGGER = LoggerFactory
             .getLogger(MMcifConsumer.class);
     private final static DateFormat DATE_FORMAT = new SimpleDateFormat(
@@ -85,11 +86,11 @@ public class MmCifConsumer implements MMcifConsumer {
 
     private FileParsingParameters parameters;
 
-    public MmCifConsumer(FileParsingParameters parameters) {
+    public CifConsumer(FileParsingParameters parameters) {
         this.parameters = parameters;
     }
 
-    public MmCifConsumer() {
+    public CifConsumer() {
     }
 
     @Override
@@ -147,8 +148,12 @@ public class MmCifConsumer implements MMcifConsumer {
                                                    x, y, z, occupancy,
                                                    temperatureFactor,
                                                    elementSymbol, charge);
-            int modelNumber = Integer
-                    .parseInt(atomSite.getPdbx_PDB_model_num());
+
+            String modelNumberString = atomSite.getPdbx_PDB_model_num();
+            int modelNumber = 1;
+            if (StringUtils.isNotBlank(modelNumberString)) {
+                modelNumber = Integer.parseInt(modelNumberString);
+            }
 
             if (!modelAtoms.containsKey(modelNumber)) {
                 modelAtoms.put(modelNumber, new ArrayList<PdbAtomLine>());
@@ -157,7 +162,7 @@ public class MmCifConsumer implements MMcifConsumer {
             List<PdbAtomLine> atomLines = modelAtoms.get(modelNumber);
             atomLines.add(atomLine);
         } catch (NumberFormatException e) {
-            MmCifConsumer.LOGGER.warn("Failed to parse _atom_site", e);
+            CifConsumer.LOGGER.warn("Failed to parse _atom_site", e);
         }
     }
 
@@ -185,11 +190,11 @@ public class MmCifConsumer implements MMcifConsumer {
     public void newDatabasePDBrev(DatabasePDBrev databasePDBrev) {
         try {
             if (depositionDate == null) {
-                depositionDate = MmCifConsumer.DATE_FORMAT
+                depositionDate = CifConsumer.DATE_FORMAT
                         .parse(databasePDBrev.getDate_original());
             }
         } catch (ParseException e) {
-            MmCifConsumer.LOGGER
+            CifConsumer.LOGGER
                     .warn("Failed to parse _database_PDB_rev.date_original as"
                                   + " yyyy-MM-dd: " + databasePDBrev
                             .getDate_original(), e);
@@ -439,16 +444,15 @@ public class MmCifConsumer implements MMcifConsumer {
                                                     Integer.parseInt(
                                                             leontisWesthofString));
 
-            double shear = MmCifConsumer.getDoubleWithDefaultNaN(map, "shear");
-            double stretch = MmCifConsumer
+            double shear = CifConsumer.getDoubleWithDefaultNaN(map, "shear");
+            double stretch = CifConsumer
                     .getDoubleWithDefaultNaN(map, "stretch");
-            double stagger = MmCifConsumer
+            double stagger = CifConsumer
                     .getDoubleWithDefaultNaN(map, "stagger");
-            double buckle = MmCifConsumer
-                    .getDoubleWithDefaultNaN(map, "buckle");
-            double propeller = MmCifConsumer
+            double buckle = CifConsumer.getDoubleWithDefaultNaN(map, "buckle");
+            double propeller = CifConsumer
                     .getDoubleWithDefaultNaN(map, "propeller");
-            double opening = MmCifConsumer
+            double opening = CifConsumer
                     .getDoubleWithDefaultNaN(map, "opening");
             QuantifiedBasePair quantifiedBasePair = new QuantifiedBasePair(
                     basePair, saenger, leontisWesthof, shear, stretch, stagger,
@@ -472,7 +476,7 @@ public class MmCifConsumer implements MMcifConsumer {
                                     : Double.NaN;
     }
 
-    public List<MmCifModel> getModels() throws PdbParsingException {
+    public List<CifModel> getModels() throws PdbParsingException {
         PdbHeaderLine headerLine = new PdbHeaderLine(classification,
                                                      depositionDate == null
                                                      ? new Date(0)
@@ -482,17 +486,16 @@ public class MmCifConsumer implements MMcifConsumer {
                         .singletonList(ExperimentalTechnique.UNKNOWN)
                                                  : experimentalTechniques);
         PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
-        List<MmCifModel> result = new ArrayList<>();
+        List<CifModel> result = new ArrayList<>();
 
         for (Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms
                 .entrySet()) {
             int modelNumber = entry.getKey();
             List<PdbAtomLine> atoms = entry.getValue();
-            MmCifModel pdbModel = new MmCifModel(headerLine,
-                                                 experimentalDataLine,
-                                                 resolutionLine, modelNumber,
-                                                 atoms, modifiedResidues,
-                                                 missingResidues, basePairs);
+            CifModel pdbModel = new CifModel(headerLine, experimentalDataLine,
+                                             resolutionLine, modelNumber, atoms,
+                                             modifiedResidues, missingResidues,
+                                             basePairs);
             result.add(pdbModel);
         }
 

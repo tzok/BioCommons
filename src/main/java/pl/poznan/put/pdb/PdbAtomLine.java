@@ -43,7 +43,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
             = "ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f         %2s%2s";
     private static final String FORMAT
             = "ATOM  %5d  %-3s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f        %2s%2s";
-    public static final String MMCIF_LOOP
+    public static final String CIF_LOOP
             = "loop_\n" +
               "_atom_site.id\n" +
               "_atom_site.auth_atom_id\n" +
@@ -309,14 +309,14 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         return v1.distance(v2);
     }
 
-    public Atom toBioJavaAtom() throws MmCifPdbIncompatibilityException {
+    public Atom toBioJavaAtom() throws CifPdbIncompatibilityException {
         if (alternateLocation.length() != 1) {
-            throw new MmCifPdbIncompatibilityException(
+            throw new CifPdbIncompatibilityException(
                     "Cannot convert to PDB. Field 'alternateLocation' is "
                             + "longer than 1 char");
         }
         if (insertionCode.length() != 1) {
-            throw new MmCifPdbIncompatibilityException(
+            throw new CifPdbIncompatibilityException(
                     "Cannot convert to PDB. Field 'insertionCode' is longer "
                             + "than 1 char");
         }
@@ -342,27 +342,34 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         return atom;
     }
 
-    public String toMmCif() {
-        // these three fields are stored differently in PDB and mmCIF if missing
-        String altloc = alternateLocation.equals(" ") ? "." : alternateLocation;
-        String icode = insertionCode.equals(" ") ? "?" : insertionCode;
-        String chargeMmCif = charge.equals(" ") ? "?" : charge;
-
+    public String toCif() {
         StringBuilder builder = new StringBuilder();
         builder.append(serialNumber).append(' ');
         builder.append(atomName).append(' ');
-        builder.append(altloc).append(' ');
+        if (StringUtils.isNotBlank(alternateLocation)) {
+            builder.append(alternateLocation).append(' ');
+        } else {
+            builder.append(". ");
+        }
         builder.append(residueName).append(' ');
         builder.append(chainIdentifier).append(' ');
         builder.append(residueNumber).append(' ');
-        builder.append(icode).append(' ');
+        if (StringUtils.isNotBlank(insertionCode)) {
+            builder.append(insertionCode).append(' ');
+        } else {
+            builder.append("? ");
+        }
         builder.append(x).append(' ');
         builder.append(y).append(' ');
         builder.append(z).append(' ');
         builder.append(occupancy).append(' ');
         builder.append(temperatureFactor).append(' ');
         builder.append(elementSymbol).append(' ');
-        builder.append(chargeMmCif);
+        if (StringUtils.isNotBlank(charge)) {
+            builder.append(charge).append(' ');
+        } else {
+            builder.append('?');
+        }
         return builder.toString();
     }
 }

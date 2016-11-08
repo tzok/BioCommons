@@ -10,16 +10,16 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
 
-public class MmCifParser implements StructureParser {
+public class CifParser implements StructureParser {
     private final MMcifParser parser = new SimpleMMcifParser();
-    private final MmCifConsumer consumer = new MmCifConsumer();
+    private final CifConsumer consumer = new CifConsumer();
 
-    public MmCifParser() {
+    public CifParser() {
         parser.addMMcifConsumer(consumer);
     }
 
     @Override
-    public synchronized List<MmCifModel> parse(String mmCifContent)
+    public synchronized List<CifModel> parse(String mmCifContent)
             throws IOException, PdbParsingException {
         Reader reader = null;
 

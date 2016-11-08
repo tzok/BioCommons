@@ -27,34 +27,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public final class MmCifConverter {
+public final class CifConverter {
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(MmCifConverter.class);
+            .getLogger(CifConverter.class);
 
     // PRINTABLE_CHARS is a set of chain names that we allow
     private static final List<String> PRINTABLE_CHARS = new ArrayList<>();
 
     static {
         for (char c = 'A'; c <= 'Z'; c++) {
-            MmCifConverter.PRINTABLE_CHARS.add(Character.toString(c));
+            CifConverter.PRINTABLE_CHARS.add(Character.toString(c));
         }
         for (char c = 'a'; c <= 'z'; c++) {
-            MmCifConverter.PRINTABLE_CHARS.add(Character.toString(c));
+            CifConverter.PRINTABLE_CHARS.add(Character.toString(c));
         }
         for (char c = '0'; c <= '9'; c++) {
-            MmCifConverter.PRINTABLE_CHARS.add(Character.toString(c));
+            CifConverter.PRINTABLE_CHARS.add(Character.toString(c));
         }
     }
 
     private static final ModelContainer EMPTY_MODEL_CONTAINER
             = new ModelContainer() {
         @Override
-        public boolean isMmCif() {
+        public boolean isCif() {
             return false;
         }
 
-        @Override
-        public File getMmCifFile() {
+        public File getCifFile() {
             throw new UnsupportedOperationException(
                     "Container does not represent mmCIF file");
         }
@@ -65,59 +64,59 @@ public final class MmCifConverter {
         }
 
         @Override
-        public String getMmCifChain(File pdbFile, String pdbChain) {
+        public String getCifChain(File pdbFile, String pdbChain) {
             return pdbChain;
         }
 
         @Override
-        public String getPdbChain(File pdbFile, String mmCifChain) {
-            return mmCifChain;
+        public String getPdbChain(File pdbFile, String cifChain) {
+            return cifChain;
         }
     };
 
-    public static ModelContainer convert(final File mmCifFile)
+    public static ModelContainer convert(final File cifFile)
             throws IOException, PdbParsingException {
-        MmCifParser cifParser = new MmCifParser();
-        String mmCifContents = FileUtils
-                .readFileToString(mmCifFile, Charset.defaultCharset());
-        List<MmCifModel> models = cifParser.parse(mmCifContents);
-        return MmCifConverter.convert(mmCifFile, models);
+        CifParser cifParser = new CifParser();
+        String cifContents = FileUtils
+                .readFileToString(cifFile, Charset.defaultCharset());
+        List<CifModel> models = cifParser.parse(cifContents);
+        return CifConverter.convert(cifFile, models);
     }
 
     private static ModelContainer convert(final File mmCifFile,
-                                          final List<MmCifModel> models)
+                                          final List<CifModel> models)
             throws IOException, PdbParsingException {
-        List<MmCifModel> rnaModels = new ArrayList<>();
+        List<CifModel> rnaModels = new ArrayList<>();
 
-        for (MmCifModel model : models) {
+        for (CifModel model : models) {
             if (model.containsAny(MoleculeType.RNA)) {
                 rnaModels.add(model.filteredNewInstance(MoleculeType.RNA));
             }
         }
 
         if (rnaModels.isEmpty()) {
-            MmCifConverter.LOGGER.info("Neither model contain any RNA chain");
-            return MmCifConverter.EMPTY_MODEL_CONTAINER;
+            CifConverter.LOGGER.info("Neither model contain any RNA chain");
+            return CifConverter.EMPTY_MODEL_CONTAINER;
         }
 
-        for (MmCifModel model : rnaModels) {
+        for (CifModel model : rnaModels) {
             for (PdbChain chain : model.getChains()) {
                 for (PdbResidue residue : chain.getResidues()) {
                     if (residue.getResidueNumber() > 9999) {
-                        MmCifConverter.LOGGER
+                        CifConverter.LOGGER
                                 .error("Cannot continue. Chain {} has residue"
                                                + " of index > 9999",
                                        chain.getIdentifier());
-                        return MmCifConverter.EMPTY_MODEL_CONTAINER;
+                        return CifConverter.EMPTY_MODEL_CONTAINER;
                     }
                 }
             }
         }
 
-        MmCifModel firstModel = rnaModels.get(0);
-        List<Set<String>> chainGroups = MmCifConverter
+        CifModel firstModel = rnaModels.get(0);
+        List<Set<String>> chainGroups = CifConverter
                 .groupContactingChains(firstModel);
-        chainGroups = MmCifConverter.packGroups(chainGroups);
+        chainGroups = CifConverter.packGroups(chainGroups);
         Map<File, BidiMap<String, String>> fileChainMap = new HashMap<>();
 
         for (Set<String> chainGroup : chainGroups) {
@@ -127,9 +126,9 @@ public final class MmCifConverter {
 
             fileChainMap.put(pdbFile, chainMap);
 
-            MmCifConverter.writeHeader(firstModel, chainMap, pdbBuilder);
-            for (MmCifModel model : rnaModels) {
-                MmCifConverter
+            CifConverter.writeHeader(firstModel, chainMap, pdbBuilder);
+            for (CifModel model : rnaModels) {
+                CifConverter
                         .writeModel(model, chainGroup, chainMap, pdbBuilder);
             }
 
@@ -137,7 +136,7 @@ public final class MmCifConverter {
                             Charset.defaultCharset());
         }
 
-        return new MmCifContainer(mmCifFile, fileChainMap);
+        return new CifContainer(mmCifFile, fileChainMap);
     }
 
     /**
@@ -166,8 +165,8 @@ public final class MmCifConverter {
             boolean flag = false;
 
             for (Set<String> bin : packed) {
-                if ((bin.size() + group.size())
-                        <= MmCifConverter.PRINTABLE_CHARS.size()) {
+                if ((bin.size() + group.size()) <= CifConverter.PRINTABLE_CHARS
+                        .size()) {
                     bin.addAll(group);
                     flag = true;
                     break;
@@ -193,10 +192,10 @@ public final class MmCifConverter {
      * chain has at least one contact in its set).
      */
     private static List<Set<String>> groupContactingChains(
-            final MmCifModel model) {
-        List<Set<String>> chainGroups = MmCifConverter
+            final CifModel model) {
+        List<Set<String>> chainGroups = CifConverter
                 .initializeChainGroups(model);
-        Map<String, Set<String>> chainContacts = MmCifConverter
+        Map<String, Set<String>> chainContacts = CifConverter
                 .initializeChainContactMap(model);
         int i = 0;
 
@@ -238,7 +237,7 @@ public final class MmCifConverter {
      * @return A list of sets, each containing one chain.
      */
     private static List<Set<String>> initializeChainGroups(
-            final MmCifModel model) {
+            final CifModel model) {
         List<Set<String>> chainGroups = new ArrayList<>();
         for (PdbChain chain : model.getChains()) {
             chainGroups.add(new HashSet<>(
@@ -257,7 +256,7 @@ public final class MmCifConverter {
      * contacts is the value.
      */
     private static Map<String, Set<String>> initializeChainContactMap(
-            final MmCifModel model) {
+            final CifModel model) {
         Map<String, Set<String>> chainContacts = new HashMap<>();
 
         for (QuantifiedBasePair quantifiedBasePair : model.getBasePairs()) {
@@ -292,7 +291,7 @@ public final class MmCifConverter {
             if (allowedChains.contains(chain.getIdentifier())) {
                 for (PdbResidue residue : chain.getResidues()) {
                     for (PdbAtomLine atom : residue.getAtoms()) {
-                        String chainIdentifier = MmCifConverter
+                        String chainIdentifier = CifConverter
                                 .mapChain(chainMap, atom.getChainIdentifier());
                         atom = atom.replaceSerialNumber(serialNumber);
                         atom = atom.replaceChainIdentifier(chainIdentifier);
@@ -325,10 +324,10 @@ public final class MmCifConverter {
 
             for (PdbRemark465Line missingResidue : missingResidues) {
                 String chainIdentifier = missingResidue.getChainIdentifier();
-                MoleculeType moleculeType = MmCifConverter
+                MoleculeType moleculeType = CifConverter
                         .getChainType(firstModel, chainIdentifier);
                 if (moleculeType == MoleculeType.RNA) {
-                    chainIdentifier = MmCifConverter
+                    chainIdentifier = CifConverter
                             .mapChain(chainMap, chainIdentifier);
                     missingResidue = missingResidue
                             .replaceChainIdentifier(chainIdentifier);
@@ -374,12 +373,12 @@ public final class MmCifConverter {
                                    final String chainIdentifier) {
         if (!chainMap.containsKey(chainIdentifier)) {
             chainMap.put(chainIdentifier,
-                         MmCifConverter.PRINTABLE_CHARS.get(chainMap.size()));
+                         CifConverter.PRINTABLE_CHARS.get(chainMap.size()));
         }
         return chainMap.get(chainIdentifier);
     }
 
-    private MmCifConverter() {
+    private CifConverter() {
         super();
     }
 }

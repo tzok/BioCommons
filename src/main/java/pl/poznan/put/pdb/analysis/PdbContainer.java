@@ -16,12 +16,11 @@ public class PdbContainer implements ModelContainer {
     }
 
     @Override
-    public boolean isMmCif() {
+    public boolean isCif() {
         return false;
     }
 
-    @Override
-    public File getMmCifFile() {
+    public File getCifFile() {
         throw new UnsupportedOperationException(
                 "Container does not represent mmCIF file");
     }
@@ -32,7 +31,7 @@ public class PdbContainer implements ModelContainer {
     }
 
     @Override
-    public String getMmCifChain(File pdbFile, String pdbChain) {
+    public String getCifChain(File pdbFile, String pdbChain) {
         if (!this.pdbFile.equals(pdbFile)) {
             // TODO
         }

@@ -5,7 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import pl.poznan.put.pdb.PdbParsingException;
-import pl.poznan.put.pdb.analysis.MmCifParser;
+import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.StructureParser;
@@ -32,7 +32,7 @@ public final class StructureManager {
     private static final String ENCODING_UTF_8 = "UTF-8";
     private static final List<StructureInfo> STRUCTURES = new ArrayList<>();
     private static final PdbParser PDB_PARSER = new PdbParser(false);
-    private static final MmCifParser MM_CIF_PARSER = new MmCifParser();
+    private static final CifParser CIF_PARSER = new CifParser();
 
     private StructureManager() {
     }
@@ -92,9 +92,7 @@ public final class StructureManager {
      * Load a structure and remember it being already cached.
      *
      * @param file Path to the PDB file.
-     *
      * @return Structure object..
-     *
      * @throws IOException
      * @throws PdbParsingException
      */
@@ -110,10 +108,10 @@ public final class StructureManager {
         String name = file.getName();
 
         if (name.endsWith(".cif") || name.endsWith(".cif.gz")) {
-            if (!StructureManager.isMmCif(fileContent)) {
+            if (!StructureManager.isCif(fileContent)) {
                 throw new IOException("File is not a mmCIF structure: " + file);
             }
-            parser = StructureManager.MM_CIF_PARSER;
+            parser = StructureManager.CIF_PARSER;
         } else {
             if (!StructureManager.isPdb(fileContent)) {
                 throw new IOException("File is not a PDB structure: " + file);
@@ -157,7 +155,7 @@ public final class StructureManager {
         }
     }
 
-    private static boolean isMmCif(String fileContent) {
+    private static boolean isCif(String fileContent) {
         return fileContent.startsWith("data_");
     }
 
@@ -234,18 +232,18 @@ public final class StructureManager {
 
         try {
             URL url = new URL("http://www.rcsb.org/pdb/download/downloadFile"
-                              + ".do?fileFormat=pdb&compression=NO&structureId="
-                              + pdbId);
+                                      + ".do?fileFormat=pdb&compression=NO&structureId="
+                                      + pdbId);
             stream = url.openStream();
-            String pdbContent =
-                    IOUtils.toString(stream, StructureManager.ENCODING_UTF_8);
+            String pdbContent = IOUtils
+                    .toString(stream, StructureManager.ENCODING_UTF_8);
 
             File pdbFile = File.createTempFile("mcq", ".pdb");
             FileUtils.writeStringToFile(pdbFile, pdbContent,
                                         StructureManager.ENCODING_UTF_8);
 
-            List<PdbModel> models =
-                    StructureManager.PDB_PARSER.parse(pdbContent);
+            List<PdbModel> models = StructureManager.PDB_PARSER
+                    .parse(pdbContent);
             StructureManager.storeStructureInfo(pdbFile, models);
             return models;
         } finally {

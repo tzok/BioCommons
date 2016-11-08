@@ -288,14 +288,14 @@ public class PdbModel implements Serializable, ResidueCollection {
         return builder.toString();
     }
 
-    public String toMmCifString() {
+    public String toCifString() {
         StringBuilder builder = new StringBuilder();
         builder.append("data_").append(getIdCode()).append('\n');
-        builder.append(PdbAtomLine.MMCIF_LOOP).append('\n');
+        builder.append(PdbAtomLine.CIF_LOOP).append('\n');
 
         for (PdbResidue residue : residues) {
             for (PdbAtomLine atom : residue.getAtoms()) {
-                builder.append(atom.toMmCif()).append('\n');
+                builder.append(atom.toCif()).append('\n');
             }
         }
 

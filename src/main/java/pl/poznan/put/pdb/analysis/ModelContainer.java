@@ -8,13 +8,13 @@ import java.util.Set;
  * same structure and also their chain names' mapping.
  */
 public interface ModelContainer {
-    boolean isMmCif();
+    boolean isCif();
 
-    File getMmCifFile();
+    File getCifFile();
 
     Set<File> getPdbFiles();
 
-    String getMmCifChain(final File pdbFile, final String pdbChain);
+    String getCifChain(final File pdbFile, final String pdbChain);
 
     String getPdbChain(final File pdbFile, final String mmCifChain);
 }
