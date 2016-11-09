@@ -16,5 +16,5 @@ public interface ModelContainer {
 
     String getCifChain(final File pdbFile, final String pdbChain);
 
-    String getPdbChain(final File pdbFile, final String mmCifChain);
+    String getPdbChain(final File pdbFile, final String cifChain);
 }

@@ -4,25 +4,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.Locale;
 
-public class PdbRemark465Line implements ChainNumberICode {
-    public static final String PROLOGUE =
-            "" + "REMARK 465                      "
-            + "                                " + "                \n"
-            + "REMARK 465 MISSING RESIDUES     "
-            + "                                " + "                \n"
-            + "REMARK 465 THE FOLLOWING " + "RESIDUES WERE NOT LOCATED IN THE"
-            + "                       \n" + "REMARK 465 EXPERIMENT. (M=MODEL "
-            + "NUMBER; RES=RESIDUE NAME; " + "C=CHAIN               \n"
-            + "REMARK 465 IDENTIFIER; " + "SSSEQ=SEQUENCE NUMBER; "
-            + "I=INSERTION CODE.)              " + "  \n"
-            + "REMARK 465                      "
-            + "                                " + "                \n"
-            + "REMARK 465   M RES C SSSEQI     "
-            + "                                " + "                ";
+public class PdbRemark465Line implements ChainNumberICode, Serializable {
+    private static final long serialVersionUID = -6551046160002695423L;
     private static final Logger LOGGER =
             LoggerFactory.getLogger(PdbRemark465Line.class);
+
+    // @formatter:off
+    @SuppressWarnings("HardcodedLineSeparator")
+    public static final String PROLOGUE =
+              "REMARK 465                                                                      \n"
+            + "REMARK 465 MISSING RESIDUES                                                     \n"
+            + "REMARK 465 THE FOLLOWING RESIDUES WERE NOT LOCATED IN THE                       \n"
+            + "REMARK 465 EXPERIMENT. (M=MODEL NUMBER; RES=RESIDUE NAME; C=CHAIN               \n"
+            + "REMARK 465 IDENTIFIER; SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)                \n"
+            + "REMARK 465                                                                      \n"
+            + "REMARK 465   M RES C SSSEQI                                                     ";
+    // @formatter:on
 
     // @formatter:off
     /*
@@ -49,7 +49,7 @@ public class PdbRemark465Line implements ChainNumberICode {
         REMARK 465     MET A     1
         REMARK 465     GLY A     2
      */
-    private static final String[] COMMENT_LINES = new String[]{
+    private static final String[] COMMENT_LINES = {
             "REMARK 465",
             "REMARK 465 MISSING RESIDUES",
             "REMARK 465 THE FOLLOWING RESIDUES WERE NOT LOCATED IN THE",
@@ -73,9 +73,11 @@ public class PdbRemark465Line implements ChainNumberICode {
     private final int residueNumber;
     private final String insertionCode;
 
-    public PdbRemark465Line(int modelNumber, String residueName,
-                            String chainIdentifier, int residueNumber,
-                            String insertionCode) {
+    public PdbRemark465Line(
+            final int modelNumber, final String residueName,
+            final String chainIdentifier, final int residueNumber,
+            final String insertionCode) {
+        super();
         this.modelNumber = modelNumber;
         this.residueName = residueName;
         this.chainIdentifier = chainIdentifier;
@@ -83,10 +85,10 @@ public class PdbRemark465Line implements ChainNumberICode {
         this.insertionCode = insertionCode;
     }
 
-    public static boolean isCommentLine(String line) {
+    public static boolean isCommentLine(final String line) {
         String lineTrimmed = StringUtils.normalizeSpace(line);
 
-        for (String comment : PdbRemark465Line.COMMENT_LINES) {
+        for (final String comment : PdbRemark465Line.COMMENT_LINES) {
             if (lineTrimmed.equals(StringUtils.normalizeSpace(comment))) {
                 return true;
             }
@@ -95,7 +97,7 @@ public class PdbRemark465Line implements ChainNumberICode {
         return lineTrimmed.startsWith("REMARK 465   MODELS");
     }
 
-    public static PdbRemark465Line parse(String line)
+    public static PdbRemark465Line parse(final String line)
             throws PdbParsingException {
         if (line.length() < 79) {
             throw new PdbParsingException(
@@ -117,56 +119,56 @@ public class PdbRemark465Line implements ChainNumberICode {
 
             String remarkContent =
                     StringUtils.stripEnd(line.substring(11, 79), null);
-            int modelNumber = remarkContent.charAt(2) == ' ' ? 0 : Integer
+            int modelNumber = (remarkContent.charAt(2) == ' ') ? 0 : Integer
                     .parseInt(remarkContent.substring(2, 3));
             String residueName = remarkContent.substring(4, 7).trim();
             String chainIdentifier =
                     Character.toString(remarkContent.charAt(8));
             int residueNumber =
                     Integer.parseInt(remarkContent.substring(10, 15).trim());
-            String insertionCode = remarkContent.length() == 15 ? " "
-                                                                : Character
+            String insertionCode = (remarkContent.length() == 15) ? " "
+                                                                  : Character
                                            .toString(remarkContent.charAt(15));
             return new PdbRemark465Line(modelNumber, residueName,
                                         chainIdentifier, residueNumber,
                                         insertionCode);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new PdbParsingException("Failed to parse PDB REMARK 465 line",
                                           e);
         }
     }
 
-    public int getModelNumber() {
+    public final int getModelNumber() {
         return modelNumber;
     }
 
-    public String getResidueName() {
+    public final String getResidueName() {
         return residueName;
     }
 
     @Override
-    public String getChainIdentifier() {
+    public final String getChainIdentifier() {
         return chainIdentifier;
     }
 
     @Override
-    public int getResidueNumber() {
+    public final int getResidueNumber() {
         return residueNumber;
     }
 
     @Override
-    public String getInsertionCode() {
+    public final String getInsertionCode() {
         return insertionCode;
     }
 
     @Override
-    public PdbResidueIdentifier getResidueIdentifier() {
+    public final PdbResidueIdentifier getResidueIdentifier() {
         return new PdbResidueIdentifier(chainIdentifier, residueNumber,
                                         insertionCode);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         if (chainIdentifier.length() != 1) {
             PdbRemark465Line.LOGGER
                     .error("Field 'chainIdentifier' is longer than 1 char. "
@@ -177,14 +179,19 @@ public class PdbRemark465Line implements ChainNumberICode {
                     .error("Field 'insertionCode' is longer than 1 char. Only"
                            + " first letter will be taken");
         }
-        return String.format(Locale.US, PdbRemark465Line.FORMAT,
-                             modelNumber == 0 ? " "
-                                              : String.valueOf(modelNumber),
-                             residueName, chainIdentifier.charAt(0),
-                             residueNumber, insertionCode.charAt(0));
+
+        String modelNumberString =
+                (modelNumber == 0) ? " " : String.valueOf(modelNumber);
+        char chain = chainIdentifier.charAt(0);
+        char icode = insertionCode.charAt(0);
+
+        return String
+                .format(Locale.US, PdbRemark465Line.FORMAT, modelNumberString,
+                        residueName, chain, residueNumber, icode);
     }
 
-    public PdbRemark465Line replaceChainIdentifier(String chainIdentifierNew) {
+    public final PdbRemark465Line replaceChainIdentifier(
+            final String chainIdentifierNew) {
         return new PdbRemark465Line(modelNumber, residueName,
                                     chainIdentifierNew, residueNumber,
                                     insertionCode);

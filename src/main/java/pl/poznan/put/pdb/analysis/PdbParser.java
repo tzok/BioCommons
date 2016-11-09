@@ -48,11 +48,11 @@ public class PdbParser implements StructureParser {
     }
 
     @Override
-    public synchronized List<PdbModel> parse(String pdbFileContent)
+    public synchronized List<PdbModel> parse(String structureContent)
             throws PdbParsingException {
         resetState();
 
-        for (String line : pdbFileContent.split("\n")) {
+        for (String line : structureContent.split("\n")) {
             if (line.startsWith("MODEL")) {
                 handleModelLine(line);
             } else if (line.startsWith("ATOM") || line.startsWith("HETATM")) {

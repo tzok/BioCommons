@@ -3,6 +3,7 @@ package pl.poznan.put.pdb.analysis;
 import org.apache.commons.collections4.BidiMap;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,33 +15,39 @@ public class CifContainer implements ModelContainer {
     private final File cifFile;
     private final Map<File, BidiMap<String, String>> fileChainMap;
 
-    public CifContainer(final File cifFile,
-                        final Map<File, BidiMap<String, String>> fileChainMap) {
+    public CifContainer(
+            final File cifFile,
+            final Map<File, BidiMap<String, String>> fileChainMap) {
+        super();
         this.cifFile = cifFile;
-        this.fileChainMap = fileChainMap;
+        this.fileChainMap = new HashMap<>(fileChainMap);
     }
 
     @Override
-    public boolean isCif() {
+    public final boolean isCif() {
         return true;
     }
 
-    public File getCifFile() {
+    @Override
+    public final File getCifFile() {
         return cifFile;
     }
 
-    public Set<File> getPdbFiles() {
+    @Override
+    public final Set<File> getPdbFiles() {
         return fileChainMap.keySet();
     }
 
-    public String getCifChain(final File pdbFile, final String pdbChain) {
+    @Override
+    public final String getCifChain(final File pdbFile, final String pdbChain) {
         if (!fileChainMap.containsKey(pdbFile)) {
             // TODO
         }
         return fileChainMap.get(pdbFile).getKey(pdbChain);
     }
 
-    public String getPdbChain(final File pdbFile, final String cifChain) {
+    @Override
+    public final String getPdbChain(final File pdbFile, final String cifChain) {
         if (!fileChainMap.containsKey(pdbFile)) {
             // TODO
         }

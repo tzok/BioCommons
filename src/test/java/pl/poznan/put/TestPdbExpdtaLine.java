@@ -2,7 +2,7 @@ package pl.poznan.put;
 
 import org.junit.Test;
 import pl.poznan.put.pdb.PdbExpdtaLine;
-import pl.poznan.put.pdb.PdbExpdtaLine.ExperimentalTechnique;
+import pl.poznan.put.pdb.ExperimentalTechnique;
 import pl.poznan.put.pdb.PdbParsingException;
 
 import java.util.List;

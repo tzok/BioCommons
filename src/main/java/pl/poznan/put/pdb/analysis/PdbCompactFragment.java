@@ -22,16 +22,17 @@ public class PdbCompactFragment implements ResidueCollection {
     private final Map<PdbResidue, List<TorsionAngleValue>>
             mapResidueAngleValue = new LinkedHashMap<>();
 
-    public PdbCompactFragment(String name, List<PdbResidue> residues) {
+    public PdbCompactFragment(
+            final String name, final List<PdbResidue> residues) {
         super();
         this.name = name;
-        this.residues = residues;
+        this.residues = new ArrayList<>(residues);
 
         for (int i = 0; i < residues.size(); i++) {
             PdbResidue residue = residues.get(i);
             List<TorsionAngleValue> values = new ArrayList<>();
 
-            for (TorsionAngleType type : residue.getTorsionAngleTypes()) {
+            for (final TorsionAngleType type : residue.getTorsionAngleTypes()) {
                 TorsionAngleValue value = type.calculate(residues, i);
                 values.add(value);
             }
@@ -40,26 +41,27 @@ public class PdbCompactFragment implements ResidueCollection {
         }
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
     @Override
-    public List<PdbResidue> getResidues() {
+    public final List<PdbResidue> getResidues() {
         return Collections.unmodifiableList(residues);
     }
 
     @Override
-    public PdbResidue findResidue(String chainIdentifier, int residueNumber,
-                                  String insertionCode) {
+    public final PdbResidue findResidue(
+            final String chainIdentifier, final int residueNumber,
+            final String insertionCode) {
         return findResidue(
                 new PdbResidueIdentifier(chainIdentifier, residueNumber,
                                          insertionCode));
     }
 
     @Override
-    public PdbResidue findResidue(PdbResidueIdentifier query) {
-        for (PdbResidue residue : residues) {
+    public final PdbResidue findResidue(final PdbResidueIdentifier query) {
+        for (final PdbResidue residue : residues) {
             if (query.equals(residue.getResidueIdentifier())) {
                 return residue;
             }
@@ -67,46 +69,46 @@ public class PdbCompactFragment implements ResidueCollection {
         throw new IllegalArgumentException("Failed to find residue: " + query);
     }
 
-    public String toPdb() {
+    public final String toPdb() {
         StringBuilder builder = new StringBuilder();
-        for (PdbResidue residue : residues) {
+        for (final PdbResidue residue : residues) {
             builder.append(residue.toPdb());
         }
         return builder.toString();
     }
 
-    public String toSequence() {
+    public final String toSequence() {
         StringBuilder builder = new StringBuilder();
-        for (PdbResidue residue : residues) {
+        for (final PdbResidue residue : residues) {
             builder.append(residue.getOneLetterName());
         }
         return builder.toString();
     }
 
-    public PdbCompactFragment shift(int shift, int size) {
+    public final PdbCompactFragment shift(final int shift, final int size) {
         return new PdbCompactFragment(name,
                                       residues.subList(shift, shift + size));
     }
 
-    public Set<TorsionAngleType> commonTorsionAngleTypes() {
+    public final Set<TorsionAngleType> commonTorsionAngleTypes() {
         Set<TorsionAngleType> set = new LinkedHashSet<>();
-        for (Entry<PdbResidue, List<TorsionAngleValue>> entry :
+        for (final Entry<PdbResidue, List<TorsionAngleValue>> entry :
                 mapResidueAngleValue
                 .entrySet()) {
-            for (TorsionAngleValue angleValue : entry.getValue()) {
+            for (final TorsionAngleValue angleValue : entry.getValue()) {
                 set.add(angleValue.getAngleType());
             }
         }
         return set;
     }
 
-    public TorsionAngleValue getTorsionAngleValue(PdbResidue residue,
-                                                  MasterTorsionAngleType
-                                                          masterType) {
+    public final TorsionAngleValue getTorsionAngleValue(
+            final PdbResidue residue, final MasterTorsionAngleType masterType) {
         Collection<? extends TorsionAngleType> angleTypes =
                 masterType.getAngleTypes();
-        for (TorsionAngleValue angleValue : mapResidueAngleValue.get(residue)) {
-            for (TorsionAngleType angleType : angleTypes) {
+        for (final TorsionAngleValue angleValue : mapResidueAngleValue
+                .get(residue)) {
+            for (final TorsionAngleType angleType : angleTypes) {
                 if (angleType.equals(angleValue.getAngleType())) {
                     return angleValue;
                 }
@@ -117,17 +119,17 @@ public class PdbCompactFragment implements ResidueCollection {
         return TorsionAngleValue.invalidInstance(first);
     }
 
-    public MoleculeType getMoleculeType() {
+    public final MoleculeType getMoleculeType() {
         // in compact fragment, all residues have the same molecule type
         return residues.get(0).getMoleculeType();
     }
 
-    public int size() {
+    public final int size() {
         return residues.size();
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + (name == null ? 0 : name.hashCode());
@@ -136,7 +138,7 @@ public class PdbCompactFragment implements ResidueCollection {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -166,7 +168,7 @@ public class PdbCompactFragment implements ResidueCollection {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         PdbResidue first = residues.get(0);
         PdbResidue last = residues.get(residues.size() - 1);
         return first + " - " + last + " (count: " + residues.size() + ")";

@@ -9,31 +9,34 @@ import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class CifModel extends PdbModel {
+    private static final long serialVersionUID = 7057234621953328374L;
     private final List<QuantifiedBasePair> basePairs;
 
-    public CifModel(PdbHeaderLine headerLine,
-                    PdbExpdtaLine experimentalDataLine,
-                    PdbRemark2Line resolutionLine, int modelNumber,
-                    List<PdbAtomLine> atoms,
-                    List<PdbModresLine> modifiedResidues,
-                    List<PdbRemark465Line> missingResidues,
-                    List<QuantifiedBasePair> basePairs)
+    public CifModel(
+            final PdbHeaderLine headerLine,
+            final PdbExpdtaLine experimentalDataLine,
+            final PdbRemark2Line resolutionLine, final int modelNumber,
+            final List<PdbAtomLine> atoms,
+            final List<PdbModresLine> modifiedResidues,
+            final List<PdbRemark465Line> missingResidues,
+            final List<QuantifiedBasePair> basePairs)
             throws PdbParsingException {
         super(headerLine, experimentalDataLine, resolutionLine, modelNumber,
               atoms, modifiedResidues, missingResidues);
-        this.basePairs = basePairs;
+        this.basePairs = new ArrayList<>(basePairs);
     }
 
-    public List<QuantifiedBasePair> getBasePairs() {
+    public final List<QuantifiedBasePair> getBasePairs() {
         return Collections.unmodifiableList(basePairs);
     }
 
     @Override
-    public CifModel filteredNewInstance(MoleculeType moleculeType)
+    public final CifModel filteredNewInstance(final MoleculeType moleculeType)
             throws PdbParsingException {
         List<PdbAtomLine> filteredAtoms = filterAtoms(moleculeType);
         List<PdbRemark465Line> filteredMissing = filterMissing(moleculeType);

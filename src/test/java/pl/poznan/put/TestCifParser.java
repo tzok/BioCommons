@@ -13,7 +13,7 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import java.io.IOException;
 import java.util.List;
 
-import static pl.poznan.put.pdb.PdbExpdtaLine.ExperimentalTechnique;
+import pl.poznan.put.pdb.ExperimentalTechnique;
 
 /**
  * Created by tzok on 24.05.16.

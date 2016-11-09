@@ -39,10 +39,10 @@ public class PdbContainer implements ModelContainer {
     }
 
     @Override
-    public String getPdbChain(File pdbFile, String mmCifChain) {
+    public String getPdbChain(File pdbFile, String cifChain) {
         if (!this.pdbFile.equals(pdbFile)) {
             // TODO
         }
-        return mmCifChain;
+        return cifChain;
     }
 }

@@ -10,45 +10,45 @@ public class InvalidResidueInformationProvider
     private final MoleculeType moleculeType;
     private final String pdbName;
 
-    public InvalidResidueInformationProvider(String pdbName) {
+    public InvalidResidueInformationProvider(final String pdbName) {
         super();
-        this.moleculeType = MoleculeType.UNKNOWN;
+        moleculeType = MoleculeType.UNKNOWN;
         this.pdbName = pdbName;
     }
 
     @Override
-    public MoleculeType getMoleculeType() {
+    public final MoleculeType getMoleculeType() {
         return moleculeType;
     }
 
     @Override
-    public List<ResidueComponent> getAllMoleculeComponents() {
+    public final List<ResidueComponent> getAllMoleculeComponents() {
         return Collections.emptyList();
     }
 
     @Override
-    public String getDescription() {
+    public final String getDescription() {
         return "";
     }
 
     @Override
-    public char getOneLetterName() {
-        assert pdbName != null && pdbName.length() > 0;
+    public final char getOneLetterName() {
+        assert (pdbName != null) && !pdbName.isEmpty();
         return pdbName.charAt(pdbName.length() - 1);
     }
 
     @Override
-    public String getDefaultPdbName() {
+    public final String getDefaultPdbName() {
         return pdbName;
     }
 
     @Override
-    public List<String> getPdbNames() {
+    public final List<String> getPdbNames() {
         return Collections.singletonList(pdbName);
     }
 
     @Override
-    public List<TorsionAngleType> getTorsionAngleTypes() {
+    public final List<TorsionAngleType> getTorsionAngleTypes() {
         return Collections.emptyList();
     }
 }

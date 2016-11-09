@@ -1,12 +1,15 @@
 package pl.poznan.put.pdb;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class PdbHeaderLine {
+public class PdbHeaderLine implements Serializable {
+    private static final long serialVersionUID = -2116748731208564528L;
+
     // @formatter:off
     /*
      *  COLUMNS       DATA  TYPE     FIELD             DEFINITION
@@ -19,25 +22,27 @@ public class PdbHeaderLine {
      */
     // @formatter:on
     private static final String FORMAT =
-            "HEADER    %-40s%9s   %4s              ";
-    private final static String RECORD_NAME = "HEADER";
-    private final static DateFormat DATE_FORMAT =
+            "HEADER    %-40s%9s   %4s              "; //NON-NLS
+    private static final String RECORD_NAME = "HEADER"; //NON-NLS
+    private static final DateFormat DATE_FORMAT =
             new SimpleDateFormat("dd-MMM-yy", Locale.US);
-    private final static PdbHeaderLine EMPTY_INSTANCE =
+    private static final PdbHeaderLine EMPTY_INSTANCE =
             new PdbHeaderLine("", new Date(0), "");
     private final String classification;
     private final Date depositionDate;
     private final String idCode;
 
-    public PdbHeaderLine(String classification, Date depositionDate,
-                         String idCode) {
+    public PdbHeaderLine(
+            final String classification, final Date depositionDate,
+            final String idCode) {
         super();
         this.classification = classification;
-        this.depositionDate = depositionDate;
+        this.depositionDate = new Date(depositionDate.getTime());
         this.idCode = idCode;
     }
 
-    public static PdbHeaderLine parse(String line) throws PdbParsingException {
+    public static PdbHeaderLine parse(final String line)
+            throws PdbParsingException {
         if (line.length() < 66) {
             throw new PdbParsingException(
                     "PDB HEADER line is not at least 66 characters long");
@@ -45,7 +50,7 @@ public class PdbHeaderLine {
 
         String recordName = line.substring(0, 6).trim();
 
-        if (!"HEADER".equals(recordName)) {
+        if (!PdbHeaderLine.RECORD_NAME.equals(recordName)) {
             throw new PdbParsingException(
                     "PDB line does not start with HEADER");
         }
@@ -56,7 +61,7 @@ public class PdbHeaderLine {
                     .parse(line.substring(50, 59).trim());
             String idCode = line.substring(62, 66).trim();
             return new PdbHeaderLine(classification, depositionDate, idCode);
-        } catch (ParseException e) {
+        } catch (final ParseException e) {
             throw new PdbParsingException(
                     "Failed to parse date in line: " + line, e);
         }
@@ -70,22 +75,23 @@ public class PdbHeaderLine {
         return PdbHeaderLine.RECORD_NAME;
     }
 
-    public String getClassification() {
+    public final String getClassification() {
         return classification;
     }
 
-    public Date getDepositionDate() {
-        return depositionDate;
+    public final Date getDepositionDate() {
+        return (Date) depositionDate.clone();
     }
 
-    public String getIdCode() {
+    public final String getIdCode() {
         return idCode;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return String.format(Locale.US, PdbHeaderLine.FORMAT, classification,
                              PdbHeaderLine.DATE_FORMAT.format(depositionDate)
-                                                      .toUpperCase(), idCode);
+                                                      .toUpperCase(Locale.US),
+                             idCode);
     }
 }

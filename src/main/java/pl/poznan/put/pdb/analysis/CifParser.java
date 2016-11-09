@@ -15,21 +15,18 @@ public class CifParser implements StructureParser {
     private final CifConsumer consumer = new CifConsumer();
 
     public CifParser() {
+        super();
         parser.addMMcifConsumer(consumer);
     }
 
     @Override
-    public synchronized List<CifModel> parse(String mmCifContent)
+    public final List<CifModel> parse(final String structureContent)
             throws IOException, PdbParsingException {
-        Reader reader = null;
-
-        try {
-            reader = new StringReader(mmCifContent);
-            parser.parse(IOUtils.toBufferedReader(reader));
-        } finally {
-            IOUtils.closeQuietly(reader);
+        synchronized (parser) {
+            try (Reader reader = new StringReader(structureContent)) {
+                parser.parse(IOUtils.toBufferedReader(reader));
+            }
+            return consumer.getModels();
         }
-
-        return consumer.getModels();
     }
 }

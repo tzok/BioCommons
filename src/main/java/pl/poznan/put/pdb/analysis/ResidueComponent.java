@@ -3,6 +3,7 @@ package pl.poznan.put.pdb.analysis;
 import org.apache.commons.collections4.CollectionUtils;
 import pl.poznan.put.atom.AtomName;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,61 +18,62 @@ public abstract class ResidueComponent {
      */
     private final List<AtomName> additionalAtoms;
 
-    protected ResidueComponent(String residueComponentName,
-                               MoleculeType moleculeType,
-                               List<AtomName> atoms) {
+    protected ResidueComponent(
+            final String residueComponentName, final MoleculeType moleculeType,
+            final List<AtomName> atoms) {
         this(residueComponentName, moleculeType, atoms,
              Collections.<AtomName>emptyList());
     }
 
-    protected ResidueComponent(String residueComponentName,
-                               MoleculeType moleculeType, List<AtomName> atoms,
-                               List<AtomName> additionalAtoms) {
+    protected ResidueComponent(
+            final String residueComponentName, final MoleculeType moleculeType,
+            final List<AtomName> atoms, final List<AtomName> additionalAtoms) {
         super();
         this.residueComponentName = residueComponentName;
         this.moleculeType = moleculeType;
-        this.atoms = atoms;
-        this.additionalAtoms = additionalAtoms;
+        this.atoms = new ArrayList<>(atoms);
+        this.additionalAtoms = new ArrayList<>(additionalAtoms);
     }
 
-    public String getResidueComponentName() {
+    public final String getResidueComponentName() {
         return residueComponentName;
     }
 
-    public MoleculeType getMoleculeType() {
+    public final MoleculeType getMoleculeType() {
         return moleculeType;
     }
 
-    public List<AtomName> getAtoms() {
-        return atoms;
+    public final List<AtomName> getAtoms() {
+        return Collections.unmodifiableList(atoms);
     }
 
-    public List<AtomName> getAdditionalAtoms() {
-        return additionalAtoms;
+    public final List<AtomName> getAdditionalAtoms() {
+        return Collections.unmodifiableList(additionalAtoms);
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         int result = residueComponentName.hashCode();
-        result = 31 * result + moleculeType.hashCode();
-        result = 31 * result + atoms.hashCode();
-        result = 31 * result + additionalAtoms.hashCode();
+        result = (31 * result) + moleculeType.hashCode();
+        result = (31 * result) + atoms.hashCode();
+        result = (31 * result) + additionalAtoms.hashCode();
         return result;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public final boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if ((obj == null) || (getClass() != obj.getClass())) {
             return false;
         }
 
-        ResidueComponent that = (ResidueComponent) o;
-        return residueComponentName.equals(that.residueComponentName)
-               && moleculeType == that.moleculeType && CollectionUtils
-                       .isEqualCollection(atoms, that.atoms) && CollectionUtils
-                       .isEqualCollection(atoms, that.atoms);
+        ResidueComponent other = (ResidueComponent) obj;
+        return residueComponentName.equals(other.residueComponentName) && (
+                moleculeType == other.moleculeType) && CollectionUtils
+                       .isEqualCollection(atoms, other.atoms) && CollectionUtils
+                       .isEqualCollection(additionalAtoms,
+                                          other.additionalAtoms);
     }
 }

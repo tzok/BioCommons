@@ -1,8 +1,11 @@
 package pl.poznan.put.pdb;
 
+import java.io.Serializable;
 import java.util.Locale;
 
-public class PdbRemark2Line {
+public class PdbRemark2Line implements Serializable {
+    private static final long serialVersionUID = -4818750947185900609L;
+
     public static final String PROLOGUE =
             "REMARK   2                                                      "
             + "                ";
@@ -36,7 +39,8 @@ public class PdbRemark2Line {
             new PdbRemark2Line(Double.NaN);
     private final double resolution;
 
-    public PdbRemark2Line(double resolution) {
+    public PdbRemark2Line(final double resolution) {
+        super();
         this.resolution = resolution;
     }
 
@@ -44,7 +48,8 @@ public class PdbRemark2Line {
         return PdbRemark2Line.EMPTY_INSTANCE;
     }
 
-    public static PdbRemark2Line parse(String line) throws PdbParsingException {
+    public static PdbRemark2Line parse(final String line)
+            throws PdbParsingException {
         if (!line.startsWith("REMARK   2 RESOLUTION.")) {
             throw new PdbParsingException(
                     "Failed to parse REMARK   2 RESOLUTION. line: " + line);
@@ -59,18 +64,18 @@ public class PdbRemark2Line {
             }
 
             return new PdbRemark2Line(resolution);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new PdbParsingException(
                     "Failed to parse REMARK   2 RESOLUTION. line", e);
         }
     }
 
-    public double getResolution() {
+    public final double getResolution() {
         return resolution;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         if (Double.isNaN(resolution)) {
             return PdbRemark2Line.NOT_APPLICABLE;
         }
