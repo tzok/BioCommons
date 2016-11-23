@@ -46,6 +46,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
             = "ATOM  %5d  %-3s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
     @SuppressWarnings("HardcodedLineSeparator") public static final String CIF_LOOP
             = "loop_\n" +
+              "_atom_site.group_PDB\n" +
               "_atom_site.id\n" +
               "_atom_site.auth_atom_id\n" +
               "_atom_site.label_alt_id\n" +
@@ -354,6 +355,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
 
     public final String toCif() {
         StringBuilder builder = new StringBuilder();
+        builder.append("ATOM ");
         builder.append(serialNumber).append(' ');
         builder.append(atomName).append(' ');
         if (StringUtils.isNotBlank(alternateLocation)) {
