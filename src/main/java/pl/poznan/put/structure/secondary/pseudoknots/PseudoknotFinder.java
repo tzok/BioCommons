@@ -15,12 +15,10 @@ public interface PseudoknotFinder {
      * BPSEQ, there can be many subsets of pairs considered to be pseudoknots.
      *
      * @param bpSeq An input BPSEQ structure with all pairs.
-     *
      * @return A list of BPSEQ structures where each contains only pairs
      * considered to be pseudoknots. Each BPSEQ is a full copy of original one,
      * but contains zeroed 'pair' columns for entries which are
      * non-pseudoknots.
-     *
      * @throws InvalidStructureException If recreation of BPSEQ fails.
      */
     List<BpSeq> findPseudoknots(BpSeq bpSeq) throws InvalidStructureException;

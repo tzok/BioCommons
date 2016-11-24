@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import pl.poznan.put.pdb.ExperimentalTechnique;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
@@ -12,8 +13,6 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 
 import java.io.IOException;
 import java.util.List;
-
-import pl.poznan.put.pdb.ExperimentalTechnique;
 
 /**
  * Created by tzok on 24.05.16.
@@ -41,8 +40,8 @@ public class TestCifParser {
         List<PdbChain> chains = model.getChains();
         Assert.assertEquals(2, chains.size());
 
-        List<ExperimentalTechnique> experimentalTechniques = model
-                .getExperimentalDataLine().getExperimentalTechniques();
+        List<ExperimentalTechnique> experimentalTechniques =
+                model.getExperimentalDataLine().getExperimentalTechniques();
         Assert.assertEquals(1, experimentalTechniques.size());
         Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION,
                             experimentalTechniques.get(0));
@@ -64,8 +63,8 @@ public class TestCifParser {
         Assert.assertEquals("API", residue.getOriginalResidueName());
         Assert.assertEquals("LYS", residue.getModifiedResidueName());
 
-        List<ExperimentalTechnique> experimentalTechniques = model
-                .getExperimentalDataLine().getExperimentalTechniques();
+        List<ExperimentalTechnique> experimentalTechniques =
+                model.getExperimentalDataLine().getExperimentalTechniques();
         Assert.assertEquals(1, experimentalTechniques.size());
         Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION,
                             experimentalTechniques.get(0));
@@ -83,8 +82,8 @@ public class TestCifParser {
         List<PdbChain> chains = model.getChains();
         Assert.assertEquals(1, chains.size());
 
-        List<ExperimentalTechnique> experimentalTechniques = model
-                .getExperimentalDataLine().getExperimentalTechniques();
+        List<ExperimentalTechnique> experimentalTechniques =
+                model.getExperimentalDataLine().getExperimentalTechniques();
         Assert.assertEquals(2, experimentalTechniques.size());
         Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION,
                             experimentalTechniques.get(0));

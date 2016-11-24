@@ -6,7 +6,7 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-public class Gamma extends AtomBasedTorsionAngleType {
+public final class Gamma extends AtomBasedTorsionAngleType {
     private static final Gamma INSTANCE = new Gamma();
 
     private Gamma() {

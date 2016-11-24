@@ -2,6 +2,7 @@ package pl.poznan.put.pdb.analysis;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -11,7 +12,8 @@ import java.util.Set;
 public class PdbContainer implements ModelContainer {
     private final File pdbFile;
 
-    public PdbContainer(File pdbFile) {
+    public PdbContainer(final File pdbFile) {
+        super();
         this.pdbFile = pdbFile;
     }
 
@@ -20,6 +22,7 @@ public class PdbContainer implements ModelContainer {
         return false;
     }
 
+    @Override
     public File getCifFile() {
         throw new UnsupportedOperationException(
                 "Container does not represent mmCIF file");
@@ -31,16 +34,16 @@ public class PdbContainer implements ModelContainer {
     }
 
     @Override
-    public String getCifChain(File pdbFile, String pdbChain) {
-        if (!this.pdbFile.equals(pdbFile)) {
+    public String getCifChain(final File pdbFile, final String pdbChain) {
+        if (!Objects.equals(this.pdbFile, pdbFile)) {
             // TODO
         }
         return pdbChain;
     }
 
     @Override
-    public String getPdbChain(File pdbFile, String cifChain) {
-        if (!this.pdbFile.equals(pdbFile)) {
+    public String getPdbChain(final File pdbFile, final String cifChain) {
+        if (!Objects.equals(this.pdbFile, pdbFile)) {
             // TODO
         }
         return cifChain;

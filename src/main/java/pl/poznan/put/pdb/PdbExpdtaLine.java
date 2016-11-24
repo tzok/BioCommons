@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class PdbExpdtaLine implements Serializable {
     private static final long serialVersionUID = 6276886553884351623L;
@@ -38,7 +39,7 @@ public class PdbExpdtaLine implements Serializable {
             throws PdbParsingException {
         String recordName = line.substring(0, 6).trim();
 
-        if (!PdbExpdtaLine.RECORD_NAME.equals(recordName)) {
+        if (!Objects.equals(PdbExpdtaLine.RECORD_NAME, recordName)) {
             throw new PdbParsingException(
                     "PDB line does not start with EXPDTA");
         }

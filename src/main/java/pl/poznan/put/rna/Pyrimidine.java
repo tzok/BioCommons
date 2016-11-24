@@ -7,8 +7,9 @@ import pl.poznan.put.types.Quadruplet;
 import java.util.List;
 
 public abstract class Pyrimidine extends Base {
-    protected Pyrimidine(List<AtomName> atoms, String longName,
-                         char oneLetterName, String... names) {
+    protected Pyrimidine(
+            final List<AtomName> atoms, final String longName,
+            final char oneLetterName, final String... names) {
         super(atoms, longName, oneLetterName, names);
         torsionAngleTypes.add(Chi.getPyrimidineInstance());
     }

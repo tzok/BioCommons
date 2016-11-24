@@ -8,7 +8,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Proline extends ProteinSidechain {
+public final class Proline extends ProteinSidechain {
     private static final Proline INSTANCE = new Proline();
 
     private Proline() {

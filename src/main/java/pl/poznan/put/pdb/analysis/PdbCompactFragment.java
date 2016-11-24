@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 public class PdbCompactFragment implements ResidueCollection {
@@ -62,7 +62,7 @@ public class PdbCompactFragment implements ResidueCollection {
     @Override
     public final PdbResidue findResidue(final PdbResidueIdentifier query) {
         for (final PdbResidue residue : residues) {
-            if (query.equals(residue.getResidueIdentifier())) {
+            if (Objects.equals(query, residue.getResidueIdentifier())) {
                 return residue;
             }
         }
@@ -92,7 +92,7 @@ public class PdbCompactFragment implements ResidueCollection {
 
     public final Set<TorsionAngleType> commonTorsionAngleTypes() {
         Set<TorsionAngleType> set = new LinkedHashSet<>();
-        for (final Entry<PdbResidue, List<TorsionAngleValue>> entry :
+        for (final Map.Entry<PdbResidue, List<TorsionAngleValue>> entry :
                 mapResidueAngleValue
                 .entrySet()) {
             for (final TorsionAngleValue angleValue : entry.getValue()) {
@@ -109,7 +109,7 @@ public class PdbCompactFragment implements ResidueCollection {
         for (final TorsionAngleValue angleValue : mapResidueAngleValue
                 .get(residue)) {
             for (final TorsionAngleType angleType : angleTypes) {
-                if (angleType.equals(angleValue.getAngleType())) {
+                if (Objects.equals(angleType, angleValue.getAngleType())) {
                     return angleValue;
                 }
             }
@@ -132,8 +132,9 @@ public class PdbCompactFragment implements ResidueCollection {
     public final int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (name == null ? 0 : name.hashCode());
-        result = prime * result + (residues == null ? 0 : residues.hashCode());
+        result = (prime * result) + ((name == null) ? 0 : name.hashCode());
+        result = (prime * result) + ((residues == null) ? 0
+                                                        : residues.hashCode());
         return result;
     }
 
@@ -153,7 +154,7 @@ public class PdbCompactFragment implements ResidueCollection {
             if (other.name != null) {
                 return false;
             }
-        } else if (!name.equals(other.name)) {
+        } else if (!Objects.equals(name, other.name)) {
             return false;
         }
         if (residues == null) {
@@ -171,6 +172,6 @@ public class PdbCompactFragment implements ResidueCollection {
     public final String toString() {
         PdbResidue first = residues.get(0);
         PdbResidue last = residues.get(residues.size() - 1);
-        return first + " - " + last + " (count: " + residues.size() + ")";
+        return first + " - " + last + " (count: " + residues.size() + ')';
     }
 }

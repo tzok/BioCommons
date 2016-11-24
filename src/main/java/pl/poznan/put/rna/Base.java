@@ -56,8 +56,9 @@ public abstract class Base extends NucleicAcidResidueComponent
     private final char oneLetterName;
     private final List<String> pdbNames;
 
-    protected Base(List<AtomName> atoms, String longName, char oneLetterName,
-                   String... pdbNames) {
+    protected Base(
+            final List<AtomName> atoms, final String longName,
+            final char oneLetterName, final String... pdbNames) {
         super(RNAResidueComponentType.BASE, atoms);
         this.longName = longName;
         this.oneLetterName = oneLetterName;
@@ -82,9 +83,8 @@ public abstract class Base extends NucleicAcidResidueComponent
 
     @Override
     public List<ResidueComponent> getAllMoleculeComponents() {
-        return Arrays.asList(new ResidueComponent[]{Phosphate.getInstance(),
-                                                    getDefaultSugarInstance(),
-                                                    this});
+        return Arrays.asList(new ResidueComponent[]{
+                Phosphate.getInstance(), getDefaultSugarInstance(), this});
     }
 
     @Override
@@ -105,12 +105,12 @@ public abstract class Base extends NucleicAcidResidueComponent
 
     @Override
     public List<String> getPdbNames() {
-        return pdbNames;
+        return Collections.unmodifiableList(pdbNames);
     }
 
     @Override
     public List<TorsionAngleType> getTorsionAngleTypes() {
-        return torsionAngleTypes;
+        return Collections.unmodifiableList(torsionAngleTypes);
     }
 
     public abstract Sugar getDefaultSugarInstance();

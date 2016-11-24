@@ -6,7 +6,7 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-public class Chi extends AtomBasedTorsionAngleType {
+public final class Chi extends AtomBasedTorsionAngleType {
     public static final Quadruplet<AtomName> PURINE_ATOMS =
             new Quadruplet<>(AtomName.O4p, AtomName.C1p, AtomName.N9,
                              AtomName.C4);
@@ -18,7 +18,7 @@ public class Chi extends AtomBasedTorsionAngleType {
     private static final Chi PYRIMIDINE_INSTANCE =
             new Chi(Chi.PYRIMIDINE_ATOMS);
 
-    private Chi(Quadruplet<AtomName> atoms) {
+    private Chi(final Quadruplet<AtomName> atoms) {
         super(MoleculeType.RNA, Unicode.CHI, atoms,
               new Quadruplet<>(0, 0, 0, 0));
     }

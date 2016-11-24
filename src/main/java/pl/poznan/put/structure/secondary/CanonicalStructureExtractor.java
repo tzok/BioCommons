@@ -10,10 +10,13 @@ import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
-public class CanonicalStructureExtractor {
+public final class CanonicalStructureExtractor {
     private CanonicalStructureExtractor() {
+        super();
         // empty constructor
     }
 
@@ -22,11 +25,11 @@ public class CanonicalStructureExtractor {
      * http://rnapdbee.cs.put.poznan.pl
      */
     public static BpSeq getCanonicalSecondaryStructure(
-            ResidueCollection residueCollection) throws
+            final ResidueCollection residueCollection) throws
 
-                                                 InvalidStructureException {
+                                                       InvalidStructureException {
         List<PdbResidue> residues = residueCollection.getResidues();
-        List<ClassifiedBasePair> basePairs = new ArrayList<>();
+        Collection<ClassifiedBasePair> basePairs = new ArrayList<>();
 
         for (int i = 0; i < residues.size(); i++) {
             PdbResidue left = residues.get(i);
@@ -42,13 +45,13 @@ public class CanonicalStructureExtractor {
                         Character.toUpperCase(right.getOneLetterName());
                 Saenger saenger;
 
-                if (leftName == 'C' && rightName == 'G' && BasePair
+                if ((leftName == 'C') && (rightName == 'G') && BasePair
                         .isCanonicalCG(left, right)) {
                     saenger = Saenger.XIX;
-                } else if (leftName == 'A' && rightName == 'U' && BasePair
+                } else if ((leftName == 'A') && (rightName == 'U') && BasePair
                         .isCanonicalAU(left, right)) {
                     saenger = Saenger.XX;
-                } else if (leftName == 'G' && rightName == 'U' && BasePair
+                } else if ((leftName == 'G') && (rightName == 'U') && BasePair
                         .isCanonicalGU(left, right)) {
                     saenger = Saenger.XXVIII;
                 } else {
@@ -75,15 +78,16 @@ public class CanonicalStructureExtractor {
     }
 
     private static boolean areBothBasesUnpaired(
-            List<ClassifiedBasePair> basePairs, PdbResidueIdentifier left,
-            PdbResidueIdentifier right) {
-        for (ClassifiedBasePair classifiedBasePair : basePairs) {
+            final Iterable<ClassifiedBasePair> basePairs,
+            final PdbResidueIdentifier left, final PdbResidueIdentifier right) {
+        for (final ClassifiedBasePair classifiedBasePair : basePairs) {
             BasePair basePair = classifiedBasePair.getBasePair();
             PdbResidueIdentifier bpLeft = basePair.getLeft();
             PdbResidueIdentifier bpRight = basePair.getRight();
 
-            if (bpLeft.equals(left) || bpLeft.equals(right) || bpRight
-                    .equals(left) || bpRight.equals(right)) {
+            if (Objects.equals(bpLeft, left) || Objects.equals(bpLeft, right)
+                || Objects.equals(bpRight, left) || Objects
+                        .equals(bpRight, right)) {
                 return false;
             }
         }

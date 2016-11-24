@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Objects;
 
 public class PdbRemark465Line implements ChainNumberICode, Serializable {
     private static final long serialVersionUID = -6551046160002695423L;
@@ -89,7 +90,8 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
         String lineTrimmed = StringUtils.normalizeSpace(line);
 
         for (final String comment : PdbRemark465Line.COMMENT_LINES) {
-            if (lineTrimmed.equals(StringUtils.normalizeSpace(comment))) {
+            if (Objects
+                    .equals(lineTrimmed, StringUtils.normalizeSpace(comment))) {
                 return true;
             }
         }
@@ -106,12 +108,12 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
 
         try {
             String recordName = line.substring(0, 6).trim();
-            int remarkNumber = Integer.parseInt(line.substring(7, 10).trim());
 
-            if (!"REMARK".equals(recordName)) {
+            if (!Objects.equals("REMARK", recordName)) {
                 throw new PdbParsingException(
                         "PDB line does not start with REMARK");
             }
+            int remarkNumber = Integer.parseInt(line.substring(7, 10).trim());
             if (remarkNumber != 465) {
                 throw new PdbParsingException(
                         "Unsupported REMARK line occurred");

@@ -7,7 +7,7 @@ import pl.poznan.put.rna.Sugar;
 
 import java.util.Arrays;
 
-public class Guanine extends Purine {
+public final class Guanine extends Purine {
     private static final Guanine INSTANCE = new Guanine();
 
     private Guanine() {

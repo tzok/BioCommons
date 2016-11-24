@@ -31,7 +31,7 @@ public class CifModel extends PdbModel {
         this.basePairs = new ArrayList<>(basePairs);
     }
 
-    public final List<QuantifiedBasePair> getBasePairs() {
+    public final Iterable<QuantifiedBasePair> getBasePairs() {
         return Collections.unmodifiableList(basePairs);
     }
 

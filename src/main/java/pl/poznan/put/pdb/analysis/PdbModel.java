@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PdbModel implements Serializable, ResidueCollection {
     private static final long serialVersionUID = -2769758924241993375L;
@@ -91,7 +92,7 @@ public class PdbModel implements Serializable, ResidueCollection {
             PdbResidueIdentifier residueIdentifier =
                     PdbResidueIdentifier.fromChainNumberICode(atom);
 
-            if (!residueIdentifier.equals(lastResidueIdentifier)) {
+            if (!Objects.equals(residueIdentifier, lastResidueIdentifier)) {
                 saveExistingResidueIfValid(residueAtoms, lastResidueIdentifier);
                 residueAtoms = new ArrayList<>();
                 lastResidueIdentifier = residueIdentifier;
@@ -116,12 +117,13 @@ public class PdbModel implements Serializable, ResidueCollection {
                 PdbResidue existing = residues.get(i);
                 String existingChain = existing.getChainIdentifier();
 
-                if (!isChainFound && chain.equals(existingChain)) {
+                if (!isChainFound && Objects.equals(chain, existingChain)) {
                     isChainFound = true;
                 }
 
-                if (isChainFound && ((existing.compareTo(residue) > 0) || !chain
-                        .equals(existingChain))) {
+                if (isChainFound && ((existing.compareTo(residue) > 0)
+                                     || !Objects
+                        .equals(chain, existingChain))) {
                     residues.add(i, residue);
                     break;
                 }
@@ -226,7 +228,7 @@ public class PdbModel implements Serializable, ResidueCollection {
         return modelNumber;
     }
 
-    public final List<PdbModresLine> getModifiedResidues() {
+    public final Iterable<PdbModresLine> getModifiedResidues() {
         return Collections.unmodifiableList(modifiedResidues);
     }
 

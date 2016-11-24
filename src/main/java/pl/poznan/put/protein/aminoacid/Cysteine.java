@@ -7,7 +7,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Cysteine extends ProteinSidechain {
+public final class Cysteine extends ProteinSidechain {
     private static final Cysteine INSTANCE = new Cysteine();
 
     private Cysteine() {

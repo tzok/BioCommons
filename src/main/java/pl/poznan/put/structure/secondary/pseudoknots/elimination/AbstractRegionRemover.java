@@ -31,14 +31,14 @@ public abstract class AbstractRegionRemover implements RegionRemover {
         AbstractRegionRemover.restoreNonConflicting(regions);
 
         Collection<BpSeq.Entry> validPairs = new ArrayList<>();
-        for (Region region : regions) {
+        for (final Region region : regions) {
             if (!region.isRemoved()) {
                 validPairs.addAll(region.getEntries());
             }
         }
 
         BpSeq result = new BpSeq(bpSeq.getEntries());
-        for (BpSeq.Entry validPair : validPairs) {
+        for (final BpSeq.Entry validPair : validPairs) {
             result.removePair(validPair);
         }
         return Collections.singletonList(result);
@@ -46,13 +46,13 @@ public abstract class AbstractRegionRemover implements RegionRemover {
 
     // Unremove all Regions that were removed but are no longer in conflict
     private static void restoreNonConflicting(final Iterable<Region> regions) {
-        for (Region ri : regions) {
+        for (final Region ri : regions) {
             if (!ri.isRemoved()) {
                 continue;
             }
 
             boolean nonConflicting = true;
-            for (Region rj : regions) {
+            for (final Region rj : regions) {
                 if (!rj.isRemoved() && ConflictMap.isConflicting(ri, rj)) {
                     nonConflicting = false;
                     break;

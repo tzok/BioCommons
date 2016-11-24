@@ -10,10 +10,10 @@ public class DotBracketSymbol
     private static final List<Character> CLOSING = new ArrayList<>();
 
     static {
-        for (char c : "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
+        for (final char c : "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
             DotBracketSymbol.OPENING.add(c);
         }
-        for (char c : ")]}>abcdefghijklmnopqrstuvwxyz".toCharArray()) {
+        for (final char c : ")]}>abcdefghijklmnopqrstuvwxyz".toCharArray()) {
             DotBracketSymbol.CLOSING.add(c);
         }
     }
@@ -24,24 +24,25 @@ public class DotBracketSymbol
     private DotBracketSymbol previous;
     private DotBracketSymbol next;
     private DotBracketSymbol pair;
-    private boolean isNonCanonical = false;
+    private boolean isNonCanonical;
 
-    public DotBracketSymbol(char sequence, char structure, int index) {
+    public DotBracketSymbol(
+            final char sequence, final char structure, final int index) {
         super();
         this.sequence = sequence;
         this.structure = structure;
         this.index = index;
     }
 
-    public static boolean isPairing(char c) {
+    public static boolean isPairing(final char c) {
         return DotBracketSymbol.isOpening(c) || DotBracketSymbol.isClosing(c);
     }
 
-    public static boolean isOpening(char c) {
+    public static boolean isOpening(final char c) {
         return DotBracketSymbol.OPENING.contains(c);
     }
 
-    public static boolean isClosing(char c) {
+    public static boolean isClosing(final char c) {
         return DotBracketSymbol.CLOSING.contains(c);
     }
 
@@ -61,13 +62,13 @@ public class DotBracketSymbol
         return previous;
     }
 
-    public void setPrevious(DotBracketSymbol previous) {
+    public void setPrevious(final DotBracketSymbol previous) {
         this.previous = previous;
     }
 
-    public DotBracketSymbol getNext(int count) {
+    public DotBracketSymbol getNext(final int count) {
         DotBracketSymbol symbol = this;
-        for (int i = 1; i < count && symbol != null; i++) {
+        for (int i = 1; (i < count) && (symbol != null); i++) {
             symbol = symbol.next;
         }
         return symbol;
@@ -77,7 +78,7 @@ public class DotBracketSymbol
         return next;
     }
 
-    public void setNext(DotBracketSymbol next) {
+    public void setNext(final DotBracketSymbol next) {
         this.next = next;
     }
 
@@ -85,7 +86,7 @@ public class DotBracketSymbol
         return pair;
     }
 
-    public void setPair(DotBracketSymbol pair) {
+    public void setPair(final DotBracketSymbol pair) {
         this.pair = pair;
     }
 
@@ -94,7 +95,7 @@ public class DotBracketSymbol
         return isNonCanonical;
     }
 
-    public void setNonCanonical(boolean isNonCanonical) {
+    public void setNonCanonical(final boolean isNonCanonical) {
         this.isNonCanonical = isNonCanonical;
     }
 
@@ -117,7 +118,8 @@ public class DotBracketSymbol
     public int getOrder() {
         if (isOpening()) {
             return DotBracketSymbol.OPENING.indexOf(structure);
-        } else if (isClosing()) {
+        }
+        if (isClosing()) {
             return DotBracketSymbol.CLOSING.indexOf(structure);
         }
         return 0;
@@ -127,14 +129,14 @@ public class DotBracketSymbol
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + index;
-        result = prime * result + sequence;
-        result = prime * result + structure;
+        result = (prime * result) + index;
+        result = (prime * result) + sequence;
+        result = (prime * result) + structure;
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -145,25 +147,25 @@ public class DotBracketSymbol
             return false;
         }
         DotBracketSymbol other = (DotBracketSymbol) obj;
-        return index == other.index && sequence == other.sequence
-               && structure == other.structure;
+        return (index == other.index) && (sequence == other.sequence) && (
+                structure == other.structure);
     }
 
     @Override
     public String toString() {
-        return index + " " + sequence + " " + structure;
+        return index + " " + sequence + ' ' + structure;
     }
 
     @Override
-    public int compareTo(DotBracketSymbol o) {
-        if (o == null) {
+    public int compareTo(final DotBracketSymbol t) {
+        if (t == null) {
             throw new NullPointerException();
         }
 
-        if (equals(o)) {
+        if (equals(t)) {
             return 0;
         }
 
-        return index < o.index ? -1 : (index == o.index ? 0 : 1);
+        return (index < t.index) ? -1 : ((index == t.index) ? 0 : 1);
     }
 }

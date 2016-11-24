@@ -44,7 +44,7 @@ public class BpSeq implements Serializable {
     private void validate() throws InvalidStructureException {
         Map<Integer, Integer> map = new HashMap<>();
 
-        for (BpSeq.Entry e : entries) {
+        for (final BpSeq.Entry e : entries) {
             if (e.getIndex() == e.getPair()) {
                 throw new InvalidStructureException(String.format(
                         "Invalid line in BPSEQ data, a residue cannot be "
@@ -56,7 +56,7 @@ public class BpSeq implements Serializable {
 
         int previous = 0;
 
-        for (BpSeq.Entry e : entries) {
+        for (final BpSeq.Entry e : entries) {
             if ((e.getIndex() - previous) != 1) {
                 throw new InvalidStructureException(String.format(
                         "Inconsistent numbering in BPSEQ format: previous=%d,"
@@ -112,7 +112,7 @@ public class BpSeq implements Serializable {
                 index = Integer.valueOf(split[0]);
                 seq = split[1].charAt(0);
                 pair = Integer.valueOf(split[2]);
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 throw new InvalidStructureException(String.format(
                         "Line does not conform to BPSEQ format: %s", line), e);
             }
@@ -126,7 +126,7 @@ public class BpSeq implements Serializable {
     public static BpSeq fromCt(final Ct ct) throws InvalidStructureException {
         List<BpSeq.Entry> bpseqEntries = new ArrayList<>();
 
-        for (Ct.Entry e : ct.getEntries()) {
+        for (final Ct.Entry e : ct.getEntries()) {
             bpseqEntries.add(new BpSeq.Entry(e.getIndex(), e.getPair(),
                                              e.getSeq()));
         }
@@ -138,7 +138,7 @@ public class BpSeq implements Serializable {
             throws InvalidStructureException {
         List<BpSeq.Entry> entries = new ArrayList<>();
 
-        for (DotBracketSymbol symbol : db.getSymbols()) {
+        for (final DotBracketSymbol symbol : db.getSymbols()) {
             DotBracketSymbol pair = symbol.getPair();
             int index = symbol.getIndex() + 1;
             int pairIndex = (pair != null) ? (pair.getIndex() + 1) : 0;
@@ -157,7 +157,7 @@ public class BpSeq implements Serializable {
         Collection<BasePair> allBasePairs = new ArrayList<>();
         Map<BasePair, String> basePairToComment = new HashMap<>();
 
-        for (ClassifiedBasePair classifiedBasePair : basePairs) {
+        for (final ClassifiedBasePair classifiedBasePair : basePairs) {
             BasePair basePair = classifiedBasePair.getBasePair();
             allBasePairs.add(basePair);
 
@@ -185,7 +185,7 @@ public class BpSeq implements Serializable {
         Collection<BpSeq.Entry> entries = new ArrayList<>();
         List<PdbResidue> residues = residueCollection.getResidues();
 
-        for (BasePair basePair : basePairs) {
+        for (final BasePair basePair : basePairs) {
             PdbResidue left = residueCollection.findResidue(basePair.getLeft());
             PdbResidue right =
                     residueCollection.findResidue(basePair.getRight());
@@ -209,7 +209,7 @@ public class BpSeq implements Serializable {
         List<PdbResidue> residues = residueCollection.getResidues();
         Collection<PdbResidueIdentifier> paired = new HashSet<>();
 
-        for (BasePair basePair : allBasePairs) {
+        for (final BasePair basePair : allBasePairs) {
             paired.add(basePair.getLeft());
             paired.add(basePair.getRight());
         }
@@ -232,7 +232,7 @@ public class BpSeq implements Serializable {
 
     public final String getSequence() {
         StringBuilder builder = new StringBuilder(entries.size());
-        for (BpSeq.Entry e : entries) {
+        for (final BpSeq.Entry e : entries) {
             builder.append(e.getSeq());
         }
         return builder.toString();
@@ -240,7 +240,7 @@ public class BpSeq implements Serializable {
 
     public final SortedSet<BpSeq.Entry> getPaired() {
         SortedSet<BpSeq.Entry> sortedSet = new TreeSet<>();
-        for (BpSeq.Entry entry : entries) {
+        for (final BpSeq.Entry entry : entries) {
             if (entry.getIndex() < entry.getPair()) {
                 sortedSet.add(entry);
             }
@@ -253,7 +253,7 @@ public class BpSeq implements Serializable {
             return;
         }
 
-        for (BpSeq.Entry entry : entries) {
+        for (final BpSeq.Entry entry : entries) {
             if (entry.getIndex() == toRemove.getPair()) {
                 entries.remove(toRemove);
                 entries.remove(entry);
@@ -269,7 +269,7 @@ public class BpSeq implements Serializable {
     }
 
     public final boolean hasAnyPair() {
-        for (BpSeq.Entry entry : entries) {
+        for (final BpSeq.Entry entry : entries) {
             if (entry.isPaired()) {
                 return true;
             }
@@ -292,8 +292,9 @@ public class BpSeq implements Serializable {
             comment = "";
         }
 
-        public Entry(final int index, final int pair, final char seq,
-                     final String comment) {
+        public Entry(
+                final int index, final int pair, final char seq,
+                final String comment) {
             super();
             this.index = index;
             this.pair = pair;
@@ -409,7 +410,7 @@ public class BpSeq implements Serializable {
     public final String toString() {
         StringBuilder builder = new StringBuilder(10 * entries.size());
 
-        for (BpSeq.Entry e : entries) {
+        for (final BpSeq.Entry e : entries) {
             builder.append(e);
             builder.append(System.lineSeparator());
         }

@@ -112,8 +112,8 @@ public class TestPdbModel {
         PdbParser parser = new PdbParser();
         List<PdbModel> models = parser.parse(pdb1EHZ);
         PdbModel model = models.get(0);
-        PdbResidue residue = model
-                .findResidue(new PdbResidueIdentifier("A", 10, " "));
+        PdbResidue residue =
+                model.findResidue(new PdbResidueIdentifier("A", 10, " "));
         assertEquals("2MG", residue.getOriginalResidueName());
         assertEquals("G", residue.getModifiedResidueName());
         assertEquals("G", residue.getDetectedResidueName());
@@ -211,8 +211,8 @@ public class TestPdbModel {
             } else {
                 assertEquals(
                         "Detected " + residue.getDetectedResidueName() + " for "
-                                + residue.getOriginalResidueName() + "/"
-                                + residue.getModifiedResidueName(),
+                        + residue.getOriginalResidueName() + "/" + residue
+                                .getModifiedResidueName(),
                         residue.getModifiedResidueName(),
                         residue.getDetectedResidueName());
                 assertEquals(residue.isModified(), !residue.hasAllAtoms());

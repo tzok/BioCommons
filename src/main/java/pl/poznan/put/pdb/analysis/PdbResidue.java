@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class PdbResidue
         implements Serializable, Comparable<PdbResidue>, ChainNumberICode {
@@ -150,7 +151,7 @@ public class PdbResidue
         return new PdbResidue(residueIdentifier, residueName, atoms, false);
     }
 
-    public final List<PdbAtomLine> getAtoms() {
+    public final Collection<PdbAtomLine> getAtoms() {
         return Collections.unmodifiableList(atoms);
     }
 
@@ -182,7 +183,7 @@ public class PdbResidue
         return modifiedResidueName;
     }
 
-    public final List<TorsionAngleType> getTorsionAngleTypes() {
+    public final Iterable<TorsionAngleType> getTorsionAngleTypes() {
         return residueInformationProvider.getTorsionAngleTypes();
     }
 
@@ -240,21 +241,21 @@ public class PdbResidue
             if (other.atomNames != null) {
                 return false;
             }
-        } else if (!atomNames.equals(other.atomNames)) {
+        } else if (!Objects.equals(atomNames, other.atomNames)) {
             return false;
         }
         if (atoms == null) {
             if (other.atoms != null) {
                 return false;
             }
-        } else if (!atoms.equals(other.atoms)) {
+        } else if (!Objects.equals(atoms, other.atoms)) {
             return false;
         }
         if (identifier == null) {
             if (other.identifier != null) {
                 return false;
             }
-        } else if (!identifier.equals(other.identifier)) {
+        } else if (!Objects.equals(identifier, other.identifier)) {
             return false;
         }
         if (isMissing != other.isMissing) {
@@ -267,14 +268,15 @@ public class PdbResidue
             if (other.modifiedResidueName != null) {
                 return false;
             }
-        } else if (!modifiedResidueName.equals(other.modifiedResidueName)) {
+        } else if (!Objects
+                .equals(modifiedResidueName, other.modifiedResidueName)) {
             return false;
         }
         if (residueName == null) {
             if (other.residueName != null) {
                 return false;
             }
-        } else if (!residueName.equals(other.residueName)) {
+        } else if (!Objects.equals(residueName, other.residueName)) {
             return false;
         }
         return true;
@@ -286,12 +288,12 @@ public class PdbResidue
         int residueNumber = identifier.getResidueNumber();
         String insertionCode = identifier.getInsertionCode();
         return chainIdentifier + '.' + modifiedResidueName + residueNumber + (
-                " ".equals(insertionCode) ? "" : insertionCode);
+                Objects.equals(" ", insertionCode) ? "" : insertionCode);
     }
 
     @Override
-    public final int compareTo(@Nonnull final PdbResidue o) {
-        return identifier.compareTo(o.identifier);
+    public final int compareTo(@Nonnull final PdbResidue t) {
+        return identifier.compareTo(t.identifier);
     }
 
     public final boolean hasAtom(final AtomName atomName) {

@@ -5,7 +5,7 @@ import pl.poznan.put.protein.ProteinSidechain;
 
 import java.util.Arrays;
 
-public class Glycine extends ProteinSidechain {
+public final class Glycine extends ProteinSidechain {
     private static final Glycine INSTANCE = new Glycine();
 
     private Glycine() {

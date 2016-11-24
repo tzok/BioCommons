@@ -8,7 +8,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class AsparticAcid extends ProteinSidechain {
+public final class AsparticAcid extends ProteinSidechain {
     private static final AsparticAcid INSTANCE = new AsparticAcid();
 
     private AsparticAcid() {

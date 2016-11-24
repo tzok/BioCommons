@@ -39,16 +39,16 @@ public enum AminoAcidType implements ResidueInformationProvider {
 
     private final ProteinSidechain sidechain;
 
-    AminoAcidType(ProteinSidechain sidechain) {
+    AminoAcidType(final ProteinSidechain sidechain) {
         this.sidechain = sidechain;
     }
 
-    public static TorsionAngleType[] getChiInstances(ProteinChiType chiType) {
+    public static TorsionAngleType[] getChiInstances(
+            final ProteinChiType chiType) {
         List<TorsionAngleType> typesList = new ArrayList<>();
 
-        for (AminoAcidType aminoAcidType : values()) {
-            ProteinSidechain residueComponent =
-                    aminoAcidType.getProteinSidechainInstance();
+        for (final AminoAcidType aminoAcidType : AminoAcidType.values()) {
+            ProteinSidechain residueComponent = aminoAcidType.sidechain;
             if (!residueComponent.hasChiDefined(chiType)) {
                 continue;
             }

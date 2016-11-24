@@ -8,13 +8,15 @@ public class TorsionAngleValue implements DisplayableExportable {
     private final TorsionAngleType angleType;
     private final Angle value;
 
-    public TorsionAngleValue(TorsionAngleType angleType, Angle value) {
+    public TorsionAngleValue(
+            final TorsionAngleType angleType, final Angle value) {
         super();
         this.angleType = angleType;
         this.value = value;
     }
 
-    public static TorsionAngleValue invalidInstance(TorsionAngleType type) {
+    public static TorsionAngleValue invalidInstance(
+            final TorsionAngleType type) {
         return new TorsionAngleValue(type, Angle.invalidInstance());
     }
 
@@ -33,19 +35,19 @@ public class TorsionAngleValue implements DisplayableExportable {
 
     @Override
     public String getLongDisplayName() {
-        return angleType.getLongDisplayName() + " " + AngleFormat
+        return angleType.getLongDisplayName() + ' ' + AngleFormat
                 .formatDisplayLong(value.getRadians());
     }
 
     @Override
     public String getShortDisplayName() {
-        return angleType.getShortDisplayName() + " " + AngleFormat
+        return angleType.getShortDisplayName() + ' ' + AngleFormat
                 .formatDisplayShort(value.getRadians());
     }
 
     @Override
     public String getExportName() {
-        return angleType.getExportName() + " " + AngleFormat
+        return angleType.getExportName() + ' ' + AngleFormat
                 .formatExport(value.getRadians());
     }
 

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Objects;
 
 public class PdbModresLine implements ChainNumberICode, Serializable {
     private static final long serialVersionUID = 1679492136825436435L;
@@ -61,7 +62,7 @@ public class PdbModresLine implements ChainNumberICode, Serializable {
         try {
             String recordName = line.substring(0, 6).trim();
 
-            if (!PdbModresLine.RECORD_NAME.equals(recordName)) {
+            if (!Objects.equals(PdbModresLine.RECORD_NAME, recordName)) {
                 throw new PdbParsingException(
                         "PDB line does not start with MODRES");
             }

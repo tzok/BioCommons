@@ -42,12 +42,11 @@ public class MaxConflicts extends AbstractRegionRemover {
         return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
     }
 
-    public static List<Region> maxConflictRegions(final ConflictMap conflictMap,
-                                                  final Iterable<Region>
-                                                          regions) {
+    public static List<Region> maxConflictRegions(
+            final ConflictMap conflictMap, final Iterable<Region> regions) {
         SortedMap<Integer, List<Region>> mapConflicsRegions = new TreeMap<>();
 
-        for (Region region : regions) {
+        for (final Region region : regions) {
             int conflictCount = conflictMap.conflictsWith(region).size();
             if (!mapConflicsRegions.containsKey(conflictCount)) {
                 mapConflicsRegions.put(conflictCount, new ArrayList<Region>());

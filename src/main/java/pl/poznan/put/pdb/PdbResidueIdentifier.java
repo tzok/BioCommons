@@ -3,6 +3,7 @@ package pl.poznan.put.pdb;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
+import java.util.Objects;
 
 public class PdbResidueIdentifier
         implements Comparable<PdbResidueIdentifier>, Serializable {
@@ -58,20 +59,20 @@ public class PdbResidueIdentifier
         }
 
         PdbResidueIdentifier other = (PdbResidueIdentifier) obj;
-        return (residueNumber == other.residueNumber) && chainIdentifier
-                .equals(other.chainIdentifier) && insertionCode
-                       .equals(other.insertionCode);
+        return (residueNumber == other.residueNumber) && Objects
+                .equals(chainIdentifier, other.chainIdentifier) && Objects
+                       .equals(insertionCode, other.insertionCode);
     }
 
     @Override
     public final String toString() {
-        String icode = " ".equals(insertionCode) ? "" : insertionCode;
+        String icode = Objects.equals(" ", insertionCode) ? "" : insertionCode;
         return chainIdentifier + '.' + residueNumber + icode;
     }
 
     @Override
     public final int compareTo(@Nonnull final PdbResidueIdentifier t) {
-        if (!chainIdentifier.equals(t.chainIdentifier)) {
+        if (!Objects.equals(chainIdentifier, t.chainIdentifier)) {
             return chainIdentifier.compareTo(t.chainIdentifier);
         }
 

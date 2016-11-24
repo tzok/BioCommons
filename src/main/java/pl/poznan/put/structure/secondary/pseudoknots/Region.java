@@ -3,6 +3,7 @@ package pl.poznan.put.structure.secondary.pseudoknots;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,8 +18,9 @@ public final class Region {
     private final int end;
     private boolean isRemoved;
 
-    private Region(final int id, final List<BpSeq.Entry> entries,
-                   final int begin, final int end) {
+    private Region(
+            final int id, final List<BpSeq.Entry> entries, final int begin,
+            final int end) {
         super();
         this.id = id;
         this.entries = new ArrayList<>(entries);
@@ -34,7 +36,7 @@ public final class Region {
         Iterable<BpSeq.Entry> allEntries = new ArrayList<>(bpSeq.getPaired());
         int id = 0;
 
-        for (BpSeq.Entry entry : allEntries) {
+        for (final BpSeq.Entry entry : allEntries) {
             if (regionEntries.isEmpty()) {
                 regionEntries.add(entry);
                 continue;
@@ -71,8 +73,8 @@ public final class Region {
         int max = Integer.MIN_VALUE;
         int min = Integer.MAX_VALUE;
 
-        for (Region region : regions) {
-            for (BpSeq.Entry entry : region.entries) {
+        for (final Region region : regions) {
+            for (final BpSeq.Entry entry : region.entries) {
                 if (entry.getIndex() < min) {
                     min = entry.getIndex();
                 }
@@ -91,7 +93,7 @@ public final class Region {
         return id;
     }
 
-    public List<BpSeq.Entry> getEntries() {
+    public Collection<BpSeq.Entry> getEntries() {
         return Collections.unmodifiableList(entries);
     }
 

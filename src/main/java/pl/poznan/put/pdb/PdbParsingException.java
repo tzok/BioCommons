@@ -5,15 +5,15 @@ public class PdbParsingException extends Exception {
         super();
     }
 
-    public PdbParsingException(String message, Throwable cause) {
+    public PdbParsingException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public PdbParsingException(String message) {
+    public PdbParsingException(final String message) {
         super(message);
     }
 
-    public PdbParsingException(Throwable cause) {
+    public PdbParsingException(final Throwable cause) {
         super(cause);
     }
 }

@@ -242,27 +242,27 @@ public enum AtomName {
     private final AtomType type;
     private final List<String> names;
 
-    AtomName(AtomType type, String... names) {
+    AtomName(final AtomType type, final String... names) {
         this.type = type;
         this.names = Arrays.asList(names);
     }
 
-    public static AtomName fromString(String pdbName) {
+    public static AtomName fromString(final String pdbName) {
         if (pdbName == null) {
             return AtomName.UNKNOWN;
         }
 
-        for (AtomName atomName : AtomName.values()) {
+        for (final AtomName atomName : AtomName.values()) {
             if (atomName.matchesName(pdbName)) {
                 return atomName;
             }
         }
 
-        AtomName.LOGGER.trace("Unknown atom name: " + pdbName);
+        AtomName.LOGGER.trace("Unknown atom name: {}", pdbName);
         return AtomName.UNKNOWN;
     }
 
-    public boolean matchesName(String pdbName) {
+    public boolean matchesName(final String pdbName) {
         return names.contains(pdbName.trim());
     }
 

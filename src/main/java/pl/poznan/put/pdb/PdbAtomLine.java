@@ -14,6 +14,7 @@ import pl.poznan.put.atom.AtomName;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Objects;
 
 public class PdbAtomLine implements Serializable, ChainNumberICode {
     private static final long serialVersionUID = -6626889209014265608L;
@@ -150,8 +151,8 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         try {
             String recordName = line.substring(0, 6).trim();
 
-            if (!PdbAtomLine.RECORD_NAME.equals(recordName) && !"HETATM"
-                    .equals(recordName)) {
+            if (!Objects.equals(PdbAtomLine.RECORD_NAME, recordName) && !Objects
+                    .equals("HETATM", recordName)) {
                 throw new PdbParsingException(
                         "PDB line does not start with ATOM or HETATM");
             }
@@ -330,8 +331,9 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         }
 
         Group group = new HetatomImpl();
-        Character icode =
-                " ".equals(insertionCode) ? null : insertionCode.charAt(0);
+        Character icode = Objects.equals(" ", insertionCode) ? null
+                                                             : insertionCode
+                                  .charAt(0);
         group.setResidueNumber(String.valueOf(chainIdentifier), residueNumber,
                                icode);
         group.setPDBName(residueName);

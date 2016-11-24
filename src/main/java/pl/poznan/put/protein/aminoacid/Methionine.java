@@ -9,7 +9,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Methionine extends ProteinSidechain {
+public final class Methionine extends ProteinSidechain {
     private static final Methionine INSTANCE = new Methionine();
 
     private Methionine() {

@@ -9,7 +9,8 @@ public class StructureInfo implements Comparable<StructureInfo> {
     private final File path;
     private final String name;
 
-    public StructureInfo(PdbModel structure, File path, String name) {
+    public StructureInfo(
+            final PdbModel structure, final File path, final String name) {
         super();
         this.structure = structure;
         this.path = path;
@@ -29,10 +30,10 @@ public class StructureInfo implements Comparable<StructureInfo> {
     }
 
     @Override
-    public int compareTo(StructureInfo o) {
-        if (o == null) {
+    public int compareTo(final StructureInfo t) {
+        if (t == null) {
             throw new NullPointerException();
         }
-        return name.compareTo(o.name);
+        return name.compareTo(t.name);
     }
 }

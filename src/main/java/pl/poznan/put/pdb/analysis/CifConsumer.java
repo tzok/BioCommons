@@ -66,6 +66,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 public class CifConsumer implements MMcifConsumer {
@@ -90,8 +91,8 @@ public class CifConsumer implements MMcifConsumer {
     private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
     private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
     private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
-    private final List<ExperimentalTechnique>
-            experimentalTechniques = new ArrayList<>();
+    private final List<ExperimentalTechnique> experimentalTechniques =
+            new ArrayList<>();
     private final List<QuantifiedBasePair> basePairs = new ArrayList<>();
 
     @Nullable
@@ -151,13 +152,13 @@ public class CifConsumer implements MMcifConsumer {
             String elementSymbol = atomSite.getType_symbol();
             String charge = atomSite.getPdbx_formal_charge();
 
-            if ("?".equals(insertionCode)) {
+            if (Objects.equals("?", insertionCode)) {
                 insertionCode = " ";
             }
-            if (".".equals(alternateLocation)) {
+            if (Objects.equals(".", alternateLocation)) {
                 alternateLocation = " ";
             }
-            if ("?".equals(charge)) {
+            if (Objects.equals("?", charge)) {
                 charge = " ";
             }
 
@@ -234,8 +235,7 @@ public class CifConsumer implements MMcifConsumer {
     @Override
     public final void newExptl(final Exptl exptl) {
         ExperimentalTechnique technique =
-                ExperimentalTechnique
-                        .fromFullName(exptl.getMethod());
+                ExperimentalTechnique.fromFullName(exptl.getMethod());
         if (technique == ExperimentalTechnique.UNKNOWN) {
             CifConsumer.LOGGER.warn("Failed to parse _exptl.method: {}",
                                     exptl.getMethod());
@@ -397,7 +397,7 @@ public class CifConsumer implements MMcifConsumer {
     @Override
     public final void newGenericData(
             final String s, final List<String> list, final List<String> list1) {
-        if (CifConsumer.PDBX_STRUCT_MOD_RESIDUE.equals(s)) {
+        if (Objects.equals(CifConsumer.PDBX_STRUCT_MOD_RESIDUE, s)) {
             Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
             String residueName = map.get("auth_comp_id");
@@ -407,7 +407,7 @@ public class CifConsumer implements MMcifConsumer {
             String standardResidueName = map.get("parent_comp_id");
             String comment = map.get("details");
 
-            if ("?".equals(insertionCode)) {
+            if (Objects.equals("?", insertionCode)) {
                 insertionCode = " ";
             }
 
@@ -416,7 +416,8 @@ public class CifConsumer implements MMcifConsumer {
                                       residueNumber, insertionCode,
                                       standardResidueName, comment);
             modifiedResidues.add(modresLine);
-        } else if (CifConsumer.PDBX_UNOBS_OR_ZERO_OCC_RESIDUES.equals(s)) {
+        } else if (Objects
+                .equals(CifConsumer.PDBX_UNOBS_OR_ZERO_OCC_RESIDUES, s)) {
             Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
             int modelNumber = Integer.parseInt(map.get("PDB_model_num"));
@@ -425,7 +426,7 @@ public class CifConsumer implements MMcifConsumer {
             int residueNumber = Integer.parseInt(map.get("auth_seq_id"));
             String insertionCode = map.get("PDB_ins_code");
 
-            if ("?".equals(insertionCode)) {
+            if (Objects.equals("?", insertionCode)) {
                 insertionCode = " ";
             }
 
@@ -434,13 +435,13 @@ public class CifConsumer implements MMcifConsumer {
                                          chainIdentifier, residueNumber,
                                          insertionCode);
             missingResidues.add(remark465Line);
-        } else if (CifConsumer.NDB_STRUCT_NA_BASE_PAIR.equals(s)) {
+        } else if (Objects.equals(CifConsumer.NDB_STRUCT_NA_BASE_PAIR, s)) {
             Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
             String chainL = map.get("i_auth_asym_id");
             int resiL = Integer.parseInt(map.get("i_auth_seq_id"));
             String icodeL = map.get("i_PDB_ins_code");
-            if ("?".equals(icodeL)) {
+            if (Objects.equals("?", icodeL)) {
                 icodeL = " ";
             }
             PdbResidueIdentifier left =
@@ -449,7 +450,7 @@ public class CifConsumer implements MMcifConsumer {
             String chainR = map.get("j_auth_asym_id");
             int resiR = Integer.parseInt(map.get("j_auth_seq_id"));
             String icodeR = map.get("j_PDB_ins_code");
-            if ("?".equals(icodeR)) {
+            if (Objects.equals("?", icodeR)) {
                 icodeR = " ";
             }
             PdbResidueIdentifier right =
@@ -458,16 +459,15 @@ public class CifConsumer implements MMcifConsumer {
 
             String saengerString = map.get("hbond_type_28");
             Saenger saenger = Saenger.UNKNOWN;
-            if (!"?".equals(saengerString)) {
+            if (!Objects.equals("?", saengerString)) {
                 saenger = Saenger.fromOrdinal(Integer.parseInt(saengerString));
             }
 
             String leontisWesthofString = map.get("hbond_type_12");
             LeontisWesthof leontisWesthof =
-                    "?".equals(leontisWesthofString) ? LeontisWesthof.UNKNOWN
-                                                     : LeontisWesthof
-                            .fromOrdinal(
-                                    Integer.parseInt(leontisWesthofString));
+                    Objects.equals("?", leontisWesthofString)
+                    ? LeontisWesthof.UNKNOWN : LeontisWesthof.fromOrdinal(
+                            Integer.parseInt(leontisWesthofString));
 
             double shear =
                     CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.SHEAR);
@@ -510,8 +510,8 @@ public class CifConsumer implements MMcifConsumer {
                 new PdbHeaderLine(classification, date, idCode);
 
         List<ExperimentalTechnique> techniques =
-                experimentalTechniques.isEmpty() ? Collections.singletonList(
-                        ExperimentalTechnique.UNKNOWN)
+                experimentalTechniques.isEmpty() ? Collections
+                        .singletonList(ExperimentalTechnique.UNKNOWN)
                                                  : experimentalTechniques;
         PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(techniques);
 

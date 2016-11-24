@@ -25,7 +25,7 @@ public class Clique {
         super();
         this.regions = new HashSet<>(regions);
 
-        for (Region region : regions) {
+        for (final Region region : regions) {
             beginEndRegion.put(region.getBegin(), region.getEnd(), region);
             sortedEndpoints.add(region.getBegin());
             sortedEndpoints.add(region.getEnd());

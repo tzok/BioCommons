@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public final class CifConverter {
@@ -342,7 +343,7 @@ public final class CifConverter {
     private static MoleculeType getChainType(
             final PdbModel firstModel, final String chainIdentifier) {
         for (final PdbChain chain : firstModel.getChains()) {
-            if (chain.getIdentifier().equals(chainIdentifier)) {
+            if (Objects.equals(chain.getIdentifier(), chainIdentifier)) {
                 return chain.getMoleculeType();
             }
         }

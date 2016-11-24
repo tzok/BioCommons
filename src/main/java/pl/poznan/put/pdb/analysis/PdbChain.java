@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class PdbChain implements Comparable<PdbChain>, Serializable {
     private static final long serialVersionUID = -954932883855490919L;
@@ -79,9 +80,10 @@ public class PdbChain implements Comparable<PdbChain>, Serializable {
         }
 
         PdbChain pdbChain = (PdbChain) obj;
-        return identifier.equals(pdbChain.identifier) && residues
-                .equals(pdbChain.residues) && (moleculeType
-                                               == pdbChain.moleculeType);
+        return Objects.equals(identifier, pdbChain.identifier) && Objects
+                .equals(residues, pdbChain.residues) && (moleculeType
+                                                         == pdbChain
+                                                                 .moleculeType);
     }
 
     @Override

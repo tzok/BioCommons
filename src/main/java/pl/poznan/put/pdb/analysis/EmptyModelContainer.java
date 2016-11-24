@@ -8,10 +8,10 @@ import java.util.Set;
  * An implementation of model container which has no PDB or mmCIF files.
  */
 public final class EmptyModelContainer implements ModelContainer {
-    private static final EmptyModelContainer INSTANCE =
+    private static final ModelContainer INSTANCE =
             new EmptyModelContainer();
 
-    public static EmptyModelContainer getInstance() {
+    public static ModelContainer getInstance() {
         return EmptyModelContainer.INSTANCE;
     }
 

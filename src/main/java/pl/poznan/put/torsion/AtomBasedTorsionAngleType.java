@@ -1,23 +1,23 @@
 package pl.poznan.put.torsion;
 
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.types.Quadruplet;
 
 import java.util.List;
+import java.util.Objects;
 
 public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     private final String displayName;
     private final Quadruplet<AtomName> atoms;
     private final Quadruplet<Integer> residueRule;
 
-    public AtomBasedTorsionAngleType(MoleculeType moleculeType,
-                                     String displayName,
-                                     Quadruplet<AtomName> atoms,
-                                     Quadruplet<Integer> residueRule) {
+    protected AtomBasedTorsionAngleType(
+            final MoleculeType moleculeType, final String displayName,
+            final Quadruplet<AtomName> atoms,
+            final Quadruplet<Integer> residueRule) {
         super(moleculeType);
         this.displayName = displayName;
         this.atoms = atoms;
@@ -34,8 +34,8 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
 
     @Override
     public String getLongDisplayName() {
-        return displayName + "(" + getExportName() + ")" + atoms.a + "-"
-               + atoms.b + "-" + atoms.c + "-" + atoms.d;
+        return displayName + '(' + getExportName() + ')' + atoms.a + '-'
+               + atoms.b + '-' + atoms.c + '-' + atoms.d;
     }
 
     @Override
@@ -52,16 +52,16 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + (atoms == null ? 0 : atoms.hashCode());
-        result = prime * result + (displayName == null ? 0 : displayName
+        result = (prime * result) + ((atoms == null) ? 0 : atoms.hashCode());
+        result = (prime * result) + ((displayName == null) ? 0 : displayName
                 .hashCode());
-        result = prime * result + (residueRule == null ? 0 : residueRule
+        result = (prime * result) + ((residueRule == null) ? 0 : residueRule
                 .hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -76,35 +76,34 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
             if (other.atoms != null) {
                 return false;
             }
-        } else if (!atoms.equals(other.atoms)) {
+        } else if (!Objects.equals(atoms, other.atoms)) {
             return false;
         }
         if (displayName == null) {
             if (other.displayName != null) {
                 return false;
             }
-        } else if (!displayName.equals(other.displayName)) {
+        } else if (!Objects.equals(displayName, other.displayName)) {
             return false;
         }
         if (residueRule == null) {
             if (other.residueRule != null) {
                 return false;
             }
-        } else if (!residueRule.equals(other.residueRule)) {
+        } else if (!Objects.equals(residueRule, other.residueRule)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public TorsionAngleValue calculate(List<PdbResidue> residues,
-                                       int currentIndex)
-            throws InvalidCircularValueException {
+    public TorsionAngleValue calculate(
+            final List<PdbResidue> residues, final int currentIndex) {
         PdbAtomLine[] foundAtoms = new PdbAtomLine[4];
 
         for (int i = 0; i < 4; i++) {
             int index = currentIndex + residueRule.get(i);
-            if (index < 0 || index >= residues.size()) {
+            if ((index < 0) || (index >= residues.size())) {
                 return TorsionAngleValue.invalidInstance(this);
             }
 
@@ -121,8 +120,9 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
                                        foundAtoms[2], foundAtoms[3]));
     }
 
-    public TorsionAngleValue calculate(PdbAtomLine a1, PdbAtomLine a2,
-                                       PdbAtomLine a3, PdbAtomLine a4) {
+    public TorsionAngleValue calculate(
+            final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3,
+            final PdbAtomLine a4) {
         return new TorsionAngleValue(this, TorsionAnglesHelper
                 .calculateTorsionAngle(a1, a2, a3, a4));
     }

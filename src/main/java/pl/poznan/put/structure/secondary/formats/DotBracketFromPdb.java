@@ -4,6 +4,7 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.util.HashMap;
@@ -16,12 +17,13 @@ public class DotBracketFromPdb extends DotBracket {
     private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol =
             new HashMap<>();
 
-    public DotBracketFromPdb(DotBracket dotBracket, PdbModel model)
+    public DotBracketFromPdb(final DotBracket dotBracket, final PdbModel model)
             throws InvalidStructureException {
         this(dotBracket.sequence, dotBracket.structure, model);
     }
 
-    public DotBracketFromPdb(String sequence, String structure, PdbModel model)
+    public DotBracketFromPdb(
+            final String sequence, final String structure, final PdbModel model)
             throws
 
             InvalidStructureException {
@@ -32,8 +34,8 @@ public class DotBracketFromPdb extends DotBracket {
         splitStrands(model);
     }
 
-    private static String updateMissingIndices(String structure,
-                                               PdbModel model) {
+    private static String updateMissingIndices(
+            final String structure, final ResidueCollection model) {
         List<PdbResidue> residues = model.getResidues();
         char[] dotBracket = structure.toCharArray();
         assert dotBracket.length == residues.size();
@@ -47,7 +49,7 @@ public class DotBracketFromPdb extends DotBracket {
         return String.valueOf(dotBracket);
     }
 
-    private void mapSymbolsAndResidues(PdbModel model) {
+    private void mapSymbolsAndResidues(final ResidueCollection model) {
         List<PdbResidue> residues = model.getResidues();
         assert residues.size() == symbols.size();
 
@@ -61,12 +63,12 @@ public class DotBracketFromPdb extends DotBracket {
         }
     }
 
-    private void splitStrands(PdbModel model) {
+    private void splitStrands(final PdbModel model) {
         strands.clear();
         int start = 0;
         int end = 0;
 
-        for (PdbChain chain : model.getChains()) {
+        for (final PdbChain chain : model.getChains()) {
             end += chain.getResidues().size();
             strands.add(new Strand(this, String.valueOf(chain.getIdentifier()),
                                    start, end));
@@ -74,16 +76,18 @@ public class DotBracketFromPdb extends DotBracket {
         }
     }
 
-    public PdbResidueIdentifier getResidueIdentifier(DotBracketSymbol symbol) {
+    public PdbResidueIdentifier getResidueIdentifier(
+            final DotBracketSymbol symbol) {
         return symbolToResidue.get(symbol);
     }
 
-    public DotBracketSymbol getSymbol(PdbResidueIdentifier residueIdentifier) {
+    public DotBracketSymbol getSymbol(
+            final PdbResidueIdentifier residueIdentifier) {
         return residueToSymbol.get(residueIdentifier);
     }
 
     @Override
-    protected int getCtOriginalColumn(DotBracketSymbol symbol) {
+    protected int getCtOriginalColumn(final DotBracketSymbol symbol) {
         return symbolToResidue.get(symbol).getResidueNumber();
     }
 }

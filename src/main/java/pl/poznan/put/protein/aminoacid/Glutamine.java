@@ -9,7 +9,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Glutamine extends ProteinSidechain {
+public final class Glutamine extends ProteinSidechain {
     private static final Glutamine INSTANCE = new Glutamine();
 
     private Glutamine() {

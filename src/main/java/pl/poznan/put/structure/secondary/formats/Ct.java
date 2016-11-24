@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -25,7 +26,8 @@ public class Ct implements Serializable {
     private static boolean printComments = true;
     private final SortedSet<Entry> entries;
 
-    public Ct(List<Entry> entries) throws InvalidStructureException {
+    public Ct(final List<Entry> entries) throws InvalidStructureException {
+        super();
         this.entries = new TreeSet<>(entries);
         validate();
     }
@@ -35,19 +37,19 @@ public class Ct implements Serializable {
      */
     private void validate() throws InvalidStructureException {
         if (Ct.LOGGER.isTraceEnabled()) {
-            Ct.LOGGER.trace("CT to be validated:\n" + toString());
+            Ct.LOGGER.trace("CT to be validated:\n{}", toString());
         }
 
         Map<Integer, Integer> map = new HashMap<>();
 
-        for (Entry e : entries) {
+        for (final Entry e : entries) {
             map.put(e.index, e.pair);
         }
 
         int previous = 0;
 
-        for (Entry e : entries) {
-            if (e.index - previous != 1) {
+        for (final Entry e : entries) {
+            if ((e.index - previous) != 1) {
                 throw new InvalidStructureException(
                         "Inconsistent numbering in CT format: previous="
                         + previous + ", current" + e.index);
@@ -60,28 +62,28 @@ public class Ct implements Serializable {
                 if (!map.containsKey(pair)) {
                     throw new InvalidStructureException(
                             "Inconsistency in CT format: (" + e.index + " -> "
-                            + pair + ")");
+                            + pair + ')');
                 }
 
                 if (map.get(pair) != e.index) {
                     throw new InvalidStructureException(
                             "Inconsistency in CT format: (" + e.index + " -> "
                             + pair + ") and (" + pair + " -> " + map.get(pair)
-                            + ")");
+                            + ')');
                 }
             }
         }
 
         // previous == maximum index
 
-        for (Entry e : entries) {
-            if (e.before < 0 || e.before >= previous) {
+        for (final Entry e : entries) {
+            if ((e.before < 0) || (e.before >= previous)) {
                 throw new InvalidStructureException(
                         "Inconsistency in CT format. Third column has invalid"
                         + " value in entry: " + e);
             }
 
-            if (e.after == 1 || e.after < 0 || e.after > previous + 1) {
+            if ((e.after == 1) || (e.after < 0) || (e.after > (previous + 1))) {
                 throw new InvalidStructureException(
                         "Inconsistency in CT format. Fourth column has "
                         + "invalid value in entry: " + e);
@@ -94,17 +96,17 @@ public class Ct implements Serializable {
         boolean expectNewStrand = true;
         Entry prevEntry = null;
 
-        for (Entry e : entries) {
-            if (e.getBefore() != 0 && expectNewStrand
-                || e.getBefore() == 0 && !expectNewStrand) {
+        for (final Entry e : entries) {
+            if (((e.getBefore() != 0) && expectNewStrand) || (
+                    (e.getBefore() == 0) && !expectNewStrand)) {
                 throw new InvalidStructureException(
                         "Inconsistency in CT format. The field 'before' is "
                         + "non-zero for the first entry in a strand: " + e);
             }
 
-            if (prevEntry != null && (
-                    prevEntry.getAfter() != 0 && expectNewStrand
-                    || prevEntry.getAfter() == 0 && !expectNewStrand)) {
+            if ((prevEntry != null) && (
+                    ((prevEntry.getAfter() != 0) && expectNewStrand) || (
+                            (prevEntry.getAfter() == 0) && !expectNewStrand))) {
                 throw new InvalidStructureException(
                         "Inconsistency in CT format. The field 'after' is "
                         + "non-zero for the last entry in a strand: "
@@ -131,7 +133,8 @@ public class Ct implements Serializable {
         }
     }
 
-    public static Ct fromString(String data) throws InvalidStructureException {
+    public static Ct fromString(final String data)
+            throws InvalidStructureException {
         List<Entry> entries = new ArrayList<>();
         boolean firstLine = true;
 
@@ -143,7 +146,7 @@ public class Ct implements Serializable {
                 line = line.substring(0, hash);
             }
 
-            if (line.length() == 0) {
+            if (line.isEmpty()) {
                 continue;
             }
 
@@ -157,7 +160,7 @@ public class Ct implements Serializable {
                                 "Invalid CT format. Line count < 0 detected: "
                                 + line);
                     }
-                } catch (NumberFormatException e) {
+                } catch (final NumberFormatException e) {
                     throw new InvalidStructureException(
                             "Invalid CT format. Failed to parse line count: "
                             + line, e);
@@ -172,7 +175,11 @@ public class Ct implements Serializable {
                         + line);
             }
 
-            int index, pair, before, after, original;
+            int index;
+            int pair;
+            int before;
+            int after;
+            int original;
             char seq;
 
             try {
@@ -182,7 +189,7 @@ public class Ct implements Serializable {
                 after = Integer.valueOf(split[3]);
                 pair = Integer.valueOf(split[4]);
                 original = Integer.valueOf(split[5]);
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 throw new InvalidStructureException(
                         "Invalid CT format. Failed to parse column values: "
                         + line, e);
@@ -194,12 +201,13 @@ public class Ct implements Serializable {
         return new Ct(entries);
     }
 
-    public static Ct fromBpSeq(BpSeq bpSeq) throws InvalidStructureException {
+    public static Ct fromBpSeq(final BpSeq bpSeq)
+            throws InvalidStructureException {
         List<Ct.Entry> ctEntries = new ArrayList<>();
         SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
         int size = entries.size();
 
-        for (BpSeq.Entry entry : entries) {
+        for (final BpSeq.Entry entry : entries) {
             int index = entry.getIndex();
             int pair = entry.getPair();
             char seq = entry.getSeq();
@@ -212,12 +220,13 @@ public class Ct implements Serializable {
         return new Ct(ctEntries);
     }
 
-    public static Ct fromBpSeqAndPdbModel(BpSeq bpSeq, PdbModel model)
+    public static Ct fromBpSeqAndPdbModel(
+            final BpSeq bpSeq, final PdbModel model)
             throws InvalidStructureException {
         PdbModel rna;
         try {
             rna = model.filteredNewInstance(MoleculeType.RNA);
-        } catch (PdbParsingException e) {
+        } catch (final PdbParsingException e) {
             throw new InvalidStructureException("Failed to filter RNA chains",
                                                 e);
         }
@@ -227,7 +236,7 @@ public class Ct implements Serializable {
         SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
         int i = 0;
 
-        for (BpSeq.Entry entry : entries) {
+        for (final BpSeq.Entry entry : entries) {
             PdbResidue residue = residues.get(i);
             PdbChain chain = rna.findChainContainingResidue(
                     residue.getResidueIdentifier());
@@ -250,18 +259,18 @@ public class Ct implements Serializable {
         return new Ct(ctEntries);
     }
 
-    public static Ct fromDotBracket(DotBracket dotBracket)
+    public static Ct fromDotBracket(final DotBracket dotBracket)
             throws InvalidStructureException {
         List<Ct.Entry> entries = new ArrayList<>();
 
-        for (Strand s : dotBracket.getStrands()) {
+        for (final Strand s : dotBracket.getStrands()) {
             for (int i = 0, j = s.getFrom(); j < s.getTo(); i++, j++) {
                 DotBracketSymbol symbol = dotBracket.getSymbol(j);
                 DotBracketSymbol pair = symbol.getPair();
 
                 int index = symbol.getIndex() + 1;
-                int pairIndex = pair != null ? pair.getIndex() + 1 : 0;
-                int after = j == s.getTo() - 1 ? 0 : i + 2;
+                int pairIndex = (pair != null) ? (pair.getIndex() + 1) : 0;
+                int after = (j == (s.getTo() - 1)) ? 0 : (i + 2);
                 int original = dotBracket.getCtOriginalColumn(symbol);
                 char seq = symbol.getSequence();
 
@@ -273,13 +282,13 @@ public class Ct implements Serializable {
         return new Ct(entries);
     }
 
-    public static void setPrintComments(boolean printComments) {
+    public static void setPrintComments(final boolean printComments) {
         Ct.printComments = printComments;
     }
 
     public int getStrandCount() {
         int count = 0;
-        for (Ct.Entry entry : entries) {
+        for (final Ct.Entry entry : entries) {
             if (entry.getAfter() == 0) {
                 count += 1;
             }
@@ -287,7 +296,7 @@ public class Ct implements Serializable {
         return count;
     }
 
-    public SortedSet<Entry> getEntries() {
+    public Iterable<Entry> getEntries() {
         return Collections.unmodifiableSortedSet(entries);
     }
 
@@ -300,8 +309,9 @@ public class Ct implements Serializable {
         private final char seq;
         private final String comment;
 
-        public Entry(int index, int pair, int before, int after, int original,
-                     char seq) {
+        public Entry(
+                final int index, final int pair, final int before,
+                final int after, final int original, final char seq) {
             super();
             this.index = index;
             this.pair = pair;
@@ -312,8 +322,10 @@ public class Ct implements Serializable {
             comment = "";
         }
 
-        public Entry(int index, int pair, int before, int after, int original,
-                     char seq, String comment) {
+        public Entry(
+                final int index, final int pair, final int before,
+                final int after, final int original, final char seq,
+                final String comment) {
             super();
             this.index = index;
             this.pair = pair;
@@ -349,19 +361,19 @@ public class Ct implements Serializable {
         }
 
         @Override
-        public int compareTo(Entry e) {
-            if (e == null) {
+        public int compareTo(final Entry t) {
+            if (t == null) {
                 throw new NullPointerException();
             }
 
-            if (equals(e)) {
+            if (equals(t)) {
                 return 0;
             }
 
-            if (index < e.index) {
+            if (index < t.index) {
                 return -1;
             }
-            if (index > e.index) {
+            if (index > t.index) {
                 return 1;
             }
             return 0;
@@ -371,19 +383,19 @@ public class Ct implements Serializable {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + after;
-            result = prime * result + before;
-            result =
-                    prime * result + (comment == null ? 0 : comment.hashCode());
-            result = prime * result + index;
-            result = prime * result + original;
-            result = prime * result + pair;
-            result = prime * result + seq;
+            result = (prime * result) + after;
+            result = (prime * result) + before;
+            result = (prime * result) + ((comment == null) ? 0 : comment
+                    .hashCode());
+            result = (prime * result) + index;
+            result = (prime * result) + original;
+            result = (prime * result) + pair;
+            result = (prime * result) + seq;
             return result;
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             if (this == obj) {
                 return true;
             }
@@ -404,11 +416,11 @@ public class Ct implements Serializable {
                 if (other.comment != null) {
                     return false;
                 }
-            } else if (!comment.equals(other.comment)) {
+            } else if (!Objects.equals(comment, other.comment)) {
                 return false;
             }
-            return index == other.index && original == other.original
-                   && pair == other.pair && seq == other.seq;
+            return (index == other.index) && (original == other.original) && (
+                    pair == other.pair) && (seq == other.seq);
         }
 
         @Override
@@ -439,8 +451,8 @@ public class Ct implements Serializable {
         builder.append(entries.size());
         builder.append('\n');
 
-        for (Entry e : entries) {
-            builder.append(e.toString());
+        for (final Entry e : entries) {
+            builder.append(e);
             builder.append('\n');
         }
 

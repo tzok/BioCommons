@@ -6,7 +6,7 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-public class Epsilon extends AtomBasedTorsionAngleType {
+public final class Epsilon extends AtomBasedTorsionAngleType {
     private static final Epsilon INSTANCE = new Epsilon();
 
     private Epsilon() {

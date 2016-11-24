@@ -37,8 +37,8 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
      *                      use heuristic to remove single regions prior to a
      *                      dynamic programming attempt.
      */
-    protected AbstractDynamicProgramming(final RegionRemover regionRemover,
-                                         final int maxCliqueSize) {
+    protected AbstractDynamicProgramming(
+            final RegionRemover regionRemover, final int maxCliqueSize) {
         super();
         this.regionRemover = regionRemover;
         this.maxCliqueSize = maxCliqueSize;
@@ -68,7 +68,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
             SubSolution current = new SubSolution(region);
 
             if (matrix[i + 1][j - 1].length > 0) {
-                for (SubSolution subSolution : matrix[i + 1][j - 1]) {
+                for (final SubSolution subSolution : matrix[i + 1][j - 1]) {
                     candidates.add(SubSolution.merge(subSolution, current));
                 }
             } else {
@@ -98,10 +98,10 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
 
         Collection<SubSolution> result = new ArrayList<>();
 
-        for (SubSolution leftSub : left) {
+        for (final SubSolution leftSub : left) {
             int highestEndpoint = leftSub.getHighestEndpoint();
 
-            for (SubSolution belowSub : below) {
+            for (final SubSolution belowSub : below) {
                 int lowestEndpoint = belowSub.getLowestEndpoint();
 
                 if (highestEndpoint < lowestEndpoint) {
@@ -113,8 +113,8 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
                 int end = clique.indexOfEndpoint(highestEndpoint) + 1;
 
                 for (int k = begin; k < end; k++) {
-                    for (SubSolution s1 : matrix[i][k]) {
-                        for (SubSolution s2 : matrix[k + 1][j]) {
+                    for (final SubSolution s1 : matrix[i][k]) {
+                        for (final SubSolution s2 : matrix[k + 1][j]) {
                             result.add(SubSolution.merge(s1, s2));
                         }
                     }
@@ -133,7 +133,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
 
         SortedMap<Integer, List<SubSolution>> map = new TreeMap<>();
 
-        for (SubSolution candidate : candidates) {
+        for (final SubSolution candidate : candidates) {
             int score = candidate.getScore();
 
             if (!map.containsKey(score)) {
@@ -154,7 +154,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
         conflictMap = AbstractDynamicProgramming.simplify(regions, conflictMap);
 
         List<BpSeq.Entry> nonConflicting = new ArrayList<>();
-        for (Region region : regions) {
+        for (final Region region : regions) {
             if (!conflictMap.hasConflicts(region)) {
                 nonConflicting.addAll(region.getEntries());
             }
@@ -163,7 +163,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
         int max;
         do {
             max = Integer.MIN_VALUE;
-            for (Clique clique : conflictMap.getConflictCliques(false)) {
+            for (final Clique clique : conflictMap.getConflictCliques(false)) {
                 if (clique.size() > max) {
                     max = clique.size();
                 }
@@ -178,15 +178,15 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
         results.add(nonConflicting);
         List<Clique> cliques = conflictMap.getConflictCliques(false);
 
-        for (Clique clique : cliques) {
+        for (final Clique clique : cliques) {
             List<List<BpSeq.Entry>> nextResults = new ArrayList<>();
             SubSolution[] solutions = findOptimalSolutions(clique);
 
-            for (SubSolution solution : solutions) {
-                for (List<BpSeq.Entry> previousResult : results) {
+            for (final SubSolution solution : solutions) {
+                for (final List<BpSeq.Entry> previousResult : results) {
                     List<BpSeq.Entry> nextResult =
                             new ArrayList<>(previousResult);
-                    for (Region region : solution.getRegions()) {
+                    for (final Region region : solution.getRegions()) {
                         nextResult.addAll(region.getEntries());
                     }
                     nextResults.add(nextResult);
@@ -198,9 +198,9 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
 
         List<BpSeq> bpSeqs = new ArrayList<>();
 
-        for (List<BpSeq.Entry> result : results) {
+        for (final List<BpSeq.Entry> result : results) {
             BpSeq nextBpSeq = new BpSeq(bpSeq.getEntries());
-            for (BpSeq.Entry entry : result) {
+            for (final BpSeq.Entry entry : result) {
                 nextBpSeq.removePair(entry);
             }
             bpSeqs.add(nextBpSeq);
@@ -209,8 +209,8 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
         return bpSeqs;
     }
 
-    private static ConflictMap simplify(final List<Region> regions,
-                                        final ConflictMap conflictMap) {
+    private static ConflictMap simplify(
+            final List<Region> regions, final ConflictMap conflictMap) {
         ConflictMap result = conflictMap;
         Collection<Region> toRemove = new ArrayList<>();
         Collection<Region> toAdd = new ArrayList<>();

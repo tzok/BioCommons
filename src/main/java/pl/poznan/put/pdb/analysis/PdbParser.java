@@ -12,11 +12,10 @@ import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 
 public class PdbParser implements StructureParser {
@@ -25,8 +24,9 @@ public class PdbParser implements StructureParser {
 
     private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
     private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
-    private final Set<String> terminatedChainIdentifiers = new HashSet<>();
-    private final Set<Integer> endedModelNumbers = new HashSet<>();
+    private final Collection<String> terminatedChainIdentifiers =
+            new HashSet<>();
+    private final Collection<Integer> endedModelNumbers = new HashSet<>();
     private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
 
     private final boolean strictMode;
@@ -37,7 +37,7 @@ public class PdbParser implements StructureParser {
     private char currentChainIdentifier;
     private int currentModelNumber;
 
-    public PdbParser(boolean strictMode) {
+    public PdbParser(final boolean strictMode) {
         super();
         this.strictMode = strictMode;
     }
@@ -48,11 +48,11 @@ public class PdbParser implements StructureParser {
     }
 
     @Override
-    public synchronized List<PdbModel> parse(String structureContent)
+    public synchronized List<PdbModel> parse(final String structureContent)
             throws PdbParsingException {
         resetState();
 
-        for (String line : structureContent.split("\n")) {
+        for (final String line : structureContent.split("\n")) {
             if (line.startsWith("MODEL")) {
                 handleModelLine(line);
             } else if (line.startsWith("ATOM") || line.startsWith("HETATM")) {
@@ -74,7 +74,8 @@ public class PdbParser implements StructureParser {
 
         List<PdbModel> result = new ArrayList<>();
 
-        for (Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
+        for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms
+                .entrySet()) {
             int modelNumber = entry.getKey();
             List<PdbAtomLine> atoms = entry.getValue();
             PdbModel pdbModel = new PdbModel(headerLine, experimentalDataLine,
@@ -102,12 +103,12 @@ public class PdbParser implements StructureParser {
         currentModelNumber = 0;
     }
 
-    private void handleModelLine(String line) {
+    private void handleModelLine(final String line) {
         endedModelNumbers.add(currentModelNumber);
 
         String modelNumberString =
-                line.length() > 14 ? line.substring(10, 14).trim()
-                                   : line.substring(5).trim();
+                (line.length() > 14) ? line.substring(10, 14).trim()
+                                     : line.substring(5).trim();
         int modelNumber = Integer.parseInt(modelNumberString);
 
         while (endedModelNumbers.contains(modelNumber)) {
@@ -119,7 +120,7 @@ public class PdbParser implements StructureParser {
         terminatedChainIdentifiers.clear();
     }
 
-    private void handleAtomLine(String line) {
+    private void handleAtomLine(final String line) {
         try {
             PdbAtomLine atomLine = PdbAtomLine.parse(line, strictMode);
 
@@ -136,23 +137,25 @@ public class PdbParser implements StructureParser {
 
             List<PdbAtomLine> atomList = modelAtoms.get(currentModelNumber);
             atomList.add(atomLine);
-        } catch (PdbParsingException e) {
-            LOGGER.warn("Invalid ATOM line: " + line, e);
+        } catch (final PdbParsingException e) {
+            PdbParser.LOGGER.warn("Invalid ATOM line: {}", line, e);
         }
     }
 
-    private void handleTerLine(String line) {
+    private void handleTerLine(final CharSequence line) {
         String chain =
-                line.length() > 21 ? Character.toString(line.charAt(21)) : " ";
+                (line.length() > 21) ? Character.toString(line.charAt(21))
+                                     : " ";
 
         if (terminatedChainIdentifiers.contains(chain)) {
-            chain = Character.toString(currentChainIdentifier++);
+            chain = Character.toString(currentChainIdentifier);
+            currentChainIdentifier++;
         }
 
         terminatedChainIdentifiers.add(chain);
     }
 
-    private void handleMissingResidueLine(String line) {
+    private void handleMissingResidueLine(final String line) {
         try {
             if (PdbRemark465Line.isCommentLine(line)) {
                 return;
@@ -160,41 +163,42 @@ public class PdbParser implements StructureParser {
 
             PdbRemark465Line remark465Line = PdbRemark465Line.parse(line);
             missingResidues.add(remark465Line);
-        } catch (PdbParsingException e) {
-            LOGGER.warn("Invalid REMARK 465 line: " + line, e);
+        } catch (final PdbParsingException e) {
+            PdbParser.LOGGER.warn("Invalid REMARK 465 line: {}", line, e);
         }
     }
 
-    private void handleModifiedResidueLine(String line) {
+    private void handleModifiedResidueLine(final String line) {
         try {
             PdbModresLine modresLine = PdbModresLine.parse(line);
             modifiedResidues.add(modresLine);
-        } catch (PdbParsingException e) {
-            LOGGER.warn("Invalid MODRES line: " + line, e);
+        } catch (final PdbParsingException e) {
+            PdbParser.LOGGER.warn("Invalid MODRES line: {}", line, e);
         }
     }
 
-    private void handleHeaderLine(String line) {
+    private void handleHeaderLine(final String line) {
         try {
             headerLine = PdbHeaderLine.parse(line);
-        } catch (PdbParsingException e) {
-            LOGGER.warn("Invalid HEADER line: " + line, e);
+        } catch (final PdbParsingException e) {
+            PdbParser.LOGGER.warn("Invalid HEADER line: {}", line, e);
         }
     }
 
-    private void handleExperimentalDataLine(String line) {
+    private void handleExperimentalDataLine(final String line) {
         try {
             experimentalDataLine = PdbExpdtaLine.parse(line);
-        } catch (PdbParsingException e) {
-            LOGGER.warn("Invalid EXPDTA line: " + line, e);
+        } catch (final PdbParsingException e) {
+            PdbParser.LOGGER.warn("Invalid EXPDTA line: {}", line, e);
         }
     }
 
-    private void handleResolutionLine(String line) {
+    private void handleResolutionLine(final String line) {
         try {
             resolutionLine = PdbRemark2Line.parse(line);
-        } catch (PdbParsingException e) {
-            LOGGER.warn("Invalid REMARK   2 RESOLUTION. line: " + line, e);
+        } catch (final PdbParsingException e) {
+            PdbParser.LOGGER
+                    .warn("Invalid REMARK   2 RESOLUTION. line: {}", line, e);
         }
     }
 }

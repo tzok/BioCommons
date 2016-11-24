@@ -6,7 +6,7 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.PseudoTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-public class EtaPrim extends PseudoTorsionAngleType {
+public final class EtaPrim extends PseudoTorsionAngleType {
     private static final EtaPrim INSTANCE = new EtaPrim();
 
     private EtaPrim() {

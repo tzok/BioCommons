@@ -5,7 +5,7 @@ import pl.poznan.put.protein.ProteinSidechain;
 
 import java.util.Arrays;
 
-public class Alanine extends ProteinSidechain {
+public final class Alanine extends ProteinSidechain {
     private static final Alanine INSTANCE = new Alanine();
 
     private Alanine() {

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Chi5 extends AtomBasedTorsionAngleType {
+public final class Chi5 extends AtomBasedTorsionAngleType {
     public static final Quadruplet<AtomName> ARGININE_ATOMS =
             new Quadruplet<>(AtomName.CD, AtomName.NE, AtomName.CZ,
                              AtomName.NH1);
@@ -19,7 +19,7 @@ public class Chi5 extends AtomBasedTorsionAngleType {
     private static final Map<Quadruplet<AtomName>, Chi5> INSTANCE_CACHE =
             new HashMap<>();
 
-    private Chi5(Quadruplet<AtomName> atoms) {
+    private Chi5(final Quadruplet<AtomName> atoms) {
         super(MoleculeType.PROTEIN, Unicode.CHI5, atoms,
               new Quadruplet<>(0, 0, 0, 0));
     }
@@ -30,7 +30,7 @@ public class Chi5 extends AtomBasedTorsionAngleType {
         return instances.toArray(new Chi5[instances.size()]);
     }
 
-    public static Chi5 getInstance(Quadruplet<AtomName> atoms) {
+    public static Chi5 getInstance(final Quadruplet<AtomName> atoms) {
         if (!Chi5.INSTANCE_CACHE.containsKey(atoms)) {
             Chi5.INSTANCE_CACHE.put(atoms, new Chi5(atoms));
         }

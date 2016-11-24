@@ -6,7 +6,7 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-public class Nu0 extends AtomBasedTorsionAngleType {
+public final class Nu0 extends AtomBasedTorsionAngleType {
     private static final Nu0 INSTANCE = new Nu0();
 
     private Nu0() {

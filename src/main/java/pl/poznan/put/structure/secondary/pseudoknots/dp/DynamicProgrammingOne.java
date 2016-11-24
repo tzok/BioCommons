@@ -49,7 +49,7 @@ public class DynamicProgrammingOne implements PseudoknotFinder {
         List<Integer> res = new ArrayList<>(connections.size() + 2);
 
         res.add(connections.size() + 1);
-        for (Integer connection : connections) {
+        for (final Integer connection : connections) {
             res.add(connection + 1);
         }
         res.add(0);
@@ -71,11 +71,9 @@ public class DynamicProgrammingOne implements PseudoknotFinder {
 
     // If connections is correct add them to final connections array (make
     // final correct connections)
-    private static void appendCorrectConnections(final int i, final int j,
-                                                 final List<Integer>
-                                                         connections,
-                                                 final int[][] dpPosition,
-                                                 final List<Integer> appendTo) {
+    private static void appendCorrectConnections(
+            final int i, final int j, final List<Integer> connections,
+            final int[][] dpPosition, final List<Integer> appendTo) {
         if (i >= j) {
             return;
         }
@@ -96,10 +94,10 @@ public class DynamicProgrammingOne implements PseudoknotFinder {
     }
 
     // Tell which connections should be as the final ones
-    private static List<Integer> keepSelected(final List<Integer> connections,
-                                              final Iterable<Integer> toKeep) {
+    private static List<Integer> keepSelected(
+            final List<Integer> connections, final Iterable<Integer> toKeep) {
         boolean[] shouldKeep = new boolean[connections.size()];
-        for (int i : toKeep) {
+        for (final int i : toKeep) {
             shouldKeep[i] = true;
         }
         List<Integer> res = new ArrayList<>(connections);
@@ -128,9 +126,9 @@ public class DynamicProgrammingOne implements PseudoknotFinder {
     }
 
     // Build final connections using idMap and filtered connections
-    private static List<Integer> mapBack(final List<Integer> original,
-                                         final List<Integer> filtered,
-                                         final Map<Integer, Integer> idMap) {
+    private static List<Integer> mapBack(
+            final List<Integer> original, final List<Integer> filtered,
+            final Map<Integer, Integer> idMap) {
         List<Integer> result = new ArrayList<>(original);
 
         for (int i = 0; i < filtered.size(); i++) {
@@ -148,7 +146,7 @@ public class DynamicProgrammingOne implements PseudoknotFinder {
         List<Character> sequence = new ArrayList<>(bpSeq.size());
         List<Integer> originalConnections = new ArrayList<>(bpSeq.size());
 
-        for (BpSeq.Entry e : bpSeq.getEntries()) {
+        for (final BpSeq.Entry e : bpSeq.getEntries()) {
             int pair = e.getPair();
             char seq = e.getSeq();
 
@@ -178,7 +176,7 @@ public class DynamicProgrammingOne implements PseudoknotFinder {
 
         // Fill dp array for results
         int[][] dpScore = new int[size][size];
-        for (Range range : ranges) {
+        for (final Range range : ranges) {
             int left = range.getLeft();
             int right = range.getRight();
             int[] prefixesScore = dpScore[left + 1];

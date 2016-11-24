@@ -2,6 +2,7 @@ package pl.poznan.put.pdb;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Objects;
 
 public class PdbRemark2Line implements Serializable {
     private static final long serialVersionUID = -4818750947185900609L;
@@ -59,7 +60,7 @@ public class PdbRemark2Line implements Serializable {
             String resolutionString = line.substring(23).trim();
             double resolution = Double.NaN;
 
-            if (!"NOT APPLICABLE.".equals(resolutionString)) {
+            if (!Objects.equals("NOT APPLICABLE.", resolutionString)) {
                 resolution = Double.parseDouble(line.substring(23, 30).trim());
             }
 

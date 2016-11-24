@@ -4,7 +4,7 @@ import pl.poznan.put.atom.AtomName;
 
 import java.util.Arrays;
 
-public class Ribose extends Sugar {
+public final class Ribose extends Sugar {
     private static final Ribose INSTANCE = new Ribose();
 
     private Ribose() {

@@ -4,8 +4,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import pl.poznan.put.atom.AtomName;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class ResidueComponent {
     private final String residueComponentName;
@@ -47,7 +49,7 @@ public abstract class ResidueComponent {
         return Collections.unmodifiableList(atoms);
     }
 
-    public final List<AtomName> getAdditionalAtoms() {
+    public final Collection<AtomName> getAdditionalAtoms() {
         return Collections.unmodifiableList(additionalAtoms);
     }
 
@@ -70,8 +72,8 @@ public abstract class ResidueComponent {
         }
 
         ResidueComponent other = (ResidueComponent) obj;
-        return residueComponentName.equals(other.residueComponentName) && (
-                moleculeType == other.moleculeType) && CollectionUtils
+        return Objects.equals(residueComponentName, other.residueComponentName)
+               && (moleculeType == other.moleculeType) && CollectionUtils
                        .isEqualCollection(atoms, other.atoms) && CollectionUtils
                        .isEqualCollection(additionalAtoms,
                                           other.additionalAtoms);

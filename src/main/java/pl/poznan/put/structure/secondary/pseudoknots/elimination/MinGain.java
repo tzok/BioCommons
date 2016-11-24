@@ -42,13 +42,13 @@ public class MinGain extends AbstractRegionRemover {
         return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
     }
 
-    public static List<Region> minGainRegions(final ConflictMap conflictMap,
-                                              final Iterable<Region> regions) {
+    public static List<Region> minGainRegions(
+            final ConflictMap conflictMap, final Iterable<Region> regions) {
         SortedMap<Integer, List<Region>> mapGainRegions = new TreeMap<>();
 
-        for (Region region : regions) {
+        for (final Region region : regions) {
             int conflictLength = 0;
-            for (Region conflicting : conflictMap.conflictsWith(region)) {
+            for (final Region conflicting : conflictMap.conflictsWith(region)) {
                 conflictLength += conflicting.getLength();
             }
 

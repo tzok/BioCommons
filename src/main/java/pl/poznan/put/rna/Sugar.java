@@ -11,7 +11,7 @@ public abstract class Sugar extends NucleicAcidResidueComponent {
                 // empty block
             };
 
-    protected Sugar(List<AtomName> atoms) {
+    protected Sugar(final List<AtomName> atoms) {
         super(RNAResidueComponentType.SUGAR, atoms);
     }
 

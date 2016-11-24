@@ -8,8 +8,9 @@ public class TorsionAngleDelta {
     private final State state;
     private final Angle delta;
 
-    public TorsionAngleDelta(MasterTorsionAngleType masterTorsionAngleType,
-                             State state, Angle delta) {
+    public TorsionAngleDelta(
+            final MasterTorsionAngleType masterTorsionAngleType,
+            final State state, final Angle delta) {
         super();
         this.masterTorsionAngleType = masterTorsionAngleType;
         this.state = state;
@@ -17,14 +18,15 @@ public class TorsionAngleDelta {
     }
 
     public static TorsionAngleDelta bothInvalidInstance(
-            MasterTorsionAngleType masterType) {
+            final MasterTorsionAngleType masterType) {
         return new TorsionAngleDelta(masterType, State.BOTH_INVALID,
                                      Angle.invalidInstance());
     }
 
     public static TorsionAngleDelta subtractTorsionAngleValues(
-            MasterTorsionAngleType masterType, TorsionAngleValue targetValue,
-            TorsionAngleValue modelValue) {
+            final MasterTorsionAngleType masterType,
+            final TorsionAngleValue targetValue,
+            final TorsionAngleValue modelValue) {
         State state;
         Angle delta = Angle.invalidInstance();
 
@@ -56,7 +58,7 @@ public class TorsionAngleDelta {
 
     @Override
     public String toString() {
-        return "AngleDelta [state=" + state + ", delta=" + delta + "]";
+        return "AngleDelta [state=" + state + ", delta=" + delta + ']';
     }
 
     /**
@@ -70,7 +72,7 @@ public class TorsionAngleDelta {
         return toString(false);
     }
 
-    public String toString(boolean isDisplayable) {
+    public String toString(final boolean isDisplayable) {
         switch (state) {
             case BOTH_INVALID:
                 return isDisplayable ? "" : null;

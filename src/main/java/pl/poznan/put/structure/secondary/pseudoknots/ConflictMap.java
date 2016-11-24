@@ -46,8 +46,8 @@ public class ConflictMap {
     }
 
     // Check if given Regions are conflicting
-    public static boolean isConflicting(final Region first,
-                                        final Region second) {
+    public static boolean isConflicting(
+            final Region first, final Region second) {
         int firstBegin = first.getBegin();
         int firstEnd = first.getEnd();
         int secondBegin = second.getBegin();
@@ -73,7 +73,7 @@ public class ConflictMap {
     // Remove Region and all associated conflicts with it
     public final void remove(final Region region) {
         if (conflicts.containsKey(region)) {
-            for (Region conflicted : conflicts.get(region)) {
+            for (final Region conflicted : conflicts.get(region)) {
                 conflicts.get(conflicted).remove(region);
                 if (conflicts.get(conflicted).isEmpty()) {
                     conflicts.remove(conflicted);
@@ -84,7 +84,7 @@ public class ConflictMap {
     }
 
     // Return all Regions that conflicts with given Region
-    public final Set<Region> conflictsWith(final Region region) {
+    public final Collection<Region> conflictsWith(final Region region) {
         return Collections.unmodifiableSet(conflicts.get(region));
     }
 
@@ -101,7 +101,7 @@ public class ConflictMap {
         return conflicts.containsKey(region);
     }
 
-    public final List<Clique> getConflictCliques(boolean isSingleton) {
+    public final List<Clique> getConflictCliques(final boolean isSingleton) {
         if (conflicts.isEmpty()) {
             return Collections.emptyList();
         }
@@ -113,7 +113,7 @@ public class ConflictMap {
         List<Clique> cliques = new ArrayList<>();
         Collection<Region> seen = new HashSet<>();
 
-        for (Region region : conflicts.keySet()) {
+        for (final Region region : conflicts.keySet()) {
             if (seen.contains(region)) {
                 continue;
             }
@@ -124,7 +124,7 @@ public class ConflictMap {
 
             while (!CollectionUtils.isEqualCollection(todo, done)) {
                 Collection<Region> next = new ArrayList<>();
-                for (Region r : todo) {
+                for (final Region r : todo) {
                     next.addAll(conflicts.get(r));
                     done.add(r);
                 }
@@ -135,7 +135,7 @@ public class ConflictMap {
                 cliques.add(new Clique(done));
             }
 
-            for (Region r : done) {
+            for (final Region r : done) {
                 seen.add(r);
             }
         }

@@ -7,7 +7,7 @@ import pl.poznan.put.rna.Sugar;
 
 import java.util.Arrays;
 
-public class Adenine extends Purine {
+public final class Adenine extends Purine {
     private static final Adenine INSTANCE = new Adenine();
 
     private Adenine() {

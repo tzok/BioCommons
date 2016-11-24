@@ -8,7 +8,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Tyrosine extends ProteinSidechain {
+public final class Tyrosine extends ProteinSidechain {
     private static final Tyrosine INSTANCE = new Tyrosine();
 
     private Tyrosine() {

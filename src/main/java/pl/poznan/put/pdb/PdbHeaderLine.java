@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class PdbHeaderLine implements Serializable {
     private static final long serialVersionUID = -2116748731208564528L;
@@ -50,7 +51,7 @@ public class PdbHeaderLine implements Serializable {
 
         String recordName = line.substring(0, 6).trim();
 
-        if (!PdbHeaderLine.RECORD_NAME.equals(recordName)) {
+        if (!Objects.equals(PdbHeaderLine.RECORD_NAME, recordName)) {
             throw new PdbParsingException(
                     "PDB line does not start with HEADER");
         }

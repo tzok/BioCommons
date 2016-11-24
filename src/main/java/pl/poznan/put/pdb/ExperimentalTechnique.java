@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb;
 
+import java.util.Objects;
+
 /**
  * Lists all experimental techniques a structure can be solved with (according
  * to the PDB sources).
@@ -31,7 +33,7 @@ public enum ExperimentalTechnique {
             final String fullName) {
         for (final ExperimentalTechnique technique : ExperimentalTechnique
                 .values()) {
-            if (technique.fullName.equals(fullName)) {
+            if (Objects.equals(technique.fullName, fullName)) {
                 return technique;
             }
         }
