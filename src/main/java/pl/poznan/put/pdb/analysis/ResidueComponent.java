@@ -53,6 +53,10 @@ public abstract class ResidueComponent {
         return Collections.unmodifiableList(additionalAtoms);
     }
 
+    public final boolean hasAtom(final AtomName atomName) {
+        return atoms.contains(atomName) || additionalAtoms.contains(atomName);
+    }
+
     @Override
     public final int hashCode() {
         int result = residueComponentName.hashCode();
