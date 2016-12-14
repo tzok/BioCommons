@@ -1,11 +1,14 @@
 package pl.poznan.put.pdb.analysis;
 
 import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * An implementation of {@link ModelContainer} which is created from
@@ -34,8 +37,8 @@ public class CifContainer implements ModelContainer {
     }
 
     @Override
-    public final Set<File> getPdbFiles() {
-        return fileChainMap.keySet();
+    public final List<File> getPdbFiles() {
+        return new ArrayList<>(fileChainMap.keySet());
     }
 
     @Override
@@ -52,5 +55,13 @@ public class CifContainer implements ModelContainer {
             // TODO
         }
         return fileChainMap.get(pdbFile).get(cifChain);
+    }
+
+    @Override
+    public void close() throws IOException {
+        FileUtils.forceDelete(cifFile);
+        for (final File file : fileChainMap.keySet()) {
+            FileUtils.forceDelete(file);
+        }
     }
 }

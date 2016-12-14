@@ -90,4 +90,8 @@ public class PdbResidueIdentifier
 
         return insertionCode.compareTo(t.insertionCode);
     }
+
+    public PdbResidueIdentifier replaceChainIdentifier(final String chain) {
+        return new PdbResidueIdentifier(chain, residueNumber, insertionCode);
+    }
 }

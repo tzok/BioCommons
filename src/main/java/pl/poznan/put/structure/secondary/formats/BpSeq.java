@@ -161,10 +161,9 @@ public class BpSeq implements Serializable {
             BasePair basePair = classifiedBasePair.getBasePair();
             allBasePairs.add(basePair);
 
-            String comment = classifiedBasePair.isCanonical() ? ""
-                                                              :
-                             classifiedBasePair
-                                     .generateComment();
+            String comment =
+                    !classifiedBasePair.isCanonical() ? classifiedBasePair
+                            .generateComment() : "";
             basePairToComment.put(basePair, comment);
             basePairToComment.put(basePair.invert(), comment);
         }

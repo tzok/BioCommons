@@ -78,17 +78,8 @@ public final class CifConverter {
         }
 
         for (final PdbModel model : rnaModels) {
-            for (final PdbChain chain : model.getChains()) {
-                for (final PdbResidue residue : chain.getResidues()) {
-                    if (residue.getResidueNumber()
-                        > CifConverter.MAX_RESIDUE_NUMBER) {
-                        CifConverter.LOGGER
-                                .error("Cannot continue. Chain {} has residue"
-                                       + " of index > 9999",
-                                       chain.getIdentifier());
-                        return EmptyModelContainer.getInstance();
-                    }
-                }
+            if (!CifConverter.isConversionPossible(model)) {
+                return EmptyModelContainer.getInstance();
             }
         }
 
@@ -116,6 +107,53 @@ public final class CifConverter {
         }
 
         return new CifContainer(mmCifFile, fileChainMap);
+    }
+
+    private static boolean isConversionPossible(final PdbModel model) {
+        for (final PdbChain chain : model.getChains()) {
+            for (final PdbResidue residue : chain.getResidues()) {
+                if (residue.getResidueNumber()
+                    > CifConverter.MAX_RESIDUE_NUMBER) {
+                    CifConverter.LOGGER
+                            .error("Cannot continue. Chain {} has residue"
+                                   + " of index > 9999", chain.getIdentifier());
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static ModelContainer convert(final CifModel model)
+            throws IOException {
+        assert model.containsAny(MoleculeType.RNA);
+
+        if (!CifConverter.isConversionPossible(model)) {
+            return EmptyModelContainer.getInstance();
+        }
+
+        List<Set<String>> chainGroups =
+                CifConverter.groupContactingChains(model);
+        chainGroups = CifConverter.packGroups(chainGroups);
+        final Map<File, BidiMap<String, String>> fileChainMap = new HashMap<>();
+
+        for (final Set<String> chainGroup : chainGroups) {
+            final File pdbFile = File.createTempFile("cif2pdb", ".pdb");
+            final BidiMap<String, String> chainMap = new TreeBidiMap<>();
+
+            fileChainMap.put(pdbFile, chainMap);
+
+            final StringBuilder pdbBuilder = new StringBuilder();
+            CifConverter.writeHeader(model, chainMap, pdbBuilder);
+            CifConverter.writeModel(model, chainGroup, chainMap, pdbBuilder);
+
+            String pdbData = pdbBuilder.toString();
+            FileUtils.write(pdbFile, pdbData, Charset.defaultCharset());
+        }
+
+        File cifFile = File.createTempFile("cif2pdb", ".cif");
+        FileUtils.write(cifFile, model.toCifString(), Charset.defaultCharset());
+        return new CifContainer(cifFile, fileChainMap);
     }
 
     /**
@@ -283,8 +321,8 @@ public final class CifConverter {
                     }
                 }
 
-                pdbBuilder.append("TER                        ");
-                pdbBuilder.append(System.lineSeparator());
+                // pdbBuilder.append("TER                        ");
+                // pdbBuilder.append(System.lineSeparator());
             }
         }
 

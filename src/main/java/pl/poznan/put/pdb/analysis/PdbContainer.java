@@ -1,9 +1,12 @@
 package pl.poznan.put.pdb.analysis;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * An implementation of {@link ModelContainer} which uses a single PDB
@@ -29,8 +32,8 @@ public class PdbContainer implements ModelContainer {
     }
 
     @Override
-    public Set<File> getPdbFiles() {
-        return Collections.singleton(pdbFile);
+    public List<File> getPdbFiles() {
+        return Collections.singletonList(pdbFile);
     }
 
     @Override
@@ -47,5 +50,10 @@ public class PdbContainer implements ModelContainer {
             // TODO
         }
         return cifChain;
+    }
+
+    @Override
+    public void close() throws IOException {
+        FileUtils.forceDelete(pdbFile);
     }
 }
