@@ -9,10 +9,10 @@ import pl.poznan.put.structure.secondary.pseudoknots.elimination.MinGain;
  * Enum listing all names and implementations of PseudoknotFinder
  */
 public enum PseudoknotFinderEnum {
-    EG("EliminationMinGain", new MinGain()),
-    EC("EliminationMaxConflicts", new MaxConflicts()),
-    DP_ONE("DynamicProgrammingOne", new DynamicProgrammingOne()),
-    DP_ALL("DynamicProgrammingAll", new DynamicProgrammingAll());
+    EG("Elimination Min-Gain", new MinGain()),
+    EC("Elimination Max-Conflicts", new MaxConflicts()),
+    DP_ONE("Dynamic Programming", new DynamicProgrammingOne()),
+    DP_ALL("Dynamic Programming (All)", new DynamicProgrammingAll());
 
     private final String name;
     private final PseudoknotFinder instance;
