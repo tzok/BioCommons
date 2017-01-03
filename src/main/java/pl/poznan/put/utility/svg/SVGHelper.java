@@ -13,52 +13,61 @@ import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.TranscodingHints;
 import org.apache.batik.util.XMLResourceDescriptor;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.math3.stat.StatUtils;
 import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
-import java.awt.*;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
 
-public class SVGHelper {
+public final class SVGHelper {
     private static final NamespaceContext SVG_NAMESPACE = new SVGNamespace();
     private static final DOMImplementation DOM_IMPLEMENTATION =
             SVGDOMImplementation.getDOMImplementation();
+
     private SVGHelper() {
+        super();
     }
 
-    public static SVGDocument fromFile(File file) throws IOException {
+    public static SVGDocument fromUri(final URI uri) throws IOException {
         SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(
                 XMLResourceDescriptor.getXMLParserClassName());
-        return (SVGDocument) factory
-                .createDocument("file://" + file.getAbsolutePath());
+        return (SVGDocument) factory.createDocument(uri.toString());
     }
 
-    public static FontMetrics getFontMetrics(SVGGraphics2D svg) {
+    public static SVGDocument fromFile(final File file) throws IOException {
+        return SVGHelper.fromUri(file.toURI());
+    }
+
+    public static FontMetrics getFontMetrics(final SVGGraphics2D svg) {
         return svg.getFontMetrics();
     }
 
-    public static LineMetrics getLineMetrics(SVGGraphics2D svg) {
+    public static LineMetrics getLineMetrics(final SVGGraphics2D svg) {
         FontRenderContext renderContext = svg.getFontRenderContext();
         Font font = svg.getFont();
         return font.getLineMetrics(
-                "qwertyuiopasdfghjklzxcvbnm" + "QWERTYUIOPASDFGHJKLZXCVBNM",
+                "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM",
                 renderContext);
     }
 
@@ -66,71 +75,45 @@ public class SVGHelper {
         return SVGHelper.SVG_NAMESPACE;
     }
 
-    public static void export(SVGDocument svgDocument, OutputStream stream,
-                              Format format,
-                              Map<TranscodingHints.Key, Object>
-                                      transcodingHints)
+    public static byte[] export(
+            final SVGDocument svgDocument, final Format format)
             throws IOException {
-        if (format == Format.EPS || format == Format.SVG) {
-            OutputStreamWriter writer = null;
-
-            try {
-                writer = new OutputStreamWriter(stream);
-                SVGHelper.export(svgDocument, writer, format, transcodingHints);
-            } finally {
-                IOUtils.closeQuietly(writer);
-            }
-
-            return;
-        }
-
-        try {
-            TranscoderInput input = new TranscoderInput(svgDocument);
-            TranscoderOutput output = new TranscoderOutput(stream);
-            Transcoder transcoder = format.getTranscoder();
-
-            if (transcodingHints != null) {
-                for (Entry<TranscodingHints.Key, Object> entry :
-                        transcodingHints
-                        .entrySet()) {
-                    transcoder.addTranscodingHint(entry.getKey(),
-                                                  entry.getValue());
-                }
-            }
-
-            transcoder.transcode(input, output);
-        } catch (TranscoderException e) {
-            throw new IOException("Failed to save SVG as image", e);
-        }
+        return SVGHelper.export(svgDocument, format,
+                                Collections.<TranscodingHints.Key,
+                                        Object>emptyMap());
     }
 
-    private static void export(SVGDocument svgDocument, Writer writer,
-                               Format format,
-                               Map<TranscodingHints.Key, Object>
-                                       transcodingHints)
+    public static byte[] export(
+            final SVGDocument svgDocument, final Format format,
+            final Map<TranscodingHints.Key, Object> transcodingHints)
             throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Writer writer =
+                new OutputStreamWriter(stream, Charset.defaultCharset());
+
+        Transcoder transcoder = format.getTranscoder();
+        for (final Map.Entry<TranscodingHints.Key, Object> entry :
+                transcodingHints
+                .entrySet()) {
+            transcoder.addTranscodingHint(entry.getKey(), entry.getValue());
+        }
+
+        TranscoderInput input = new TranscoderInput(svgDocument);
+        TranscoderOutput output =
+                (format == Format.SVG) ? new TranscoderOutput(writer)
+                                       : new TranscoderOutput(stream);
+
         try {
-            TranscoderInput input = new TranscoderInput(svgDocument);
-            TranscoderOutput output = new TranscoderOutput(writer);
-            Transcoder transcoder = format.getTranscoder();
-
-            if (transcodingHints != null) {
-                for (Entry<TranscodingHints.Key, Object> entry :
-                        transcodingHints
-                        .entrySet()) {
-                    transcoder.addTranscodingHint(entry.getKey(),
-                                                  entry.getValue());
-                }
-            }
-
             transcoder.transcode(input, output);
-        } catch (TranscoderException e) {
+        } catch (final TranscoderException e) {
             throw new IOException("Failed to save SVG as image", e);
         }
+
+        return stream.toByteArray();
     }
 
-    public static SVGDocument merge(List<SVGDocument> svgs) {
-        if (svgs.size() == 0) {
+    public static SVGDocument merge(final List<SVGDocument> svgs) {
+        if (svgs.isEmpty()) {
             return SVGHelper.emptyDocument();
         }
 
@@ -164,7 +147,7 @@ public class SVGHelper {
         mergedRoot.setAttribute("width", Double.toString(mergedWidth));
         mergedRoot.setAttribute("height", Double.toString(mergedHeight));
         mergedRoot.setAttribute("viewBox",
-                                "0 0 " + mergedWidth + " " + mergedHeight);
+                                "0 0 " + mergedWidth + ' ' + mergedHeight);
 
         return mergedSvg;
     }
@@ -175,7 +158,7 @@ public class SVGHelper {
                                 null);
     }
 
-    public static Rectangle2D calculateBoundingBox(SVGDocument doc) {
+    public static Rectangle2D calculateBoundingBox(final Document doc) {
         GVTBuilder builder = new GVTBuilder();
         BridgeContext ctx = new BridgeContext(new UserAgentAdapter());
         GraphicsNode gvtRoot = builder.build(ctx, doc);
@@ -184,22 +167,23 @@ public class SVGHelper {
 
     private static class SVGNamespace implements NamespaceContext {
         @Override
-        public String getNamespaceURI(String prefix) {
-            if (prefix == null) {
+        public String getNamespaceURI(final String s) {
+            if (s == null) {
                 throw new IllegalArgumentException("Null prefix for namespace");
-            } else if ("svg".equals(prefix)) {
+            }
+            if (Objects.equals("svg", s)) {
                 return SVGDOMImplementation.SVG_NAMESPACE_URI;
             }
             return XMLConstants.NULL_NS_URI;
         }
 
         @Override
-        public String getPrefix(String arg0) {
+        public String getPrefix(final String s) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public Iterator getPrefixes(String arg0) {
+        public Iterator getPrefixes(final String s) {
             throw new UnsupportedOperationException();
         }
     }

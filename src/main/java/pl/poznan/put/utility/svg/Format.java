@@ -16,7 +16,7 @@ public enum Format {
 
     private final String extension;
 
-    Format(String extension) {
+    Format(final String extension) {
         this.extension = extension;
     }
 
@@ -30,8 +30,8 @@ public enum Format {
                 return new PNGTranscoder();
             case TIFF:
                 return new TIFFTranscoder();
-            default:
             case SVG:
+            default:
                 return new SVGTranscoder();
         }
     }
