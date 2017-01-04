@@ -11,8 +11,8 @@ import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 public final class CanonicalStructureExtractor {
     private CanonicalStructureExtractor() {
@@ -25,73 +25,38 @@ public final class CanonicalStructureExtractor {
      * http://rnapdbee.cs.put.poznan.pl
      */
     public static BpSeq getCanonicalSecondaryStructure(
-            final ResidueCollection residueCollection) throws
-
-                                                       InvalidStructureException {
+            final ResidueCollection residueCollection)
+            throws InvalidStructureException {
         List<PdbResidue> residues = residueCollection.getResidues();
         Collection<ClassifiedBasePair> basePairs = new ArrayList<>();
+        Collection<PdbResidueIdentifier> paired = new HashSet<>();
 
         for (int i = 0; i < residues.size(); i++) {
             PdbResidue left = residues.get(i);
-            char leftName = Character.toUpperCase(left.getOneLetterName());
+            PdbResidueIdentifier leftId = left.getResidueIdentifier();
 
-            for (int j = 0; j < residues.size(); j++) {
-                if (Math.abs(i - j) <= 1) {
-                    continue;
-                }
-
+            for (int j = i + 2; j < residues.size(); j++) {
                 PdbResidue right = residues.get(j);
-                char rightName =
-                        Character.toUpperCase(right.getOneLetterName());
-                Saenger saenger;
+                PdbResidueIdentifier rightId = right.getResidueIdentifier();
 
-                if ((leftName == 'C') && (rightName == 'G') && BasePair
-                        .isCanonicalCG(left, right)) {
-                    saenger = Saenger.XIX;
-                } else if ((leftName == 'A') && (rightName == 'U') && BasePair
-                        .isCanonicalAU(left, right)) {
-                    saenger = Saenger.XX;
-                } else if ((leftName == 'G') && (rightName == 'U') && BasePair
-                        .isCanonicalGU(left, right)) {
-                    saenger = Saenger.XXVIII;
-                } else {
-                    continue;
-                }
+                if (BasePair.isCanonicalPair(left, right)) {
+                    BasePair basePair = new BasePair(leftId, rightId);
+                    ClassifiedBasePair classifiedBasePair =
+                            new ClassifiedBasePair(basePair,
+                                                   RNAInteractionType.BASE_BASE,
+                                                   Saenger.XIX,
+                                                   LeontisWesthof.CWW,
+                                                   HelixOrigin.UNKNOWN);
 
-                BasePair basePair = new BasePair(left.getResidueIdentifier(),
-                                                 right.getResidueIdentifier());
-                ClassifiedBasePair classifiedBasePair =
-                        new ClassifiedBasePair(basePair,
-                                               RNAInteractionType.BASE_BASE,
-                                               saenger, LeontisWesthof.CWW,
-                                               HelixOrigin.UNKNOWN);
-
-                if (CanonicalStructureExtractor.areBothBasesUnpaired(basePairs,
-                                                                     left.getResidueIdentifier(),
-                                                                     right.getResidueIdentifier())) {
-                    basePairs.add(classifiedBasePair);
+                    if (!paired.contains(leftId) && !paired.contains(rightId)) {
+                        basePairs.add(classifiedBasePair);
+                        paired.add(leftId);
+                        paired.add(rightId);
+                    }
                 }
             }
         }
 
         return BpSeq.fromResidueCollection(residueCollection, basePairs);
-    }
-
-    private static boolean areBothBasesUnpaired(
-            final Iterable<ClassifiedBasePair> basePairs,
-            final PdbResidueIdentifier left, final PdbResidueIdentifier right) {
-        for (final ClassifiedBasePair classifiedBasePair : basePairs) {
-            BasePair basePair = classifiedBasePair.getBasePair();
-            PdbResidueIdentifier bpLeft = basePair.getLeft();
-            PdbResidueIdentifier bpRight = basePair.getRight();
-
-            if (Objects.equals(bpLeft, left) || Objects.equals(bpLeft, right)
-                || Objects.equals(bpRight, left) || Objects
-                        .equals(bpRight, right)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }
