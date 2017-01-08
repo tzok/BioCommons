@@ -1,6 +1,8 @@
 package darrylbu.component;
 
-import javax.swing.*;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.MenuElement;
+import javax.swing.MenuSelectionManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -12,77 +14,25 @@ import javax.swing.event.ChangeListener;
  */
 public class StayOpenRadioButtonMenuItem extends JRadioButtonMenuItem {
     private static final long serialVersionUID = 1L;
-    static MenuElement[] path;
-
-    {
-        getModel().addChangeListener(new ChangeListener() {
-
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if (getModel().isArmed() && isShowing()) {
-                    StayOpenRadioButtonMenuItem.path =
-                            MenuSelectionManager.defaultManager()
-                                                .getSelectedPath();
-                }
-            }
-        });
-    }
-
-    /**
-     * @see JRadioButtonMenuItem#JRadioButtonMenuItem()
-     */
-    public StayOpenRadioButtonMenuItem() {
-        super();
-    }
-
-    /**
-     * @see JRadioButtonMenuItem#JRadioButtonMenuItem(Action)
-     */
-    public StayOpenRadioButtonMenuItem(Action a) {
-        super(a);
-    }
-
-    /**
-     * @see JRadioButtonMenuItem#JRadioButtonMenuItem(Icon)
-     */
-    public StayOpenRadioButtonMenuItem(Icon icon) {
-        super(icon);
-    }
-
-    /**
-     * @see JRadioButtonMenuItem#JRadioButtonMenuItem(Icon, boolean)
-     */
-    public StayOpenRadioButtonMenuItem(Icon icon, boolean selected) {
-        super(icon, selected);
-    }
-
-    /**
-     * @see JRadioButtonMenuItem#JRadioButtonMenuItem(String)
-     */
-    public StayOpenRadioButtonMenuItem(String text) {
-        super(text);
-    }
+    private MenuElement[] path;
 
     /**
      * @see JRadioButtonMenuItem#JRadioButtonMenuItem(String, boolean)
      */
-    public StayOpenRadioButtonMenuItem(String text, boolean selected) {
+    public StayOpenRadioButtonMenuItem(final String text,
+                                       final boolean selected) {
         super(text, selected);
-    }
 
-    /**
-     * @see JRadioButtonMenuItem#JRadioButtonMenuItem(String, Icon)
-     */
-    public StayOpenRadioButtonMenuItem(String text, Icon icon) {
-        super(text, icon);
-    }
+        getModel().addChangeListener(new ChangeListener() {
 
-    /**
-     * @see JRadioButtonMenuItem#JRadioButtonMenuItem(String, Icon, boolean)
-     */
-    public StayOpenRadioButtonMenuItem(String text, Icon icon,
-                                       boolean selected) {
-        super(text, icon, selected);
+            @Override
+            public void stateChanged(final ChangeEvent changeEvent) {
+                if (getModel().isArmed() && isShowing()) {
+                    path = MenuSelectionManager.defaultManager()
+                                               .getSelectedPath();
+                }
+            }
+        });
     }
 
     /**
@@ -91,9 +41,8 @@ public class StayOpenRadioButtonMenuItem extends JRadioButtonMenuItem {
      * @param pressTime the time to "hold down" the button, in milliseconds
      */
     @Override
-    public void doClick(int pressTime) {
+    public final void doClick(final int pressTime) {
         super.doClick(pressTime);
-        MenuSelectionManager.defaultManager()
-                            .setSelectedPath(StayOpenRadioButtonMenuItem.path);
+        MenuSelectionManager.defaultManager().setSelectedPath(path);
     }
 }
