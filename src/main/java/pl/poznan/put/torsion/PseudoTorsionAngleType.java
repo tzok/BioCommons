@@ -8,9 +8,10 @@ import pl.poznan.put.types.Quadruplet;
  * A pseudotorsion angle is defined on atoms which are not covalently bound.
  */
 public abstract class PseudoTorsionAngleType extends AtomBasedTorsionAngleType {
-    public PseudoTorsionAngleType(MoleculeType moleculeType, String displayName,
-                                  Quadruplet<AtomName> atoms,
-                                  Quadruplet<Integer> residueRule) {
+    protected PseudoTorsionAngleType(
+            final MoleculeType moleculeType, final String displayName,
+            final Quadruplet<AtomName> atoms,
+            final Quadruplet<Integer> residueRule) {
         super(moleculeType, displayName, atoms, residueRule);
     }
 }

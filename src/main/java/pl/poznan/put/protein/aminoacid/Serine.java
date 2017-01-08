@@ -7,7 +7,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Serine extends ProteinSidechain {
+public final class Serine extends ProteinSidechain {
     private static final Serine INSTANCE = new Serine();
 
     private Serine() {

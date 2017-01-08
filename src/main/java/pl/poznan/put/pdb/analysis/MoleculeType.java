@@ -7,11 +7,11 @@ public enum MoleculeType {
 
     private final ResidueBondRule bondRule;
 
-    MoleculeType(ResidueBondRule bondRule) {
+    MoleculeType(final ResidueBondRule bondRule) {
         this.bondRule = bondRule;
     }
 
-    public boolean areConnected(PdbResidue r1, PdbResidue r2) {
+    public boolean areConnected(final PdbResidue r1, final PdbResidue r2) {
         return bondRule.areConnected(r1, r2);
     }
 }

@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
+import org.apache.commons.lang3.StringUtils;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.io.mmcif.MMcifConsumer;
 import org.biojava.nbio.structure.io.mmcif.model.AtomSite;
@@ -42,9 +43,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
+import pl.poznan.put.pdb.ExperimentalTechnique;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbExpdtaLine;
-import pl.poznan.put.pdb.PdbExpdtaLine.ExperimentalTechnique;
 import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbParsingException;
@@ -54,6 +55,7 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
+import javax.annotation.Nullable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -62,14 +64,29 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
-public class MmCifConsumer implements MMcifConsumer {
-    private final static Logger LOGGER =
-            LoggerFactory.getLogger(MMcifConsumer.class);
-    private final static DateFormat DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd");
+public class CifConsumer implements MMcifConsumer {
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(CifConsumer.class);
+
+    private static final DateFormat DATE_FORMAT =
+            new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    private static final String PDBX_STRUCT_MOD_RESIDUE =
+            "_pdbx_struct_mod_residue"; //NON-NLS
+    private static final String PDBX_UNOBS_OR_ZERO_OCC_RESIDUES =
+            "_pdbx_unobs_or_zero_occ_residues"; //NON-NLS
+    private static final String NDB_STRUCT_NA_BASE_PAIR =
+            "_ndb_struct_na_base_pair"; //NON-NLS
+    private static final String SHEAR = "shear"; //NON-NLS
+    private static final String STRETCH = "stretch"; //NON-NLS
+    private static final String STAGGER = "stagger"; //NON-NLS
+    private static final String BUCKLE = "buckle"; //NON-NLS
+    private static final String PROPELLER = "propeller"; //NON-NLS
+    private static final String OPENING = "opening"; //NON-NLS
 
     private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
     private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
@@ -78,22 +95,27 @@ public class MmCifConsumer implements MMcifConsumer {
             new ArrayList<>();
     private final List<QuantifiedBasePair> basePairs = new ArrayList<>();
 
+    @Nullable
     private Date depositionDate;
+    @Nullable
     private String classification;
+    @Nullable
     private String idCode;
     private double resolution;
 
     private FileParsingParameters parameters;
 
-    public MmCifConsumer(FileParsingParameters parameters) {
+    public CifConsumer(final FileParsingParameters parameters) {
+        super();
         this.parameters = parameters;
     }
 
-    public MmCifConsumer() {
+    public CifConsumer() {
+        super();
     }
 
     @Override
-    public void documentStart() {
+    public final void documentStart() {
         modelAtoms.clear();
         missingResidues.clear();
         modifiedResidues.clear();
@@ -112,7 +134,7 @@ public class MmCifConsumer implements MMcifConsumer {
     }
 
     @Override
-    public void newAtomSite(AtomSite atomSite) {
+    public final void newAtomSite(final AtomSite atomSite) {
         try {
             int serialNumber = Integer.parseInt(atomSite.getId());
             String atomName = atomSite.getAuth_atom_id();
@@ -130,13 +152,13 @@ public class MmCifConsumer implements MMcifConsumer {
             String elementSymbol = atomSite.getType_symbol();
             String charge = atomSite.getPdbx_formal_charge();
 
-            if ("?".equals(insertionCode)) {
+            if (Objects.equals("?", insertionCode)) {
                 insertionCode = " ";
             }
-            if (".".equals(alternateLocation)) {
+            if (Objects.equals(".", alternateLocation)) {
                 alternateLocation = " ";
             }
-            if ("?".equals(charge)) {
+            if (Objects.equals("?", charge)) {
                 charge = " ";
             }
 
@@ -145,8 +167,12 @@ public class MmCifConsumer implements MMcifConsumer {
                                     residueName, chainIdentifier, residueNumber,
                                     insertionCode, x, y, z, occupancy,
                                     temperatureFactor, elementSymbol, charge);
-            int modelNumber =
-                    Integer.parseInt(atomSite.getPdbx_PDB_model_num());
+
+            String modelNumberString = atomSite.getPdbx_PDB_model_num();
+            int modelNumber = 1;
+            if (StringUtils.isNotBlank(modelNumberString)) {
+                modelNumber = Integer.parseInt(modelNumberString);
+            }
 
             if (!modelAtoms.containsKey(modelNumber)) {
                 modelAtoms.put(modelNumber, new ArrayList<PdbAtomLine>());
@@ -154,217 +180,225 @@ public class MmCifConsumer implements MMcifConsumer {
 
             List<PdbAtomLine> atomLines = modelAtoms.get(modelNumber);
             atomLines.add(atomLine);
-        } catch (NumberFormatException e) {
-            MmCifConsumer.LOGGER.warn("Failed to parse _atom_site", e);
+        } catch (final NumberFormatException e) {
+            CifConsumer.LOGGER.warn("Failed to parse _atom_site", e);
         }
     }
 
     @Override
-    public void newEntity(Entity entity) {
+    public void newEntity(final Entity entity) {
         // do nothing
     }
 
     @Override
-    public void newEntityPolySeq(EntityPolySeq entityPolySeq) {
+    public void newEntityPolySeq(final EntityPolySeq entityPolySeq) {
         // do nothing
     }
 
     @Override
-    public void newStructAsym(StructAsym structAsym) {
+    public void newStructAsym(final StructAsym structAsym) {
         // do nothing
     }
 
     @Override
-    public void setStruct(Struct struct) {
+    public void setStruct(final Struct struct) {
         // do nothing
     }
 
     @Override
-    public void newDatabasePDBrev(DatabasePDBrev databasePDBrev) {
+    public final void newDatabasePDBrev(final DatabasePDBrev databasePDBrev) {
         try {
             if (depositionDate == null) {
-                depositionDate = MmCifConsumer.DATE_FORMAT
+                depositionDate = CifConsumer.DATE_FORMAT
                         .parse(databasePDBrev.getDate_original());
             }
-        } catch (ParseException e) {
-            MmCifConsumer.LOGGER
+        } catch (final ParseException e) {
+            CifConsumer.LOGGER
                     .warn("Failed to parse _database_PDB_rev.date_original as"
-                          + " yyyy-MM-dd: " + databasePDBrev.getDate_original(),
-                          e);
+                          + " yyyy-MM-dd: {}",
+                          databasePDBrev.getDate_original(), e);
         }
     }
 
     @Override
     public void newDatabasePDBrevRecord(
-            DatabasePdbrevRecord databasePdbrevRecord) {
+            final DatabasePdbrevRecord databasePdbrevRecord) {
         // do nothing
     }
 
     @Override
-    public void newDatabasePDBremark(DatabasePDBremark databasePDBremark) {
+    public void newDatabasePDBremark(
+            final DatabasePDBremark databasePDBremark) {
         // do nothing
     }
 
     @Override
-    public void newExptl(Exptl exptl) {
+    public final void newExptl(final Exptl exptl) {
         ExperimentalTechnique technique =
                 ExperimentalTechnique.fromFullName(exptl.getMethod());
         if (technique == ExperimentalTechnique.UNKNOWN) {
-            LOGGER.warn("Failed to parse _exptl.method: " + exptl.getMethod());
+            CifConsumer.LOGGER.warn("Failed to parse _exptl.method: {}",
+                                    exptl.getMethod());
         } else {
             experimentalTechniques.add(technique);
         }
     }
 
     @Override
-    public void newCell(Cell cell) {
+    public void newCell(final Cell cell) {
         // do nothing
     }
 
     @Override
-    public void newSymmetry(Symmetry symmetry) {
+    public void newSymmetry(final Symmetry symmetry) {
         // do nothing
     }
 
     @Override
-    public void newStructNcsOper(StructNcsOper structNcsOper) {
+    public void newStructNcsOper(final StructNcsOper structNcsOper) {
         // do nothing
     }
 
     @Override
-    public void newStructRef(StructRef structRef) {
+    public void newStructRef(final StructRef structRef) {
         // do nothing
     }
 
     @Override
-    public void newStructRefSeq(StructRefSeq structRefSeq) {
+    public void newStructRefSeq(final StructRefSeq structRefSeq) {
         // do nothing
     }
 
     @Override
-    public void newStructRefSeqDif(StructRefSeqDif structRefSeqDif) {
+    public void newStructRefSeqDif(final StructRefSeqDif structRefSeqDif) {
         // do nothing
     }
 
     @Override
-    public void newStructSite(StructSite structSite) {
+    public void newStructSite(final StructSite structSite) {
         // do nothing
     }
 
     @Override
-    public void newStructSiteGen(StructSiteGen structSiteGen) {
+    public void newStructSiteGen(final StructSiteGen structSiteGen) {
         // do nothing
     }
 
     @Override
-    public void newPdbxPolySeqScheme(PdbxPolySeqScheme pdbxPolySeqScheme) {
+    public void newPdbxPolySeqScheme(
+            final PdbxPolySeqScheme pdbxPolySeqScheme) {
         // do nothing
     }
 
     @Override
-    public void newPdbxNonPolyScheme(PdbxNonPolyScheme pdbxNonPolyScheme) {
+    public void newPdbxNonPolyScheme(
+            final PdbxNonPolyScheme pdbxNonPolyScheme) {
         // do nothing
     }
 
     @Override
-    public void newPdbxEntityNonPoly(PdbxEntityNonPoly pdbxEntityNonPoly) {
+    public void newPdbxEntityNonPoly(
+            final PdbxEntityNonPoly pdbxEntityNonPoly) {
         // do nothing
     }
 
     @Override
-    public void newStructKeywords(StructKeywords structKeywords) {
+    public final void newStructKeywords(final StructKeywords structKeywords) {
         idCode = structKeywords.getEntry_id();
         classification = structKeywords.getPdbx_keywords();
     }
 
     @Override
-    public void newRefine(Refine refine) {
+    public final void newRefine(final Refine refine) {
         try {
             resolution = Double.parseDouble(refine.getLs_d_res_high());
-        } catch (NumberFormatException e) {
-            LOGGER.warn("Failed to parse _refine.ls_d_res_high: " + refine
-                    .getLs_d_res_high());
+        } catch (final NumberFormatException e) {
+            CifConsumer.LOGGER.warn("Failed to parse _refine.ls_d_res_high: {}",
+                                    refine.getLs_d_res_high(), e);
         }
     }
 
     @Override
-    public void newChemComp(ChemComp chemComp) {
+    public void newChemComp(final ChemComp chemComp) {
         // do nothing
     }
 
     @Override
-    public void newChemCompDescriptor(ChemCompDescriptor chemCompDescriptor) {
+    public void newChemCompDescriptor(
+            final ChemCompDescriptor chemCompDescriptor) {
         // do nothing
     }
 
     @Override
-    public void newPdbxStructOperList(PdbxStructOperList pdbxStructOperList) {
+    public void newPdbxStructOperList(
+            final PdbxStructOperList pdbxStructOperList) {
         // do nothing
     }
 
     @Override
-    public void newPdbxStrucAssembly(PdbxStructAssembly pdbxStructAssembly) {
+    public void newPdbxStrucAssembly(
+            final PdbxStructAssembly pdbxStructAssembly) {
         // do nothing
     }
 
     @Override
     public void newPdbxStrucAssemblyGen(
-            PdbxStructAssemblyGen pdbxStructAssemblyGen) {
+            final PdbxStructAssemblyGen pdbxStructAssemblyGen) {
         // do nothing
     }
 
     @Override
-    public void newChemCompAtom(ChemCompAtom chemCompAtom) {
+    public void newChemCompAtom(final ChemCompAtom chemCompAtom) {
         // do nothing
     }
 
     @Override
     public void newPdbxChemCompIndentifier(
-            PdbxChemCompIdentifier pdbxChemCompIdentifier) {
+            final PdbxChemCompIdentifier pdbxChemCompIdentifier) {
         // do nothing
     }
 
     @Override
-    public void newChemCompBond(ChemCompBond chemCompBond) {
+    public void newChemCompBond(final ChemCompBond chemCompBond) {
         // do nothing
     }
 
     @Override
     public void newPdbxChemCompDescriptor(
-            PdbxChemCompDescriptor pdbxChemCompDescriptor) {
+            final PdbxChemCompDescriptor pdbxChemCompDescriptor) {
         // do nothing
     }
 
     @Override
-    public void newEntitySrcGen(EntitySrcGen entitySrcGen) {
+    public void newEntitySrcGen(final EntitySrcGen entitySrcGen) {
         // do nothing
     }
 
     @Override
-    public void newEntitySrcNat(EntitySrcNat entitySrcNat) {
+    public void newEntitySrcNat(final EntitySrcNat entitySrcNat) {
         // do nothing
     }
 
     @Override
-    public void newEntitySrcSyn(EntitySrcSyn entitySrcSyn) {
+    public void newEntitySrcSyn(final EntitySrcSyn entitySrcSyn) {
         // do nothing
     }
 
     @Override
-    public void newStructConn(StructConn structConn) {
+    public void newStructConn(final StructConn structConn) {
         // do nothing
     }
 
     @Override
-    public void newAuditAuthor(AuditAuthor auditAuthor) {
+    public void newAuditAuthor(final AuditAuthor auditAuthor) {
         // do nothing
     }
 
     @Override
-    public void newGenericData(String category, List<String> loopFields,
-                               List<String> lineData) {
-        if ("_pdbx_struct_mod_residue".equals(category)) {
-            Map<String, String> map = convertToMap(loopFields, lineData);
+    public final void newGenericData(
+            final String s, final List<String> list, final List<String> list1) {
+        if (Objects.equals(CifConsumer.PDBX_STRUCT_MOD_RESIDUE, s)) {
+            Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
             String residueName = map.get("auth_comp_id");
             String chainIdentifier = map.get("auth_asym_id");
@@ -373,7 +407,7 @@ public class MmCifConsumer implements MMcifConsumer {
             String standardResidueName = map.get("parent_comp_id");
             String comment = map.get("details");
 
-            if ("?".equals(insertionCode)) {
+            if (Objects.equals("?", insertionCode)) {
                 insertionCode = " ";
             }
 
@@ -382,8 +416,9 @@ public class MmCifConsumer implements MMcifConsumer {
                                       residueNumber, insertionCode,
                                       standardResidueName, comment);
             modifiedResidues.add(modresLine);
-        } else if ("_pdbx_unobs_or_zero_occ_residues".equals(category)) {
-            Map<String, String> map = convertToMap(loopFields, lineData);
+        } else if (Objects
+                .equals(CifConsumer.PDBX_UNOBS_OR_ZERO_OCC_RESIDUES, s)) {
+            Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
             int modelNumber = Integer.parseInt(map.get("PDB_model_num"));
             String residueName = map.get("auth_comp_id");
@@ -391,7 +426,7 @@ public class MmCifConsumer implements MMcifConsumer {
             int residueNumber = Integer.parseInt(map.get("auth_seq_id"));
             String insertionCode = map.get("PDB_ins_code");
 
-            if ("?".equals(insertionCode)) {
+            if (Objects.equals("?", insertionCode)) {
                 insertionCode = " ";
             }
 
@@ -400,13 +435,13 @@ public class MmCifConsumer implements MMcifConsumer {
                                          chainIdentifier, residueNumber,
                                          insertionCode);
             missingResidues.add(remark465Line);
-        } else if ("_ndb_struct_na_base_pair".equals(category)) {
-            Map<String, String> map = convertToMap(loopFields, lineData);
+        } else if (Objects.equals(CifConsumer.NDB_STRUCT_NA_BASE_PAIR, s)) {
+            Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
             String chainL = map.get("i_auth_asym_id");
             int resiL = Integer.parseInt(map.get("i_auth_seq_id"));
             String icodeL = map.get("i_PDB_ins_code");
-            if ("?".equals(icodeL)) {
+            if (Objects.equals("?", icodeL)) {
                 icodeL = " ";
             }
             PdbResidueIdentifier left =
@@ -415,7 +450,7 @@ public class MmCifConsumer implements MMcifConsumer {
             String chainR = map.get("j_auth_asym_id");
             int resiR = Integer.parseInt(map.get("j_auth_seq_id"));
             String icodeR = map.get("j_PDB_ins_code");
-            if ("?".equals(icodeR)) {
+            if (Objects.equals("?", icodeR)) {
                 icodeR = " ";
             }
             PdbResidueIdentifier right =
@@ -423,28 +458,29 @@ public class MmCifConsumer implements MMcifConsumer {
             BasePair basePair = new BasePair(left, right);
 
             String saengerString = map.get("hbond_type_28");
-            Saenger saenger = "?".equals(saengerString) ? Saenger.UNKNOWN
-                                                        : Saenger.fromOrdinal(
-                                                                Integer.parseInt(
-                                                                        saengerString));
+            Saenger saenger = Saenger.UNKNOWN;
+            if (!Objects.equals("?", saengerString)) {
+                saenger = Saenger.fromOrdinal(Integer.parseInt(saengerString));
+            }
+
             String leontisWesthofString = map.get("hbond_type_12");
             LeontisWesthof leontisWesthof =
-                    "?".equals(leontisWesthofString) ? LeontisWesthof.UNKNOWN
-                                                     : LeontisWesthof
-                            .fromOrdinal(
-                                    Integer.parseInt(leontisWesthofString));
+                    Objects.equals("?", leontisWesthofString)
+                    ? LeontisWesthof.UNKNOWN : LeontisWesthof.fromOrdinal(
+                            Integer.parseInt(leontisWesthofString));
 
-            double shear = MmCifConsumer.getDoubleWithDefaultNaN(map, "shear");
-            double stretch =
-                    MmCifConsumer.getDoubleWithDefaultNaN(map, "stretch");
-            double stagger =
-                    MmCifConsumer.getDoubleWithDefaultNaN(map, "stagger");
-            double buckle =
-                    MmCifConsumer.getDoubleWithDefaultNaN(map, "buckle");
-            double propeller =
-                    MmCifConsumer.getDoubleWithDefaultNaN(map, "propeller");
-            double opening =
-                    MmCifConsumer.getDoubleWithDefaultNaN(map, "opening");
+            double shear =
+                    CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.SHEAR);
+            double stretch = CifConsumer
+                    .getDoubleWithDefaultNaN(map, CifConsumer.STRETCH);
+            double stagger = CifConsumer
+                    .getDoubleWithDefaultNaN(map, CifConsumer.STAGGER);
+            double buckle = CifConsumer
+                    .getDoubleWithDefaultNaN(map, CifConsumer.BUCKLE);
+            double propeller = CifConsumer
+                    .getDoubleWithDefaultNaN(map, CifConsumer.PROPELLER);
+            double opening = CifConsumer
+                    .getDoubleWithDefaultNaN(map, CifConsumer.OPENING);
             QuantifiedBasePair quantifiedBasePair =
                     new QuantifiedBasePair(basePair, saenger, leontisWesthof,
                                            shear, stretch, stagger, buckle,
@@ -453,8 +489,8 @@ public class MmCifConsumer implements MMcifConsumer {
         }
     }
 
-    private Map<String, String> convertToMap(List<String> loopFields,
-                                             List<String> lineData) {
+    private static Map<String, String> convertToMap(
+            final List<String> loopFields, final List<String> lineData) {
         Map<String, String> map = new HashMap<>();
         for (int i = 0; i < loopFields.size(); i++) {
             map.put(loopFields.get(i), lineData.get(i));
@@ -462,25 +498,27 @@ public class MmCifConsumer implements MMcifConsumer {
         return map;
     }
 
-    private static double getDoubleWithDefaultNaN(Map<String, String> map,
-                                                  String key) {
+    private static double getDoubleWithDefaultNaN(
+            final Map<String, String> map, final String key) {
         return map.containsKey(key) ? Double.parseDouble(map.get(key))
                                     : Double.NaN;
     }
 
-    public List<CifModel> getModels() throws PdbParsingException {
-        PdbHeaderLine headerLine = new PdbHeaderLine(classification,
-                                                     depositionDate == null
-                                                     ? new Date(0)
-                                                     : depositionDate, idCode);
-        PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(
+    public final List<CifModel> getModels() throws PdbParsingException {
+        Date date = (depositionDate == null) ? new Date(0) : depositionDate;
+        PdbHeaderLine headerLine =
+                new PdbHeaderLine(classification, date, idCode);
+
+        List<ExperimentalTechnique> techniques =
                 experimentalTechniques.isEmpty() ? Collections
                         .singletonList(ExperimentalTechnique.UNKNOWN)
-                                                 : experimentalTechniques);
+                                                 : experimentalTechniques;
+        PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(techniques);
+
         PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
         List<CifModel> result = new ArrayList<>();
 
-        for (Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms
+        for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms
                 .entrySet()) {
             int modelNumber = entry.getKey();
             List<PdbAtomLine> atoms = entry.getValue();
@@ -495,12 +533,13 @@ public class MmCifConsumer implements MMcifConsumer {
     }
 
     @Override
-    public void setFileParsingParameters(FileParsingParameters parameters) {
-        this.parameters = parameters;
+    public final void setFileParsingParameters(
+            final FileParsingParameters fileParsingParameters) {
+        parameters = fileParsingParameters;
     }
 
     @Override
-    public FileParsingParameters getFileParsingParameters() {
+    public final FileParsingParameters getFileParsingParameters() {
         return parameters;
     }
 

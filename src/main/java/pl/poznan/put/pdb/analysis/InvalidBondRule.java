@@ -2,7 +2,8 @@ package pl.poznan.put.pdb.analysis;
 
 public class InvalidBondRule implements ResidueBondRule {
     @Override
-    public boolean areConnected(PdbResidue r1, PdbResidue r2) {
+    public final boolean areConnected(
+            final PdbResidue r1, final PdbResidue r2) {
         return false;
     }
 }

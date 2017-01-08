@@ -8,7 +8,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Phenylalanine extends ProteinSidechain {
+public final class Phenylalanine extends ProteinSidechain {
     private static final Phenylalanine INSTANCE = new Phenylalanine();
 
     private Phenylalanine() {

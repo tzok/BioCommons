@@ -1,7 +1,6 @@
 package pl.poznan.put.torsion;
 
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.samples.AngleSample;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
@@ -13,7 +12,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 public class AverageTorsionAngleType extends TorsionAngleType
         implements MasterTorsionAngleType {
@@ -21,20 +19,19 @@ public class AverageTorsionAngleType extends TorsionAngleType
     private final String exportName;
     private final List<MasterTorsionAngleType> consideredAngles;
 
-    public AverageTorsionAngleType(MoleculeType moleculeType,
-                                   MasterTorsionAngleType... masterTypes) {
+    public AverageTorsionAngleType(
+            final MoleculeType moleculeType,
+            final MasterTorsionAngleType... masterTypes) {
         super(moleculeType);
-        this.consideredAngles = Arrays.asList(masterTypes);
-        this.displayName =
-                AverageTorsionAngleType.toDisplayName(consideredAngles);
-        this.exportName =
-                AverageTorsionAngleType.toExportName(consideredAngles);
+        consideredAngles = Arrays.asList(masterTypes);
+        displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
+        exportName = AverageTorsionAngleType.toExportName(consideredAngles);
     }
 
     private static String toDisplayName(
-            List<MasterTorsionAngleType> consideredAngles) {
-        Set<String> angleNames = new LinkedHashSet<>();
-        for (MasterTorsionAngleType angleType : consideredAngles) {
+            final Iterable<MasterTorsionAngleType> consideredAngles) {
+        Collection<String> angleNames = new LinkedHashSet<>();
+        for (final MasterTorsionAngleType angleType : consideredAngles) {
             angleNames.add(angleType.getShortDisplayName());
         }
 
@@ -52,9 +49,9 @@ public class AverageTorsionAngleType extends TorsionAngleType
     }
 
     private static String toExportName(
-            List<MasterTorsionAngleType> consideredAngles) {
-        Set<String> angleNames = new LinkedHashSet<>();
-        for (MasterTorsionAngleType angleType : consideredAngles) {
+            final Iterable<MasterTorsionAngleType> consideredAngles) {
+        Collection<String> angleNames = new LinkedHashSet<>();
+        for (final MasterTorsionAngleType angleType : consideredAngles) {
             angleNames.add(angleType.getExportName());
         }
 
@@ -63,28 +60,26 @@ public class AverageTorsionAngleType extends TorsionAngleType
         builder.append(iterator.next());
 
         while (iterator.hasNext()) {
-            builder.append("_");
+            builder.append('_');
             builder.append(iterator.next());
         }
 
         return builder.toString();
     }
 
-    public AverageTorsionAngleType(MoleculeType moleculeType,
-                                   List<MasterTorsionAngleType>
-                                           consideredAngles) {
+    public AverageTorsionAngleType(
+            final MoleculeType moleculeType,
+            final List<MasterTorsionAngleType> consideredAngles) {
         super(moleculeType);
-        this.consideredAngles = consideredAngles;
-        this.displayName =
-                AverageTorsionAngleType.toDisplayName(consideredAngles);
-        this.exportName =
-                AverageTorsionAngleType.toExportName(consideredAngles);
+        this.consideredAngles = new ArrayList<>(consideredAngles);
+        displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
+        exportName = AverageTorsionAngleType.toExportName(consideredAngles);
     }
 
-    private AverageTorsionAngleType(MoleculeType moleculeType,
-                                    List<MasterTorsionAngleType>
-                                            consideredAngles,
-                                    String displayName, String exportName) {
+    private AverageTorsionAngleType(
+            final MoleculeType moleculeType,
+            final List<MasterTorsionAngleType> consideredAngles,
+            final String displayName, final String exportName) {
         super(moleculeType);
         this.consideredAngles = consideredAngles;
         this.displayName = displayName;
@@ -111,19 +106,18 @@ public class AverageTorsionAngleType extends TorsionAngleType
         return displayName;
     }
 
-    public List<MasterTorsionAngleType> getConsideredAngles() {
+    public Iterable<MasterTorsionAngleType> getConsideredAngles() {
         return Collections.unmodifiableList(consideredAngles);
     }
 
     @Override
-    public TorsionAngleValue calculate(List<PdbResidue> residues,
-                                       int currentIndex)
-            throws InvalidCircularValueException {
+    public TorsionAngleValue calculate(
+            final List<PdbResidue> residues, final int currentIndex) {
         PdbResidue residue = residues.get(currentIndex);
         List<Angle> angles = new ArrayList<>();
 
-        for (TorsionAngleType type : residue.getTorsionAngleTypes()) {
-            for (MasterTorsionAngleType masterType : consideredAngles) {
+        for (final TorsionAngleType type : residue.getTorsionAngleTypes()) {
+            for (final MasterTorsionAngleType masterType : consideredAngles) {
                 if (masterType.getAngleTypes().contains(type)) {
                     TorsionAngleValue angleValue =
                             type.calculate(residues, currentIndex);
@@ -136,11 +130,12 @@ public class AverageTorsionAngleType extends TorsionAngleType
         return new TorsionAngleValue(this, angleSample.getMeanDirection());
     }
 
-    public TorsionAngleValue calculate(Collection<TorsionAngleValue> values) {
+    public TorsionAngleValue calculate(
+            final Iterable<TorsionAngleValue> values) {
         List<Angle> angles = new ArrayList<>();
 
-        for (MasterTorsionAngleType masterType : consideredAngles) {
-            for (TorsionAngleValue angleValue : values) {
+        for (final MasterTorsionAngleType masterType : consideredAngles) {
+            for (final TorsionAngleValue angleValue : values) {
                 if (masterType.getAngleTypes()
                               .contains(angleValue.getAngleType())) {
                     if (angleValue.isValid()) {

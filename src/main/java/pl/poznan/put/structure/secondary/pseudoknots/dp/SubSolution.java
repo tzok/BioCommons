@@ -29,7 +29,7 @@ public class SubSolution {
         int max = Integer.MIN_VALUE;
         int sum = 0;
 
-        for (Region region : regions) {
+        for (final Region region : regions) {
             min = Math.min(min, region.getBegin());
             max = Math.max(max, region.getEnd());
             sum += region.getLength();
@@ -40,8 +40,8 @@ public class SubSolution {
         score = sum;
     }
 
-    public static SubSolution merge(final SubSolution left,
-                                    final SubSolution below) {
+    public static SubSolution merge(
+            final SubSolution left, final SubSolution below) {
         List<Region> regions = new ArrayList<>(left.regions);
         regions.addAll(below.regions);
         return new SubSolution(regions);
@@ -71,7 +71,7 @@ public class SubSolution {
                              lowestEndpoint, highestEndpoint, score);
     }
 
-    public final List<Region> getRegions() {
+    public final Iterable<Region> getRegions() {
         return Collections.unmodifiableList(regions);
     }
 

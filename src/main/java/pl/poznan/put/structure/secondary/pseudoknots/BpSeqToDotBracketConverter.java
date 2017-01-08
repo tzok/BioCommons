@@ -28,8 +28,8 @@ public class BpSeqToDotBracketConverter {
      * @param maxSolutions Maximum number of solutions to be considered in a
      *                     single step of the algorithm.
      */
-    public BpSeqToDotBracketConverter(final PseudoknotFinder pkRemover,
-                                      final int maxSolutions) {
+    public BpSeqToDotBracketConverter(
+            final PseudoknotFinder pkRemover, final int maxSolutions) {
         super();
         this.pkRemover = pkRemover;
         this.maxSolutions = maxSolutions;
@@ -50,7 +50,7 @@ public class BpSeqToDotBracketConverter {
     }
 
     protected static boolean isProcessingNeeded(final Iterable<State> states) {
-        for (State state : states) {
+        for (final State state : states) {
             if (!state.isFinal()) {
                 return true;
             }
@@ -61,8 +61,8 @@ public class BpSeqToDotBracketConverter {
     protected final List<State> processStates(final Collection<State> states)
             throws InvalidStructureException {
         List<State> nextStates = new ArrayList<>(states.size());
-        for (State state : states) {
-            for (BpSeq bpSeq : pkRemover.findPseudoknots(state.bpSeq)) {
+        for (final State state : states) {
+            for (final BpSeq bpSeq : pkRemover.findPseudoknots(state.bpSeq)) {
                 State nextState = new State(state, bpSeq, state.level + 1);
                 nextStates.add(nextState);
 
@@ -80,7 +80,7 @@ public class BpSeqToDotBracketConverter {
         State current = state.parent;
 
         while (current != null) {
-            for (BpSeq.Entry pairs : current.bpSeq.getPaired()) {
+            for (final BpSeq.Entry pairs : current.bpSeq.getPaired()) {
                 int i = pairs.getIndex();
                 int j = pairs.getPair();
 

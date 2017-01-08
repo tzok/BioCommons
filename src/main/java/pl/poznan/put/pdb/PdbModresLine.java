@@ -3,11 +3,15 @@ package pl.poznan.put.pdb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.Locale;
+import java.util.Objects;
 
-public class PdbModresLine implements ChainNumberICode {
+public class PdbModresLine implements ChainNumberICode, Serializable {
+    private static final long serialVersionUID = 1679492136825436435L;
     private static final Logger LOGGER =
             LoggerFactory.getLogger(PdbModresLine.class);
+
     // @formatter:off
     /*
        COLUMNS        DATA TYPE     FIELD       DEFINITION
@@ -24,7 +28,7 @@ public class PdbModresLine implements ChainNumberICode {
     // @formatter:on
     private static final String FORMAT =
             "MODRES %4s %3s %c %4d%c %3s  %41s          ";
-    private final static String RECORD_NAME = "MODRES";
+    private static final String RECORD_NAME = "MODRES";
     private final String idCode;
     private final String residueName;
     private final String chainIdentifier;
@@ -33,10 +37,11 @@ public class PdbModresLine implements ChainNumberICode {
     private final String standardResidueName;
     private final String comment;
 
-    public PdbModresLine(String idCode, String residueName,
-                         String chainIdentifier, int residueNumber,
-                         String insertionCode, String standardResidueName,
-                         String comment) {
+    public PdbModresLine(
+            final String idCode, final String residueName,
+            final String chainIdentifier, final int residueNumber,
+            final String insertionCode, final String standardResidueName,
+            final String comment) {
         super();
         this.idCode = idCode;
         this.residueName = residueName;
@@ -47,7 +52,8 @@ public class PdbModresLine implements ChainNumberICode {
         this.comment = comment;
     }
 
-    public static PdbModresLine parse(String line) throws PdbParsingException {
+    public static PdbModresLine parse(final String line)
+            throws PdbParsingException {
         if (line.length() < 70) {
             throw new PdbParsingException(
                     "PDB MODRES line is not at least 70 character long");
@@ -56,7 +62,7 @@ public class PdbModresLine implements ChainNumberICode {
         try {
             String recordName = line.substring(0, 6).trim();
 
-            if (!"MODRES".equals(recordName)) {
+            if (!Objects.equals(PdbModresLine.RECORD_NAME, recordName)) {
                 throw new PdbParsingException(
                         "PDB line does not start with MODRES");
             }
@@ -71,7 +77,7 @@ public class PdbModresLine implements ChainNumberICode {
             return new PdbModresLine(idCode, residueName, chainIdentifier,
                                      residueNumber, insertionCode,
                                      standardResidueName, comment);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new PdbParsingException("Failed to parse PDB MODRES line", e);
         }
     }
@@ -80,45 +86,45 @@ public class PdbModresLine implements ChainNumberICode {
         return PdbModresLine.RECORD_NAME;
     }
 
-    public String getIdCode() {
+    public final String getIdCode() {
         return idCode;
     }
 
-    public String getResidueName() {
+    public final String getResidueName() {
         return residueName;
     }
 
     @Override
-    public String getChainIdentifier() {
+    public final String getChainIdentifier() {
         return chainIdentifier;
     }
 
     @Override
-    public int getResidueNumber() {
+    public final int getResidueNumber() {
         return residueNumber;
     }
 
     @Override
-    public String getInsertionCode() {
+    public final String getInsertionCode() {
         return insertionCode;
     }
 
     @Override
-    public PdbResidueIdentifier getResidueIdentifier() {
+    public final PdbResidueIdentifier getResidueIdentifier() {
         return new PdbResidueIdentifier(chainIdentifier, residueNumber,
                                         insertionCode);
     }
 
-    public String getStandardResidueName() {
+    public final String getStandardResidueName() {
         return standardResidueName;
     }
 
-    public String getComment() {
+    public final String getComment() {
         return comment;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         if (chainIdentifier.length() != 1) {
             PdbModresLine.LOGGER
                     .error("Field 'chainIdentifier' is longer than 1 char. "

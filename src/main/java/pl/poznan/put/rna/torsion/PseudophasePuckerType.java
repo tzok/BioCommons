@@ -1,7 +1,6 @@
 package pl.poznan.put.rna.torsion;
 
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
@@ -12,7 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class PseudophasePuckerType extends TorsionAngleType
+public final class PseudophasePuckerType extends TorsionAngleType
         implements MasterTorsionAngleType {
     private static final PseudophasePuckerType INSTANCE =
             new PseudophasePuckerType();
@@ -41,9 +40,8 @@ public class PseudophasePuckerType extends TorsionAngleType
     }
 
     @Override
-    public TorsionAngleValue calculate(List<PdbResidue> residues,
-                                       int currentIndex)
-            throws InvalidCircularValueException {
+    public TorsionAngleValue calculate(
+            final List<PdbResidue> residues, final int currentIndex) {
         TorsionAngleValue nu0 =
                 Nu0.getInstance().calculate(residues, currentIndex);
         TorsionAngleValue nu1 =
@@ -60,13 +58,12 @@ public class PseudophasePuckerType extends TorsionAngleType
             return TorsionAngleValue.invalidInstance(this);
         }
 
-        double scale = 2 * (Math.sin(Math.toRadians(36.0)) + Math
+        double scale = 2 * (StrictMath.sin(Math.toRadians(36.0)) + StrictMath
                 .sin(Math.toRadians(72.0)));
-        double y =
-                nu1.getValue().getRadians() + nu4.getValue().getRadians() - nu0
-                        .getValue().getRadians() - nu3.getValue().getRadians();
+        double y = (nu1.getValue().getRadians() + nu4.getValue().getRadians())
+                   - nu0.getValue().getRadians() - nu3.getValue().getRadians();
         double x = nu2.getValue().getRadians() * scale;
-        return new TorsionAngleValue(this, new Angle(Math.atan2(y, x)));
+        return new TorsionAngleValue(this, new Angle(StrictMath.atan2(y, x)));
     }
 
     @Override

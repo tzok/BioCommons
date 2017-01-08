@@ -5,6 +5,7 @@ import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.RNAInteractionType;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class ClassifiedBasePair
         implements Serializable, Comparable<ClassifiedBasePair> {
@@ -15,10 +16,10 @@ public class ClassifiedBasePair
     private HelixOrigin helixOrigin;
     private boolean isRepresented;
 
-    public ClassifiedBasePair(BasePair basePair,
-                              RNAInteractionType interactionType,
-                              Saenger saenger, LeontisWesthof leontisWesthof,
-                              HelixOrigin helixOrigin) {
+    public ClassifiedBasePair(
+            final BasePair basePair, final RNAInteractionType interactionType,
+            final Saenger saenger, final LeontisWesthof leontisWesthof,
+            final HelixOrigin helixOrigin) {
         super();
         this.basePair = basePair;
         this.interactionType = interactionType;
@@ -47,7 +48,7 @@ public class ClassifiedBasePair
         return helixOrigin;
     }
 
-    public void setHelixOrigin(HelixOrigin helixOrigin) {
+    public void setHelixOrigin(final HelixOrigin helixOrigin) {
         this.helixOrigin = helixOrigin;
     }
 
@@ -55,7 +56,7 @@ public class ClassifiedBasePair
         return isRepresented;
     }
 
-    public void setRepresented(boolean isRepresented) {
+    public void setRepresented(final boolean isRepresented) {
         this.isRepresented = isRepresented;
     }
 
@@ -76,17 +77,21 @@ public class ClassifiedBasePair
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (basePair == null ? 0 : basePair.hashCode());
-        result = prime * result + (interactionType == null ? 0 : interactionType
-                .hashCode());
-        result = prime * result + (leontisWesthof == null ? 0 : leontisWesthof
-                .hashCode());
-        result = prime * result + (saenger == null ? 0 : saenger.hashCode());
+        result = (prime * result) + ((basePair == null) ? 0
+                                                        : basePair.hashCode());
+        result = (prime * result) + ((interactionType == null) ? 0
+                                                               : interactionType
+                                             .hashCode());
+        result = (prime * result) + ((leontisWesthof == null) ? 0
+                                                              : leontisWesthof
+                                             .hashCode());
+        result =
+                (prime * result) + ((saenger == null) ? 0 : saenger.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -101,12 +106,12 @@ public class ClassifiedBasePair
             if (other.basePair != null) {
                 return false;
             }
-        } else if (!basePair.equals(other.basePair)) {
+        } else if (!Objects.equals(basePair, other.basePair)) {
             return false;
         }
-        return interactionType == other.interactionType
-               && leontisWesthof == other.leontisWesthof
-               && saenger == other.saenger;
+        return (interactionType == other.interactionType) && (leontisWesthof
+                                                              == other.leontisWesthof)
+               && (saenger == other.saenger);
     }
 
     @Override
@@ -114,35 +119,37 @@ public class ClassifiedBasePair
         return "ClassifiedBasePair [basePair=" + basePair + ", interactionType="
                + interactionType + ", saenger=" + saenger + ", leontisWesthof="
                + leontisWesthof + ", helixOrigin=" + helixOrigin
-               + ", isRepresented=" + isRepresented + "]";
+               + ", isRepresented=" + isRepresented + ']';
     }
 
     @Override
-    public int compareTo(ClassifiedBasePair o) {
-        if (o == null) {
+    public int compareTo(final ClassifiedBasePair t) {
+        if (t == null) {
             throw new NullPointerException();
         }
 
-        if (equals(o)) {
+        if (equals(t)) {
             return 0;
         }
 
         int interactionComparison =
-                interactionType.compareTo(o.interactionType);
+                interactionType.compareTo(t.interactionType);
         if (interactionComparison != 0) {
             return interactionComparison;
         }
 
-        return basePair.compareTo(o.basePair);
+        return basePair.compareTo(t.basePair);
     }
 
     public String generateComment() {
-        if (saenger != Saenger.UNKNOWN
-            && leontisWesthof != LeontisWesthof.UNKNOWN) {
+        if ((saenger != Saenger.UNKNOWN) && (leontisWesthof
+                                             != LeontisWesthof.UNKNOWN)) {
             return "S:" + saenger + ", LW:" + leontisWesthof;
-        } else if (saenger != Saenger.UNKNOWN) {
+        }
+        if (saenger != Saenger.UNKNOWN) {
             return "S:" + saenger;
-        } else if (leontisWesthof != LeontisWesthof.UNKNOWN) {
+        }
+        if (leontisWesthof != LeontisWesthof.UNKNOWN) {
             return "LW:" + leontisWesthof;
         }
         return "unknown classification";

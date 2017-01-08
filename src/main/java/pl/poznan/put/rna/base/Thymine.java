@@ -7,7 +7,7 @@ import pl.poznan.put.rna.Sugar;
 
 import java.util.Arrays;
 
-public class Thymine extends Pyrimidine {
+public final class Thymine extends Pyrimidine {
     private static final Thymine INSTANCE = new Thymine();
 
     private Thymine() {

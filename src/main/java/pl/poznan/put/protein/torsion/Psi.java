@@ -6,7 +6,7 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-public class Psi extends AtomBasedTorsionAngleType {
+public final class Psi extends AtomBasedTorsionAngleType {
     private static final Psi INSTANCE = new Psi();
 
     private Psi() {

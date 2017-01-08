@@ -1,5 +1,7 @@
 package pl.poznan.put.notation;
 
+import java.util.Objects;
+
 public enum Saenger {
     I,
     II,
@@ -31,25 +33,25 @@ public enum Saenger {
     XXVIII,
     UNKNOWN;
 
-    public static Saenger fromString(String str) {
-        for (Saenger s : Saenger.values()) {
-            if (s.toString().equals(str)) {
+    public static Saenger fromString(final String str) {
+        for (final Saenger s : Saenger.values()) {
+            if (Objects.equals(s.toString(), str)) {
                 return s;
             }
         }
-        return UNKNOWN;
+        return Saenger.UNKNOWN;
     }
 
     @Override
     public String toString() {
-        if (this == UNKNOWN) {
+        if (this == Saenger.UNKNOWN) {
             return "n/a";
         }
         return name();
     }
 
-    public static Saenger fromOrdinal(int ordinal) {
-        if (ordinal >= 1 && ordinal <= 28) {
+    public static Saenger fromOrdinal(final int ordinal) {
+        if ((ordinal >= 1) && (ordinal <= 28)) {
             return Saenger.values()[ordinal];
         }
         return Saenger.UNKNOWN;
@@ -59,7 +61,7 @@ public enum Saenger {
         return Saenger.isCanonical(this);
     }
 
-    public static boolean isCanonical(Saenger s) {
-        return s == XIX || s == XX || s == XXVIII;
+    public static boolean isCanonical(final Saenger s) {
+        return (s == Saenger.XIX) || (s == Saenger.XX) || (s == Saenger.XXVIII);
     }
 }

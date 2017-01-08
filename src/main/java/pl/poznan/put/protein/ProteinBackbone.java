@@ -6,7 +6,7 @@ import pl.poznan.put.pdb.analysis.ResidueComponent;
 
 import java.util.Arrays;
 
-public class ProteinBackbone extends ResidueComponent {
+public final class ProteinBackbone extends ResidueComponent {
     private static final ProteinBackbone INSTANCE = new ProteinBackbone();
 
     private ProteinBackbone() {

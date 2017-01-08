@@ -8,7 +8,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class IsoLeucine extends ProteinSidechain {
+public final class IsoLeucine extends ProteinSidechain {
     private static final IsoLeucine INSTANCE = new IsoLeucine();
 
     private IsoLeucine() {

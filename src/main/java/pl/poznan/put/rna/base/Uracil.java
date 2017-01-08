@@ -7,7 +7,7 @@ import pl.poznan.put.rna.Sugar;
 
 import java.util.Arrays;
 
-public class Uracil extends Pyrimidine {
+public final class Uracil extends Pyrimidine {
     private static final Uracil INSTANCE = new Uracil();
 
     private Uracil() {

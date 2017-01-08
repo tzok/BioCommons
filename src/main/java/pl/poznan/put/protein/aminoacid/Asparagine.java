@@ -8,7 +8,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Asparagine extends ProteinSidechain {
+public final class Asparagine extends ProteinSidechain {
     private static final Asparagine INSTANCE = new Asparagine();
 
     private Asparagine() {

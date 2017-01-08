@@ -4,7 +4,7 @@ import pl.poznan.put.atom.AtomName;
 
 import java.util.Arrays;
 
-public class DeoxyRibose extends Sugar {
+public final class DeoxyRibose extends Sugar {
     private static final DeoxyRibose INSTANCE = new DeoxyRibose();
 
     private DeoxyRibose() {

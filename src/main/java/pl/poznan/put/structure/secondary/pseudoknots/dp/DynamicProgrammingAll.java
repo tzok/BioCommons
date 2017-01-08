@@ -17,8 +17,8 @@ public class DynamicProgrammingAll extends AbstractDynamicProgramming {
      *                      cliques are getting bigger, so it is advisable to
      *                      use heuristic to remove single regions prior to a
      */
-    public DynamicProgrammingAll(final RegionRemover regionRemover,
-                                 final int maxCliqueSize) {
+    public DynamicProgrammingAll(
+            final RegionRemover regionRemover, final int maxCliqueSize) {
         super(regionRemover, maxCliqueSize);
     }
 

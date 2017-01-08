@@ -7,6 +7,7 @@ import pl.poznan.put.torsion.TorsionAngleType;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
@@ -20,14 +21,15 @@ public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
     CHI4(Chi4.getInstances()),
     CHI5(Chi5.getInstances());
 
-    private static final MasterTorsionAngleType[] MAIN =
-            new MasterTorsionAngleType[]{PHI, PSI, OMEGA};
+    private static final MasterTorsionAngleType[] MAIN = {
+            ProteinTorsionAngleType.PHI, ProteinTorsionAngleType.PSI,
+            ProteinTorsionAngleType.OMEGA};
     private static final AverageTorsionAngleType AVERAGE_TORSION_INSTANCE =
             new AverageTorsionAngleType(MoleculeType.PROTEIN,
                                         ProteinTorsionAngleType.MAIN);
     private final List<TorsionAngleType> angleTypes;
 
-    ProteinTorsionAngleType(TorsionAngleType... angleTypes) {
+    ProteinTorsionAngleType(final TorsionAngleType... angleTypes) {
         this.angleTypes = Arrays.asList(angleTypes);
     }
 
@@ -41,24 +43,24 @@ public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
 
     @Override
     public Collection<? extends TorsionAngleType> getAngleTypes() {
-        return angleTypes;
+        return Collections.unmodifiableList(angleTypes);
     }
 
     @Override
     public String getLongDisplayName() {
-        assert angleTypes.size() > 0;
+        assert !angleTypes.isEmpty();
         return angleTypes.get(0).getLongDisplayName();
     }
 
     @Override
     public String getShortDisplayName() {
-        assert angleTypes.size() > 0;
+        assert !angleTypes.isEmpty();
         return angleTypes.get(0).getShortDisplayName();
     }
 
     @Override
     public String getExportName() {
-        assert angleTypes.size() > 0;
+        assert !angleTypes.isEmpty();
         return angleTypes.get(0).getExportName();
     }
 }

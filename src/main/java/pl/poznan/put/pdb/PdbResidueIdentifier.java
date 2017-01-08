@@ -1,13 +1,25 @@
 package pl.poznan.put.pdb;
 
 
-public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier> {
+import javax.annotation.Nonnull;
+import java.io.Serializable;
+import java.util.Objects;
+
+public class PdbResidueIdentifier
+        implements Comparable<PdbResidueIdentifier>, Serializable {
+    private static final long serialVersionUID = -573135765487167710L;
+
+    private static final PdbResidueIdentifier INVALID =
+            new PdbResidueIdentifier("", Integer.MIN_VALUE, "");
+
+
     private final String chainIdentifier;
     private final int residueNumber;
     private final String insertionCode;
 
-    public PdbResidueIdentifier(String chainIdentifier, int residueNumber,
-                                String insertionCode) {
+    public PdbResidueIdentifier(
+            final String chainIdentifier, final int residueNumber,
+            final String insertionCode) {
         super();
         this.chainIdentifier = chainIdentifier;
         this.residueNumber = residueNumber;
@@ -15,67 +27,71 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier> {
     }
 
     public static PdbResidueIdentifier fromChainNumberICode(
-            ChainNumberICode chainNumberICode) {
+            final ChainNumberICode chainNumberICode) {
         return new PdbResidueIdentifier(chainNumberICode.getChainIdentifier(),
                                         chainNumberICode.getResidueNumber(),
                                         chainNumberICode.getInsertionCode());
     }
 
-    public String getChainIdentifier() {
+    public static PdbResidueIdentifier invalid() {
+        return PdbResidueIdentifier.INVALID;
+    }
+
+    public final String getChainIdentifier() {
         return chainIdentifier;
     }
 
-    public int getResidueNumber() {
+    public final int getResidueNumber() {
         return residueNumber;
     }
 
-    public String getInsertionCode() {
+    public final String getInsertionCode() {
         return insertionCode;
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         int result = chainIdentifier.hashCode();
-        result = 31 * result + residueNumber;
-        result = 31 * result + insertionCode.hashCode();
+        result = (31 * result) + residueNumber;
+        result = (31 * result) + insertionCode.hashCode();
         return result;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public final boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if ((obj == null) || (getClass() != obj.getClass())) {
             return false;
         }
 
-        PdbResidueIdentifier that = (PdbResidueIdentifier) o;
-        return residueNumber == that.residueNumber && chainIdentifier
-                .equals(that.chainIdentifier) && insertionCode
-                       .equals(that.insertionCode);
+        PdbResidueIdentifier other = (PdbResidueIdentifier) obj;
+        return (residueNumber == other.residueNumber) && Objects
+                .equals(chainIdentifier, other.chainIdentifier) && Objects
+                       .equals(insertionCode, other.insertionCode);
     }
 
     @Override
-    public String toString() {
-        return chainIdentifier + "." + residueNumber + (
-                " ".equals(insertionCode) ? "" : insertionCode);
+    public final String toString() {
+        String icode = Objects.equals(" ", insertionCode) ? "" : insertionCode;
+        return chainIdentifier + '.' + residueNumber + icode;
     }
 
     @Override
-    public int compareTo(PdbResidueIdentifier o) {
-        if (o == null) {
-            throw new NullPointerException();
+    public final int compareTo(@Nonnull final PdbResidueIdentifier t) {
+        if (!Objects.equals(chainIdentifier, t.chainIdentifier)) {
+            return chainIdentifier.compareTo(t.chainIdentifier);
         }
 
-        if (!chainIdentifier.equals(o.chainIdentifier)) {
-            return chainIdentifier.compareTo(o.chainIdentifier);
+        if (residueNumber != t.residueNumber) {
+            return (residueNumber < t.residueNumber) ? -1 : 1;
         }
 
-        if (residueNumber != o.residueNumber) {
-            return residueNumber < o.residueNumber ? -1 : 1;
-        }
+        return insertionCode.compareTo(t.insertionCode);
+    }
 
-        return insertionCode.compareTo(o.insertionCode);
+    public PdbResidueIdentifier replaceChainIdentifier(final String chain) {
+        return new PdbResidueIdentifier(chain, residueNumber, insertionCode);
     }
 }

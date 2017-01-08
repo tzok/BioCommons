@@ -1,6 +1,7 @@
 package pl.poznan.put.rna;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class RNAInteractionType
         implements Serializable, Comparable<RNAInteractionType> {
@@ -32,9 +33,9 @@ public class RNAInteractionType
     private final boolean isPairing;
     private final String description;
 
-    public RNAInteractionType(RNAResidueComponentType left,
-                              RNAResidueComponentType right,
-                              boolean isPairing) {
+    public RNAInteractionType(
+            final RNAResidueComponentType left,
+            final RNAResidueComponentType right, final boolean isPairing) {
         super();
         this.left = left;
         this.right = right;
@@ -43,13 +44,13 @@ public class RNAInteractionType
                 left.name().toLowerCase() + " - " + right.name().toLowerCase();
     }
 
-    public RNAInteractionType(RNAResidueComponentType left,
-                              RNAResidueComponentType right,
-                              String description) {
+    public RNAInteractionType(
+            final RNAResidueComponentType left,
+            final RNAResidueComponentType right, final String description) {
         super();
         this.left = left;
         this.right = right;
-        this.isPairing = false;
+        isPairing = false;
         this.description = description;
     }
 
@@ -69,16 +70,16 @@ public class RNAInteractionType
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (description == null ? 0 : description
+        result = (prime * result) + ((description == null) ? 0 : description
                 .hashCode());
-        result = prime * result + (isPairing ? 1231 : 1237);
-        result = prime * result + (left == null ? 0 : left.hashCode());
-        result = prime * result + (right == null ? 0 : right.hashCode());
+        result = (prime * result) + (isPairing ? 1231 : 1237);
+        result = (prime * result) + ((left == null) ? 0 : left.hashCode());
+        result = (prime * result) + ((right == null) ? 0 : right.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -93,11 +94,12 @@ public class RNAInteractionType
             if (other.description != null) {
                 return false;
             }
-        } else if (!description.equals(other.description)) {
+        } else if (!Objects.equals(description, other.description)) {
             return false;
         }
-        return isPairing == other.isPairing && left == other.left
-               && right == other.right;
+        return (isPairing == other.isPairing) && (left == other.left) && (right
+                                                                          ==
+                                                                          other.right);
     }
 
     @Override
@@ -106,18 +108,18 @@ public class RNAInteractionType
     }
 
     @Override
-    public int compareTo(RNAInteractionType o) {
-        if (o == null) {
+    public int compareTo(final RNAInteractionType t) {
+        if (t == null) {
             throw new NullPointerException();
         }
 
-        if (equals(o)) {
+        if (equals(t)) {
             return 0;
         }
 
         int mine = getInternalValue();
-        int theirs = o.getInternalValue();
-        return mine < theirs ? -1 : (mine == theirs ? 0 : 1);
+        int theirs = t.getInternalValue();
+        return (mine < theirs) ? -1 : ((mine == theirs) ? 0 : 1);
     }
 
     /*
@@ -141,7 +143,7 @@ public class RNAInteractionType
     }
 
     private static int getNucleotideFragmentInternalValue(
-            RNAResidueComponentType type) {
+            final RNAResidueComponentType type) {
         switch (type) {
             case BASE:
                 return 1;

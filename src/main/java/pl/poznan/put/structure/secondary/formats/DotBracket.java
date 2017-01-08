@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,17 +80,17 @@ public class DotBracket implements Serializable {
         parentheses.put('{', '}');
         parentheses.put('<', '>');
 
-        for (char c : "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
+        for (final char c : "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
             parentheses.put(c, Character.toLowerCase(c));
         }
 
         Map<Character, Stack<DotBracketSymbol>> parenthesesStacks =
                 new HashMap<>();
-        for (char c : parentheses.keySet()) {
+        for (final char c : parentheses.keySet()) {
             parenthesesStacks.put(c, new Stack<DotBracketSymbol>());
         }
 
-        for (DotBracketSymbol symbol : symbols) {
+        for (final DotBracketSymbol symbol : symbols) {
             char str = symbol.getStructure();
 
             // catch dot '.'
@@ -169,7 +170,7 @@ public class DotBracket implements Serializable {
         dotBracket.strands.clear();
 
         int index = 0;
-        for (Pair<Integer, Integer> pair : pairBeginEnd) {
+        for (final Pair<Integer, Integer> pair : pairBeginEnd) {
             dotBracket.strands
                     .add(new Strand(dotBracket, strandNames.get(index),
                                     pair.getLeft(), pair.getRight()));
@@ -182,7 +183,7 @@ public class DotBracket implements Serializable {
     public final String toStringWithStrands() {
         StringBuilder builder =
                 new StringBuilder(sequence.length() + structure.length());
-        for (Strand strand : strands) {
+        for (final Strand strand : strands) {
             builder.append(strand);
             builder.append('\n');
         }
@@ -216,14 +217,14 @@ public class DotBracket implements Serializable {
             if (other.sequence != null) {
                 return false;
             }
-        } else if (!sequence.equals(other.sequence)) {
+        } else if (!Objects.equals(sequence, other.sequence)) {
             return false;
         }
         if (structure == null) {
             if (other.structure != null) {
                 return false;
             }
-        } else if (!structure.equals(other.structure)) {
+        } else if (!Objects.equals(structure, other.structure)) {
             return false;
         }
         return true;
@@ -255,7 +256,7 @@ public class DotBracket implements Serializable {
         return Collections.unmodifiableList(symbols);
     }
 
-    public final List<Strand> getStrands() {
+    public final Collection<Strand> getStrands() {
         return Collections.unmodifiableList(strands);
     }
 
@@ -269,7 +270,7 @@ public class DotBracket implements Serializable {
         int start = 0;
         int i = 0;
 
-        for (Ct.Entry e : ct.getEntries()) {
+        for (final Ct.Entry e : ct.getEntries()) {
             if (e.getAfter() == 0) {
                 Strand strand = new Strand(this, "", start, i + 1);
                 strands.add(strand);
@@ -285,10 +286,10 @@ public class DotBracket implements Serializable {
         List<Strand> toCombine = new ArrayList<>();
         int level = 0;
 
-        for (Strand strand : strands) {
+        for (final Strand strand : strands) {
             toCombine.add(strand);
 
-            for (DotBracketSymbol symbol : strand.getSymbols()) {
+            for (final DotBracketSymbol symbol : strand.getSymbols()) {
                 level += symbol.isOpening() ? 1 : 0;
                 level -= symbol.isClosing() ? 1 : 0;
             }

@@ -2,21 +2,22 @@ package pl.poznan.put.structure.secondary.formats;
 
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TerminalMissing {
     private final List<DotBracketSymbol> symbols;
 
-    public TerminalMissing(List<DotBracketSymbol> symbols) {
+    public TerminalMissing(final List<DotBracketSymbol> symbols) {
         super();
-        this.symbols = symbols;
+        this.symbols = new ArrayList<>(symbols);
     }
 
     public int getLength() {
         return symbols.size();
     }
 
-    public boolean contains(DotBracketSymbol symbol) {
+    public boolean contains(final DotBracketSymbol symbol) {
         return symbols.contains(symbol);
     }
 
@@ -26,10 +27,10 @@ public class TerminalMissing {
     }
 
     public DotBracketSymbol getFirst() {
-        return symbols.size() > 0 ? symbols.get(0) : null;
+        return !symbols.isEmpty() ? symbols.get(0) : null;
     }
 
     public DotBracketSymbol getLast() {
-        return symbols.size() > 0 ? symbols.get(symbols.size() - 1) : null;
+        return !symbols.isEmpty() ? symbols.get(symbols.size() - 1) : null;
     }
 }

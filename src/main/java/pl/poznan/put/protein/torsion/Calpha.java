@@ -6,7 +6,7 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.PseudoTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-public class Calpha extends PseudoTorsionAngleType {
+public final class Calpha extends PseudoTorsionAngleType {
     private static final Calpha INSTANCE = new Calpha();
 
     private Calpha() {

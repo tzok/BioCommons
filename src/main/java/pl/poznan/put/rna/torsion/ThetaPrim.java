@@ -6,7 +6,7 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.PseudoTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-public class ThetaPrim extends PseudoTorsionAngleType {
+public final class ThetaPrim extends PseudoTorsionAngleType {
     private static final ThetaPrim INSTANCE = new ThetaPrim();
 
     private ThetaPrim() {

@@ -7,7 +7,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Valine extends ProteinSidechain {
+public final class Valine extends ProteinSidechain {
     private static final Valine INSTANCE = new Valine();
 
     private Valine() {

@@ -7,23 +7,26 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class BasePair implements Serializable, Comparable<BasePair> {
-    private static final double GU_DISTANCE_O6_N3 = 2.83 + 0.13 * 3;
-    private static final double GU_DISTANCE_N1_O2 = 2.79 + 0.13 * 3;
-    private static final double AU_DISTANCE_N6_O4 = 3.00 + 0.17 * 3;
-    private static final double AU_DISTANCE_N1_N3 = 2.84 + 0.12 * 3;
-    private static final double CG_DISTANCE_N4_O6 = 2.96 + 0.17 * 3;
-    private static final double CG_DISTANCE_O2_N2 = 2.77 + 0.15 * 3;
-    private static final double CG_DISTANCE_N3_N1 = 2.89 + 0.11 * 3;
+    private static final double GU_DISTANCE_O6_N3 = 2.83 + (0.13 * 3);
+    private static final double GU_DISTANCE_N1_O2 = 2.79 + (0.13 * 3);
+    private static final double AU_DISTANCE_N6_O4 = 3.00 + (0.17 * 3);
+    private static final double AU_DISTANCE_N1_N3 = 2.84 + (0.12 * 3);
+    private static final double CG_DISTANCE_N4_O6 = 2.96 + (0.17 * 3);
+    private static final double CG_DISTANCE_O2_N2 = 2.77 + (0.15 * 3);
+    private static final double CG_DISTANCE_N3_N1 = 2.89 + (0.11 * 3);
     private final Pair<PdbResidueIdentifier, PdbResidueIdentifier> pair;
 
-    public BasePair(PdbResidueIdentifier left, PdbResidueIdentifier right) {
+    public BasePair(
+            final PdbResidueIdentifier left, final PdbResidueIdentifier right) {
         super();
         pair = Pair.of(left, right);
     }
 
-    public static boolean isCanonicalPair(PdbResidue left, PdbResidue right) {
+    public static boolean isCanonicalPair(
+            final PdbResidue left, final PdbResidue right) {
         char leftName = Character.toUpperCase(left.getOneLetterName());
         char rightName = Character.toUpperCase(right.getOneLetterName());
 
@@ -31,18 +34,19 @@ public class BasePair implements Serializable, Comparable<BasePair> {
             return BasePair.isCanonicalPair(right, left);
         }
 
-        if (leftName == 'C' && rightName == 'G') {
+        if ((leftName == 'C') && (rightName == 'G')) {
             return BasePair.isCanonicalCG(left, right);
-        } else if (leftName == 'A' && rightName == 'U') {
-            return BasePair.isCanonicalAU(left, right);
-        } else if (leftName == 'G' && rightName == 'U') {
-            return BasePair.isCanonicalGU(left, right);
         }
+        if ((leftName == 'A') && (rightName == 'U')) {
+            return BasePair.isCanonicalAU(left, right);
+        }
+        return (leftName == 'G') && (rightName == 'U') && BasePair
+                .isCanonicalGU(left, right);
 
-        return false;
     }
 
-    public static boolean isCanonicalGU(PdbResidue guanine, PdbResidue uracil) {
+    public static boolean isCanonicalGU(
+            final PdbResidue guanine, final PdbResidue uracil) {
         if (!guanine.hasAtom(AtomName.N1) || !guanine.hasAtom(AtomName.O6)) {
             return false;
         }
@@ -56,11 +60,13 @@ public class BasePair implements Serializable, Comparable<BasePair> {
         PdbAtomLine n3 = uracil.findAtom(AtomName.N3);
         double n1o2 = n1.distanceTo(o2);
         double o6n3 = o6.distanceTo(n3);
-        return n1o2 <= BasePair.GU_DISTANCE_N1_O2
-               && o6n3 <= BasePair.GU_DISTANCE_O6_N3;
+        return (n1o2 <= BasePair.GU_DISTANCE_N1_O2) && (o6n3
+                                                        <= BasePair
+                                                                .GU_DISTANCE_O6_N3);
     }
 
-    public static boolean isCanonicalAU(PdbResidue adenine, PdbResidue uracil) {
+    public static boolean isCanonicalAU(
+            final PdbResidue adenine, final PdbResidue uracil) {
         if (!adenine.hasAtom(AtomName.N1) || !adenine.hasAtom(AtomName.N6)) {
             return false;
         }
@@ -74,12 +80,13 @@ public class BasePair implements Serializable, Comparable<BasePair> {
         PdbAtomLine o4 = uracil.findAtom(AtomName.O4);
         double n1n3 = n1.distanceTo(n3);
         double n6o4 = n6.distanceTo(o4);
-        return n1n3 <= BasePair.AU_DISTANCE_N1_N3
-               && n6o4 <= BasePair.AU_DISTANCE_N6_O4;
+        return (n1n3 <= BasePair.AU_DISTANCE_N1_N3) && (n6o4
+                                                        <= BasePair
+                                                                .AU_DISTANCE_N6_O4);
     }
 
-    public static boolean isCanonicalCG(PdbResidue cytosine,
-                                        PdbResidue guanine) {
+    public static boolean isCanonicalCG(
+            final PdbResidue cytosine, final PdbResidue guanine) {
         if (!cytosine.hasAtom(AtomName.N3) || !cytosine.hasAtom(AtomName.O2)
             || !cytosine.hasAtom(AtomName.N4)) {
             return false;
@@ -98,9 +105,10 @@ public class BasePair implements Serializable, Comparable<BasePair> {
         double n3n1 = n3.distanceTo(n1);
         double o2n2 = o2.distanceTo(n2);
         double n4o6 = n4.distanceTo(o6);
-        return n3n1 <= BasePair.CG_DISTANCE_N3_N1
-               && o2n2 <= BasePair.CG_DISTANCE_O2_N2
-               && n4o6 <= BasePair.CG_DISTANCE_N4_O6;
+        return (n3n1 <= BasePair.CG_DISTANCE_N3_N1) && (o2n2
+                                                        <= BasePair
+                                                                .CG_DISTANCE_O2_N2)
+               && (n4o6 <= BasePair.CG_DISTANCE_N4_O6);
     }
 
     public PdbResidueIdentifier getLeft() {
@@ -119,12 +127,12 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (pair == null ? 0 : pair.hashCode());
+        result = (prime * result) + ((pair == null) ? 0 : pair.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -139,7 +147,7 @@ public class BasePair implements Serializable, Comparable<BasePair> {
             if (other.pair != null) {
                 return false;
             }
-        } else if (!pair.equals(other.pair)) {
+        } else if (!Objects.equals(pair, other.pair)) {
             return false;
         }
         return true;
@@ -151,15 +159,15 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     }
 
     @Override
-    public int compareTo(BasePair o) {
-        if (o == null) {
+    public int compareTo(final BasePair t) {
+        if (t == null) {
             throw new NullPointerException();
         }
 
-        if (equals(o)) {
+        if (equals(t)) {
             return 0;
         }
 
-        return pair.compareTo(o.pair);
+        return pair.compareTo(t.pair);
     }
 }

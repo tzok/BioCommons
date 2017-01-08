@@ -8,7 +8,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Tryptophan extends ProteinSidechain {
+public final class Tryptophan extends ProteinSidechain {
     private static final Tryptophan INSTANCE = new Tryptophan();
 
     private Tryptophan() {

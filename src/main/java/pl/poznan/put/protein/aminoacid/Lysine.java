@@ -10,7 +10,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Lysine extends ProteinSidechain {
+public final class Lysine extends ProteinSidechain {
     private static final Lysine INSTANCE = new Lysine();
 
     private Lysine() {

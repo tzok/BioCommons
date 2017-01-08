@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.secondary;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.RNAInteractionType;
@@ -12,10 +14,11 @@ public class QuantifiedBasePair extends ClassifiedBasePair {
     private final double propeller;
     private final double opening;
 
-    public QuantifiedBasePair(BasePair basePair, Saenger saenger,
-                              LeontisWesthof leontisWesthof, double shear,
-                              double stretch, double stagger, double buckle,
-                              double propeller, double opening) {
+    public QuantifiedBasePair(
+            final BasePair basePair, final Saenger saenger,
+            final LeontisWesthof leontisWesthof, final double shear,
+            final double stretch, final double stagger, final double buckle,
+            final double propeller, final double opening) {
         super(basePair, RNAInteractionType.BASE_BASE, saenger, leontisWesthof,
               HelixOrigin.UNKNOWN);
         this.shear = shear;
@@ -51,55 +54,31 @@ public class QuantifiedBasePair extends ClassifiedBasePair {
     }
 
     @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        long temp;
-        temp = Double.doubleToLongBits(shear);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(stretch);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(stagger);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(buckle);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(propeller);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(opening);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if ((obj == null) || (getClass() != obj.getClass())) {
+            return false;
+        }
+
+        QuantifiedBasePair other = (QuantifiedBasePair) obj;
+        return new EqualsBuilder().appendSuper(super.equals(obj))
+                                  .append(shear, other.shear)
+                                  .append(stretch, other.stretch)
+                                  .append(stagger, other.stagger)
+                                  .append(buckle, other.buckle)
+                                  .append(propeller, other.propeller)
+                                  .append(opening, other.opening).isEquals();
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-
-        QuantifiedBasePair that = (QuantifiedBasePair) o;
-
-        if (Double.compare(that.shear, shear) != 0) {
-            return false;
-        }
-        if (Double.compare(that.stretch, stretch) != 0) {
-            return false;
-        }
-        if (Double.compare(that.stagger, stagger) != 0) {
-            return false;
-        }
-        if (Double.compare(that.buckle, buckle) != 0) {
-            return false;
-        }
-        if (Double.compare(that.propeller, propeller) != 0) {
-            return false;
-        }
-        return Double.compare(that.opening, opening) == 0;
-
+    public int hashCode() {
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(shear)
+                                    .append(stretch).append(stagger)
+                                    .append(buckle).append(propeller)
+                                    .append(opening).toHashCode();
     }
 
     @Override

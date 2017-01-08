@@ -11,7 +11,9 @@ public class Strand implements Serializable {
     private final int from;
     private final int to;
 
-    public Strand(DotBracket parent, String name, int from, int to) {
+    public Strand(
+            final DotBracket parent, final String name, final int from,
+            final int to) {
         super();
         this.parent = parent;
         this.name = name;
@@ -23,7 +25,7 @@ public class Strand implements Serializable {
 
     @Override
     public String toString() {
-        return ">strand_" + name + "\n" + getSequence() + "\n" + getStructure();
+        return ">strand_" + name + '\n' + getSequence() + '\n' + getStructure();
     }
 
     public String getSequence() {
@@ -74,7 +76,7 @@ public class Strand implements Serializable {
 
     public int getPseudoknotOrder() {
         int order = 0;
-        for (DotBracketSymbol symbol : getSymbols()) {
+        for (final DotBracketSymbol symbol : getSymbols()) {
             order = Math.max(order, symbol.getOrder());
         }
         return order;
@@ -84,7 +86,7 @@ public class Strand implements Serializable {
         return parent.getSymbols().subList(from, to);
     }
 
-    public boolean contains(DotBracketSymbol symbol) {
+    public boolean contains(final DotBracketSymbol symbol) {
         return getSymbols().contains(symbol);
     }
 
@@ -99,7 +101,7 @@ public class Strand implements Serializable {
     public boolean isSingleStrand() {
         List<DotBracketSymbol> symbols = getSymbols();
 
-        for (int i = 1; i < symbols.size() - 1; i++) {
+        for (int i = 1; i < (symbols.size() - 1); i++) {
             DotBracketSymbol symbol = symbols.get(i);
             if (symbol.isPairing() && symbols.contains(symbol.getPair())) {
                 return false;
@@ -110,7 +112,7 @@ public class Strand implements Serializable {
     }
 
     public boolean containsMissing() {
-        for (DotBracketSymbol symbol : getSymbols()) {
+        for (final DotBracketSymbol symbol : getSymbols()) {
             if (symbol.isMissing()) {
                 return true;
             }
@@ -119,19 +121,19 @@ public class Strand implements Serializable {
         return false;
     }
 
-    public boolean containsFully(Strand other) {
-        return from <= other.from && to >= other.to;
+    public boolean containsFully(final Strand other) {
+        return (from <= other.from) && (to >= other.to);
     }
 
     public String getDescription() {
-        return from + 1 + " " + to + " " + getSequence() + " " + getStructure()
-               + " " + getRSequence();
+        return from + 1 + " " + to + ' ' + getSequence() + ' ' + getStructure()
+               + ' ' + getRSequence();
     }
 
     public String getRSequence() {
         char[] cs = getSequence().toCharArray();
         for (int i = 0; i < cs.length; i++) {
-            cs[i] = cs[i] == 'A' || cs[i] == 'G' ? 'R' : 'Y';
+            cs[i] = ((cs[i] == 'A') || (cs[i] == 'G')) ? 'R' : 'Y';
         }
         return new String(cs);
     }

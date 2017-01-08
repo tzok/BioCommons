@@ -1,5 +1,7 @@
 package pl.poznan.put.notation;
 
+import java.util.Objects;
+
 public enum LeontisWesthof {
     CWW,
     CWH,
@@ -21,100 +23,100 @@ public enum LeontisWesthof {
     TSS,
     UNKNOWN;
 
-    public static LeontisWesthof fromString(String str) {
+    public static LeontisWesthof fromString(final String str) {
         String lc = str.toLowerCase();
 
-        if ("cww".equals(lc)) {
-            return CWW;
+        if (Objects.equals("cww", lc)) {
+            return LeontisWesthof.CWW;
         }
-        if ("cwh".equals(lc)) {
-            return CWH;
+        if (Objects.equals("cwh", lc)) {
+            return LeontisWesthof.CWH;
         }
-        if ("cws".equals(lc)) {
-            return CWS;
+        if (Objects.equals("cws", lc)) {
+            return LeontisWesthof.CWS;
         }
-        if ("chw".equals(lc)) {
-            return CHW;
+        if (Objects.equals("chw", lc)) {
+            return LeontisWesthof.CHW;
         }
-        if ("chh".equals(lc)) {
-            return CHH;
+        if (Objects.equals("chh", lc)) {
+            return LeontisWesthof.CHH;
         }
-        if ("chs".equals(lc)) {
-            return CHS;
+        if (Objects.equals("chs", lc)) {
+            return LeontisWesthof.CHS;
         }
-        if ("csw".equals(lc)) {
-            return CSW;
+        if (Objects.equals("csw", lc)) {
+            return LeontisWesthof.CSW;
         }
-        if ("csh".equals(lc)) {
-            return CSH;
+        if (Objects.equals("csh", lc)) {
+            return LeontisWesthof.CSH;
         }
-        if ("css".equals(lc)) {
-            return CSS;
+        if (Objects.equals("css", lc)) {
+            return LeontisWesthof.CSS;
         }
-        if ("tww".equals(lc)) {
-            return TWW;
+        if (Objects.equals("tww", lc)) {
+            return LeontisWesthof.TWW;
         }
-        if ("twh".equals(lc)) {
-            return TWH;
+        if (Objects.equals("twh", lc)) {
+            return LeontisWesthof.TWH;
         }
-        if ("tws".equals(lc)) {
-            return TWS;
+        if (Objects.equals("tws", lc)) {
+            return LeontisWesthof.TWS;
         }
-        if ("thw".equals(lc)) {
-            return THW;
+        if (Objects.equals("thw", lc)) {
+            return LeontisWesthof.THW;
         }
-        if ("thh".equals(lc)) {
-            return THH;
+        if (Objects.equals("thh", lc)) {
+            return LeontisWesthof.THH;
         }
-        if ("ths".equals(lc)) {
-            return THS;
+        if (Objects.equals("ths", lc)) {
+            return LeontisWesthof.THS;
         }
-        if ("tsw".equals(lc)) {
-            return TSW;
+        if (Objects.equals("tsw", lc)) {
+            return LeontisWesthof.TSW;
         }
-        if ("tsh".equals(lc)) {
-            return TSH;
+        if (Objects.equals("tsh", lc)) {
+            return LeontisWesthof.TSH;
         }
-        if ("tss".equals(lc)) {
-            return TSS;
+        if (Objects.equals("tss", lc)) {
+            return LeontisWesthof.TSS;
         }
-        return UNKNOWN;
+        return LeontisWesthof.UNKNOWN;
     }
 
-    public static LeontisWesthof fromOrdinal(int ordinal) {
+    public static LeontisWesthof fromOrdinal(final int ordinal) {
         switch (ordinal) {
             case 1:
-                return CWW;
+                return LeontisWesthof.CWW;
             case 2:
-                return TWW;
+                return LeontisWesthof.TWW;
             case 3:
-                return CWH;
+                return LeontisWesthof.CWH;
             case 4:
-                return TWH;
+                return LeontisWesthof.TWH;
             case 5:
-                return CWS;
+                return LeontisWesthof.CWS;
             case 6:
-                return TWS;
+                return LeontisWesthof.TWS;
             case 7:
-                return CHH;
+                return LeontisWesthof.CHH;
             case 8:
-                return THH;
+                return LeontisWesthof.THH;
             case 9:
-                return CHS;
+                return LeontisWesthof.CHS;
             case 10:
-                return THS;
+                return LeontisWesthof.THS;
             case 11:
-                return CSS;
+                return LeontisWesthof.CSS;
             case 12:
-                return TSS;
+                return LeontisWesthof.TSS;
             default:
-                return UNKNOWN;
+                return LeontisWesthof.UNKNOWN;
         }
     }
 
     @Override
     public String toString() {
-        if (this == UNKNOWN) {
+        if (this == LeontisWesthof.UNKNOWN) {
             return "n/a";
         }
 
@@ -126,7 +128,7 @@ public enum LeontisWesthof {
     }
 
     public String getFullName() {
-        if (this == UNKNOWN) {
+        if (this == LeontisWesthof.UNKNOWN) {
             return "n/a";
         }
 

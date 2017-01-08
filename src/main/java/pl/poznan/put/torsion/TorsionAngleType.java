@@ -25,14 +25,15 @@ public abstract class TorsionAngleType implements DisplayableExportable {
                 }
 
                 @Override
-                public TorsionAngleValue calculate(List<PdbResidue> residues,
-                                                   int currentIndex) {
+                public TorsionAngleValue calculate(
+                        final List<PdbResidue> residues,
+                        final int currentIndex) {
                     return TorsionAngleValue.invalidInstance(this);
                 }
             };
     private final MoleculeType moleculeType;
 
-    protected TorsionAngleType(MoleculeType moleculeType) {
+    protected TorsionAngleType(final MoleculeType moleculeType) {
         super();
         this.moleculeType = moleculeType;
     }
@@ -49,13 +50,13 @@ public abstract class TorsionAngleType implements DisplayableExportable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (moleculeType == null ? 0 : moleculeType
+        result = (prime * result) + ((moleculeType == null) ? 0 : moleculeType
                 .hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -69,6 +70,6 @@ public abstract class TorsionAngleType implements DisplayableExportable {
         return moleculeType == other.moleculeType;
     }
 
-    public abstract TorsionAngleValue calculate(List<PdbResidue> residues,
-                                                int currentIndex);
+    public abstract TorsionAngleValue calculate(
+            List<PdbResidue> residues, int currentIndex);
 }

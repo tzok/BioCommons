@@ -4,7 +4,7 @@ import pl.poznan.put.atom.AtomName;
 
 import java.util.Arrays;
 
-public class Phosphate extends NucleicAcidResidueComponent {
+public final class Phosphate extends NucleicAcidResidueComponent {
     private static final Phosphate INSTANCE = new Phosphate();
 
     private Phosphate() {

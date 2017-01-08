@@ -4,21 +4,20 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import pl.poznan.put.pdb.ExperimentalTechnique;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.analysis.CifModel;
-import pl.poznan.put.pdb.analysis.MmCifParser;
+import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
 import java.io.IOException;
 import java.util.List;
 
-import static pl.poznan.put.pdb.PdbExpdtaLine.ExperimentalTechnique;
-
 /**
  * Created by tzok on 24.05.16.
  */
-public class TestMmCifParser {
+public class TestCifParser {
     private String cif100D;
     private String cif148L;
     private String cif5A93;
@@ -33,7 +32,7 @@ public class TestMmCifParser {
 
     @Test
     public void test100D() throws IOException, PdbParsingException {
-        MmCifParser parser = new MmCifParser();
+        CifParser parser = new CifParser();
         List<CifModel> models = parser.parse(cif100D);
         Assert.assertEquals(1, models.size());
 
@@ -52,7 +51,7 @@ public class TestMmCifParser {
 
     @Test
     public void test148L() throws IOException, PdbParsingException {
-        MmCifParser parser = new MmCifParser();
+        CifParser parser = new CifParser();
         List<CifModel> models = parser.parse(cif148L);
         Assert.assertEquals(1, models.size());
         CifModel model = models.get(0);
@@ -75,7 +74,7 @@ public class TestMmCifParser {
 
     @Test
     public void test5A93() throws IOException, PdbParsingException {
-        MmCifParser parser = new MmCifParser();
+        CifParser parser = new CifParser();
         List<CifModel> models = parser.parse(cif5A93);
         Assert.assertEquals(1, models.size());
 

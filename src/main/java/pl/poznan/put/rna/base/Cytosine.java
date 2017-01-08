@@ -7,7 +7,7 @@ import pl.poznan.put.rna.Sugar;
 
 import java.util.Arrays;
 
-public class Cytosine extends Pyrimidine {
+public final class Cytosine extends Pyrimidine {
     private static final Cytosine INSTANCE = new Cytosine();
 
     private Cytosine() {

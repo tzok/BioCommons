@@ -9,6 +9,6 @@ import java.util.List;
  * An interface for both PDB and mmCIF parsers
  */
 public interface StructureParser {
-    List<? extends PdbModel> parse(String pdbFileContent)
+    List<? extends PdbModel> parse(String structureContent)
             throws PdbParsingException, IOException;
 }

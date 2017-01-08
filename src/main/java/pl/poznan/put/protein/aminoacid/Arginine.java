@@ -11,7 +11,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Arginine extends ProteinSidechain {
+public final class Arginine extends ProteinSidechain {
     private static final Arginine INSTANCE = new Arginine();
 
     private Arginine() {

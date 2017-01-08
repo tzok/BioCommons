@@ -7,7 +7,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Threonine extends ProteinSidechain {
+public final class Threonine extends ProteinSidechain {
     private static final Threonine INSTANCE = new Threonine();
 
     private Threonine() {

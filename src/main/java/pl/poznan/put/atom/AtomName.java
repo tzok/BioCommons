@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public enum AtomName {
     C(AtomType.C, "C"),
@@ -242,27 +244,35 @@ public enum AtomName {
     private final AtomType type;
     private final List<String> names;
 
-    AtomName(AtomType type, String... names) {
+    AtomName(final AtomType type, final String... names) {
         this.type = type;
         this.names = Arrays.asList(names);
     }
 
-    public static AtomName fromString(String pdbName) {
+    private static final Map<String, AtomName> LOOKUP_TABLE = new HashMap<>();
+
+    static {
+        for (final AtomName atomName : AtomName.values()) {
+            for (final String name : atomName.names) {
+                AtomName.LOOKUP_TABLE.put(name, atomName);
+            }
+        }
+    }
+
+    public static AtomName fromString(final String pdbName) {
         if (pdbName == null) {
             return AtomName.UNKNOWN;
         }
 
-        for (AtomName atomName : AtomName.values()) {
-            if (atomName.matchesName(pdbName)) {
-                return atomName;
-            }
+        if (!AtomName.LOOKUP_TABLE.containsKey(pdbName)) {
+            AtomName.LOGGER.trace("Unknown atom name: {}", pdbName);
+            return AtomName.UNKNOWN;
         }
 
-        AtomName.LOGGER.trace("Unknown atom name: " + pdbName);
-        return AtomName.UNKNOWN;
+        return AtomName.LOOKUP_TABLE.get(pdbName);
     }
 
-    public boolean matchesName(String pdbName) {
+    public boolean matchesName(final String pdbName) {
         return names.contains(pdbName.trim());
     }
 

@@ -6,7 +6,7 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-public class Zeta extends AtomBasedTorsionAngleType {
+public final class Zeta extends AtomBasedTorsionAngleType {
     private static final Zeta INSTANCE = new Zeta();
 
     private Zeta() {

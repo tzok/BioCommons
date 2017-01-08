@@ -5,15 +5,16 @@ public class InvalidStructureException extends Exception {
         super();
     }
 
-    public InvalidStructureException(String message, Throwable cause) {
+    public InvalidStructureException(
+            final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public InvalidStructureException(String message) {
+    public InvalidStructureException(final String message) {
         super(message);
     }
 
-    public InvalidStructureException(Throwable cause) {
+    public InvalidStructureException(final Throwable cause) {
         super(cause);
     }
 }

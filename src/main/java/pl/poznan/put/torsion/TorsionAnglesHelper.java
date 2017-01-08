@@ -1,9 +1,9 @@
 package pl.poznan.put.torsion;
 
+import org.apache.commons.math3.geometry.Vector;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.types.Quadruplet;
 
@@ -14,19 +14,17 @@ import pl.poznan.put.types.Quadruplet;
  */
 public final class TorsionAnglesHelper {
     private TorsionAnglesHelper() {
+        super();
     }
 
     /**
      * Calculate one dihedral angle value. By default use the atan method.
      *
      * @param atoms A 4-tuple of atoms.
-     *
      * @return Value of the tosion angle.
-     *
-     * @throws InvalidCircularValueException
      */
-    public static Angle calculateTorsionAngle(Quadruplet<PdbAtomLine> atoms)
-            throws InvalidCircularValueException {
+    public static Angle calculateTorsionAngle(
+            final Quadruplet<PdbAtomLine> atoms) {
         return TorsionAnglesHelper
                 .calculateTorsionAngle(atoms.a, atoms.b, atoms.c, atoms.d);
     }
@@ -38,14 +36,11 @@ public final class TorsionAnglesHelper {
      * @param a2 Atom 2.
      * @param a3 Atom 3.
      * @param a4 Atom 4.
-     *
      * @return Value of the torsion angle.
-     *
-     * @throws InvalidCircularValueException
      */
-    public static Angle calculateTorsionAngle(PdbAtomLine a1, PdbAtomLine a2,
-                                              PdbAtomLine a3, PdbAtomLine a4)
-            throws InvalidCircularValueException {
+    public static Angle calculateTorsionAngle(
+            final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3,
+            final PdbAtomLine a4) {
         return TorsionAnglesHelper.calculateTorsionAtan(a1, a2, a3, a4);
     }
 
@@ -56,15 +51,12 @@ public final class TorsionAnglesHelper {
      * @param a2 Atom 2.
      * @param a3 Atom 3.
      * @param a4 Atom 4.
-     *
      * @return Dihedral angle between atoms 1-4.
-     *
-     * @throws InvalidCircularValueException
      */
-    public static Angle calculateTorsionAtan(PdbAtomLine a1, PdbAtomLine a2,
-                                             PdbAtomLine a3, PdbAtomLine a4)
-            throws InvalidCircularValueException {
-        if (a1 == null || a2 == null || a3 == null || a4 == null) {
+    public static Angle calculateTorsionAtan(
+            final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3,
+            final PdbAtomLine a4) {
+        if ((a1 == null) || (a2 == null) || (a3 == null) || (a4 == null)) {
             return Angle.invalidInstance();
         }
 
@@ -79,7 +71,8 @@ public final class TorsionAnglesHelper {
                 FastMath.atan2(tmp3.dotProduct(tmp2), tmp1.dotProduct(tmp2)));
     }
 
-    public static Vector3D atomDistance(PdbAtomLine a, PdbAtomLine b) {
+    public static Vector3D atomDistance(
+            final PdbAtomLine a, final PdbAtomLine b) {
         Vector3D va = new Vector3D(a.getX(), a.getY(), a.getZ());
         Vector3D vb = new Vector3D(b.getX(), b.getY(), b.getZ());
         return vb.subtract(va);
@@ -93,15 +86,12 @@ public final class TorsionAnglesHelper {
      * @param a2 Atom 2.
      * @param a3 Atom 3.
      * @param a4 Atom 4.
-     *
      * @return Dihedral angle between atoms 1-4.
-     *
-     * @throws InvalidCircularValueException
      */
-    public static Angle calculateTorsionAcos(PdbAtomLine a1, PdbAtomLine a2,
-                                             PdbAtomLine a3, PdbAtomLine a4)
-            throws InvalidCircularValueException {
-        if (a1 == null || a2 == null || a3 == null || a4 == null) {
+    public static Angle calculateTorsionAcos(
+            final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3,
+            final PdbAtomLine a4) {
+        if ((a1 == null) || (a2 == null) || (a3 == null) || (a4 == null)) {
             return Angle.invalidInstance();
         }
 
@@ -114,15 +104,15 @@ public final class TorsionAnglesHelper {
 
         double ctor = u1.dotProduct(u2) / FastMath
                 .sqrt(u1.dotProduct(u1) * u2.dotProduct(u2));
-        ctor = ctor < -1 ? -1 : ctor > 1 ? 1 : ctor;
-        double torp = Math.acos(ctor);
+        ctor = (ctor < -1) ? -1 : ctor > 1 ? 1 : ctor;
+        double torp = StrictMath.acos(ctor);
         if (u1.dotProduct(u2.crossProduct(d2)) < 0) {
             torp = -torp;
         }
         return new Angle(torp);
     }
 
-    public static double subtractTorsions(double a1, double a2) {
+    public static double subtractTorsions(final double a1, final double a2) {
         if (Double.isNaN(a1) || Double.isNaN(a2)) {
             return Double.NaN;
         }

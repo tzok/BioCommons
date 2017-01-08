@@ -7,6 +7,7 @@ import pl.poznan.put.torsion.TorsionAngleType;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public enum RNATorsionAngleType implements MasterTorsionAngleType {
@@ -28,15 +29,17 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
     CHI(Chi.getPurineInstance(), Chi.getPyrimidineInstance()),
     PSEUDOPHASE_PUCKER(PseudophasePuckerType.getInstance());
 
-    private static final MasterTorsionAngleType[] MAIN =
-            new MasterTorsionAngleType[]{ALPHA, BETA, GAMMA, DELTA, EPSILON,
-                                         ZETA, CHI, PSEUDOPHASE_PUCKER};
+    private static final MasterTorsionAngleType[] MAIN = {
+            RNATorsionAngleType.ALPHA, RNATorsionAngleType.BETA,
+            RNATorsionAngleType.GAMMA, RNATorsionAngleType.DELTA,
+            RNATorsionAngleType.EPSILON, RNATorsionAngleType.ZETA,
+            RNATorsionAngleType.CHI, RNATorsionAngleType.PSEUDOPHASE_PUCKER};
     private static final AverageTorsionAngleType AVERAGE_TORSION_INSTANCE =
             new AverageTorsionAngleType(MoleculeType.RNA,
                                         RNATorsionAngleType.MAIN);
     private final List<TorsionAngleType> angleTypes;
 
-    RNATorsionAngleType(TorsionAngleType... angleTypes) {
+    RNATorsionAngleType(final TorsionAngleType... angleTypes) {
         this.angleTypes = Arrays.asList(angleTypes);
     }
 
@@ -50,24 +53,24 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
 
     @Override
     public Collection<? extends TorsionAngleType> getAngleTypes() {
-        return angleTypes;
+        return Collections.unmodifiableList(angleTypes);
     }
 
     @Override
     public String getLongDisplayName() {
-        assert angleTypes.size() > 0;
+        assert !angleTypes.isEmpty();
         return angleTypes.get(0).getLongDisplayName();
     }
 
     @Override
     public String getShortDisplayName() {
-        assert angleTypes.size() > 0;
+        assert !angleTypes.isEmpty();
         return angleTypes.get(0).getShortDisplayName();
     }
 
     @Override
     public String getExportName() {
-        assert angleTypes.size() > 0;
+        assert !angleTypes.isEmpty();
         return angleTypes.get(0).getExportName();
     }
 }

@@ -11,6 +11,8 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.analysis.CifModel;
+import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
@@ -438,5 +440,30 @@ public class TestPdbModel {
         residue = model.findResidue("S", 169, " ");
         assertEquals("API", residue.getOriginalResidueName());
         assertEquals("LYS", residue.getModifiedResidueName());
+    }
+
+    @Test
+    public void testCif() throws PdbParsingException, IOException {
+        PdbParser pdbParser = new PdbParser();
+        List<PdbModel> pdbModels = pdbParser.parse(pdb1EHZ);
+        assertEquals(1, pdbModels.size());
+        PdbModel pdbModel = pdbModels.get(0);
+
+        String cif1EHZ = pdbModel.toCifString();
+
+        CifParser cifParser = new CifParser();
+        List<CifModel> cifModels = cifParser.parse(cif1EHZ);
+        assertEquals(1, cifModels.size());
+        CifModel cifModel = cifModels.get(0);
+
+        List<PdbResidue> pdbResidues = pdbModel.getResidues();
+        List<PdbResidue> cifResidues = cifModel.getResidues();
+        assertEquals(pdbResidues.size(), cifResidues.size());
+
+        for (int i = 0; i > pdbResidues.size(); i++) {
+            PdbResidue pdbResidue = pdbResidues.get(i);
+            PdbResidue cifResidue = cifResidues.get(i);
+            assertEquals(pdbResidue, cifResidue);
+        }
     }
 }

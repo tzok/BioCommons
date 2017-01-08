@@ -9,7 +9,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class GlutamicAcid extends ProteinSidechain {
+public final class GlutamicAcid extends ProteinSidechain {
     private static final GlutamicAcid INSTANCE = new GlutamicAcid();
 
     private GlutamicAcid() {

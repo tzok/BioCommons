@@ -8,7 +8,7 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
-public class Histidine extends ProteinSidechain {
+public final class Histidine extends ProteinSidechain {
     private static final Histidine INSTANCE = new Histidine();
 
     private Histidine() {

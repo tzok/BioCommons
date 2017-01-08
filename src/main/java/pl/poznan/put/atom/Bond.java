@@ -5,7 +5,7 @@ import org.apache.commons.collections4.map.MultiKeyMap;
 /*
  * Values are taken from Charm36 parameters file
  */
-public class Bond {
+public final class Bond {
     private static final MultiKeyMap<AtomType, Bond.Length> MAP =
             new MultiKeyMap<>();
     private static final Bond.Length INVALID =
@@ -33,7 +33,11 @@ public class Bond {
         Bond.MAP.put(AtomType.S, AtomType.S, new Length(2.029, 2.029, 2.029));
     }
 
-    public static Bond.Length length(AtomType left, AtomType right) {
+    private Bond() {
+    }
+
+    public static Bond.Length length(
+            final AtomType left, final AtomType right) {
         Length length = Bond.MAP.get(left, right);
 
         if (length == null) {
@@ -52,7 +56,7 @@ public class Bond {
         private final double max;
         private final double avg;
 
-        Length(double min, double max, double avg) {
+        Length(final double min, final double max, final double avg) {
             super();
             this.min = min;
             this.max = max;
