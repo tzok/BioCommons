@@ -1,14 +1,19 @@
 package pl.poznan.put.structure.secondary;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.RNAInteractionType;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class ClassifiedBasePair
         implements Serializable, Comparable<ClassifiedBasePair> {
+    private static final long serialVersionUID = -7311037449944786616L;
+
     private final BasePair basePair;
     private final RNAInteractionType interactionType;
     private final Saenger saenger;
@@ -94,44 +99,29 @@ public class ClassifiedBasePair
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + ((basePair == null) ? 0
-                                                        : basePair.hashCode());
-        result = (prime * result) + ((interactionType == null) ? 0
-                                                               : interactionType
-                                             .hashCode());
-        result = (prime * result) + ((leontisWesthof == null) ? 0
-                                                              : leontisWesthof
-                                             .hashCode());
-        result =
-                (prime * result) + ((saenger == null) ? 0 : saenger.hashCode());
-        return result;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if ((o == null) || (getClass() != o.getClass())) {
+            return false;
+        }
+
+        ClassifiedBasePair bp = (ClassifiedBasePair) o;
+        return new EqualsBuilder().append(basePair, bp.basePair)
+                                  .append(interactionType, bp.interactionType)
+                                  .append(saenger, bp.saenger)
+                                  .append(leontisWesthof, bp.leontisWesthof)
+                                  .isEquals();
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        ClassifiedBasePair other = (ClassifiedBasePair) obj;
-        if (basePair == null) {
-            if (other.basePair != null) {
-                return false;
-            }
-        } else if (!Objects.equals(basePair, other.basePair)) {
-            return false;
-        }
-        return (interactionType == other.interactionType) && (leontisWesthof
-                                                              == other.leontisWesthof)
-               && (saenger == other.saenger);
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(basePair)
+                                          .append(interactionType)
+                                          .append(saenger)
+                                          .append(leontisWesthof).toHashCode();
     }
 
     @Override
@@ -143,11 +133,7 @@ public class ClassifiedBasePair
     }
 
     @Override
-    public int compareTo(final ClassifiedBasePair t) {
-        if (t == null) {
-            throw new NullPointerException();
-        }
-
+    public int compareTo(@Nonnull final ClassifiedBasePair t) {
         if (equals(t)) {
             return 0;
         }
