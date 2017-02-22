@@ -73,6 +73,26 @@ public class ClassifiedBasePair
         return Saenger.isCanonical(saenger);
     }
 
+    public boolean isNonCanonical() {
+        return !Saenger.isCanonical(saenger) && (
+                Objects.equals(interactionType, RNAInteractionType.BASE_BASE)
+                || Objects.equals(interactionType,
+                                  RNAInteractionType.BASE_BASE_1H));
+    }
+
+    public boolean isStacking() {
+        return Objects.equals(interactionType, RNAInteractionType.STACKING);
+    }
+
+    public boolean isBasePhosphate() {
+        return Objects
+                .equals(interactionType, RNAInteractionType.BASE_PHOSPHATE);
+    }
+
+    public boolean isBaseRibose() {
+        return Objects.equals(interactionType, RNAInteractionType.BASE_SUGAR);
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
