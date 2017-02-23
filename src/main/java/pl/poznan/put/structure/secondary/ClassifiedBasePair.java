@@ -160,4 +160,11 @@ public class ClassifiedBasePair
         }
         return "unknown classification";
     }
+
+    public ClassifiedBasePair invert() {
+        return new ClassifiedBasePair(basePair.invert(),
+                                      interactionType.invert(), saenger,
+                                      leontisWesthof.invert(), bph, br,
+                                      helixOrigin);
+    }
 }

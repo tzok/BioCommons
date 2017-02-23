@@ -154,7 +154,10 @@ public class RNAInteractionType
             case UNKNOWN:
             default:
                 return 1000;
-
         }
+    }
+
+    public RNAInteractionType invert() {
+        return new RNAInteractionType(right, left, isPairing);
     }
 }
