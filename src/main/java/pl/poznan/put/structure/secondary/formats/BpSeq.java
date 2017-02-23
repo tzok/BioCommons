@@ -161,11 +161,16 @@ public class BpSeq implements Serializable {
             BasePair basePair = classifiedBasePair.getBasePair();
             allBasePairs.add(basePair);
 
-            String comment =
-                    !classifiedBasePair.isCanonical() ? classifiedBasePair
-                            .generateComment() : "";
-            basePairToComment.put(basePair, comment);
-            basePairToComment.put(basePair.invert(), comment);
+            if (classifiedBasePair.isCanonical()) {
+                basePairToComment.put(basePair, "");
+                basePairToComment.put(basePair.invert(), "");
+            } else {
+                basePairToComment
+                        .put(basePair, classifiedBasePair.generateComment());
+                basePairToComment.put(basePair.invert(),
+                                      classifiedBasePair.invert()
+                                                        .generateComment());
+            }
         }
 
         List<BpSeq.Entry> entries = new ArrayList<>();
@@ -194,7 +199,7 @@ public class BpSeq implements Serializable {
                                         basePairToComment.get(basePair)));
             entries.add(
                     new BpSeq.Entry(indexR, indexL, right.getOneLetterName(),
-                                    basePairToComment.get(basePair)));
+                                    basePairToComment.get(basePair.invert())));
             BpSeq.LOGGER.trace("Storing pair ({} -> {}) which is ({} -> {})",
                                indexL, indexR, left, right);
         }
