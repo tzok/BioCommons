@@ -4,6 +4,8 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.rna.base.NucleobaseType;
 
+import java.util.Objects;
+
 /**
  * Base-ribose notation.
  * <p>
@@ -13,26 +15,26 @@ import pl.poznan.put.rna.base.NucleobaseType;
  * .org/10.1093/nar/gkp468
  */
 public enum BR {
-    _0("0BR"),
-    _1("1BR"),
-    _2("2BR"),
-    _3("3BR"),
-    _4("4BR"),
-    _5("5BR"),
-    _6("6BR"),
-    _7("7BR"),
-    _8("8BR"),
-    _9("9BR"),
+    _0("0BR", "n0BR", "0RB", "n0RB"),
+    _1("1BR", "n1BR", "1RB", "n1RB"),
+    _2("2BR", "n2BR", "2RB", "n2RB"),
+    _3("3BR", "n3BR", "3RB", "n3RB"),
+    _4("4BR", "n4BR", "4RB", "n4RB"),
+    _5("5BR", "n5BR", "5RB", "n5RB"),
+    _6("6BR", "n6BR", "6RB", "n6RB"),
+    _7("7BR", "n7BR", "7RB", "n7RB"),
+    _8("8BR", "n8BR", "8RB", "n8RB"),
+    _9("9BR", "n9BR", "9RB", "n9RB"),
     UNKNOWN("UNKNOWN");
 
-    private final String displayName;
+    private final String[] displayNames;
 
-    BR(final String displayName) {
-        this.displayName = displayName;
+    BR(final String... displayNames) {
+        this.displayNames = displayNames;
     }
 
     public String getDisplayName() {
-        return displayName;
+        return displayNames[0];
     }
 
     public static BR detect(
@@ -82,6 +84,17 @@ public enum BR {
     private static BR detectForAdenine(
             final PdbResidue base, final PdbResidue ribose) {
         // FIXME: implement this
+        return BR.UNKNOWN;
+    }
+
+    public static BR fromString(final String candidate) {
+        for (final BR br : BR.values()) {
+            for (final String displayName : br.displayNames) {
+                if (Objects.equals(displayName, candidate)) {
+                    return br;
+                }
+            }
+        }
         return BR.UNKNOWN;
     }
 }
