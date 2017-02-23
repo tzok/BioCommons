@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.secondary;
 
+import pl.poznan.put.notation.BPh;
+import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
@@ -46,6 +48,7 @@ public final class CanonicalStructureExtractor {
                                                    RNAInteractionType.BASE_BASE,
                                                    Saenger.XIX,
                                                    LeontisWesthof.CWW,
+                                                   BPh.UNKNOWN, BR.UNKNOWN,
                                                    HelixOrigin.UNKNOWN);
 
                     if (!paired.contains(leftId) && !paired.contains(rightId)) {

@@ -2,7 +2,7 @@ package pl.poznan.put.rna;
 
 public enum RNAResidueComponentType {
     BASE,
-    SUGAR,
+    RIBOSE,
     PHOSPHATE,
     UNKNOWN
 }

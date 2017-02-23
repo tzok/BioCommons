@@ -344,4 +344,8 @@ public class PdbResidue
         }
         return builder.toString();
     }
+
+    public ResidueInformationProvider getResidueInformationProvider() {
+        return residueInformationProvider;
+    }
 }
