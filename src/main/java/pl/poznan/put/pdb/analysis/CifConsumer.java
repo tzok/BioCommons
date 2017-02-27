@@ -41,6 +41,8 @@ import org.biojava.nbio.structure.io.mmcif.model.StructSiteGen;
 import org.biojava.nbio.structure.io.mmcif.model.Symmetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.poznan.put.notation.BPh;
+import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.ExperimentalTechnique;
@@ -483,8 +485,9 @@ public class CifConsumer implements MMcifConsumer {
                     .getDoubleWithDefaultNaN(map, CifConsumer.OPENING);
             QuantifiedBasePair quantifiedBasePair =
                     new QuantifiedBasePair(basePair, saenger, leontisWesthof,
-                                           shear, stretch, stagger, buckle,
-                                           propeller, opening);
+                                           BPh.UNKNOWN, BR.UNKNOWN, shear,
+                                           stretch, stagger, buckle, propeller,
+                                           opening);
             basePairs.add(quantifiedBasePair);
         }
     }

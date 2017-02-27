@@ -5,6 +5,8 @@ import java.util.Objects;
 
 public class RNAInteractionType
         implements Serializable, Comparable<RNAInteractionType> {
+    private static final long serialVersionUID = -3447319886413641277L;
+
     public static final RNAInteractionType BASE_BASE =
             new RNAInteractionType(RNAResidueComponentType.BASE,
                                    RNAResidueComponentType.BASE, true);
@@ -15,12 +17,12 @@ public class RNAInteractionType
     public static final RNAInteractionType BASE_PHOSPHATE =
             new RNAInteractionType(RNAResidueComponentType.BASE,
                                    RNAResidueComponentType.PHOSPHATE, false);
-    public static final RNAInteractionType BASE_SUGAR =
+    public static final RNAInteractionType BASE_RIBOSE =
             new RNAInteractionType(RNAResidueComponentType.BASE,
-                                   RNAResidueComponentType.SUGAR, false);
+                                   RNAResidueComponentType.RIBOSE, false);
     public static final RNAInteractionType SUGAR_SUGAR =
-            new RNAInteractionType(RNAResidueComponentType.SUGAR,
-                                   RNAResidueComponentType.SUGAR, false);
+            new RNAInteractionType(RNAResidueComponentType.RIBOSE,
+                                   RNAResidueComponentType.RIBOSE, false);
     public static final RNAInteractionType STACKING =
             new RNAInteractionType(RNAResidueComponentType.BASE,
                                    RNAResidueComponentType.BASE, "stacking");
@@ -147,7 +149,7 @@ public class RNAInteractionType
         switch (type) {
             case BASE:
                 return 1;
-            case SUGAR:
+            case RIBOSE:
                 return 10;
             case PHOSPHATE:
                 return 100;

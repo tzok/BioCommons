@@ -2,6 +2,8 @@ package pl.poznan.put.structure.secondary;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import pl.poznan.put.notation.BPh;
+import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.RNAInteractionType;
@@ -16,11 +18,11 @@ public class QuantifiedBasePair extends ClassifiedBasePair {
 
     public QuantifiedBasePair(
             final BasePair basePair, final Saenger saenger,
-            final LeontisWesthof leontisWesthof, final double shear,
-            final double stretch, final double stagger, final double buckle,
-            final double propeller, final double opening) {
+            final LeontisWesthof leontisWesthof, final BPh bph, final BR br,
+            final double shear, final double stretch, final double stagger,
+            final double buckle, final double propeller, final double opening) {
         super(basePair, RNAInteractionType.BASE_BASE, saenger, leontisWesthof,
-              HelixOrigin.UNKNOWN);
+              bph, br, HelixOrigin.UNKNOWN);
         this.shear = shear;
         this.stretch = stretch;
         this.stagger = stagger;
