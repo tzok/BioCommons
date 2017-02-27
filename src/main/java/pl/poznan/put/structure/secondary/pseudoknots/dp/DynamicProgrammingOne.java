@@ -44,7 +44,7 @@ public class DynamicProgrammingOne implements PseudoknotFinder {
     }
 
     // Create one range that contains all of the other
-    private static List<Integer> addOuterRange(
+    private static List<Integer> insertOuterRange(
             final Collection<Integer> connections) {
         List<Integer> res = new ArrayList<>(connections.size() + 2);
 
@@ -110,7 +110,7 @@ public class DynamicProgrammingOne implements PseudoknotFinder {
     }
 
     // Remove helping range that contains everything
-    private static List<Integer> removeOuterRange(
+    private static List<Integer> withdrawOuterRange(
             final List<Integer> connections) {
         List<Integer> res = new ArrayList<>(connections.size());
 
@@ -158,7 +158,7 @@ public class DynamicProgrammingOne implements PseudoknotFinder {
         List<Integer> connections = DynamicProgrammingOne
                 .filterNotConnected(originalConnections, idMap);
 
-        connections = DynamicProgrammingOne.addOuterRange(connections);
+        connections = DynamicProgrammingOne.insertOuterRange(connections);
         int size = connections.size();
 
         // Create array of ranges and sort them
@@ -217,7 +217,7 @@ public class DynamicProgrammingOne implements PseudoknotFinder {
 
         List<Integer> nonConflicting = DynamicProgrammingOne
                 .keepSelected(connections, correctConnections);
-        nonConflicting = DynamicProgrammingOne.removeOuterRange(nonConflicting);
+        nonConflicting = DynamicProgrammingOne.withdrawOuterRange(nonConflicting);
 
         List<Integer> structureCorrectConnections = DynamicProgrammingOne
                 .mapBack(originalConnections, nonConflicting, idMap);
