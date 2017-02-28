@@ -307,6 +307,14 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
                                temperatureFactor, elementSymbol, charge);
     }
 
+    public final PdbAtomLine replaceAlternateLocation(
+            final String alternateLocationNew) {
+        return new PdbAtomLine(serialNumber, atomName, alternateLocationNew,
+                               residueName, chainIdentifier, residueNumber,
+                               insertionCode, x, y, z, occupancy,
+                               temperatureFactor, elementSymbol, charge);
+    }
+
     public final AtomName detectAtomName() {
         return AtomName.fromString(atomName);
     }
