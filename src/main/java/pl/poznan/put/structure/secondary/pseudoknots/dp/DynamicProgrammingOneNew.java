@@ -13,10 +13,6 @@ import java.util.List;
  * A new implementation of dynamic programming solution.
  */
 public final class DynamicProgrammingOneNew implements PseudoknotFinder {
-    private DynamicProgrammingOneNew() {
-        super();
-    }
-
     @Override
     public List<BpSeq> findPseudoknots(final BpSeq bpSeq)
             throws InvalidStructureException {
@@ -28,7 +24,7 @@ public final class DynamicProgrammingOneNew implements PseudoknotFinder {
             int pair = e.getPair();
 
             if (index < pair) {
-                connections.add(Pair.of(index - 1, pair - 1));
+                connections.add(Pair.of(index, pair));
             }
         }
 
@@ -37,18 +33,27 @@ public final class DynamicProgrammingOneNew implements PseudoknotFinder {
         List<BpSeq> results = new ArrayList<>(solutions.size());
 
         for (final List<Pair<Integer, Integer>> pairs : solutions) {
-
             List<BpSeq.Entry> entries = new ArrayList<>(bpSeq.getEntries());
             for (final Pair<Integer, Integer> pair : pairs) {
+                BpSeq.Entry left = null;
+                BpSeq.Entry right = null;
                 for (int i = 0; i < entries.size(); i++) {
                     BpSeq.Entry entry = entries.get(i);
-                    if ((entry.getIndex() - 1) == pair.getLeft()) {
-                        entries.remove(i);
-                        entries.add(new BpSeq.Entry(entry.getIndex(), 0,
-                                                    entry.getSeq()));
+                    if (entry.getIndex() == pair.getLeft()) {
+                        left = entry;
+                        continue;
+                    }
+                    if (entry.getIndex() == pair.getRight()) {
+                        right = entry;
                         break;
                     }
                 }
+                assert (left != null) && (right != null);
+                entries.remove(left);
+                entries.remove(right);
+                entries.add(new BpSeq.Entry(left.getIndex(), 0, left.getSeq()));
+                entries.add(
+                        new BpSeq.Entry(right.getIndex(), 0, right.getSeq()));
             }
 
             results.add(new BpSeq(entries));
@@ -206,7 +211,7 @@ public final class DynamicProgrammingOneNew implements PseudoknotFinder {
             beginnings[upper] = lower;
         }
 
-        // Calculate dome socers.
+        // Calculate dome scores.
         int[] prefixScore = new int[size + 2];
         int[] domeScore = new int[size + 2];
         for (int i = 1; i <= size; ++i) {
