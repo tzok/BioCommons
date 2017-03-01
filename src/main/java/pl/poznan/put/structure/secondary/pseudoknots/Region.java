@@ -3,7 +3,6 @@ package pl.poznan.put.structure.secondary.pseudoknots;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -93,7 +92,7 @@ public final class Region {
         return id;
     }
 
-    public Collection<BpSeq.Entry> getEntries() {
+    public List<BpSeq.Entry> getEntries() {
         return Collections.unmodifiableList(entries);
     }
 
@@ -123,14 +122,14 @@ public final class Region {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if ((obj == null) || (getClass() != obj.getClass())) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-        Region region = (Region) obj;
+        Region region = (Region) o;
         return id == region.id;
     }
 }
