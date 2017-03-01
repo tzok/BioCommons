@@ -10,6 +10,7 @@ import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
+import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -252,9 +253,9 @@ public class BpSeq implements Serializable {
         return sortedSet;
     }
 
-    public final void removePair(final BpSeq.Entry toRemove) {
+    public final boolean removePair(final Entry toRemove) {
         if (!toRemove.isPaired()) {
-            return;
+            return false;
         }
 
         for (final BpSeq.Entry entry : entries) {
@@ -263,9 +264,10 @@ public class BpSeq implements Serializable {
                 entries.remove(entry);
                 entries.add(new BpSeq.Entry(toRemove.index, 0, toRemove.seq));
                 entries.add(new BpSeq.Entry(entry.index, 0, entry.seq));
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     public final int size() {
@@ -279,6 +281,17 @@ public class BpSeq implements Serializable {
             }
         }
         return false;
+    }
+
+    public final boolean removeIsolatedPairs() {
+        List<Region> regions = Region.createRegions(this);
+        final boolean[] flag = {false};
+        regions.forEach(region -> {
+            if (region.getLength() == 1) {
+                flag[0] |= removePair(region.getEntries().get(0));
+            }
+        });
+        return flag[0];
     }
 
     public static class Entry implements Comparable<BpSeq.Entry>, Serializable {
