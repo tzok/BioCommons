@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 
 public class TestCt {
     //@formatter:off
@@ -143,7 +144,8 @@ public class TestCt {
     public void prepare() throws IOException {
         dbn4UG0 = IOUtils.toString(TestCt.class.getClassLoader()
                                                .getResourceAsStream(
-                                                       "4UG0-dotbracket.txt"));
+                                                       "4UG0-dotbracket.txt"),
+                                   Charset.defaultCharset());
     }
 
     @SuppressWarnings("static-method")

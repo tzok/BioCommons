@@ -21,13 +21,13 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.1.9</version>
+            <version>1.2.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.biojava</groupId>
             <artifactId>biojava-structure</artifactId>
-            <version>4.2.4</version>
+            <version>5.0.0-alpha6</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.22</version>
+            <version>1.7.24</version>
         </dependency>
 
         <dependency>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>pl.poznan.put</groupId>
             <artifactId>TzokCommons</artifactId>
-            <version>1.4.3</version>
+            <version>1.4.4</version>
         </dependency>
 
         <dependency>
@@ -134,6 +134,18 @@
                 <version>3.0.0</version>
                 <configuration>
                     <usedDependencies>ch.qos.logback:logback-classic</usedDependencies>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <excludes>
+                        <exclude>xml-apis:xml-apis</exclude>
+                        <exclude>xml-apis:xml-apis-ext</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>

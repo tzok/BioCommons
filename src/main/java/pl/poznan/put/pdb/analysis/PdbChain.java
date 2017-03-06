@@ -51,7 +51,7 @@ public class PdbChain implements Comparable<PdbChain>, Serializable {
         for (final Group group : chain.getAtomGroups()) {
             residues.add(PdbResidue.fromBioJavaGroup(group));
         }
-        return new PdbChain(chain.getChainID(), residues);
+        return new PdbChain(chain.getId(), residues);
     }
 
     public final String getIdentifier() {
@@ -71,15 +71,15 @@ public class PdbChain implements Comparable<PdbChain>, Serializable {
     }
 
     @Override
-    public final boolean equals(final Object obj) {
-        if (this == obj) {
+    public final boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if ((obj == null) || (getClass() != obj.getClass())) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
 
-        PdbChain pdbChain = (PdbChain) obj;
+        PdbChain pdbChain = (PdbChain) o;
         return Objects.equals(identifier, pdbChain.identifier) && Objects
                 .equals(residues, pdbChain.residues) && (moleculeType
                                                          == pdbChain
