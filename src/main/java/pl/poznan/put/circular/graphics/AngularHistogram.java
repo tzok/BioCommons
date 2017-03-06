@@ -13,9 +13,10 @@ import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
 
-import java.awt.*;
+import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,16 +25,16 @@ public class AngularHistogram extends RawDataPlot {
     private final double binRadians;
     private double scalingFactor;
 
-    public AngularHistogram(Collection<Circular> data, double binRadians,
-                            double diameter, double majorTickSpread,
-                            double minorTickSpread)
+    public AngularHistogram(
+            Collection<Circular> data, double binRadians, double diameter,
+            double majorTickSpread, double minorTickSpread)
             throws InvalidCircularOperationException {
         super(data, diameter, majorTickSpread, minorTickSpread);
         this.binRadians = binRadians;
     }
 
-    public AngularHistogram(Collection<Circular> data, double binRadians,
-                            double diameter)
+    public AngularHistogram(
+            Collection<Circular> data, double binRadians, double diameter)
             throws InvalidCircularOperationException {
         super(data, diameter);
         this.binRadians = binRadians;
@@ -73,7 +74,8 @@ public class AngularHistogram extends RawDataPlot {
         AngularHistogram plot = new AngularHistogram(data);
         plot.draw();
         SVGDocument svgDocument = plot.finalizeDrawingAndGetSVG();
-        SVGHelper.export(svgDocument, System.out, Format.SVG, null);
+        System.out.println(new String(SVGHelper.export(svgDocument, Format.SVG),
+                                      Charset.defaultCharset()));
     }
 
     @Override
@@ -107,8 +109,8 @@ public class AngularHistogram extends RawDataPlot {
         }
     }
 
-    private void drawHistogramTriangle(Graphics graphics, double circularValue,
-                                       double frequency) {
+    private void drawHistogramTriangle(
+            Graphics graphics, double circularValue, double frequency) {
         double sectorRadius = Math.sqrt(frequency) * radius * scalingFactor;
 
         // angle as in XY coordinate system
@@ -120,8 +122,9 @@ public class AngularHistogram extends RawDataPlot {
         double y2 = centerY + sectorRadius * Math.sin(t);
 
         graphics.drawPolygon(new int[]{(int) x1, (int) x2, (int) centerX},
-                             new int[]{(int) (diameter - y1),
-                                       (int) (diameter - y2),
-                                       (int) (diameter - centerY)}, 3);
+                             new int[]{
+                                     (int) (diameter - y1),
+                                     (int) (diameter - y2),
+                                     (int) (diameter - centerY)}, 3);
     }
 }

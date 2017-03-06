@@ -36,9 +36,9 @@ public class RawDataPlot extends AbstractDrawable {
     protected double centerY;
     protected double radius;
 
-    public RawDataPlot(Collection<Circular> data, double diameter,
-                       double majorTickSpread, double minorTickSpread)
-            throws InvalidCircularOperationException {
+    public RawDataPlot(
+            Collection<Circular> data, double diameter, double majorTickSpread,
+            double minorTickSpread) throws InvalidCircularOperationException {
         super();
         this.data = data;
         this.diameter = diameter;
@@ -125,7 +125,7 @@ public class RawDataPlot extends AbstractDrawable {
 
         try {
             stream = new FileOutputStream("/tmp/D01-plot.svg");
-            SVGHelper.export(svgDocument, stream, Format.SVG, null);
+            IOUtils.write(SVGHelper.export(svgDocument, Format.SVG), stream);
         } finally {
             IOUtils.closeQuietly(stream);
         }
@@ -155,7 +155,7 @@ public class RawDataPlot extends AbstractDrawable {
 
         try {
             stream = new FileOutputStream("/tmp/D02-plot.svg");
-            SVGHelper.export(svgDocument, stream, Format.SVG, null);
+            IOUtils.write(SVGHelper.export(svgDocument, Format.SVG), stream);
         } finally {
             IOUtils.closeQuietly(stream);
         }
@@ -239,10 +239,10 @@ public class RawDataPlot extends AbstractDrawable {
                     double y3 = centerY + virtualRadius * Math.sin(t);
 
                     svgGraphics.drawPolygon(
-                            new int[]{(int) x1, (int) x2, (int) x3},
-                            new int[]{(int) (diameter - y1),
-                                      (int) (diameter - y2),
-                                      (int) (diameter - y3)}, 3);
+                            new int[]{(int) x1, (int) x2, (int) x3}, new int[]{
+                                    (int) (diameter - y1),
+                                    (int) (diameter - y2),
+                                    (int) (diameter - y3)}, 3);
                     i += 2;
                 } else if (circular instanceof Axis) {
                     xv -= observationSize / 2.0;
@@ -263,8 +263,8 @@ public class RawDataPlot extends AbstractDrawable {
         }
     }
 
-    private void drawTicks(SVGGraphics2D graphics, double tickSpread,
-                           double virtualRadius) {
+    private void drawTicks(
+            SVGGraphics2D graphics, double tickSpread, double virtualRadius) {
         for (double d = 0; d < 2 * Math.PI; d += tickSpread) {
             // angle as in XY coordinate system
             double t = -(d + Math.PI * 3 / 2) % (2 * Math.PI);

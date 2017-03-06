@@ -14,7 +14,7 @@ import pl.poznan.put.utility.AngleFormat;
 import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
 
-import java.awt.*;
+import java.awt.FontMetrics;
 import java.awt.font.LineMetrics;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,8 +29,8 @@ public class LinearHistogram extends AbstractDrawable {
     private final double binRadians;
     private final int drawingUnitSize;
 
-    public LinearHistogram(Collection<Circular> data, double binRadians,
-                           int drawingUnitSize) {
+    public LinearHistogram(
+            Collection<Circular> data, double binRadians, int drawingUnitSize) {
         super();
         this.data = data;
         this.binRadians = binRadians;
@@ -73,7 +73,7 @@ public class LinearHistogram extends AbstractDrawable {
 
         try {
             stream = new FileOutputStream("/tmp/D01-linear-histogram.svg");
-            SVGHelper.export(svgDocument, stream, Format.SVG, null);
+            IOUtils.write(SVGHelper.export(svgDocument, Format.SVG), stream);
         } finally {
             IOUtils.closeQuietly(stream);
         }
