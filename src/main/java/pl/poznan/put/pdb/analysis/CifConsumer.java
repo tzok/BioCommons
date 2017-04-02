@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.io.mmcif.MMcifConsumer;
 import org.biojava.nbio.structure.io.mmcif.model.AtomSite;
+import org.biojava.nbio.structure.io.mmcif.model.AtomSites;
 import org.biojava.nbio.structure.io.mmcif.model.AuditAuthor;
 import org.biojava.nbio.structure.io.mmcif.model.Cell;
 import org.biojava.nbio.structure.io.mmcif.model.ChemComp;
@@ -137,23 +138,23 @@ public class CifConsumer implements MMcifConsumer {
     }
 
     @Override
-    public final void newAtomSite(final AtomSite atom) {
+    public final void newAtomSite(final AtomSite atomSite) {
         try {
-            int serialNumber = Integer.parseInt(atom.getId());
-            String atomName = atom.getAuth_atom_id();
-            String alternateLocation = atom.getLabel_alt_id();
-            String residueName = atom.getAuth_comp_id();
-            String chainIdentifier = atom.getAuth_asym_id();
-            int residueNumber = Integer.parseInt(atom.getAuth_seq_id());
-            String insertionCode = atom.getPdbx_PDB_ins_code();
-            double x = Double.parseDouble(atom.getCartn_x());
-            double y = Double.parseDouble(atom.getCartn_y());
-            double z = Double.parseDouble(atom.getCartn_z());
-            double occupancy = Double.parseDouble(atom.getOccupancy());
+            int serialNumber = Integer.parseInt(atomSite.getId());
+            String atomName = atomSite.getAuth_atom_id();
+            String alternateLocation = atomSite.getLabel_alt_id();
+            String residueName = atomSite.getAuth_comp_id();
+            String chainIdentifier = atomSite.getAuth_asym_id();
+            int residueNumber = Integer.parseInt(atomSite.getAuth_seq_id());
+            String insertionCode = atomSite.getPdbx_PDB_ins_code();
+            double x = Double.parseDouble(atomSite.getCartn_x());
+            double y = Double.parseDouble(atomSite.getCartn_y());
+            double z = Double.parseDouble(atomSite.getCartn_z());
+            double occupancy = Double.parseDouble(atomSite.getOccupancy());
             double temperatureFactor =
-                    Double.parseDouble(atom.getB_iso_or_equiv());
-            String elementSymbol = atom.getType_symbol();
-            String charge = atom.getPdbx_formal_charge();
+                    Double.parseDouble(atomSite.getB_iso_or_equiv());
+            String elementSymbol = atomSite.getType_symbol();
+            String charge = atomSite.getPdbx_formal_charge();
 
             if (Objects.equals("?", insertionCode)) {
                 insertionCode = " ";
@@ -171,7 +172,7 @@ public class CifConsumer implements MMcifConsumer {
                                     insertionCode, x, y, z, occupancy,
                                     temperatureFactor, elementSymbol, charge);
 
-            String modelNumberString = atom.getPdbx_PDB_model_num();
+            String modelNumberString = atomSite.getPdbx_PDB_model_num();
             int modelNumber = 1;
             if (StringUtils.isNotBlank(modelNumberString)) {
                 modelNumber = Integer.parseInt(modelNumberString);
@@ -199,12 +200,12 @@ public class CifConsumer implements MMcifConsumer {
     }
 
     @Override
-    public void newEntityPolySeq(final EntityPolySeq epolseq) {
+    public void newEntityPolySeq(final EntityPolySeq entityPolySeq) {
         // do nothing
     }
 
     @Override
-    public void newStructAsym(final StructAsym sasym) {
+    public void newStructAsym(final StructAsym structAsym) {
         // do nothing
     }
 
@@ -214,28 +215,29 @@ public class CifConsumer implements MMcifConsumer {
     }
 
     @Override
-    public final void newDatabasePDBrev(final DatabasePDBrev dbrev) {
+    public final void newDatabasePDBrev(final DatabasePDBrev databasePDBrev) {
         try {
             if (depositionDate == null) {
-                depositionDate =
-                        CifConsumer.DATE_FORMAT.parse(dbrev.getDate_original());
+                depositionDate = CifConsumer.DATE_FORMAT
+                        .parse(databasePDBrev.getDate_original());
             }
         } catch (final ParseException e) {
             CifConsumer.LOGGER
                     .warn("Failed to parse _database_PDB_rev.date_original as"
-                          + " yyyy-MM-dd: {}", dbrev.getDate_original(), e);
+                          + " yyyy-MM-dd: {}",
+                          databasePDBrev.getDate_original(), e);
         }
     }
 
     @Override
     public void newDatabasePDBrevRecord(
-            final DatabasePdbrevRecord dbrev) {
+            final DatabasePdbrevRecord databasePdbrevRecord) {
         // do nothing
     }
 
     @Override
     public void newDatabasePDBremark(
-            final DatabasePDBremark remark) {
+            final DatabasePDBremark databasePDBremark) {
         // do nothing
     }
 
@@ -262,117 +264,123 @@ public class CifConsumer implements MMcifConsumer {
     }
 
     @Override
-    public void newStructNcsOper(final StructNcsOper sNcsOper) {
+    public void newStructNcsOper(final StructNcsOper structNcsOper) {
         // do nothing
     }
 
     @Override
-    public void newStructRef(final StructRef sref) {
+    public void newAtomSites(
+            final AtomSites atomSites) {
         // do nothing
     }
 
     @Override
-    public void newStructRefSeq(final StructRefSeq sref) {
+    public void newStructRef(final StructRef structRef) {
         // do nothing
     }
 
     @Override
-    public void newStructRefSeqDif(final StructRefSeqDif sref) {
+    public void newStructRefSeq(final StructRefSeq structRefSeq) {
         // do nothing
     }
 
     @Override
-    public void newStructSite(final StructSite sref) {
+    public void newStructRefSeqDif(final StructRefSeqDif structRefSeqDif) {
         // do nothing
     }
 
     @Override
-    public void newStructSiteGen(final StructSiteGen sref) {
+    public void newStructSite(final StructSite structSite) {
+        // do nothing
+    }
+
+    @Override
+    public void newStructSiteGen(final StructSiteGen structSiteGen) {
         // do nothing
     }
 
     @Override
     public void newPdbxPolySeqScheme(
-            final PdbxPolySeqScheme ppss) {
+            final PdbxPolySeqScheme pdbxPolySeqScheme) {
         // do nothing
     }
 
     @Override
     public void newPdbxNonPolyScheme(
-            final PdbxNonPolyScheme ppss) {
+            final PdbxNonPolyScheme pdbxNonPolyScheme) {
         // do nothing
     }
 
     @Override
     public void newPdbxEntityNonPoly(
-            final PdbxEntityNonPoly pen) {
+            final PdbxEntityNonPoly pdbxEntityNonPoly) {
         // do nothing
     }
 
     @Override
-    public final void newStructKeywords(final StructKeywords kw) {
-        idCode = kw.getEntry_id();
-        classification = kw.getPdbx_keywords();
+    public final void newStructKeywords(final StructKeywords structKeywords) {
+        idCode = structKeywords.getEntry_id();
+        classification = structKeywords.getPdbx_keywords();
     }
 
     @Override
-    public final void newRefine(final Refine r) {
+    public final void newRefine(final Refine refine) {
         try {
-            resolution = Double.parseDouble(r.getLs_d_res_high());
+            resolution = Double.parseDouble(refine.getLs_d_res_high());
         } catch (final NumberFormatException e) {
             CifConsumer.LOGGER.warn("Failed to parse _refine.ls_d_res_high: {}",
-                                    r.getLs_d_res_high(), e);
+                                    refine.getLs_d_res_high(), e);
         }
     }
 
     @Override
-    public void newChemComp(final ChemComp c) {
+    public void newChemComp(final ChemComp chemComp) {
         // do nothing
     }
 
     @Override
     public void newChemCompDescriptor(
-            final ChemCompDescriptor ccd) {
+            final ChemCompDescriptor chemCompDescriptor) {
         // do nothing
     }
 
     @Override
     public void newPdbxStructOperList(
-            final PdbxStructOperList structOper) {
+            final PdbxStructOperList pdbxStructOperList) {
         // do nothing
     }
 
     @Override
     public void newPdbxStrucAssembly(
-            final PdbxStructAssembly strucAssembly) {
+            final PdbxStructAssembly pdbxStructAssembly) {
         // do nothing
     }
 
     @Override
     public void newPdbxStrucAssemblyGen(
-            final PdbxStructAssemblyGen strucAssembly) {
+            final PdbxStructAssemblyGen pdbxStructAssemblyGen) {
         // do nothing
     }
 
     @Override
-    public void newChemCompAtom(final ChemCompAtom atom) {
+    public void newChemCompAtom(final ChemCompAtom chemCompAtom) {
         // do nothing
     }
 
     @Override
     public void newPdbxChemCompIndentifier(
-            final PdbxChemCompIdentifier id) {
+            final PdbxChemCompIdentifier pdbxChemCompIdentifier) {
         // do nothing
     }
 
     @Override
-    public void newChemCompBond(final ChemCompBond bond) {
+    public void newChemCompBond(final ChemCompBond chemCompBond) {
         // do nothing
     }
 
     @Override
     public void newPdbxChemCompDescriptor(
-            final PdbxChemCompDescriptor desc) {
+            final PdbxChemCompDescriptor pdbxChemCompDescriptor) {
         // do nothing
     }
 
@@ -397,17 +405,15 @@ public class CifConsumer implements MMcifConsumer {
     }
 
     @Override
-    public void newAuditAuthor(final AuditAuthor aa) {
+    public void newAuditAuthor(final AuditAuthor auditAuthor) {
         // do nothing
     }
 
     @Override
     public final void newGenericData(
-            final String category, final List<String> loopFields,
-            final List<String> lineData) {
-        if (Objects.equals(CifConsumer.PDBX_STRUCT_MOD_RESIDUE, category)) {
-            Map<String, String> map =
-                    CifConsumer.convertToMap(loopFields, lineData);
+            final String s, final List<String> list, final List<String> list1) {
+        if (Objects.equals(CifConsumer.PDBX_STRUCT_MOD_RESIDUE, s)) {
+            Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
             String residueName = map.get("auth_comp_id");
             String chainIdentifier = map.get("auth_asym_id");
@@ -425,10 +431,9 @@ public class CifConsumer implements MMcifConsumer {
                                       residueNumber, insertionCode,
                                       standardResidueName, comment);
             modifiedResidues.add(modresLine);
-        } else if (Objects.equals(CifConsumer.PDBX_UNOBS_OR_ZERO_OCC_RESIDUES,
-                                  category)) {
-            Map<String, String> map =
-                    CifConsumer.convertToMap(loopFields, lineData);
+        } else if (Objects
+                .equals(CifConsumer.PDBX_UNOBS_OR_ZERO_OCC_RESIDUES, s)) {
+            Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
             int modelNumber = Integer.parseInt(map.get("PDB_model_num"));
             String residueName = map.get("auth_comp_id");
@@ -445,10 +450,8 @@ public class CifConsumer implements MMcifConsumer {
                                          chainIdentifier, residueNumber,
                                          insertionCode);
             missingResidues.add(remark465Line);
-        } else if (Objects
-                .equals(CifConsumer.NDB_STRUCT_NA_BASE_PAIR, category)) {
-            Map<String, String> map =
-                    CifConsumer.convertToMap(loopFields, lineData);
+        } else if (Objects.equals(CifConsumer.NDB_STRUCT_NA_BASE_PAIR, s)) {
+            Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
             String chainL = map.get("i_auth_asym_id");
             int resiL = Integer.parseInt(map.get("i_auth_seq_id"));
@@ -547,8 +550,8 @@ public class CifConsumer implements MMcifConsumer {
 
     @Override
     public final void setFileParsingParameters(
-            final FileParsingParameters params) {
-        parameters = params;
+            final FileParsingParameters fileParsingParameters) {
+        parameters = fileParsingParameters;
     }
 
     @Override
