@@ -9,16 +9,32 @@ import pl.poznan.put.utility.svg.SVGHelper;
 import java.awt.geom.Rectangle2D;
 
 public abstract class AbstractDrawable implements Drawable {
-    protected SVGDocument svgDocument = SVGHelper.emptyDocument();
-    protected SVGGraphics2D svgGraphics = new SVGGraphics2D(svgDocument);
+    private SVGDocument svgDocument = SVGHelper.emptyDocument();
+    private SVGGraphics2D svgGraphics = new SVGGraphics2D(svgDocument);
 
-    public SVGDocument finalizeDrawingAndGetSVG() {
+    protected final SVGDocument finalizeDrawingAndGetSvg() {
         SVGSVGElement rootElement = svgDocument.getRootElement();
         svgGraphics.getRoot(rootElement);
         Rectangle2D box = SVGHelper.calculateBoundingBox(svgDocument);
         rootElement.setAttributeNS(null, SVGConstants.SVG_VIEW_BOX_ATTRIBUTE,
-                                   box.getX() + " " + box.getY() + " " + box
-                                           .getWidth() + " " + box.getHeight());
+                                   box.getX() + " " + box.getY() + ' ' + box
+                                           .getWidth() + ' ' + box.getHeight());
         return svgDocument;
+    }
+
+    public final SVGDocument getSvgDocument() {
+        return svgDocument;
+    }
+
+    public final void setSvgDocument(final SVGDocument svgDocument) {
+        this.svgDocument = svgDocument;
+    }
+
+    public final SVGGraphics2D getSvgGraphics() {
+        return svgGraphics;
+    }
+
+    public final void setSvgGraphics(final SVGGraphics2D svgGraphics) {
+        this.svgGraphics = svgGraphics;
     }
 }
