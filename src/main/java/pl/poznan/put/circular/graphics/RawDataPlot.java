@@ -1,56 +1,70 @@
 package pl.poznan.put.circular.graphics;
 
 import org.apache.batik.svggen.SVGGraphics2D;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.svg.SVGDocument;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.Axis;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
-import pl.poznan.put.circular.exception.InvalidCircularValueException;
-import pl.poznan.put.circular.exception.InvalidVectorFormatException;
-import pl.poznan.put.utility.svg.Format;
-import pl.poznan.put.utility.svg.SVGHelper;
+import pl.poznan.put.circular.utility.Helper;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class RawDataPlot extends AbstractDrawable {
-    protected final Collection<? extends Circular> data;
-    protected final double diameter;
-    protected final boolean isAxes;
+    public static void main(final String[] args)
+            throws IOException, FileNotFoundException {
+        /*
+         * First example
+         */
+        String circularsData = Helper.readResource("example/D01");
+        List<Circular> circulars = Helper.loadHourMinuteData(circularsData);
+        Drawable circularsPlot = new RawDataPlot(circulars);
+        SVGDocument circularsSvg = circularsPlot.draw();
+        Helper.exportSvg(circularsSvg, File.createTempFile("D01", ".svg"));
+
+        /*
+         * Second example
+         */
+        String axesData = Helper.readResource("example/D02");
+        List<Axis> axes = Helper.loadAxisData(axesData);
+        Drawable axesPlot = new RawDataPlot(axes);
+        SVGDocument axesSvg = axesPlot.draw();
+        Helper.exportSvg(axesSvg, File.createTempFile("D02", ".svg"));
+    }
+
+    private final Collection<? extends Circular> data;
+    private final double diameter;
+    private final boolean isAxes;
     private final double majorTickSpread;
     private final double minorTickSpread;
 
-    protected double centerX;
-    protected double centerY;
-    protected double radius;
+    private double centerX;
+    private double centerY;
+    private double radius;
 
     public RawDataPlot(
-            Collection<Circular> data, double diameter, double majorTickSpread,
-            double minorTickSpread) throws InvalidCircularOperationException {
+            final Collection<Circular> data, final double diameter,
+            final double majorTickSpread, final double minorTickSpread) {
         super();
-        this.data = data;
+        this.data = new ArrayList<>(data);
         this.diameter = diameter;
         this.majorTickSpread = majorTickSpread;
         this.minorTickSpread = minorTickSpread;
 
-        if (data.size() == 0) {
+        if (data.isEmpty()) {
             throw new InvalidCircularOperationException(
                     "A dataset cannot be empty!");
         }
 
-        this.isAxes = data.iterator().next() instanceof Axis;
+        isAxes = data.iterator().next() instanceof Axis;
         init();
     }
 
@@ -62,183 +76,120 @@ public class RawDataPlot extends AbstractDrawable {
         radius = diameter / 2.0;
     }
 
-    public RawDataPlot(Collection<Circular> data, double diameter)
-            throws InvalidCircularOperationException {
+    public RawDataPlot(final Collection<Circular> data, final double diameter) {
         super();
-        this.data = data;
+        this.data = new ArrayList<>(data);
         this.diameter = diameter;
-        this.majorTickSpread = Math.PI / 2;
-        this.minorTickSpread = Math.PI / 12;
+        majorTickSpread = Math.PI / 2;
+        minorTickSpread = Math.PI / 12;
 
-        if (data.size() == 0) {
+        if (data.isEmpty()) {
             throw new InvalidCircularOperationException(
                     "A dataset cannot be empty!");
         }
 
-        this.isAxes = data.iterator().next() instanceof Axis;
+        isAxes = data.iterator().next() instanceof Axis;
         init();
     }
 
-    public RawDataPlot(Collection<? extends Circular> data)
-            throws InvalidCircularOperationException {
+    public RawDataPlot(final Collection<? extends Circular> data) {
         super();
-        this.data = data;
-        this.diameter = 1024;
-        this.majorTickSpread = Math.PI / 2;
-        this.minorTickSpread = Math.PI / 12;
+        this.data = new ArrayList<>(data);
+        diameter = 1024;
+        majorTickSpread = Math.PI / 2;
+        minorTickSpread = Math.PI / 12;
 
-        if (data.size() == 0) {
+        if (data.isEmpty()) {
             throw new InvalidCircularOperationException(
                     "A dataset cannot be empty!");
         }
 
-        this.isAxes = data.iterator().next() instanceof Axis;
+        isAxes = data.iterator().next() instanceof Axis;
         init();
-    }
-
-    public static void main(String[] args)
-            throws IOException, InvalidVectorFormatException,
-                   InvalidCircularValueException,
-                   InvalidCircularOperationException {
-        /*
-         * First example
-         */
-        List<Circular> data = new ArrayList<Circular>();
-        List<String> lines = FileUtils.readLines(new File("data/D01"), "UTF-8");
-
-        for (String line : lines) {
-            if (line.startsWith("#")) {
-                continue;
-            }
-
-            for (String token : StringUtils.split(line)) {
-                if (!StringUtils.isBlank(token)) {
-                    data.add(Angle.fromHourMinuteString(token));
-                }
-            }
-        }
-
-        RawDataPlot plot = new RawDataPlot(data);
-        plot.draw();
-        SVGDocument svgDocument = plot.finalizeDrawingAndGetSVG();
-        OutputStream stream = null;
-
-        try {
-            stream = new FileOutputStream("/tmp/D01-plot.svg");
-            IOUtils.write(SVGHelper.export(svgDocument, Format.SVG), stream);
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
-
-        /*
-         * Second example
-         */
-        data.clear();
-        lines = FileUtils.readLines(new File("data/D02"), "UTF-8");
-
-        for (String line : lines) {
-            if (line.startsWith("#")) {
-                continue;
-            }
-
-            for (String token : StringUtils.split(line)) {
-                if (!StringUtils.isBlank(token)) {
-                    double degrees = Double.parseDouble(token);
-                    data.add(new Axis(Math.toRadians(degrees)));
-                }
-            }
-        }
-
-        plot = new RawDataPlot(data);
-        plot.draw();
-        svgDocument = plot.finalizeDrawingAndGetSVG();
-
-        try {
-            stream = new FileOutputStream("/tmp/D02-plot.svg");
-            IOUtils.write(SVGHelper.export(svgDocument, Format.SVG), stream);
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
     }
 
     @Override
-    public void draw() throws InvalidCircularValueException {
+    public SVGDocument draw() {
         // main circle
-        svgGraphics.drawOval(0, 0, (int) diameter, (int) diameter);
+        getSvgGraphics().drawOval(0, 0, (int) diameter, (int) diameter);
         // ticks
         double rminor = 0.95 * radius;
         double rmajor = 0.85 * radius;
-        drawTicks(svgGraphics, minorTickSpread, rminor);
-        drawTicks(svgGraphics, majorTickSpread, rmajor);
+        drawTicks(getSvgGraphics(), minorTickSpread, rminor);
+        drawTicks(getSvgGraphics(), majorTickSpread, rmajor);
 
         // observations for every degree on a circle (map key = 0..360)
-        Map<Integer, List<Circular>> observations =
-                new TreeMap<Integer, List<Circular>>();
+        Map<Integer, List<Circular>> observations = new TreeMap<>();
 
-        for (Circular circular : data) {
+        for (final Circular circular : data) {
             double degrees = circular.getDegrees360();
             int index = (int) degrees;
 
             if (!observations.containsKey(index)) {
-                observations.put(index, new ArrayList<Circular>());
+                observations.put(index, new ArrayList<>());
             }
             observations.get(index).add(circular);
         }
 
         double observationSize = 0.02 * radius;
 
-        for (Entry<Integer, List<Circular>> entry : observations.entrySet()) {
+        for (final Map.Entry<Integer, List<Circular>> entry : observations
+                .entrySet()) {
             // 't' = angle as in XY coordinate system
             int degree = entry.getKey();
-            double t =
-                    -(Math.toRadians(degree) + Math.PI * 3 / 2) % (2 * Math.PI);
+            double t = -(Math.toRadians(degree) + ((Math.PI * 3) / 2)) % (2
+                                                                          *
+                                                                          Math.PI);
             // point on circle
-            double x = centerX + radius * Math.cos(t);
-            double y = centerY + radius * Math.sin(t);
+            double x = centerX + (radius * StrictMath.cos(t));
+            double y = centerY + (radius * StrictMath.sin(t));
             // 'a', 'b' = equation for a line from center to this point
             double a = (x - centerX) / (y - centerY);
 
             int i = 0;
-            for (Circular circular : entry.getValue()) {
+            for (final Circular circular : entry.getValue()) {
                 // point on virtual circle
-                double virtualRadius = radius + (i + 1) * observationSize;
-                double xv = centerX + virtualRadius * Math.cos(t);
-                double yv = centerY + virtualRadius * Math.sin(t);
+                double virtualRadius = radius + ((i + 1) * observationSize);
+                double xv = centerX + (virtualRadius * StrictMath.cos(t));
+                double yv = centerY + (virtualRadius * StrictMath.sin(t));
 
                 if (circular instanceof Angle) {
-                    double x1, y1, x2, y2;
+                    double x1;
+                    double y1;
+                    double x2;
+                    double y2;
 
                     // special case is required for 90 and 270 degrees
-                    if (degree == 90 || degree == 270) {
+                    if ((degree == 90) || (degree == 270)) {
                         x1 = xv;
-                        y1 = yv + observationSize / 2;
+                        y1 = yv + (observationSize / 2);
                         x2 = xv;
-                        y2 = yv - observationSize / 2;
+                        y2 = yv - (observationSize / 2);
                     } else {
                         // 'ap', 'bp' = equation for perpendicular line to 'a',
                         // 'b'
                         double ap = -a;
-                        double bp = yv + a * xv;
+                        double bp = yv + (a * xv);
                         // 'sa', 'sb', 'sc' = square equation parameters
-                        double sa = 1 + Math.pow(ap, 2);
-                        double sb = -2 * xv + 2 * ap * (bp - yv);
-                        double sc =
-                                Math.pow(xv, 2) + Math.pow(bp - yv, 2) - Math
-                                        .pow(observationSize / 2, 2);
+                        double sa = 1 + StrictMath.pow(ap, 2);
+                        double sb = (-2 * xv) + (2 * ap * (bp - yv));
+                        double sc = (StrictMath.pow(xv, 2) + StrictMath
+                                .pow(bp - yv, 2)) - StrictMath
+                                            .pow(observationSize / 2, 2);
                         // solve
-                        double delta = sb * sb - 4 * sa * sc;
+                        double delta = (sb * sb) - (4 * sa * sc);
                         x1 = (-sb - Math.sqrt(delta)) / (2 * sa);
-                        y1 = ap * x1 + bp;
+                        y1 = (ap * x1) + bp;
                         x2 = (-sb + Math.sqrt(delta)) / (2 * sa);
-                        y2 = ap * x2 + bp;
+                        y2 = (ap * x2) + bp;
                     }
 
                     // last point is one step further
-                    virtualRadius = radius + (i + 2) * observationSize;
-                    double x3 = centerX + virtualRadius * Math.cos(t);
-                    double y3 = centerY + virtualRadius * Math.sin(t);
+                    virtualRadius = radius + ((i + 2) * observationSize);
+                    double x3 = centerX + (virtualRadius * StrictMath.cos(t));
+                    double y3 = centerY + (virtualRadius * StrictMath.sin(t));
 
-                    svgGraphics.drawPolygon(
+                    getSvgGraphics().drawPolygon(
                             new int[]{(int) x1, (int) x2, (int) x3}, new int[]{
                                     (int) (diameter - y1),
                                     (int) (diameter - y2),
@@ -247,35 +198,81 @@ public class RawDataPlot extends AbstractDrawable {
                 } else if (circular instanceof Axis) {
                     xv -= observationSize / 2.0;
                     yv += observationSize / 2.0;
-                    svgGraphics.drawOval((int) xv, (int) (diameter - yv),
-                                         (int) observationSize,
-                                         (int) observationSize);
-                    xv = centerX + virtualRadius * Math.cos(t + Math.PI)
-                         - observationSize / 2.0;
-                    yv = centerY + virtualRadius * Math.sin(t + Math.PI)
-                         + observationSize / 2.0;
-                    svgGraphics.drawOval((int) xv, (int) (diameter - yv),
-                                         (int) observationSize,
-                                         (int) observationSize);
+                    getSvgGraphics().drawOval((int) xv, (int) (diameter - yv),
+                                              (int) observationSize,
+                                              (int) observationSize);
+                    xv = (centerX + (virtualRadius * StrictMath
+                            .cos(t + Math.PI))) - (observationSize / 2.0);
+                    yv = centerY + (virtualRadius * StrictMath.sin(t + Math.PI))
+                         + (observationSize / 2.0);
+                    getSvgGraphics().drawOval((int) xv, (int) (diameter - yv),
+                                              (int) observationSize,
+                                              (int) observationSize);
                     i += 1;
                 }
             }
         }
+        return finalizeDrawingAndGetSvg();
     }
 
     private void drawTicks(
-            SVGGraphics2D graphics, double tickSpread, double virtualRadius) {
-        for (double d = 0; d < 2 * Math.PI; d += tickSpread) {
+            final SVGGraphics2D graphics, final double tickSpread,
+            final double virtualRadius) {
+        for (double d = 0; d < (2 * Math.PI); d += tickSpread) {
             // angle as in XY coordinate system
-            double t = -(d + Math.PI * 3 / 2) % (2 * Math.PI);
+            double t = -(d + ((Math.PI * 3) / 2)) % (2 * Math.PI);
             // point on virtual circle
-            double xv = centerX + virtualRadius * Math.cos(t);
-            double yv = centerY + virtualRadius * Math.sin(t);
+            double xv = centerX + (virtualRadius * StrictMath.cos(t));
+            double yv = centerY + (virtualRadius * StrictMath.sin(t));
             // point on circle
-            double x = centerX + radius * Math.cos(t);
-            double y = centerY + radius * Math.sin(t);
+            double x = centerX + (radius * StrictMath.cos(t));
+            double y = centerY + (radius * StrictMath.sin(t));
             graphics.drawLine((int) xv, (int) (diameter - yv), (int) x,
                               (int) (diameter - y));
         }
+    }
+
+    public final Collection<? extends Circular> getData() {
+        return Collections.unmodifiableCollection(data);
+    }
+
+    public final double getDiameter() {
+        return diameter;
+    }
+
+    public final boolean isAxes() {
+        return isAxes;
+    }
+
+    public final double getMajorTickSpread() {
+        return majorTickSpread;
+    }
+
+    public final double getMinorTickSpread() {
+        return minorTickSpread;
+    }
+
+    public final double getCenterX() {
+        return centerX;
+    }
+
+    public final void setCenterX(final double centerX) {
+        this.centerX = centerX;
+    }
+
+    public final double getCenterY() {
+        return centerY;
+    }
+
+    public final void setCenterY(final double centerY) {
+        this.centerY = centerY;
+    }
+
+    public final double getRadius() {
+        return radius;
+    }
+
+    public final void setRadius(final double radius) {
+        this.radius = radius;
     }
 }
