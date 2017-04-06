@@ -9,6 +9,7 @@ import org.w3c.dom.svg.SVGDocument;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.Axis;
 import pl.poznan.put.circular.Circular;
+import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
 
@@ -119,7 +120,7 @@ public final class Helper {
             for (final String token : StringUtils.split(line)) {
                 if (!StringUtils.isBlank(token)) {
                     double degrees = Double.parseDouble(token);
-                    data.add(new Axis(Math.toRadians(degrees)));
+                    data.add(new Axis(degrees, ValueType.DEGREES));
                 }
             }
         }

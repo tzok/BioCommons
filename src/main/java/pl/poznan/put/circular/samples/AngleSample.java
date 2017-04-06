@@ -10,6 +10,7 @@ import org.apache.commons.math3.optim.univariate.UnivariateOptimizer;
 import org.apache.commons.math3.optim.univariate.UnivariatePointValuePair;
 import org.apache.commons.math3.util.MathUtils;
 import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
 
 import java.util.ArrayList;
@@ -56,7 +57,8 @@ public final class AngleSample {
                            .pow(circularVariance, 2);
 
         UnivariatePointValuePair medianFunctionRoot = minimizeMedianFunction();
-        medianDirection = new Angle(medianFunctionRoot.getPoint());
+        medianDirection =
+                new Angle(medianFunctionRoot.getPoint(), ValueType.RADIANS);
         meanDeviation = medianFunctionRoot.getValue();
     }
 
@@ -76,8 +78,9 @@ public final class AngleSample {
 
                 for (final Angle vector : data) {
                     sum += Angle.subtractByMinimum(Math.PI,
-                                                   Angle.subtractByMinimum(vector.getRadians(),
-                                                                           v));
+                                                   Angle.subtractByMinimum(
+                                                           vector.getRadians(),
+                                                           v));
                 }
 
                 return Math.PI - (sum / data.size());
@@ -122,7 +125,7 @@ public final class AngleSample {
             mi = (StrictMath.atan(s / c) + (2 * Math.PI)) % (2 * Math.PI);
         }
 
-        return new TrigonometricMoment(new Angle(mi), rho);
+        return new TrigonometricMoment(new Angle(mi, ValueType.RADIANS), rho);
     }
 
     public Angle getMeanDirection() {

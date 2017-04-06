@@ -1,26 +1,28 @@
 package pl.poznan.put.circular;
 
 import org.junit.Test;
+import pl.poznan.put.circular.enums.ValueType;
 
 import static org.junit.Assert.assertEquals;
 
 public class AngleTest {
     @Test
     public void fromHourMinuteString() throws Exception {
-        assertEquals(new Angle(0), Angle.fromHourMinuteString("00.00"));
-        assertEquals(new Angle(Math.toRadians(45)),
+        assertEquals(new Angle(0, ValueType.DEGREES),
+                     Angle.fromHourMinuteString("00.00"));
+        assertEquals(new Angle(45, ValueType.DEGREES),
                      Angle.fromHourMinuteString("03.00"));
-        assertEquals(new Angle(Math.toRadians(90)),
+        assertEquals(new Angle(90, ValueType.DEGREES),
                      Angle.fromHourMinuteString("06.00"));
-        assertEquals(new Angle(Math.toRadians(135)),
+        assertEquals(new Angle(135, ValueType.DEGREES),
                      Angle.fromHourMinuteString("09.00"));
-        assertEquals(new Angle(Math.toRadians(180)),
+        assertEquals(new Angle(180, ValueType.DEGREES),
                      Angle.fromHourMinuteString("12.00"));
-        assertEquals(new Angle(Math.toRadians(225)),
+        assertEquals(new Angle(225, ValueType.DEGREES),
                      Angle.fromHourMinuteString("15.00"));
-        assertEquals(new Angle(Math.toRadians(270)),
+        assertEquals(new Angle(270, ValueType.DEGREES),
                      Angle.fromHourMinuteString("18.00"));
-        assertEquals(new Angle(Math.toRadians(315)),
+        assertEquals(new Angle(315, ValueType.DEGREES),
                      Angle.fromHourMinuteString("21.00"));
     }
 

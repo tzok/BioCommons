@@ -1,15 +1,16 @@
 package pl.poznan.put.circular;
 
 import org.apache.commons.math3.util.MathUtils;
+import pl.poznan.put.circular.enums.ValueType;
 
 import java.util.Objects;
 
 public abstract class Circular implements Comparable<Circular> {
     private final double radians;
 
-    protected Circular(final double radians) {
+    protected Circular(final double value, final ValueType valueType) {
         super();
-        this.radians = radians;
+        radians = valueType.toRadians(value);
     }
 
     public final double getRadians() {
@@ -46,7 +47,7 @@ public abstract class Circular implements Comparable<Circular> {
     }
 
     @Override
-    public final String toString() {
+    public String toString() {
         return !isValid() ? "invalid"
                           : (radians + " rad\t" + Math.toDegrees(radians)
                              + " deg");

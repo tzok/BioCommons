@@ -1,6 +1,8 @@
 package pl.poznan.put.circular;
 
 import org.apache.commons.math3.util.MathUtils;
+import pl.poznan.put.circular.enums.Range;
+import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 
@@ -11,11 +13,12 @@ import pl.poznan.put.circular.exception.InvalidVectorFormatException;
  * @author tzok
  */
 public class Angle extends Circular {
-    private static final Angle INVALID = new Angle(Double.NaN);
+    private static final Angle INVALID =
+            new Angle(Double.NaN, ValueType.RADIANS);
     private static final int MINUTES_IN_DAY = 24 * 60;
 
-    public Angle(final double radians) {
-        super(radians);
+    public Angle(final double value, final ValueType valueType) {
+        super(value, valueType);
     }
 
     public static Angle invalidInstance() {
@@ -47,7 +50,8 @@ public class Angle extends Circular {
             int minutes = Integer.parseInt(split[1]);
             minutes += hours * 60;
             return new Angle(
-                    (MathUtils.TWO_PI * minutes) / Angle.MINUTES_IN_DAY);
+                    (MathUtils.TWO_PI * minutes) / Angle.MINUTES_IN_DAY,
+                    ValueType.RADIANS);
         } catch (final NumberFormatException e) {
             throw new InvalidVectorFormatException(
                     "Required format is HH.MM eg. 02.40. The input given was: "
@@ -56,12 +60,14 @@ public class Angle extends Circular {
     }
 
     public final Angle multiply(final double n) {
-        return new Angle((getRadians() * n) % MathUtils.TWO_PI);
+        return new Angle((getRadians() * n) % MathUtils.TWO_PI,
+                         ValueType.RADIANS);
     }
 
     public final Angle subtract(final Angle other) {
         return new Angle(
-                Angle.subtractByMinimum(getRadians(), other.getRadians()));
+                Angle.subtractByMinimum(getRadians(), other.getRadians()),
+                ValueType.RADIANS);
     }
 
     public static double subtractByMinimum(
@@ -77,5 +83,10 @@ public class Angle extends Circular {
         v = Math.min(1, v);
         v = Math.max(-1, v);
         return StrictMath.acos(v);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ' ' + Range.fromAngle(this).getDisplayName();
     }
 }
