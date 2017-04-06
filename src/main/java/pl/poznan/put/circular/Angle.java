@@ -60,12 +60,22 @@ public class Angle extends Circular {
     }
 
     public final Angle subtract(final Angle other) {
-        return new Angle(Angle.subtract(getRadians(), other.getRadians()));
+        return new Angle(
+                Angle.subtractByMinimum(getRadians(), other.getRadians()));
     }
 
-    public static double subtract(
-            final double radians1, final double radians2) {
-        double d = Math.abs(radians1 - radians2);
+    public static double subtractByMinimum(
+            final double left, final double right) {
+        double d = Math.abs(left - right);
         return Math.min(d, (2 * Math.PI) - d);
+    }
+
+    public static double subtractAsVectors(
+            final double left, final double right) {
+        double v = (StrictMath.sin(left) * StrictMath.sin(right)) + (
+                StrictMath.cos(left) * StrictMath.cos(right));
+        v = Math.min(1, v);
+        v = Math.max(-1, v);
+        return StrictMath.acos(v);
     }
 }

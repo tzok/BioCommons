@@ -74,7 +74,7 @@ public final class Helper {
 
     /**
      * Parse input string in the following way: lines beginning with # are
-     * ignored, all other are tokenized. Each token is treated as HH:MM
+     * ignored, all other are tokenized. Each token is treated as HH.MM
      * datapoint converted into an {@link Circular}.
      *
      * @param content Input string.

@@ -75,9 +75,9 @@ public final class AngleSample {
                 double sum = 0;
 
                 for (final Angle vector : data) {
-                    sum += Angle.subtract(Math.PI,
-                                          Angle.subtract(vector.getRadians(),
-                                                         v));
+                    sum += Angle.subtractByMinimum(Math.PI,
+                                                   Angle.subtractByMinimum(vector.getRadians(),
+                                                                           v));
                 }
 
                 return Math.PI - (sum / data.size());
