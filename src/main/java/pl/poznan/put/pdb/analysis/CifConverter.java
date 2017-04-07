@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbExpdtaLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark2Line;
@@ -336,8 +337,13 @@ public final class CifConverter {
         pdbBuilder.append(firstModel.getHeaderLine())
                   .append(System.lineSeparator());
 
-        pdbBuilder.append(firstModel.getExperimentalDataLine())
-                  .append(System.lineSeparator());
+        PdbExpdtaLine experimentalDataLine =
+                firstModel.getExperimentalDataLine();
+        if (experimentalDataLine.isValid()) {
+            pdbBuilder.append(experimentalDataLine)
+                      .append(System.lineSeparator());
+        }
+
         pdbBuilder.append(PdbRemark2Line.PROLOGUE)
                   .append(System.lineSeparator());
         pdbBuilder.append(firstModel.getResolutionLine())

@@ -12,7 +12,7 @@ public abstract class Sugar extends NucleicAcidResidueComponent {
             };
 
     protected Sugar(final List<AtomName> atoms) {
-        super(RNAResidueComponentType.SUGAR, atoms);
+        super(RNAResidueComponentType.RIBOSE, atoms);
     }
 
     public static Sugar invalidInstance() {

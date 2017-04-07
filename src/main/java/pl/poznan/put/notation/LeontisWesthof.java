@@ -143,4 +143,48 @@ public enum LeontisWesthof {
                                     : cs[2] == 'H' ? "Hoogsteen"
                                                    : "Sugar Edge");
     }
+
+    public LeontisWesthof invert() {
+        switch (this) {
+            case CWW:
+                return LeontisWesthof.CWW;
+            case CWH:
+                return LeontisWesthof.CHW;
+            case CWS:
+                return LeontisWesthof.CSW;
+            case CHW:
+                return LeontisWesthof.CWH;
+            case CHH:
+                return LeontisWesthof.CHH;
+            case CHS:
+                return LeontisWesthof.CSH;
+            case CSW:
+                return LeontisWesthof.CWS;
+            case CSH:
+                return LeontisWesthof.CHS;
+            case CSS:
+                return LeontisWesthof.CSS;
+            case TWW:
+                return LeontisWesthof.TWW;
+            case TWH:
+                return LeontisWesthof.THW;
+            case TWS:
+                return LeontisWesthof.TSW;
+            case THW:
+                return LeontisWesthof.TWH;
+            case THH:
+                return LeontisWesthof.THH;
+            case THS:
+                return LeontisWesthof.TSH;
+            case TSW:
+                return LeontisWesthof.TWS;
+            case TSH:
+                return LeontisWesthof.THS;
+            case TSS:
+                return LeontisWesthof.TSS;
+            case UNKNOWN:
+            default:
+                return LeontisWesthof.UNKNOWN;
+        }
+    }
 }

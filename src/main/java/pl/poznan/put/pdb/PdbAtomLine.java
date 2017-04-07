@@ -109,7 +109,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         Group group = atom.getGroup();
         String residueName = group.getPDBName();
         ResidueNumber residueNumberObject = group.getResidueNumber();
-        String chainIdentifier = residueNumberObject.getChainId();
+        String chainIdentifier = residueNumberObject.getChainName();
         int residueNumber = residueNumberObject.getSeqNum();
         String insertionCode = (residueNumberObject.getInsCode() == null) ? " "
                                                                           :
@@ -303,6 +303,14 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     public final PdbAtomLine replaceResidueNumber(final int residueNumberNew) {
         return new PdbAtomLine(serialNumber, atomName, alternateLocation,
                                residueName, chainIdentifier, residueNumberNew,
+                               insertionCode, x, y, z, occupancy,
+                               temperatureFactor, elementSymbol, charge);
+    }
+
+    public final PdbAtomLine replaceAlternateLocation(
+            final String alternateLocationNew) {
+        return new PdbAtomLine(serialNumber, atomName, alternateLocationNew,
+                               residueName, chainIdentifier, residueNumber,
                                insertionCode, x, y, z, occupancy,
                                temperatureFactor, elementSymbol, charge);
     }

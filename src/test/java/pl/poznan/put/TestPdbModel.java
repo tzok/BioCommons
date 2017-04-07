@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
@@ -268,13 +269,14 @@ public class TestPdbModel {
         PdbModel model = models.get(0);
 
         PDBFileParser fileParser = new PDBFileParser();
-        Structure structure = fileParser
-                .parsePDBFile(IOUtils.toInputStream(model.toPdbString()));
+        Structure structure = fileParser.parsePDBFile(
+                IOUtils.toInputStream(model.toPdbString(),
+                                      Charset.defaultCharset()));
 
         assertEquals(1, structure.getChains().size());
         assertEquals(1, model.getChains().size());
 
-        assertEquals(76, structure.getChain(0).getAtomGroups().size());
+        assertEquals(76, structure.getChain("A").getAtomGroups().size());
         assertEquals(76, model.getChains().get(0).getResidues().size());
     }
 

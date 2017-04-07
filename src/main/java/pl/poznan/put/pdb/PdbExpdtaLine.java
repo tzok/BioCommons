@@ -61,6 +61,11 @@ public class PdbExpdtaLine implements Serializable {
         return Collections.unmodifiableList(experimentalTechniques);
     }
 
+    public final boolean isValid() {
+        return !experimentalTechniques.isEmpty() && (
+                experimentalTechniques.get(0) != ExperimentalTechnique.UNKNOWN);
+    }
+
     @Override
     public final String toString() {
         StringBuilder builder = new StringBuilder();

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.io.mmcif.MMcifConsumer;
 import org.biojava.nbio.structure.io.mmcif.model.AtomSite;
+import org.biojava.nbio.structure.io.mmcif.model.AtomSites;
 import org.biojava.nbio.structure.io.mmcif.model.AuditAuthor;
 import org.biojava.nbio.structure.io.mmcif.model.Cell;
 import org.biojava.nbio.structure.io.mmcif.model.ChemComp;
@@ -14,6 +15,7 @@ import org.biojava.nbio.structure.io.mmcif.model.DatabasePDBremark;
 import org.biojava.nbio.structure.io.mmcif.model.DatabasePDBrev;
 import org.biojava.nbio.structure.io.mmcif.model.DatabasePdbrevRecord;
 import org.biojava.nbio.structure.io.mmcif.model.Entity;
+import org.biojava.nbio.structure.io.mmcif.model.EntityPoly;
 import org.biojava.nbio.structure.io.mmcif.model.EntityPolySeq;
 import org.biojava.nbio.structure.io.mmcif.model.EntitySrcGen;
 import org.biojava.nbio.structure.io.mmcif.model.EntitySrcNat;
@@ -41,6 +43,8 @@ import org.biojava.nbio.structure.io.mmcif.model.StructSiteGen;
 import org.biojava.nbio.structure.io.mmcif.model.Symmetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.poznan.put.notation.BPh;
+import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.ExperimentalTechnique;
@@ -175,7 +179,7 @@ public class CifConsumer implements MMcifConsumer {
             }
 
             if (!modelAtoms.containsKey(modelNumber)) {
-                modelAtoms.put(modelNumber, new ArrayList<PdbAtomLine>());
+                modelAtoms.put(modelNumber, new ArrayList<>());
             }
 
             List<PdbAtomLine> atomLines = modelAtoms.get(modelNumber);
@@ -187,6 +191,11 @@ public class CifConsumer implements MMcifConsumer {
 
     @Override
     public void newEntity(final Entity entity) {
+        // do nothing
+    }
+
+    @Override
+    public void newEntityPoly(final EntityPoly entityPoly) {
         // do nothing
     }
 
@@ -256,6 +265,12 @@ public class CifConsumer implements MMcifConsumer {
 
     @Override
     public void newStructNcsOper(final StructNcsOper structNcsOper) {
+        // do nothing
+    }
+
+    @Override
+    public void newAtomSites(
+            final AtomSites atomSites) {
         // do nothing
     }
 
@@ -483,8 +498,9 @@ public class CifConsumer implements MMcifConsumer {
                     .getDoubleWithDefaultNaN(map, CifConsumer.OPENING);
             QuantifiedBasePair quantifiedBasePair =
                     new QuantifiedBasePair(basePair, saenger, leontisWesthof,
-                                           shear, stretch, stagger, buckle,
-                                           propeller, opening);
+                                           BPh.UNKNOWN, BR.UNKNOWN, shear,
+                                           stretch, stagger, buckle, propeller,
+                                           opening);
             basePairs.add(quantifiedBasePair);
         }
     }

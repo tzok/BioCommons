@@ -12,6 +12,7 @@ import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -25,9 +26,12 @@ public class TestCifParser {
     @Before
     public void readTestData() throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        cif100D = IOUtils.toString(classLoader.getResourceAsStream("100D.cif"));
-        cif148L = IOUtils.toString(classLoader.getResourceAsStream("148L.cif"));
-        cif5A93 = IOUtils.toString(classLoader.getResourceAsStream("5A93.cif"));
+        cif100D = IOUtils.toString(classLoader.getResourceAsStream("100D.cif"),
+                                   Charset.defaultCharset());
+        cif148L = IOUtils.toString(classLoader.getResourceAsStream("148L.cif"),
+                                   Charset.defaultCharset());
+        cif5A93 = IOUtils.toString(classLoader.getResourceAsStream("5A93.cif"),
+                                   Charset.defaultCharset());
     }
 
     @Test

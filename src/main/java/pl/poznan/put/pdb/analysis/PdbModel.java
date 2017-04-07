@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
+import org.apache.commons.lang3.tuple.Pair;
+import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbExpdtaLine;
 import pl.poznan.put.pdb.PdbHeaderLine;
@@ -287,12 +289,24 @@ public class PdbModel implements Serializable, ResidueCollection {
 
     @SuppressWarnings("HardcodedLineSeparator")
     public final String toPdbString() {
+        Collection<Pair<PdbResidueIdentifier, AtomName>> resolved =
+                new HashSet<>();
         StringBuilder builder = new StringBuilder();
+
         for (final PdbResidue residue : residues) {
             for (final PdbAtomLine atom : residue.getAtoms()) {
-                builder.append(atom).append('\n');
+                Pair<PdbResidueIdentifier, AtomName> pair =
+                        Pair.of(residue.getResidueIdentifier(),
+                                atom.detectAtomName());
+
+                if (!resolved.contains(pair)) {
+                    builder.append(atom.replaceAlternateLocation(" "))
+                           .append('\n');
+                    resolved.add(pair);
+                }
             }
         }
+
         return builder.toString();
     }
 
@@ -302,9 +316,19 @@ public class PdbModel implements Serializable, ResidueCollection {
         builder.append("data_").append(getIdCode()).append('\n');
         builder.append(PdbAtomLine.CIF_LOOP).append('\n');
 
+        Collection<Pair<PdbResidueIdentifier, AtomName>> resolved =
+                new HashSet<>();
         for (final PdbResidue residue : residues) {
             for (final PdbAtomLine atom : residue.getAtoms()) {
-                builder.append(atom.toCif()).append('\n');
+                Pair<PdbResidueIdentifier, AtomName> pair =
+                        Pair.of(residue.getResidueIdentifier(),
+                                atom.detectAtomName());
+
+                if (!resolved.contains(pair)) {
+                    builder.append(atom.replaceAlternateLocation(" ").toCif())
+                           .append('\n');
+                    resolved.add(pair);
+                }
             }
         }
 

@@ -5,9 +5,13 @@ import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
+import pl.poznan.put.structure.secondary.BasePair;
+import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -17,16 +21,45 @@ public class DotBracketFromPdb extends DotBracket {
     private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol =
             new HashMap<>();
 
-    public DotBracketFromPdb(final DotBracket dotBracket, final PdbModel model)
+    public DotBracketFromPdb(
+            final DotBracket dotBracket, final PdbModel model,
+            final Iterable<ClassifiedBasePair> nonCanonical)
             throws InvalidStructureException {
         this(dotBracket.sequence, dotBracket.structure, model);
+        markRepresentedNonCanonicals(nonCanonical);
+    }
+
+    private void markRepresentedNonCanonicals(
+            final Iterable<ClassifiedBasePair> nonCanonical) {
+        Collection<BasePair> representedSet = new HashSet<>();
+
+        for (final DotBracketSymbol symbol : symbols) {
+            if (symbol.isPairing()) {
+                PdbResidueIdentifier left = getResidueIdentifier(symbol);
+                PdbResidueIdentifier right =
+                        getResidueIdentifier(symbol.getPair());
+                representedSet.add(new BasePair(left, right));
+            }
+        }
+
+        for (final ClassifiedBasePair cbp : nonCanonical) {
+            BasePair basePair = cbp.getBasePair();
+            if (representedSet.contains(basePair)) {
+                cbp.setRepresented(true);
+
+                if (!cbp.isCanonical()) {
+                    DotBracketSymbol left = getSymbol(basePair.getLeft());
+                    DotBracketSymbol right = getSymbol(basePair.getRight());
+                    left.setNonCanonical(true);
+                    right.setNonCanonical(true);
+                }
+            }
+        }
     }
 
     public DotBracketFromPdb(
             final String sequence, final String structure, final PdbModel model)
-            throws
-
-            InvalidStructureException {
+            throws InvalidStructureException {
         super(sequence,
               DotBracketFromPdb.updateMissingIndices(structure, model));
 

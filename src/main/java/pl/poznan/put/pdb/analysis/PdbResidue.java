@@ -131,7 +131,7 @@ public class PdbResidue
 
     public static PdbResidue fromBioJavaGroup(final Group group) {
         ResidueNumber residueNumberObject = group.getResidueNumber();
-        String chainIdentifier = residueNumberObject.getChainId();
+        String chainIdentifier = residueNumberObject.getChainName();
         int residueNumber = residueNumberObject.getSeqNum();
         String insertionCode = (residueNumberObject.getInsCode() == null) ? " "
                                                                           :
@@ -343,5 +343,9 @@ public class PdbResidue
             builder.append('\n');
         }
         return builder.toString();
+    }
+
+    public ResidueInformationProvider getResidueInformationProvider() {
+        return residueInformationProvider;
     }
 }

@@ -1,7 +1,7 @@
 package pl.poznan.put.structure.secondary;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import pl.poznan.put.notation.BPh;
+import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.RNAInteractionType;
@@ -18,18 +18,22 @@ public class ClassifiedBasePair
     private final RNAInteractionType interactionType;
     private final Saenger saenger;
     private final LeontisWesthof leontisWesthof;
+    private final BPh bph;
+    private final BR br;
     private HelixOrigin helixOrigin;
     private boolean isRepresented;
 
     public ClassifiedBasePair(
             final BasePair basePair, final RNAInteractionType interactionType,
             final Saenger saenger, final LeontisWesthof leontisWesthof,
-            final HelixOrigin helixOrigin) {
+            final BPh bph, final BR br, final HelixOrigin helixOrigin) {
         super();
         this.basePair = basePair;
         this.interactionType = interactionType;
         this.saenger = saenger;
         this.leontisWesthof = leontisWesthof;
+        this.bph = bph;
+        this.br = br;
         this.helixOrigin = helixOrigin;
     }
 
@@ -47,6 +51,14 @@ public class ClassifiedBasePair
 
     public LeontisWesthof getLeontisWesthof() {
         return leontisWesthof;
+    }
+
+    public BPh getBph() {
+        return bph;
+    }
+
+    public BR getBr() {
+        return br;
     }
 
     public HelixOrigin getHelixOrigin() {
@@ -95,7 +107,7 @@ public class ClassifiedBasePair
     }
 
     public boolean isBaseRibose() {
-        return Objects.equals(interactionType, RNAInteractionType.BASE_SUGAR);
+        return Objects.equals(interactionType, RNAInteractionType.BASE_RIBOSE);
     }
 
     @Override
@@ -103,25 +115,25 @@ public class ClassifiedBasePair
         if (this == o) {
             return true;
         }
-
         if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-
-        ClassifiedBasePair bp = (ClassifiedBasePair) o;
-        return new EqualsBuilder().append(basePair, bp.basePair)
-                                  .append(interactionType, bp.interactionType)
-                                  .append(saenger, bp.saenger)
-                                  .append(leontisWesthof, bp.leontisWesthof)
-                                  .isEquals();
+        ClassifiedBasePair basePair1 = (ClassifiedBasePair) o;
+        return Objects.equals(basePair, basePair1.basePair) && Objects
+                .equals(interactionType, basePair1.interactionType) && (saenger
+                                                                        ==
+                                                                        basePair1.saenger)
+               && (leontisWesthof == basePair1.leontisWesthof) && (bph
+                                                                   ==
+                                                                   basePair1.bph)
+               && (br == basePair1.br);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(basePair)
-                                          .append(interactionType)
-                                          .append(saenger)
-                                          .append(leontisWesthof).toHashCode();
+        return Objects
+                .hash(basePair, interactionType, saenger, leontisWesthof, bph,
+                      br);
     }
 
     @Override
@@ -159,5 +171,12 @@ public class ClassifiedBasePair
             return "LW:" + leontisWesthof;
         }
         return "unknown classification";
+    }
+
+    public ClassifiedBasePair invert() {
+        return new ClassifiedBasePair(basePair.invert(),
+                                      interactionType.invert(), saenger,
+                                      leontisWesthof.invert(), bph, br,
+                                      helixOrigin);
     }
 }
