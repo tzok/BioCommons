@@ -7,12 +7,9 @@ import pl.poznan.put.rna.base.NucleobaseType;
 import java.util.Objects;
 
 /**
- * Base-phosphate notation.
- * <p>
- * Zirbel, C. L., Šponer, J. E., Šponer, J., Stombaugh, J., & Leontis, N. B.
- * (2009). Classification and energetics of the base-phosphate interactions in
- * RNA. Nucleic Acids Research, 37(15), 4898–4918. http://doi
- * .org/10.1093/nar/gkp468
+ * Base-phosphate notation. Zirbel, C. L., et al (2009). Classification and
+ * energetics of the base-phosphate interactions in RNA. Nucleic Acids Research,
+ * 37(15), 4898–4918. http://doi.org/10.1093/nar/gkp468
  */
 public enum BPh {
     _0("0BPh", "n0BPh", "0PhB", "n0PhB"),
