@@ -1,8 +1,6 @@
-package pl.poznan.put.structure.secondary.pseudoknots;
+package pl.poznan.put.structure.secondary.formats;
 
-import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.DotBracket;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
+import pl.poznan.put.structure.secondary.pseudoknots.PseudoknotFinder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class BpSeqToDotBracketConverter {
+public class LevelByLevelConverter implements Converter {
     private static final char[] BRACKETS_OPENING =
             "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private static final char[] BRACKETS_CLOSING =
@@ -28,24 +26,25 @@ public class BpSeqToDotBracketConverter {
      * @param maxSolutions Maximum number of solutions to be considered in a
      *                     single step of the algorithm.
      */
-    public BpSeqToDotBracketConverter(
+    public LevelByLevelConverter(
             final PseudoknotFinder pkRemover, final int maxSolutions) {
         super();
         this.pkRemover = pkRemover;
         this.maxSolutions = maxSolutions;
     }
 
+    @Override
     public final DotBracket convert(final BpSeq bpSeq)
             throws InvalidStructureException {
         List<State> states = new ArrayList<>();
         states.add(new State(null, bpSeq, 0));
 
-        while (BpSeqToDotBracketConverter.isProcessingNeeded(states)) {
+        while (LevelByLevelConverter.isProcessingNeeded(states)) {
             states = processStates(states);
         }
 
         Collections.sort(states);
-        String structure = BpSeqToDotBracketConverter.traceback(states.get(0));
+        String structure = LevelByLevelConverter.traceback(states.get(0));
         return new DotBracket(bpSeq.getSequence(), structure);
     }
 
@@ -86,11 +85,11 @@ public class BpSeqToDotBracketConverter {
 
                 if (structure[i - 1] == '.') {
                     structure[i - 1] =
-                            BpSeqToDotBracketConverter
-                                    .BRACKETS_OPENING[current.level];
+                            LevelByLevelConverter.BRACKETS_OPENING[current
+                                    .level];
                     structure[j - 1] =
-                            BpSeqToDotBracketConverter
-                                    .BRACKETS_CLOSING[current.level];
+                            LevelByLevelConverter.BRACKETS_CLOSING[current
+                                    .level];
                 }
             }
 

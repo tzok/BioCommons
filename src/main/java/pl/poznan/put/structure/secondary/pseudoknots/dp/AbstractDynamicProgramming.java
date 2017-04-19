@@ -137,7 +137,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
             int score = candidate.getScore();
 
             if (!map.containsKey(score)) {
-                map.put(score, new ArrayList<SubSolution>());
+                map.put(score, new ArrayList<>());
             }
 
             map.get(score).add(candidate);

@@ -6,7 +6,7 @@ import org.junit.Test;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.DotBracket;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
-import pl.poznan.put.structure.secondary.pseudoknots.BpSeqToDotBracketConverter;
+import pl.poznan.put.structure.secondary.formats.LevelByLevelConverter;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.MinGain;
 
 import java.io.File;
@@ -70,8 +70,8 @@ public class TestDotBracket {
     @SuppressWarnings("static-method")
     @Test
     public void fromBpSeq() throws InvalidStructureException {
-        BpSeqToDotBracketConverter converter =
-                new BpSeqToDotBracketConverter(new MinGain(), 1);
+        LevelByLevelConverter converter =
+                new LevelByLevelConverter(new MinGain(), 1);
         BpSeq bpSeq = BpSeq.fromString(TestDotBracket.BPSEQ);
         DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
         DotBracket dotBracketFromString =
@@ -81,8 +81,8 @@ public class TestDotBracket {
 
     @Test
     public void fromBpSeq1EHZ() throws InvalidStructureException {
-        BpSeqToDotBracketConverter converter =
-                new BpSeqToDotBracketConverter(new MinGain(), 1);
+        LevelByLevelConverter converter =
+                new LevelByLevelConverter(new MinGain(), 1);
         BpSeq bpSeq = BpSeq.fromString(bpseq1EHZ);
         DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
         DotBracket dotBracketFromString = DotBracket.fromString(dotBracket1EHZ);
