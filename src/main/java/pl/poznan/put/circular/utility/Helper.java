@@ -81,9 +81,9 @@ public final class Helper {
      * @param content Input string.
      * @return A list of {@link Circular} values as parsed from the input.
      */
-    public static List<Circular> loadHourMinuteData(final String content) {
+    public static List<Angle> loadHourMinuteData(final String content) {
         String[] lines = StringUtils.split(content, '\n');
-        List<Circular> data = new ArrayList<>(lines.length);
+        List<Angle> data = new ArrayList<>(lines.length);
 
         for (final String line : lines) {
             if (!line.isEmpty() && (line.charAt(0) == '#')) {
