@@ -1,11 +1,14 @@
 package pl.poznan.put.circular.graphics;
 
+import org.apache.batik.ext.awt.geom.Polygon2D;
+import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.w3c.dom.svg.SVGDocument;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Histogram;
+import pl.poznan.put.circular.enums.AngleTransformation;
 
-import java.awt.Graphics;
 import java.util.Collection;
 
 public class AngularHistogram extends RawDataPlot {
@@ -15,8 +18,10 @@ public class AngularHistogram extends RawDataPlot {
     public AngularHistogram(
             final Collection<Circular> data, final double binRadians,
             final double diameter, final double majorTickSpread,
-            final double minorTickSpread) {
-        super(data, diameter, majorTickSpread, minorTickSpread);
+            final double minorTickSpread,
+            final AngleTransformation angleTransformation) {
+        super(data, diameter, majorTickSpread, minorTickSpread,
+              angleTransformation);
         this.binRadians = binRadians;
     }
 
@@ -62,7 +67,8 @@ public class AngularHistogram extends RawDataPlot {
 
             if (isAxes()) {
                 drawHistogramTriangle(getSvgGraphics(),
-                                      (d + Math.PI) % (2 * Math.PI), frequency);
+                                      (d + Math.PI) % MathUtils.TWO_PI,
+                                      frequency);
             }
         }
 
@@ -70,23 +76,24 @@ public class AngularHistogram extends RawDataPlot {
     }
 
     private void drawHistogramTriangle(
-            final Graphics graphics, final double circularValue,
+            final SVGGraphics2D graphics, final double circularValue,
             final double frequency) {
         double sectorRadius =
-                Math.sqrt(frequency) * getRadius() * scalingFactor;
+                FastMath.sqrt(frequency) * getRadius() * scalingFactor;
 
         // angle as in XY coordinate system
-        double t = -(circularValue + ((Math.PI * 3) / 2)) % (2 * Math.PI);
-        double x1 = getCenterX() + (sectorRadius * StrictMath.cos(t));
-        double y1 = getCenterY() + (sectorRadius * StrictMath.sin(t));
-        t = -(circularValue + binRadians + ((Math.PI * 3) / 2)) % (2 * Math.PI);
-        double x2 = getCenterX() + (sectorRadius * StrictMath.cos(t));
-        double y2 = getCenterY() + (sectorRadius * StrictMath.sin(t));
+        double t1 = transform(circularValue);
+        double x1 = getCenterX() + (sectorRadius * FastMath.cos(t1));
+        double y1 = getCenterY() + (sectorRadius * FastMath.sin(t1));
 
-        graphics.drawPolygon(new int[]{(int) x1, (int) x2, (int) getCenterX()},
-                             new int[]{
-                                     (int) (getDiameter() - y1),
-                                     (int) (getDiameter() - y2),
-                                     (int) (getDiameter() - getCenterY())}, 3);
+        double t2 = transform(circularValue + binRadians);
+        double x2 = getCenterX() + (sectorRadius * FastMath.cos(t2));
+        double y2 = getCenterY() + (sectorRadius * FastMath.sin(t2));
+
+        float[] xs = {(float) x1, (float) x2, (float) getCenterX()};
+        float[] ys = {
+                (float) (getDiameter() - y1), (float) (getDiameter() - y2),
+                (float) (getDiameter() - getCenterY())};
+        graphics.draw(new Polygon2D(xs, ys, 3));
     }
 }

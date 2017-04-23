@@ -19,6 +19,10 @@ public abstract class AbstractDrawable implements Drawable {
         rootElement.setAttributeNS(null, SVGConstants.SVG_VIEW_BOX_ATTRIBUTE,
                                    box.getX() + " " + box.getY() + ' ' + box
                                            .getWidth() + ' ' + box.getHeight());
+        rootElement.setAttributeNS(null, SVGConstants.SVG_WIDTH_ATTRIBUTE,
+                                   Double.toString(box.getWidth()));
+        rootElement.setAttributeNS(null, SVGConstants.SVG_HEIGHT_ATTRIBUTE,
+                                   Double.toString(box.getHeight()));
         return svgDocument;
     }
 

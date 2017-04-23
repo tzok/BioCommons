@@ -8,6 +8,7 @@ import org.apache.commons.math3.optim.univariate.SearchInterval;
 import org.apache.commons.math3.optim.univariate.UnivariateObjectiveFunction;
 import org.apache.commons.math3.optim.univariate.UnivariateOptimizer;
 import org.apache.commons.math3.optim.univariate.UnivariatePointValuePair;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
@@ -40,21 +41,20 @@ public final class AngleSample {
         meanResultantLength = um1.getMeanResultantLength();
         circularVariance = 1 - meanResultantLength;
         circularStandardDeviation =
-                Math.sqrt(-2 * StrictMath.log(meanResultantLength));
+                Math.sqrt(-2 * FastMath.log(meanResultantLength));
 
         TrigonometricMoment cm2 = getCenteredMoment(2);
         TrigonometricMoment um2 = getUncenteredMoment(2);
         circularDispersion =
-                (1.0 - cm2.getMeanResultantLength()) / (2 * StrictMath
+                (1.0 - cm2.getMeanResultantLength()) / (2 * FastMath
                         .pow(meanResultantLength, 2));
-        skewness = (cm2.getMeanResultantLength() * StrictMath
+        skewness = (cm2.getMeanResultantLength() * FastMath
                 .sin(cm2.getMeanDirection().subtract(meanDirection.multiply(2))
                         .getRadians())) / Math.sqrt(circularVariance);
-        kurtosis = ((cm2.getMeanResultantLength() * StrictMath
+        kurtosis = ((cm2.getMeanResultantLength() * FastMath
                 .cos(um2.getMeanDirection().subtract(meanDirection.multiply(2))
-                        .getRadians())) - StrictMath
-                            .pow(meanResultantLength, 4)) / StrictMath
-                           .pow(circularVariance, 2);
+                        .getRadians())) - FastMath.pow(meanResultantLength, 4))
+                   / FastMath.pow(circularVariance, 2);
 
         UnivariatePointValuePair medianFunctionRoot = minimizeMedianFunction();
         medianDirection =
@@ -90,7 +90,7 @@ public final class AngleSample {
         UnivariateOptimizer optimizer = new BrentOptimizer(1.0e-10, 1.0e-14);
         return optimizer.optimize(
                 new UnivariateObjectiveFunction(medianObjectiveFunction),
-                GoalType.MINIMIZE, new SearchInterval(0, 2 * Math.PI),
+                GoalType.MINIMIZE, new SearchInterval(0, MathUtils.TWO_PI),
                 new MaxEval(1000));
     }
 
@@ -106,23 +106,23 @@ public final class AngleSample {
                 radians = vector.subtract(meanDirection).getRadians();
             }
 
-            c += StrictMath.cos(p * radians);
-            s += StrictMath.sin(p * radians);
+            c += FastMath.cos(p * radians);
+            s += FastMath.sin(p * radians);
         }
 
         c /= data.size();
         s /= data.size();
 
-        double rho = Math.sqrt(StrictMath.pow(c, 2) + StrictMath.pow(s, 2));
+        double rho = Math.sqrt(FastMath.pow(c, 2) + FastMath.pow(s, 2));
         double mi;
 
         if ((s > 0) && (c > 0)) {
-            mi = StrictMath.atan(s / c);
+            mi = FastMath.atan(s / c);
         } else if (c < 0) {
-            mi = StrictMath.atan(s / c) + Math.PI;
+            mi = FastMath.atan(s / c) + Math.PI;
         } else {
             // s < 0 && c > 0
-            mi = (StrictMath.atan(s / c) + (2 * Math.PI)) % (2 * Math.PI);
+            mi = (FastMath.atan(s / c) + MathUtils.TWO_PI) % MathUtils.TWO_PI;
         }
 
         return new TrigonometricMoment(new Angle(mi, ValueType.RADIANS), rho);

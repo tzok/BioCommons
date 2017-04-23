@@ -5,9 +5,12 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
+import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Histogram;
+import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.utility.Helper;
 
 import java.io.File;
@@ -27,10 +30,13 @@ public class TemplateHistogram {
     private static final MustacheFactory FACTORY = new DefaultMustacheFactory();
 
     public static void main(final String[] args) throws IOException {
-        String circularsData = Helper.readResource("example/D01");
-        List<Circular> circulars = Helper.loadHourMinuteData(circularsData);
-        Mustache template = Helper.readTemplateResource("pgfplots.mustache");
+        List<Circular> circulars = new ArrayList<>();
+        for (final String line : Helper.readResource("1EHZ-chi").split("\n")) {
+            circulars.add(new Angle(Double.parseDouble(line),
+                                    ValueType.DEGREES));
+        }
 
+        Mustache template = Helper.readTemplateResource("pgfplots.mustache");
         TemplateHistogram histogram =
                 new TemplateHistogram(circulars, template);
         File tempFile = File.createTempFile("histogram", ".tex");
@@ -74,7 +80,6 @@ public class TemplateHistogram {
     private List<Vector2D> generatePolarCoordinates() {
         Histogram histogram = new Histogram(data, binRadians);
         double maxFrequency = histogram.getMaxFrequency();
-        double scalingFactor = 1 / Math.sqrt(maxFrequency);
 
         List<Vector2D> polarCoordinates = new ArrayList<>();
 
@@ -83,7 +88,8 @@ public class TemplateHistogram {
 
             double frequency = (double) histogram.getBinSize(d) / data.size();
             double x = Math.toDegrees(d);
-            double y = frequency * scalingFactor;
+            // sqrt allows to see even some smaller clusters
+            double y = FastMath.sqrt(frequency);
             polarCoordinates.add(new Vector2D(Math.toDegrees(d), y));
             polarCoordinates
                     .add(new Vector2D(Math.toDegrees(d + binRadians), y));

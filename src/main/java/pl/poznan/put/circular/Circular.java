@@ -3,9 +3,11 @@ package pl.poznan.put.circular;
 import org.apache.commons.math3.util.MathUtils;
 import pl.poznan.put.circular.enums.ValueType;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class Circular implements Comparable<Circular> {
+public abstract class Circular implements Comparable<Circular>, Serializable {
+    private static final long serialVersionUID = -4674646476160594025L;
     private final double radians;
 
     protected Circular(final double value, final ValueType valueType) {

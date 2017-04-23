@@ -1,5 +1,6 @@
 package pl.poznan.put.circular;
 
+import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import pl.poznan.put.circular.enums.Range;
 import pl.poznan.put.circular.enums.ValueType;
@@ -73,16 +74,16 @@ public class Angle extends Circular {
     public static double subtractByMinimum(
             final double left, final double right) {
         double d = Math.abs(left - right);
-        return Math.min(d, (2 * Math.PI) - d);
+        return Math.min(d, MathUtils.TWO_PI - d);
     }
 
     public static double subtractAsVectors(
             final double left, final double right) {
-        double v = (StrictMath.sin(left) * StrictMath.sin(right)) + (
-                StrictMath.cos(left) * StrictMath.cos(right));
+        double v = FastMath.sin(left) * FastMath.sin(right);
+        v += FastMath.cos(left) * FastMath.cos(right);
         v = Math.min(1, v);
         v = Math.max(-1, v);
-        return StrictMath.acos(v);
+        return FastMath.acos(v);
     }
 
     @Override
