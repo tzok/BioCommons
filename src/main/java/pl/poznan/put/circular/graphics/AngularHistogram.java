@@ -1,10 +1,8 @@
 package pl.poznan.put.circular.graphics;
 
 import org.apache.batik.ext.awt.geom.Polygon2D;
-import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
-import org.w3c.dom.svg.SVGDocument;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Histogram;
 import pl.poznan.put.circular.enums.AngleTransformation;
@@ -16,7 +14,7 @@ public class AngularHistogram extends RawDataPlot {
     private double scalingFactor;
 
     public AngularHistogram(
-            final Collection<Circular> data, final double binRadians,
+            final Collection<? extends Circular> data, final double binRadians,
             final double diameter, final double majorTickSpread,
             final double minorTickSpread,
             final AngleTransformation angleTransformation) {
@@ -26,14 +24,15 @@ public class AngularHistogram extends RawDataPlot {
     }
 
     public AngularHistogram(
-            final Collection<Circular> data, final double binRadians,
+            final Collection<? extends Circular> data, final double binRadians,
             final double diameter) {
         super(data, diameter);
         this.binRadians = binRadians;
     }
 
     public AngularHistogram(
-            final Collection<Circular> data, final double binRadians) {
+            final Collection<? extends Circular> data,
+            final double binRadians) {
         super(data);
         this.binRadians = binRadians;
     }
@@ -44,7 +43,7 @@ public class AngularHistogram extends RawDataPlot {
     }
 
     @Override
-    public final SVGDocument draw() {
+    public final void draw() {
         super.draw();
 
         Histogram histogram = new Histogram(getData(), binRadians);
@@ -63,21 +62,19 @@ public class AngularHistogram extends RawDataPlot {
         for (double d = 0; d < MathUtils.TWO_PI; d += binRadians) {
             double frequency =
                     (double) histogram.getBinSize(d) / getData().size();
-            drawHistogramTriangle(getSvgGraphics(), d, frequency);
+            if (frequency > 0) {
+                drawHistogramTriangle(d, frequency);
+            }
 
             if (isAxes()) {
-                drawHistogramTriangle(getSvgGraphics(),
-                                      (d + Math.PI) % MathUtils.TWO_PI,
+                drawHistogramTriangle((d + Math.PI) % MathUtils.TWO_PI,
                                       frequency);
             }
         }
-
-        return finalizeDrawingAndGetSvg();
     }
 
     private void drawHistogramTriangle(
-            final SVGGraphics2D graphics, final double circularValue,
-            final double frequency) {
+            final double circularValue, final double frequency) {
         double sectorRadius =
                 FastMath.sqrt(frequency) * getRadius() * scalingFactor;
 
@@ -94,6 +91,6 @@ public class AngularHistogram extends RawDataPlot {
         float[] ys = {
                 (float) (getDiameter() - y1), (float) (getDiameter() - y2),
                 (float) (getDiameter() - getCenterY())};
-        graphics.draw(new Polygon2D(xs, ys, 3));
+        svgGraphics.draw(new Polygon2D(xs, ys, 3));
     }
 }
