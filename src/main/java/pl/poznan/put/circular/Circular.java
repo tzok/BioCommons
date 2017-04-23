@@ -1,72 +1,69 @@
 package pl.poznan.put.circular;
 
-public abstract class Circular implements Comparable<Circular> {
-    protected final double radians;
+import org.apache.commons.math3.util.MathUtils;
+import pl.poznan.put.circular.enums.ValueType;
 
-    protected Circular(double radians) {
+import java.io.Serializable;
+import java.util.Objects;
+
+public abstract class Circular implements Comparable<Circular>, Serializable {
+    private static final long serialVersionUID = -4674646476160594025L;
+    private final double radians;
+
+    protected Circular(final double value, final ValueType valueType) {
         super();
-        this.radians = radians;
+        radians = valueType.toRadians(value);
     }
 
-    public double getRadians() {
+    public final double getRadians() {
         return radians;
     }
 
-    public double getDegrees() {
+    public final double getDegrees() {
         return Math.toDegrees(radians);
     }
 
-    public double getDegrees360() {
+    public final double getDegrees360() {
         return Math.toDegrees(getRadians2PI());
     }
 
-    public double getRadians2PI() {
-        return radians < 0.0 ? radians + 2 * Math.PI : radians;
+    public final double getRadians2PI() {
+        return (radians < 0.0) ? (radians + MathUtils.TWO_PI) : radians;
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        long temp;
-        temp = Double.doubleToLongBits(radians);
-        result = prime * result + (int) (temp ^ temp >>> 32);
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public final boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Circular other = (Circular) obj;
-        return Double.doubleToLongBits(radians) == Double
-                .doubleToLongBits(other.radians);
+        Circular circular = (Circular) o;
+        return Double.compare(circular.radians, radians) == 0;
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(radians);
     }
 
     @Override
     public String toString() {
         return !isValid() ? "invalid"
-                          : radians + " rad\t" + Math.toDegrees(radians)
-                            + " deg";
+                          : (radians + " rad\t" + Math.toDegrees(radians)
+                             + " deg");
     }
 
-    public boolean isValid() {
+    public final boolean isValid() {
         return !Double.isNaN(radians);
     }
 
     @Override
-    public int compareTo(Circular other) {
-        if (equals(other)) {
+    public final int compareTo(final Circular t) {
+        if (equals(t)) {
             return 0;
         }
-
-        return Double.compare(radians, other.radians);
+        return Double.compare(radians, t.radians);
     }
 }

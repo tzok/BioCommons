@@ -1,7 +1,9 @@
 package pl.poznan.put.circular.graphics;
 
-import pl.poznan.put.circular.exception.InvalidCircularValueException;
+import org.w3c.dom.svg.SVGDocument;
 
 public interface Drawable {
-    void draw() throws InvalidCircularValueException;
+    void draw();
+
+    SVGDocument finalizeDrawing();
 }

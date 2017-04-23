@@ -8,18 +8,19 @@ import org.apache.commons.math3.optim.univariate.SearchInterval;
 import org.apache.commons.math3.optim.univariate.UnivariateObjectiveFunction;
 import org.apache.commons.math3.optim.univariate.UnivariateOptimizer;
 import org.apache.commons.math3.optim.univariate.UnivariatePointValuePair;
+import org.apache.commons.math3.util.FastMath;
+import org.apache.commons.math3.util.MathUtils;
 import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
-import pl.poznan.put.circular.exception.InvalidCircularValueException;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class AngleSample {
-    private final Collection<Angle> data;
-    private final List<Angle> dataSorted;
+public final class AngleSample {
+    private final List<Angle> data;
     private final Angle meanDirection;
     private final double meanResultantLength;
     private final double circularVariance;
@@ -30,102 +31,101 @@ public class AngleSample {
     private final Angle medianDirection;
     private final double meanDeviation;
 
-    public AngleSample(Collection<Angle> data)
-            throws InvalidCircularValueException {
+    public AngleSample(final Collection<Angle> data) {
         super();
-        this.data = data;
-        this.dataSorted = new ArrayList<Angle>(data);
-        Collections.sort(dataSorted);
+        this.data = new ArrayList<>(data);
+        Collections.sort(this.data);
 
         TrigonometricMoment um1 = getUncenteredMoment(1);
         meanDirection = um1.getMeanDirection();
         meanResultantLength = um1.getMeanResultantLength();
         circularVariance = 1 - meanResultantLength;
         circularStandardDeviation =
-                Math.sqrt(-2 * Math.log(meanResultantLength));
+                Math.sqrt(-2 * FastMath.log(meanResultantLength));
 
         TrigonometricMoment cm2 = getCenteredMoment(2);
         TrigonometricMoment um2 = getUncenteredMoment(2);
-        circularDispersion = (1.0 - cm2.getMeanResultantLength()) / (2 * Math
-                .pow(meanResultantLength, 2));
-        skewness = cm2.getMeanResultantLength() * Math
+        circularDispersion =
+                (1.0 - cm2.getMeanResultantLength()) / (2 * FastMath
+                        .pow(meanResultantLength, 2));
+        skewness = (cm2.getMeanResultantLength() * FastMath
                 .sin(cm2.getMeanDirection().subtract(meanDirection.multiply(2))
-                        .getRadians()) / Math.sqrt(circularVariance);
-        kurtosis = (cm2.getMeanResultantLength() * Math
+                        .getRadians())) / Math.sqrt(circularVariance);
+        kurtosis = ((cm2.getMeanResultantLength() * FastMath
                 .cos(um2.getMeanDirection().subtract(meanDirection.multiply(2))
-                        .getRadians()) - Math.pow(meanResultantLength, 4))
-                   / Math.pow(circularVariance, 2);
+                        .getRadians())) - FastMath.pow(meanResultantLength, 4))
+                   / FastMath.pow(circularVariance, 2);
 
         UnivariatePointValuePair medianFunctionRoot = minimizeMedianFunction();
-        medianDirection = new Angle(medianFunctionRoot.getPoint());
+        medianDirection =
+                new Angle(medianFunctionRoot.getPoint(), ValueType.RADIANS);
         meanDeviation = medianFunctionRoot.getValue();
     }
 
-    public TrigonometricMoment getUncenteredMoment(int p)
-            throws InvalidCircularValueException {
+    public TrigonometricMoment getUncenteredMoment(final int p) {
         return getMoment(p, false);
     }
 
-    public TrigonometricMoment getCenteredMoment(int p)
-            throws InvalidCircularValueException {
+    public TrigonometricMoment getCenteredMoment(final int p) {
         return getMoment(p, true);
     }
 
     private UnivariatePointValuePair minimizeMedianFunction() {
         UnivariateFunction medianObjectiveFunction = new UnivariateFunction() {
             @Override
-            public double value(double x) {
+            public double value(final double v) {
                 double sum = 0;
 
-                for (Angle vector : data) {
-                    sum += Angle.subtract(Math.PI,
-                                          Angle.subtract(vector.getRadians(),
-                                                         x));
+                for (final Angle vector : data) {
+                    sum += Angle.subtractByMinimum(Math.PI,
+                                                   Angle.subtractByMinimum(
+                                                           vector.getRadians(),
+                                                           v));
                 }
 
-                return Math.PI - sum / data.size();
+                return Math.PI - (sum / data.size());
             }
         };
 
-        UnivariateOptimizer optimizer = new BrentOptimizer(1e-10, 1e-14);
+        UnivariateOptimizer optimizer = new BrentOptimizer(1.0e-10, 1.0e-14);
         return optimizer.optimize(
                 new UnivariateObjectiveFunction(medianObjectiveFunction),
-                GoalType.MINIMIZE, new SearchInterval(0, 2 * Math.PI),
+                GoalType.MINIMIZE, new SearchInterval(0, MathUtils.TWO_PI),
                 new MaxEval(1000));
     }
 
-    private TrigonometricMoment getMoment(int p, boolean isCentered)
-            throws InvalidCircularValueException {
+    private TrigonometricMoment getMoment(
+            final int p, final boolean isCentered) {
         double c = 0;
         double s = 0;
 
-        for (Angle vector : data) {
+        for (final Angle vector : data) {
             double radians = vector.getRadians();
 
             if (isCentered) {
                 radians = vector.subtract(meanDirection).getRadians();
             }
 
-            c += Math.cos(p * radians);
-            s += Math.sin(p * radians);
+            c += FastMath.cos(p * radians);
+            s += FastMath.sin(p * radians);
         }
 
         c /= data.size();
         s /= data.size();
 
-        double rho = Math.sqrt(Math.pow(c, 2) + Math.pow(s, 2));
+        double rho = Math.sqrt(FastMath.pow(c, 2) + FastMath.pow(s, 2));
         double mi;
 
-        if (s > 0 && c > 0) {
-            mi = Math.atan(s / c);
+        if ((s > 0) && (c > 0)) {
+            mi = FastMath.atan(s / c);
         } else if (c < 0) {
-            mi = Math.atan(s / c) + Math.PI;
+            mi = FastMath.atan(s / c) + Math.PI;
         } else {
             // s < 0 && c > 0
-            mi = (Math.atan(s / c) + 2 * Math.PI) % (2 * Math.PI);
+            mi = (FastMath.atan(s / c) + MathUtils.TWO_PI) % MathUtils.TWO_PI;
         }
 
-        return new TrigonometricMoment(new Angle(mi), rho);
+        return new TrigonometricMoment(new Angle(mi, ValueType.RADIANS), rho);
     }
 
     public Angle getMeanDirection() {
@@ -164,16 +164,15 @@ public class AngleSample {
         return meanDeviation;
     }
 
-    public double getCircularRank(Angle datapoint)
-            throws InvalidCircularOperationException {
+    public double getCircularRank(final Angle datapoint) {
         if (!data.contains(datapoint)) {
             throw new InvalidCircularOperationException(
                     "Cannot calculate circular rank for an observation "
                     + "outside the sample range");
         }
 
-        int rank = dataSorted.indexOf(datapoint) + 1;
-        return 2 * Math.PI * rank / data.size();
+        int rank = data.indexOf(datapoint) + 1;
+        return (MathUtils.TWO_PI * rank) / data.size();
     }
 
     @Override
@@ -184,6 +183,6 @@ public class AngleSample {
                + ", circularStandardDeviation=" + circularStandardDeviation
                + ", circularDispersion=" + circularDispersion + ", skewness="
                + skewness + ", kurtosis=" + kurtosis + ", medianDirection="
-               + medianDirection + ", meanDeviation=" + meanDeviation + "]";
+               + medianDirection + ", meanDeviation=" + meanDeviation + ']';
     }
 }

@@ -1,0 +1,13 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+
+\pgfplotsset{compat=newest}
+\usepgfplotslibrary{polar}
+
+\begin{document}
+  \begin{tikzpicture}
+    \begin{polaraxis}
+{{#fragments}}      \addplot [mark = none, blue] coordinates { {{#points}}({{x}},{{y}}) {{/points}} };{{/fragments}}
+    \end{polaraxis}
+  \end{tikzpicture}
+\end{document}
