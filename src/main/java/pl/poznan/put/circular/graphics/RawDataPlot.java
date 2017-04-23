@@ -3,13 +3,11 @@ package pl.poznan.put.circular.graphics;
 import org.apache.batik.ext.awt.geom.Polygon2D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
-import org.w3c.dom.svg.SVGDocument;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.Axis;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.enums.AngleTransformation;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
-import pl.poznan.put.circular.utility.Helper;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.utility.svg.SVGHelper;
 
@@ -17,9 +15,6 @@ import java.awt.FontMetrics;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,31 +23,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class RawDataPlot extends AbstractDrawable {
-    private static final double PI_TIMES_3_BY_2 = 4.71238898038468985766;
-
-    public static void main(final String[] args)
-            throws IOException, FileNotFoundException {
-        /*
-         * First example
-         */
-        String circularsData = Helper.readResource("example/D01");
-        List<Circular> circulars = Helper.loadHourMinuteData(circularsData);
-        Drawable circularsPlot = new RawDataPlot(circulars);
-        circularsPlot.draw();
-        SVGDocument circularsSvg = circularsPlot.finalizeDrawing();
-        Helper.exportSvg(circularsSvg, File.createTempFile("D01", ".svg"));
-
-        /*
-         * Second example
-         */
-        String axesData = Helper.readResource("example/D02");
-        List<Axis> axes = Helper.loadAxisData(axesData);
-        Drawable axesPlot = new RawDataPlot(axes);
-        axesPlot.draw();
-        SVGDocument axesSvg = axesPlot.finalizeDrawing();
-        Helper.exportSvg(axesSvg, File.createTempFile("D02", ".svg"));
-    }
-
     private final Collection<? extends Circular> data;
     private final double diameter;
     private final boolean isAxes;

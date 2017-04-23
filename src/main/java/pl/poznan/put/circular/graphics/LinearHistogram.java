@@ -1,51 +1,23 @@
 package pl.poznan.put.circular.graphics;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.util.MathUtils;
-import org.w3c.dom.svg.SVGDocument;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Histogram;
-import pl.poznan.put.circular.utility.Helper;
 import pl.poznan.put.utility.AngleFormat;
-import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
 
 import java.awt.FontMetrics;
 import java.awt.font.LineMetrics;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class LinearHistogram extends AbstractDrawable {
-    public static void main(final String[] args)
-            throws IOException, FileNotFoundException {
-        String resource = Helper.readResource("example/D01");
-        List<Circular> data = Helper.loadHourMinuteData(resource);
-
-        LinearHistogram histogram =
-                new LinearHistogram(data, Math.toRadians(20));
-        histogram.draw();
-        SVGDocument svgDocument = histogram.finalizeDrawing();
-        OutputStream stream = null;
-
-        try {
-            stream = new FileOutputStream("/tmp/D01-linear-histogram.svg");
-            IOUtils.write(SVGHelper.export(svgDocument, Format.SVG), stream);
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
-    }
-
     private final Collection<Circular> data;
     private final double binRadians;
     private final int drawingUnitSize;
 
     public LinearHistogram(
-            final Collection<Circular> data, final double binRadians,
+            final Collection<? extends Circular> data, final double binRadians,
             final int drawingUnitSize) {
         super();
         this.data = new ArrayList<>(data);
@@ -54,11 +26,14 @@ public class LinearHistogram extends AbstractDrawable {
     }
 
     public LinearHistogram(
-            final Collection<Circular> data, final double binRadians) {
-        super();
-        this.data = new ArrayList<>(data);
-        this.binRadians = binRadians;
-        drawingUnitSize = 20;
+            final Collection<? extends Circular> data,
+            final double binRadians) {
+        this(data, binRadians, 20);
+    }
+
+    public LinearHistogram(
+            final Collection<? extends Circular> data) {
+        this(data, Math.PI / 12, 20);
     }
 
     @Override
