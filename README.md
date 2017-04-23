@@ -12,4 +12,4 @@ A library for the analysis of circular data
 
 [Angular histogram for axes](examples/D02-angular-histogram.png)
 
-[Angular histogram for vectors, proxy drawing made by PGFPlots](examples/D01-angular-histogram-pgfplots.png]
+[Angular histogram for vectors, proxy drawing made by PGFPlots](examples/D01-angular-histogram-pgfplots.png)
