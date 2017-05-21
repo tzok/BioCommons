@@ -36,11 +36,11 @@ public enum Range {
     }
 
     public static Range fromAngle(final Angle angle) {
-        double degrees360 = angle.getDegrees360();
+        final double degrees360 = angle.getDegrees360();
 
         for (final Range range : Range.values()) {
-            double begin360 = range.begin.getDegrees360();
-            double end360 = range.end.getDegrees360();
+            final double begin360 = range.begin.getDegrees360();
+            final double end360 = range.end.getDegrees360();
 
             if (begin360 < end360) {
                 if ((degrees360 >= begin360) && (degrees360 < end360)) {
@@ -54,5 +54,20 @@ public enum Range {
         }
 
         throw new IllegalArgumentException("Invalid input value: " + angle);
+    }
+
+    /**
+     * Calculate difference between two angle ranges. It will be either 0
+     * (equal), 1 (neighbour), 2 (next to neighbour) or 3 (opposite). Because
+     * each range is exactly 60 degree wide, then difference between beginnings
+     * is also always a multiple of 60.
+     *
+     * @param other An object to compare to.
+     * @return RangeDifference object.
+     */
+    public RangeDifference difference(final Range other) {
+        final int delta =
+                (int) Math.round(begin.subtract(other.begin).getDegrees360());
+        return RangeDifference.fromValue(delta / 60);
     }
 }
