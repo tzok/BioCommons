@@ -70,7 +70,7 @@ public class PdbResidue
     }
 
     private List<AtomName> detectAtomNames() {
-        List<AtomName> result = new ArrayList<>();
+        final List<AtomName> result = new ArrayList<>();
         for (final PdbAtomLine atom : atoms) {
             result.add(atom.detectAtomName());
         }
@@ -83,8 +83,8 @@ public class PdbResidue
     }
 
     public final boolean hasAllAtoms() {
-        Collection<AtomName> expected = new ArrayList<>();
-        Collection<AtomName> additional = new ArrayList<>();
+        final Collection<AtomName> expected = new ArrayList<>();
+        final Collection<AtomName> additional = new ArrayList<>();
 
         for (final ResidueComponent component : residueInformationProvider
                 .getAllMoleculeComponents()) {
@@ -92,15 +92,15 @@ public class PdbResidue
             additional.addAll(component.getAdditionalAtoms());
         }
 
-        Predicate<AtomName> isHeavyAtomPredicate =
+        final Predicate<AtomName> isHeavyAtomPredicate =
                 PredicateUtils.invokerPredicate("isHeavy");
-        List<AtomName> actual = new ArrayList<>(atomNames);
+        final List<AtomName> actual = new ArrayList<>(atomNames);
         CollectionUtils.filter(actual, isHeavyAtomPredicate);
         CollectionUtils.filter(expected, isHeavyAtomPredicate);
-        boolean result = CollectionUtils.isEqualCollection(actual, expected);
+        final boolean result = CollectionUtils.isEqualCollection(actual, expected);
 
         if (!result) {
-            Collection<AtomName> intersection = new ArrayList<>(actual);
+            final Collection<AtomName> intersection = new ArrayList<>(actual);
             intersection.retainAll(expected);
             actual.removeAll(intersection);
             actual.removeAll(additional);
@@ -130,19 +130,19 @@ public class PdbResidue
     }
 
     public static PdbResidue fromBioJavaGroup(final Group group) {
-        ResidueNumber residueNumberObject = group.getResidueNumber();
-        String chainIdentifier = residueNumberObject.getChainName();
-        int residueNumber = residueNumberObject.getSeqNum();
-        String insertionCode = (residueNumberObject.getInsCode() == null) ? " "
+        final ResidueNumber residueNumberObject = group.getResidueNumber();
+        final String chainIdentifier = residueNumberObject.getChainName();
+        final int residueNumber = residueNumberObject.getSeqNum();
+        final String insertionCode = (residueNumberObject.getInsCode() == null) ? " "
                                                                           :
                                Character
                                        .toString(residueNumberObject
                                                          .getInsCode());
-        PdbResidueIdentifier residueIdentifier =
+        final PdbResidueIdentifier residueIdentifier =
                 new PdbResidueIdentifier(chainIdentifier, residueNumber,
                                          insertionCode);
-        String residueName = group.getPDBName();
-        List<PdbAtomLine> atoms = new ArrayList<>();
+        final String residueName = group.getPDBName();
+        final List<PdbAtomLine> atoms = new ArrayList<>();
 
         for (final Atom atom : group.getAtoms()) {
             atoms.add(PdbAtomLine.fromBioJavaAtom(atom));
@@ -188,7 +188,7 @@ public class PdbResidue
     }
 
     public final char getOneLetterName() {
-        char oneLetterName = residueInformationProvider.getOneLetterName();
+        final char oneLetterName = residueInformationProvider.getOneLetterName();
         return isModified ? Character.toLowerCase(oneLetterName)
                           : oneLetterName;
     }
@@ -226,17 +226,17 @@ public class PdbResidue
     }
 
     @Override
-    public final boolean equals(final Object obj) {
-        if (this == obj) {
+    public final boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null) {
+        if (o == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != o.getClass()) {
             return false;
         }
-        PdbResidue other = (PdbResidue) obj;
+        final PdbResidue other = (PdbResidue) o;
         if (atomNames == null) {
             if (other.atomNames != null) {
                 return false;
@@ -284,9 +284,9 @@ public class PdbResidue
 
     @Override
     public final String toString() {
-        String chainIdentifier = identifier.getChainIdentifier();
-        int residueNumber = identifier.getResidueNumber();
-        String insertionCode = identifier.getInsertionCode();
+        final String chainIdentifier = identifier.getChainIdentifier();
+        final int residueNumber = identifier.getResidueNumber();
+        final String insertionCode = identifier.getInsertionCode();
         return chainIdentifier + '.' + modifiedResidueName + residueNumber + (
                 Objects.equals(" ", insertionCode) ? "" : insertionCode);
     }
@@ -301,7 +301,7 @@ public class PdbResidue
     }
 
     public final boolean hasHydrogen() {
-        Predicate<AtomName> notIsHeavyPredicate = PredicateUtils
+        final Predicate<AtomName> notIsHeavyPredicate = PredicateUtils
                 .notPredicate(PredicateUtils.invokerPredicate("isHeavy"));
         return IterableUtils.matchesAny(atomNames, notIsHeavyPredicate);
     }
@@ -317,17 +317,17 @@ public class PdbResidue
     }
 
     public final boolean isConnectedTo(final PdbResidue other) {
-        MoleculeType moleculeType =
+        final MoleculeType moleculeType =
                 residueInformationProvider.getMoleculeType();
         return moleculeType.areConnected(this, other);
     }
 
     public final int findConnectedResidueIndex(
             final List<PdbResidue> candidates) {
-        MoleculeType moleculeType =
+        final MoleculeType moleculeType =
                 residueInformationProvider.getMoleculeType();
         for (int i = 0; i < candidates.size(); i++) {
-            PdbResidue candidate = candidates.get(i);
+            final PdbResidue candidate = candidates.get(i);
             if (moleculeType.areConnected(this, candidate)) {
                 return i;
             }
@@ -335,9 +335,8 @@ public class PdbResidue
         return -1;
     }
 
-    @SuppressWarnings("HardcodedLineSeparator")
     public final String toPdb() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         for (final PdbAtomLine atom : atoms) {
             builder.append(atom);
             builder.append('\n');

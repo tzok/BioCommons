@@ -40,7 +40,7 @@ public class Ct implements Serializable {
             Ct.LOGGER.trace("CT to be validated:\n{}", toString());
         }
 
-        Map<Integer, Integer> map = new HashMap<>();
+        final Map<Integer, Integer> map = new HashMap<>();
 
         for (final Entry e : entries) {
             map.put(e.index, e.pair);
@@ -56,7 +56,7 @@ public class Ct implements Serializable {
             }
 
             previous = e.index;
-            int pair = map.get(e.index);
+            final int pair = map.get(e.index);
 
             if (pair != 0) {
                 if (!map.containsKey(pair)) {
@@ -117,7 +117,7 @@ public class Ct implements Serializable {
             prevEntry = e;
         }
 
-        Entry lastEntry = entries.last();
+        final Entry lastEntry = entries.last();
 
         if (lastEntry.after != 0) {
             if (Ct.FIX_LAST_ENTRY) {
@@ -135,13 +135,13 @@ public class Ct implements Serializable {
 
     public static Ct fromString(final String data)
             throws InvalidStructureException {
-        List<Entry> entries = new ArrayList<>();
+        final List<Entry> entries = new ArrayList<>();
         boolean firstLine = true;
 
         for (String line : data.split("\n")) {
             line = line.trim();
 
-            int hash = line.indexOf('#');
+            final int hash = line.indexOf('#');
             if (hash != -1) {
                 line = line.substring(0, hash);
             }
@@ -150,11 +150,11 @@ public class Ct implements Serializable {
                 continue;
             }
 
-            String[] split = line.split("\\s+");
+            final String[] split = line.split("\\s+");
 
             if (firstLine) {
                 try {
-                    int lineCount = Integer.parseInt(split[0]);
+                    final int lineCount = Integer.parseInt(split[0]);
                     if (lineCount < 0) {
                         throw new InvalidStructureException(
                                 "Invalid CT format. Line count < 0 detected: "
@@ -175,12 +175,12 @@ public class Ct implements Serializable {
                         + line);
             }
 
-            int index;
-            int pair;
-            int before;
-            int after;
-            int original;
-            char seq;
+            final int index;
+            final int pair;
+            final int before;
+            final int after;
+            final int original;
+            final char seq;
 
             try {
                 index = Integer.valueOf(split[0]);
@@ -203,16 +203,16 @@ public class Ct implements Serializable {
 
     public static Ct fromBpSeq(final BpSeq bpSeq)
             throws InvalidStructureException {
-        List<Ct.Entry> ctEntries = new ArrayList<>();
-        SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
-        int size = entries.size();
+        final List<Entry> ctEntries = new ArrayList<>();
+        final SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
+        final int size = entries.size();
 
         for (final BpSeq.Entry entry : entries) {
-            int index = entry.getIndex();
-            int pair = entry.getPair();
-            char seq = entry.getSeq();
-            String comment = entry.getComment();
-            ctEntries.add(new Ct.Entry(index, pair, index - 1,
+            final int index = entry.getIndex();
+            final int pair = entry.getPair();
+            final char seq = entry.getSeq();
+            final String comment = entry.getComment();
+            ctEntries.add(new Entry(index, pair, index - 1,
                                        (index + 1) % (size + 1), index, seq,
                                        comment));
         }
@@ -223,7 +223,7 @@ public class Ct implements Serializable {
     public static Ct fromBpSeqAndPdbModel(
             final BpSeq bpSeq, final PdbModel model)
             throws InvalidStructureException {
-        PdbModel rna;
+        final PdbModel rna;
         try {
             rna = model.filteredNewInstance(MoleculeType.RNA);
         } catch (final PdbParsingException e) {
@@ -231,26 +231,26 @@ public class Ct implements Serializable {
                                                 e);
         }
 
-        List<Ct.Entry> ctEntries = new ArrayList<>();
-        List<PdbResidue> residues = rna.getResidues();
-        SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
+        final List<Entry> ctEntries = new ArrayList<>();
+        final List<PdbResidue> residues = rna.getResidues();
+        final SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
         int i = 0;
 
         for (final BpSeq.Entry entry : entries) {
-            PdbResidue residue = residues.get(i);
-            PdbChain chain = rna.findChainContainingResidue(
+            final PdbResidue residue = residues.get(i);
+            final PdbChain chain = rna.findChainContainingResidue(
                     residue.getResidueIdentifier());
-            List<PdbResidue> chainResidues = chain.getResidues();
+            final List<PdbResidue> chainResidues = chain.getResidues();
 
-            int index = entry.getIndex();
-            int pair = entry.getPair();
-            int before = chainResidues.indexOf(residue);
-            int after = (before + 2) % (chainResidues.size() + 1);
-            int original = residue.getResidueNumber();
-            char seq = entry.getSeq();
-            String comment = entry.getComment();
+            final int index = entry.getIndex();
+            final int pair = entry.getPair();
+            final int before = chainResidues.indexOf(residue);
+            final int after = (before + 2) % (chainResidues.size() + 1);
+            final int original = residue.getResidueNumber();
+            final char seq = entry.getSeq();
+            final String comment = entry.getComment();
             ctEntries
-                    .add(new Ct.Entry(index, pair, before, after, original, seq,
+                    .add(new Entry(index, pair, before, after, original, seq,
                                       comment));
 
             i += 1;
@@ -261,20 +261,20 @@ public class Ct implements Serializable {
 
     public static Ct fromDotBracket(final DotBracket dotBracket)
             throws InvalidStructureException {
-        List<Ct.Entry> entries = new ArrayList<>();
+        final List<Entry> entries = new ArrayList<>();
 
         for (final Strand s : dotBracket.getStrands()) {
             for (int i = 0, j = s.getFrom(); j < s.getTo(); i++, j++) {
-                DotBracketSymbol symbol = dotBracket.getSymbol(j);
-                DotBracketSymbol pair = symbol.getPair();
+                final DotBracketSymbol symbol = dotBracket.getSymbol(j);
+                final DotBracketSymbol pair = symbol.getPair();
 
-                int index = symbol.getIndex() + 1;
-                int pairIndex = (pair != null) ? (pair.getIndex() + 1) : 0;
-                int after = (j == (s.getTo() - 1)) ? 0 : (i + 2);
-                int original = dotBracket.getCtOriginalColumn(symbol);
-                char seq = symbol.getSequence();
+                final int index = symbol.getIndex() + 1;
+                final int pairIndex = (pair != null) ? (pair.getIndex() + 1) : 0;
+                final int after = (j == (s.getTo() - 1)) ? 0 : (i + 2);
+                final int original = dotBracket.getCtOriginalColumn(symbol);
+                final char seq = symbol.getSequence();
 
-                entries.add(new Ct.Entry(index, pairIndex, i, after, original,
+                entries.add(new Entry(index, pairIndex, i, after, original,
                                          seq));
             }
         }
@@ -288,7 +288,7 @@ public class Ct implements Serializable {
 
     public int getStrandCount() {
         int count = 0;
-        for (final Ct.Entry entry : entries) {
+        for (final Entry entry : entries) {
             if (entry.getAfter() == 0) {
                 count += 1;
             }
@@ -300,7 +300,7 @@ public class Ct implements Serializable {
         return Collections.unmodifiableSortedSet(entries);
     }
 
-    public static class Entry implements Serializable, Comparable<Ct.Entry> {
+    public static class Entry implements Serializable, Comparable<Entry> {
         private final int index;
         private final int pair;
         private final int before;
@@ -395,17 +395,17 @@ public class Ct implements Serializable {
         }
 
         @Override
-        public boolean equals(final Object obj) {
-            if (this == obj) {
+        public boolean equals(final Object o) {
+            if (this == o) {
                 return true;
             }
-            if (obj == null) {
+            if (o == null) {
                 return false;
             }
-            if (getClass() != obj.getClass()) {
+            if (getClass() != o.getClass()) {
                 return false;
             }
-            Entry other = (Entry) obj;
+            final Entry other = (Entry) o;
             if (after != other.after) {
                 return false;
             }
@@ -425,7 +425,7 @@ public class Ct implements Serializable {
 
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             builder.append(index);
             builder.append(' ');
             builder.append(seq);
@@ -447,7 +447,7 @@ public class Ct implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append(entries.size());
         builder.append('\n');
 

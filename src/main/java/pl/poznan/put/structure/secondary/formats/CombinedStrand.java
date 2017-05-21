@@ -29,7 +29,7 @@ public class CombinedStrand {
     }
 
     public List<DotBracketSymbol> getSymbols() {
-        List<DotBracketSymbol> result = new ArrayList<>();
+        final List<DotBracketSymbol> result = new ArrayList<>();
         for (final Strand strand : strands) {
             result.addAll(strand.getSymbols());
         }
@@ -37,7 +37,7 @@ public class CombinedStrand {
     }
 
     public Iterable<TerminalMissing> getTerminalMissing() {
-        Collection<TerminalMissing> result = new ArrayList<>();
+        final Collection<TerminalMissing> result = new ArrayList<>();
         for (final Strand strand : strands) {
             result.add(strand.getMissingBegin());
             result.add(strand.getMissingEnd());
@@ -46,18 +46,18 @@ public class CombinedStrand {
     }
 
     public List<DotBracketSymbol> getInternalMissing() {
-        List<DotBracketSymbol> result = new ArrayList<>();
+        final List<DotBracketSymbol> result = new ArrayList<>();
 
         for (final Strand strand : strands) {
-            TerminalMissing missingBegin = strand.getMissingBegin();
-            TerminalMissing missingEnd = strand.getMissingEnd();
-            List<DotBracketSymbol> symbols = strand.getSymbols();
+            final TerminalMissing missingBegin = strand.getMissingBegin();
+            final TerminalMissing missingEnd = strand.getMissingEnd();
+            final List<DotBracketSymbol> symbols = strand.getSymbols();
 
             DotBracketSymbol symbol =
                     (missingBegin.getLength() > 0) ? missingBegin.getLast()
                                                                  .getNext()
                                                    : symbols.get(0);
-            DotBracketSymbol lastSymbol =
+            final DotBracketSymbol lastSymbol =
                     (missingEnd.getLength() > 0) ? missingEnd.getFirst()
                                                  : symbols
                             .get(symbols.size() - 1);
@@ -92,7 +92,7 @@ public class CombinedStrand {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
 
         for (final Strand strand : strands) {
             builder.append(strand.getName());
@@ -103,7 +103,7 @@ public class CombinedStrand {
     }
 
     public String getSequence() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         for (final Strand strand : strands) {
             builder.append(strand.getSequence());
         }
@@ -111,7 +111,7 @@ public class CombinedStrand {
     }
 
     public String getStructure() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         for (final Strand strand : strands) {
             builder.append(strand.getStructure());
         }

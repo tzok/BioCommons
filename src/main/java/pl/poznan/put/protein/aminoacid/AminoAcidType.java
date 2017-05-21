@@ -45,10 +45,10 @@ public enum AminoAcidType implements ResidueInformationProvider {
 
     public static TorsionAngleType[] getChiInstances(
             final ProteinChiType chiType) {
-        List<TorsionAngleType> typesList = new ArrayList<>();
+        final List<TorsionAngleType> typesList = new ArrayList<>();
 
         for (final AminoAcidType aminoAcidType : AminoAcidType.values()) {
-            ProteinSidechain residueComponent = aminoAcidType.sidechain;
+            final ProteinSidechain residueComponent = aminoAcidType.sidechain;
             if (!residueComponent.hasChiDefined(chiType)) {
                 continue;
             }
@@ -73,8 +73,6 @@ public enum AminoAcidType implements ResidueInformationProvider {
                 case CHI5:
                     typesList.add(Chi5.getInstance(
                             residueComponent.getChiAtoms(chiType)));
-                    break;
-                default:
                     break;
             }
         }

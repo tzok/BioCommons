@@ -118,7 +118,7 @@ public class ClassifiedBasePair
         if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-        ClassifiedBasePair basePair1 = (ClassifiedBasePair) o;
+        final ClassifiedBasePair basePair1 = (ClassifiedBasePair) o;
         return Objects.equals(basePair, basePair1.basePair) && Objects
                 .equals(interactionType, basePair1.interactionType) && (saenger
                                                                         ==
@@ -150,7 +150,7 @@ public class ClassifiedBasePair
             return 0;
         }
 
-        int interactionComparison =
+        final int interactionComparison =
                 interactionType.compareTo(t.interactionType);
         if (interactionComparison != 0) {
             return interactionComparison;

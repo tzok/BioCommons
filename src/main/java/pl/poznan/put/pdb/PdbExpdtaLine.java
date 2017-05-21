@@ -37,17 +37,17 @@ public class PdbExpdtaLine implements Serializable {
 
     public static PdbExpdtaLine parse(final String line)
             throws PdbParsingException {
-        String recordName = line.substring(0, 6).trim();
+        final String recordName = line.substring(0, 6).trim();
 
         if (!Objects.equals(PdbExpdtaLine.RECORD_NAME, recordName)) {
             throw new PdbParsingException(
                     "PDB line does not start with EXPDTA");
         }
 
-        List<ExperimentalTechnique> experimentalTechniques = new ArrayList<>();
+        final List<ExperimentalTechnique> experimentalTechniques = new ArrayList<>();
         for (final String techniqueFullName : line.substring(10).trim()
                                                   .split(";")) {
-            ExperimentalTechnique technique = ExperimentalTechnique
+            final ExperimentalTechnique technique = ExperimentalTechnique
                     .fromFullName(techniqueFullName.trim());
             if (technique == ExperimentalTechnique.UNKNOWN) {
                 throw new PdbParsingException("Failed to parse line: " + line);
@@ -68,7 +68,7 @@ public class PdbExpdtaLine implements Serializable {
 
     @Override
     public final String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
 
         if (experimentalTechniques.isEmpty()) {
             builder.append(ExperimentalTechnique.UNKNOWN);

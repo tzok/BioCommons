@@ -34,8 +34,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
 
     @Override
     public String getLongDisplayName() {
-        return displayName + '(' + getExportName() + ')' + atoms.a + '-'
-               + atoms.b + '-' + atoms.c + '-' + atoms.d;
+        return String.format("%s(%s)%s-%s-%s-%s", displayName, getExportName(), atoms.a, atoms.b, atoms.c, atoms.d);
     }
 
     @Override
@@ -71,7 +70,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        AtomBasedTorsionAngleType other = (AtomBasedTorsionAngleType) obj;
+        final AtomBasedTorsionAngleType other = (AtomBasedTorsionAngleType) obj;
         if (atoms == null) {
             if (other.atoms != null) {
                 return false;
@@ -99,15 +98,15 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     @Override
     public TorsionAngleValue calculate(
             final List<PdbResidue> residues, final int currentIndex) {
-        PdbAtomLine[] foundAtoms = new PdbAtomLine[4];
+        final PdbAtomLine[] foundAtoms = new PdbAtomLine[4];
 
         for (int i = 0; i < 4; i++) {
-            int index = currentIndex + residueRule.get(i);
+            final int index = currentIndex + residueRule.get(i);
             if ((index < 0) || (index >= residues.size())) {
                 return TorsionAngleValue.invalidInstance(this);
             }
 
-            PdbResidue residue = residues.get(index);
+            final PdbResidue residue = residues.get(index);
             if (!residue.hasAtom(atoms.get(i))) {
                 return TorsionAngleValue.invalidInstance(this);
             }

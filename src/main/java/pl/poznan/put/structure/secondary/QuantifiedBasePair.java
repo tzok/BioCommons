@@ -56,17 +56,17 @@ public class QuantifiedBasePair extends ClassifiedBasePair {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
 
-        if ((obj == null) || (getClass() != obj.getClass())) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
 
-        QuantifiedBasePair other = (QuantifiedBasePair) obj;
-        return new EqualsBuilder().appendSuper(super.equals(obj))
+        final QuantifiedBasePair other = (QuantifiedBasePair) o;
+        return new EqualsBuilder().appendSuper(super.equals(o))
                                   .append(shear, other.shear)
                                   .append(stretch, other.stretch)
                                   .append(stagger, other.stagger)

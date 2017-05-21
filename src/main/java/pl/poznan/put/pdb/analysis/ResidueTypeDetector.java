@@ -31,7 +31,7 @@ public final class ResidueTypeDetector {
 
     public static ResidueInformationProvider detectResidueType(
             final String residueName, final Collection<AtomName> atomNames) {
-        ResidueInformationProvider provider = ResidueTypeDetector
+        final ResidueInformationProvider provider = ResidueTypeDetector
                 .detectResidueTypeFromResidueName(residueName);
         if (provider.getMoleculeType() != MoleculeType.UNKNOWN) {
             return provider;
@@ -53,11 +53,11 @@ public final class ResidueTypeDetector {
 
     public static ResidueInformationProvider detectResidueTypeFromAtoms(
             final Collection<AtomName> atomNames, final String residueName) {
-        boolean hasHydrogen = ResidueTypeDetector.hasHydrogen(atomNames);
-        Predicate<AtomName> isHeavyAtomPredicate =
+        final boolean hasHydrogen = ResidueTypeDetector.hasHydrogen(atomNames);
+        final Predicate<AtomName> isHeavyAtomPredicate =
                 PredicateUtils.invokerPredicate("isHeavy");
 
-        Iterable<AtomName> actual = EnumSet.copyOf(atomNames);
+        final Iterable<AtomName> actual = EnumSet.copyOf(atomNames);
         if (!hasHydrogen) {
             CollectionUtils.filter(actual, isHeavyAtomPredicate);
         }
@@ -67,7 +67,7 @@ public final class ResidueTypeDetector {
 
         for (final ResidueInformationProvider provider : ResidueTypeDetector
                 .PROVIDERS) {
-            Collection<AtomName> expected = EnumSet.noneOf(AtomName.class);
+            final Collection<AtomName> expected = EnumSet.noneOf(AtomName.class);
 
             for (final ResidueComponent component : provider
                     .getAllMoleculeComponents()) {
@@ -79,11 +79,11 @@ public final class ResidueTypeDetector {
                 }
             }
 
-            Collection<AtomName> disjunction =
+            final Collection<AtomName> disjunction =
                     CollectionUtils.disjunction(expected, actual);
-            Collection<AtomName> union =
+            final Collection<AtomName> union =
                     CollectionUtils.union(expected, actual);
-            double score = disjunction.size() / (double) union.size();
+            final double score = disjunction.size() / (double) union.size();
 
             if (score < bestScore) {
                 bestScore = score;
@@ -99,7 +99,7 @@ public final class ResidueTypeDetector {
     }
 
     private static boolean hasHydrogen(final Iterable<AtomName> atomNames) {
-        Predicate<AtomName> notIsHeavyPredicate = PredicateUtils.notPredicate(
+        final Predicate<AtomName> notIsHeavyPredicate = PredicateUtils.notPredicate(
                 PredicateUtils.invokerPredicate("isHeavy")); //NON-NLS
         return IterableUtils.matchesAny(atomNames, notIsHeavyPredicate);
     }

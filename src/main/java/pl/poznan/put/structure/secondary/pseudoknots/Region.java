@@ -30,9 +30,9 @@ public final class Region {
 
     // Create Array of Regions from connections stored in RNAStructure
     public static List<Region> createRegions(final BpSeq bpSeq) {
-        List<Region> regions = new ArrayList<>();
-        List<BpSeq.Entry> regionEntries = new ArrayList<>();
-        Iterable<BpSeq.Entry> allEntries = new ArrayList<>(bpSeq.getPaired());
+        final List<Region> regions = new ArrayList<>();
+        final List<BpSeq.Entry> regionEntries = new ArrayList<>();
+        final Iterable<BpSeq.Entry> allEntries = new ArrayList<>(bpSeq.getPaired());
         int id = 0;
 
         for (final BpSeq.Entry entry : allEntries) {
@@ -41,7 +41,7 @@ public final class Region {
                 continue;
             }
 
-            BpSeq.Entry last = regionEntries.get(regionEntries.size() - 1);
+            final BpSeq.Entry last = regionEntries.get(regionEntries.size() - 1);
             if ((entry.getIndex() == (last.getIndex() + 1)) && (entry.getPair()
                                                                 == (last.getPair()
                                                                     - 1))) {
@@ -49,7 +49,7 @@ public final class Region {
                 continue;
             }
 
-            BpSeq.Entry first = regionEntries.get(0);
+            final BpSeq.Entry first = regionEntries.get(0);
             regions.add(new Region(id, regionEntries, first.getIndex(),
                                    first.getPair()));
             regionEntries.clear();
@@ -59,7 +59,7 @@ public final class Region {
         }
 
         if (!regionEntries.isEmpty()) {
-            BpSeq.Entry first = regionEntries.get(0);
+            final BpSeq.Entry first = regionEntries.get(0);
             regions.add(new Region(id, regionEntries, first.getIndex(),
                                    first.getPair()));
         }
@@ -68,7 +68,7 @@ public final class Region {
     }
 
     public static Region merge(final Region... regions) {
-        List<BpSeq.Entry> entries = new ArrayList<>();
+        final List<BpSeq.Entry> entries = new ArrayList<>();
         int max = Integer.MIN_VALUE;
         int min = Integer.MAX_VALUE;
 
@@ -84,7 +84,7 @@ public final class Region {
             }
         }
 
-        int id = regions[0].id;
+        final int id = regions[0].id;
         return new Region(id, entries, min, max);
     }
 
@@ -129,7 +129,7 @@ public final class Region {
         if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-        Region region = (Region) o;
+        final Region region = (Region) o;
         return id == region.id;
     }
 }

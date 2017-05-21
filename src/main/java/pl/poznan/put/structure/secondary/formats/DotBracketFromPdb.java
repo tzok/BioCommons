@@ -31,25 +31,25 @@ public class DotBracketFromPdb extends DotBracket {
 
     private void markRepresentedNonCanonicals(
             final Iterable<ClassifiedBasePair> nonCanonical) {
-        Collection<BasePair> representedSet = new HashSet<>();
+        final Collection<BasePair> representedSet = new HashSet<>();
 
         for (final DotBracketSymbol symbol : symbols) {
             if (symbol.isPairing()) {
-                PdbResidueIdentifier left = getResidueIdentifier(symbol);
-                PdbResidueIdentifier right =
+                final PdbResidueIdentifier left = getResidueIdentifier(symbol);
+                final PdbResidueIdentifier right =
                         getResidueIdentifier(symbol.getPair());
                 representedSet.add(new BasePair(left, right));
             }
         }
 
         for (final ClassifiedBasePair cbp : nonCanonical) {
-            BasePair basePair = cbp.getBasePair();
+            final BasePair basePair = cbp.getBasePair();
             if (representedSet.contains(basePair)) {
                 cbp.setRepresented(true);
 
                 if (!cbp.isCanonical()) {
-                    DotBracketSymbol left = getSymbol(basePair.getLeft());
-                    DotBracketSymbol right = getSymbol(basePair.getRight());
+                    final DotBracketSymbol left = getSymbol(basePair.getLeft());
+                    final DotBracketSymbol right = getSymbol(basePair.getRight());
                     left.setNonCanonical(true);
                     right.setNonCanonical(true);
                 }
@@ -69,8 +69,8 @@ public class DotBracketFromPdb extends DotBracket {
 
     private static String updateMissingIndices(
             final String structure, final ResidueCollection model) {
-        List<PdbResidue> residues = model.getResidues();
-        char[] dotBracket = structure.toCharArray();
+        final List<PdbResidue> residues = model.getResidues();
+        final char[] dotBracket = structure.toCharArray();
         assert dotBracket.length == residues.size();
 
         for (int i = 0; i < dotBracket.length; i++) {
@@ -83,13 +83,13 @@ public class DotBracketFromPdb extends DotBracket {
     }
 
     private void mapSymbolsAndResidues(final ResidueCollection model) {
-        List<PdbResidue> residues = model.getResidues();
+        final List<PdbResidue> residues = model.getResidues();
         assert residues.size() == symbols.size();
 
         for (int i = 0; i < residues.size(); i++) {
-            DotBracketSymbol symbol = symbols.get(i);
-            PdbResidue residue = residues.get(i);
-            PdbResidueIdentifier residueIdentifier =
+            final DotBracketSymbol symbol = symbols.get(i);
+            final PdbResidue residue = residues.get(i);
+            final PdbResidueIdentifier residueIdentifier =
                     residue.getResidueIdentifier();
             symbolToResidue.put(symbol, residueIdentifier);
             residueToSymbol.put(residueIdentifier, symbol);

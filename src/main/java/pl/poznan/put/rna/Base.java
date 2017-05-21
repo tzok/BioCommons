@@ -30,7 +30,7 @@ import java.util.List;
 public abstract class Base extends NucleicAcidResidueComponent
         implements ResidueInformationProvider {
     private static final Base INVALID =
-            new Base(Collections.<AtomName>emptyList(), "UNK", 'X', "UNK") {
+            new Base(Collections.emptyList(), "UNK", 'X', "UNK") {
                 private final Quadruplet<AtomName> chiAtoms =
                         new Quadruplet<>(AtomName.UNKNOWN, AtomName.UNKNOWN,
                                          AtomName.UNKNOWN, AtomName.UNKNOWN);

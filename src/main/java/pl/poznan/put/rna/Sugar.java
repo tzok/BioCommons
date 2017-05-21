@@ -7,7 +7,7 @@ import java.util.List;
 
 public abstract class Sugar extends NucleicAcidResidueComponent {
     private static final Sugar INVALID =
-            new Sugar(Collections.<AtomName>emptyList()) {
+            new Sugar(Collections.emptyList()) {
                 // empty block
             };
 

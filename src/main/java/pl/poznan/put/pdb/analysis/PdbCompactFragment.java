@@ -29,11 +29,11 @@ public class PdbCompactFragment implements ResidueCollection {
         this.residues = new ArrayList<>(residues);
 
         for (int i = 0; i < residues.size(); i++) {
-            PdbResidue residue = residues.get(i);
-            List<TorsionAngleValue> values = new ArrayList<>();
+            final PdbResidue residue = residues.get(i);
+            final List<TorsionAngleValue> values = new ArrayList<>();
 
             for (final TorsionAngleType type : residue.getTorsionAngleTypes()) {
-                TorsionAngleValue value = type.calculate(residues, i);
+                final TorsionAngleValue value = type.calculate(residues, i);
                 values.add(value);
             }
 
@@ -70,7 +70,7 @@ public class PdbCompactFragment implements ResidueCollection {
     }
 
     public final String toPdb() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         for (final PdbResidue residue : residues) {
             builder.append(residue.toPdb());
         }
@@ -78,7 +78,7 @@ public class PdbCompactFragment implements ResidueCollection {
     }
 
     public final String toSequence() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         for (final PdbResidue residue : residues) {
             builder.append(residue.getOneLetterName());
         }
@@ -91,7 +91,7 @@ public class PdbCompactFragment implements ResidueCollection {
     }
 
     public final Set<TorsionAngleType> commonTorsionAngleTypes() {
-        Set<TorsionAngleType> set = new LinkedHashSet<>();
+        final Set<TorsionAngleType> set = new LinkedHashSet<>();
         for (final Map.Entry<PdbResidue, List<TorsionAngleValue>> entry :
                 mapResidueAngleValue
                 .entrySet()) {
@@ -104,7 +104,7 @@ public class PdbCompactFragment implements ResidueCollection {
 
     public final TorsionAngleValue getTorsionAngleValue(
             final PdbResidue residue, final MasterTorsionAngleType masterType) {
-        Collection<? extends TorsionAngleType> angleTypes =
+        final Collection<? extends TorsionAngleType> angleTypes =
                 masterType.getAngleTypes();
         for (final TorsionAngleValue angleValue : mapResidueAngleValue
                 .get(residue)) {
@@ -115,7 +115,7 @@ public class PdbCompactFragment implements ResidueCollection {
             }
         }
 
-        TorsionAngleType first = angleTypes.iterator().next();
+        final TorsionAngleType first = angleTypes.iterator().next();
         return TorsionAngleValue.invalidInstance(first);
     }
 
@@ -139,17 +139,17 @@ public class PdbCompactFragment implements ResidueCollection {
     }
 
     @Override
-    public final boolean equals(final Object obj) {
-        if (this == obj) {
+    public final boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null) {
+        if (o == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != o.getClass()) {
             return false;
         }
-        PdbCompactFragment other = (PdbCompactFragment) obj;
+        final PdbCompactFragment other = (PdbCompactFragment) o;
         if (name == null) {
             if (other.name != null) {
                 return false;
@@ -170,8 +170,8 @@ public class PdbCompactFragment implements ResidueCollection {
 
     @Override
     public final String toString() {
-        PdbResidue first = residues.get(0);
-        PdbResidue last = residues.get(residues.size() - 1);
+        final PdbResidue first = residues.get(0);
+        final PdbResidue last = residues.get(residues.size() - 1);
         return first + " - " + last + " (count: " + residues.size() + ')';
     }
 }

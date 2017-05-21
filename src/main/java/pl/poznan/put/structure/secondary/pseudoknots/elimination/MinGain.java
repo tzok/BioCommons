@@ -19,32 +19,27 @@ import java.util.TreeMap;
 public class MinGain extends AbstractRegionRemover {
     @Override
     public final Region selectRegionToRemove(final ConflictMap conflictMap) {
-        Set<Region> regions = conflictMap.getRegionsWithConflicts();
+        final Set<Region> regions = conflictMap.getRegionsWithConflicts();
 
-        List<Region> minGainRegions =
+        final List<Region> minGainRegions =
                 MinGain.minGainRegions(conflictMap, regions);
         if (minGainRegions.size() == 1) {
             return minGainRegions.get(0);
         }
 
-        List<Region> maxConflictsRegions =
+        final List<Region> maxConflictsRegions =
                 MaxConflicts.maxConflictRegions(conflictMap, minGainRegions);
         if (maxConflictsRegions.size() == 1) {
             return maxConflictsRegions.get(0);
         }
 
-        Collections.sort(maxConflictsRegions, new Comparator<Region>() {
-            @Override
-            public int compare(final Region t, final Region t1) {
-                return Integer.compare(t.getBegin(), t1.getBegin());
-            }
-        });
+        maxConflictsRegions.sort((t, t1) -> Integer.compare(t.getBegin(), t1.getBegin()));
         return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
     }
 
     public static List<Region> minGainRegions(
             final ConflictMap conflictMap, final Iterable<Region> regions) {
-        SortedMap<Integer, List<Region>> mapGainRegions = new TreeMap<>();
+        final SortedMap<Integer, List<Region>> mapGainRegions = new TreeMap<>();
 
         for (final Region region : regions) {
             int conflictLength = 0;
@@ -52,9 +47,9 @@ public class MinGain extends AbstractRegionRemover {
                 conflictLength += conflicting.getLength();
             }
 
-            int gain = region.getLength() - conflictLength;
+            final int gain = region.getLength() - conflictLength;
             if (!mapGainRegions.containsKey(gain)) {
-                mapGainRegions.put(gain, new ArrayList<Region>());
+                mapGainRegions.put(gain, new ArrayList<>());
             }
 
             mapGainRegions.get(gain).add(region);

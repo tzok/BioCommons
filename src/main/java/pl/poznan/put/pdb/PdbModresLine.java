@@ -60,20 +60,20 @@ public class PdbModresLine implements ChainNumberICode, Serializable {
         }
 
         try {
-            String recordName = line.substring(0, 6).trim();
+            final String recordName = line.substring(0, 6).trim();
 
             if (!Objects.equals(PdbModresLine.RECORD_NAME, recordName)) {
                 throw new PdbParsingException(
                         "PDB line does not start with MODRES");
             }
 
-            String idCode = line.substring(7, 11).trim();
-            String residueName = line.substring(12, 15).trim();
-            String chainIdentifier = Character.toString(line.charAt(16));
-            int residueNumber = Integer.parseInt(line.substring(18, 22).trim());
-            String insertionCode = Character.toString(line.charAt(22));
-            String standardResidueName = line.substring(24, 27).trim();
-            String comment = line.substring(29, 70);
+            final String idCode = line.substring(7, 11).trim();
+            final String residueName = line.substring(12, 15).trim();
+            final String chainIdentifier = Character.toString(line.charAt(16));
+            final int residueNumber = Integer.parseInt(line.substring(18, 22).trim());
+            final String insertionCode = Character.toString(line.charAt(22));
+            final String standardResidueName = line.substring(24, 27).trim();
+            final String comment = line.substring(29, 70);
             return new PdbModresLine(idCode, residueName, chainIdentifier,
                                      residueNumber, insertionCode,
                                      standardResidueName, comment);

@@ -57,7 +57,7 @@ public class PdbRemark2Line implements Serializable {
         }
 
         try {
-            String resolutionString = line.substring(23).trim();
+            final String resolutionString = line.substring(23).trim();
             double resolution = Double.NaN;
 
             if (!Objects.equals("NOT APPLICABLE.", resolutionString)) {

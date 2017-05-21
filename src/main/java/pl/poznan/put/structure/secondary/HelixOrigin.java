@@ -12,8 +12,8 @@ public enum HelixOrigin {
                 return "false";
             case TRUE:
                 return "true";
-            default:
             case UNKNOWN:
+            default:
                 return "unknown";
         }
     }

@@ -81,17 +81,17 @@ public class RNAInteractionType
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null) {
+        if (o == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != o.getClass()) {
             return false;
         }
-        RNAInteractionType other = (RNAInteractionType) obj;
+        final RNAInteractionType other = (RNAInteractionType) o;
         if (description == null) {
             if (other.description != null) {
                 return false;
@@ -119,8 +119,8 @@ public class RNAInteractionType
             return 0;
         }
 
-        int mine = getInternalValue();
-        int theirs = t.getInternalValue();
+        final int mine = getInternalValue();
+        final int theirs = t.getInternalValue();
         return (mine < theirs) ? -1 : ((mine == theirs) ? 0 : 1);
     }
 

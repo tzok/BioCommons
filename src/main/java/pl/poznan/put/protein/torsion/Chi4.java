@@ -28,7 +28,7 @@ public final class Chi4 extends AtomBasedTorsionAngleType {
     }
 
     public static Chi4[] getInstances() {
-        List<Chi4> instances = new ArrayList<>();
+        final List<Chi4> instances = new ArrayList<>();
         instances.add(Chi4.getInstance(Chi4.ARGININE_ATOMS));
         instances.add(Chi4.getInstance(Chi4.LYSINE_ATOMS));
         return instances.toArray(new Chi4[instances.size()]);

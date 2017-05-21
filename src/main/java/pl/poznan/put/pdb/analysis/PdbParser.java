@@ -72,13 +72,13 @@ public class PdbParser implements StructureParser {
             }
         }
 
-        List<PdbModel> result = new ArrayList<>();
+        final List<PdbModel> result = new ArrayList<>();
 
         for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms
                 .entrySet()) {
-            int modelNumber = entry.getKey();
-            List<PdbAtomLine> atoms = entry.getValue();
-            PdbModel pdbModel = new PdbModel(headerLine, experimentalDataLine,
+            final int modelNumber = entry.getKey();
+            final List<PdbAtomLine> atoms = entry.getValue();
+            final PdbModel pdbModel = new PdbModel(headerLine, experimentalDataLine,
                                              resolutionLine, modelNumber, atoms,
                                              modifiedResidues, missingResidues);
             result.add(pdbModel);
@@ -106,7 +106,7 @@ public class PdbParser implements StructureParser {
     private void handleModelLine(final String line) {
         endedModelNumbers.add(currentModelNumber);
 
-        String modelNumberString =
+        final String modelNumberString =
                 (line.length() > 14) ? line.substring(10, 14).trim()
                                      : line.substring(5).trim();
         int modelNumber = Integer.parseInt(modelNumberString);
@@ -132,10 +132,10 @@ public class PdbParser implements StructureParser {
 
             if (!modelAtoms.containsKey(currentModelNumber)) {
                 modelAtoms
-                        .put(currentModelNumber, new ArrayList<PdbAtomLine>());
+                        .put(currentModelNumber, new ArrayList<>());
             }
 
-            List<PdbAtomLine> atomList = modelAtoms.get(currentModelNumber);
+            final List<PdbAtomLine> atomList = modelAtoms.get(currentModelNumber);
             atomList.add(atomLine);
         } catch (final PdbParsingException e) {
             PdbParser.LOGGER.warn("Invalid ATOM line: {}", line, e);
@@ -161,7 +161,7 @@ public class PdbParser implements StructureParser {
                 return;
             }
 
-            PdbRemark465Line remark465Line = PdbRemark465Line.parse(line);
+            final PdbRemark465Line remark465Line = PdbRemark465Line.parse(line);
             missingResidues.add(remark465Line);
         } catch (final PdbParsingException e) {
             PdbParser.LOGGER.warn("Invalid REMARK 465 line: {}", line, e);
@@ -170,7 +170,7 @@ public class PdbParser implements StructureParser {
 
     private void handleModifiedResidueLine(final String line) {
         try {
-            PdbModresLine modresLine = PdbModresLine.parse(line);
+            final PdbModresLine modresLine = PdbModresLine.parse(line);
             modifiedResidues.add(modresLine);
         } catch (final PdbParsingException e) {
             PdbParser.LOGGER.warn("Invalid MODRES line: {}", line, e);

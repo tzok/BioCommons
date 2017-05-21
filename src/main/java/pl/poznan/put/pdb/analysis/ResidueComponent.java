@@ -24,7 +24,7 @@ public abstract class ResidueComponent {
             final String residueComponentName, final MoleculeType moleculeType,
             final List<AtomName> atoms) {
         this(residueComponentName, moleculeType, atoms,
-             Collections.<AtomName>emptyList());
+             Collections.emptyList());
     }
 
     protected ResidueComponent(
@@ -67,15 +67,15 @@ public abstract class ResidueComponent {
     }
 
     @Override
-    public final boolean equals(final Object obj) {
-        if (this == obj) {
+    public final boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if ((obj == null) || (getClass() != obj.getClass())) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
 
-        ResidueComponent other = (ResidueComponent) obj;
+        final ResidueComponent other = (ResidueComponent) o;
         return Objects.equals(residueComponentName, other.residueComponentName)
                && (moleculeType == other.moleculeType) && CollectionUtils
                        .isEqualCollection(atoms, other.atoms) && CollectionUtils

@@ -45,7 +45,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
             = "ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
     private static final String FORMAT
             = "ATOM  %5d  %-3s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
-    @SuppressWarnings("HardcodedLineSeparator") public static final String CIF_LOOP
+    public static final String CIF_LOOP
             = "loop_\n" +
               "_atom_site.group_PDB\n" +
               "_atom_site.id\n" +
@@ -106,28 +106,28 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     }
 
     public static PdbAtomLine fromBioJavaAtom(final Atom atom) {
-        Group group = atom.getGroup();
-        String residueName = group.getPDBName();
-        ResidueNumber residueNumberObject = group.getResidueNumber();
-        String chainIdentifier = residueNumberObject.getChainName();
-        int residueNumber = residueNumberObject.getSeqNum();
-        String insertionCode = (residueNumberObject.getInsCode() == null) ? " "
+        final Group group = atom.getGroup();
+        final String residueName = group.getPDBName();
+        final ResidueNumber residueNumberObject = group.getResidueNumber();
+        final String chainIdentifier = residueNumberObject.getChainName();
+        final int residueNumber = residueNumberObject.getSeqNum();
+        final String insertionCode = (residueNumberObject.getInsCode() == null) ? " "
                                                                           :
                                Character
                                        .toString(residueNumberObject
                                                          .getInsCode());
 
-        int serialNumber = atom.getPDBserial();
-        String atomName = atom.getName();
-        String alternateLocation = (atom.getAltLoc() == null) ? " " : Character
+        final int serialNumber = atom.getPDBserial();
+        final String atomName = atom.getName();
+        final String alternateLocation = (atom.getAltLoc() == null) ? " " : Character
                 .toString(atom.getAltLoc());
-        double x = atom.getX();
-        double y = atom.getY();
-        double z = atom.getZ();
-        double occupancy = atom.getOccupancy();
-        double temperatureFactor = atom.getTempFactor();
-        String elementSymbol = atom.getElement().name();
-        String charge = "";
+        final double x = atom.getX();
+        final double y = atom.getY();
+        final double z = atom.getZ();
+        final double occupancy = atom.getOccupancy();
+        final double temperatureFactor = atom.getTempFactor();
+        final String elementSymbol = atom.getElement().name();
+        final String charge = "";
         return new PdbAtomLine(serialNumber, atomName, alternateLocation,
                                residueName, chainIdentifier, residueNumber,
                                insertionCode, x, y, z, occupancy,
@@ -143,13 +143,13 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
             throws PdbParsingException {
         // in non-strict mode, only up to X, Y, Z fields are required, rest is
         // optional
-        int minLineLenth = strictMode ? 80 : 54;
+        final int minLineLenth = strictMode ? 80 : 54;
         if (line.length() < minLineLenth) {
             throw new PdbParsingException("PDB ATOM line is too short");
         }
 
         try {
-            String recordName = line.substring(0, 6).trim();
+            final String recordName = line.substring(0, 6).trim();
 
             if (!Objects.equals(PdbAtomLine.RECORD_NAME, recordName) && !Objects
                     .equals("HETATM", recordName)) {
@@ -157,26 +157,26 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
                         "PDB line does not start with ATOM or HETATM");
             }
 
-            int serialNumber = Integer.parseInt(line.substring(6, 11).trim());
-            String atomName = line.substring(12, 16).trim();
-            String alternateLocation = Character.toString(line.charAt(16));
-            String residueName = line.substring(17, 20).trim();
-            String chainIdentifier = Character.toString(line.charAt(21));
-            int residueNumber = Integer.parseInt(line.substring(22, 26).trim());
-            String insertionCode = Character.toString(line.charAt(26));
-            double x = Double.parseDouble(line.substring(30, 38).trim());
-            double y = Double.parseDouble(line.substring(38, 46).trim());
-            double z = Double.parseDouble(line.substring(46, 54).trim());
+            final int serialNumber = Integer.parseInt(line.substring(6, 11).trim());
+            final String atomName = line.substring(12, 16).trim();
+            final String alternateLocation = Character.toString(line.charAt(16));
+            final String residueName = line.substring(17, 20).trim();
+            final String chainIdentifier = Character.toString(line.charAt(21));
+            final int residueNumber = Integer.parseInt(line.substring(22, 26).trim());
+            final String insertionCode = Character.toString(line.charAt(26));
+            final double x = Double.parseDouble(line.substring(30, 38).trim());
+            final double y = Double.parseDouble(line.substring(38, 46).trim());
+            final double z = Double.parseDouble(line.substring(46, 54).trim());
 
-            double occupancy = ((line.length() >= 60) && StringUtils
+            final double occupancy = ((line.length() >= 60) && StringUtils
                     .isNotBlank(line.substring(54, 60))) ? Double.parseDouble(
                     line.substring(54, 60).trim()) : 0;
-            double temperatureFactor = ((line.length() >= 66) && StringUtils
+            final double temperatureFactor = ((line.length() >= 66) && StringUtils
                     .isNotBlank(line.substring(60, 66))) ? Double.parseDouble(
                     line.substring(60, 66).trim()) : 0;
-            String elementSymbol =
+            final String elementSymbol =
                     (line.length() >= 78) ? line.substring(76, 78).trim() : "";
-            String charge =
+            final String charge =
                     (line.length() >= 80) ? line.substring(78, 80).trim() : "";
 
             return new PdbAtomLine(serialNumber, atomName, alternateLocation,
@@ -275,7 +275,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
                            + " first letter will be taken");
         }
 
-        String format =
+        final String format =
                 (atomName.length() == 4) ? PdbAtomLine.FORMAT_ATOM_4_CHARACTER
                                          : PdbAtomLine.FORMAT;
         return String.format(Locale.US, format, serialNumber, atomName,
@@ -319,10 +319,9 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         return AtomName.fromString(atomName);
     }
 
-    @SuppressWarnings("TypeMayBeWeakened")
     public final double distanceTo(final PdbAtomLine other) {
-        Vector3D v1 = new Vector3D(x, y, z);
-        Vector3D v2 = new Vector3D(other.x, other.y, other.z);
+        final Vector3D v1 = new Vector3D(x, y, z);
+        final Vector3D v2 = new Vector3D(other.x, other.y, other.z);
         return v1.distance(v2);
     }
 
@@ -338,18 +337,18 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
                     + "than 1 char");
         }
 
-        Group group = new HetatomImpl();
-        Character icode = Objects.equals(" ", insertionCode) ? null
+        final Group group = new HetatomImpl();
+        final Character icode = Objects.equals(" ", insertionCode) ? null
                                                              : insertionCode
                                   .charAt(0);
         group.setResidueNumber(String.valueOf(chainIdentifier), residueNumber,
                                icode);
         group.setPDBName(residueName);
 
-        String name = (atomName.length() == 4) ? atomName : String
+        final String name = (atomName.length() == 4) ? atomName : String
                 .format(" %-3s", atomName);
 
-        Atom atom = new AtomImpl();
+        final Atom atom = new AtomImpl();
         atom.setPDBserial(serialNumber);
         atom.setName(name);
         atom.setAltLoc(alternateLocation.charAt(0));
@@ -364,7 +363,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     }
 
     public final String toCif() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("ATOM ");
         builder.append(serialNumber).append(' ');
         builder.append(atomName).append(' ');

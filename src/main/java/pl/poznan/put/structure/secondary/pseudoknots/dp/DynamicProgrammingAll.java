@@ -28,8 +28,8 @@ public class DynamicProgrammingAll extends AbstractDynamicProgramming {
 
     @Override
     public final SubSolution[] findOptimalSolutions(final Clique clique) {
-        int size = clique.endpointCount();
-        SubSolution[][][] matrix = new SubSolution[size][size][0];
+        final int size = clique.endpointCount();
+        final SubSolution[][][] matrix = new SubSolution[size][size][0];
 
         for (int j = 1; j < size; j++) {
             for (int i = j - 1; i >= 0; i--) {

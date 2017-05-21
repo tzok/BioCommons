@@ -61,7 +61,7 @@ public final class Chi1 extends AtomBasedTorsionAngleType {
     }
 
     public static Chi1[] getInstances() {
-        List<Chi1> instances = new ArrayList<>();
+        final List<Chi1> instances = new ArrayList<>();
         instances.add(Chi1.getInstance(Chi1.ARGININE_ATOMS));
         instances.add(Chi1.getInstance(Chi1.ASPARAGINE_ATOMS));
         instances.add(Chi1.getInstance(Chi1.ASPARTIC_ACID_ATOMS));

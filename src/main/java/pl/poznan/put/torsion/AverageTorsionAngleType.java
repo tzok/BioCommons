@@ -30,13 +30,13 @@ public class AverageTorsionAngleType extends TorsionAngleType
 
     private static String toDisplayName(
             final Iterable<MasterTorsionAngleType> consideredAngles) {
-        Collection<String> angleNames = new LinkedHashSet<>();
+        final Collection<String> angleNames = new LinkedHashSet<>();
         for (final MasterTorsionAngleType angleType : consideredAngles) {
             angleNames.add(angleType.getShortDisplayName());
         }
 
-        StringBuilder builder = new StringBuilder("MCQ(");
-        Iterator<String> iterator = angleNames.iterator();
+        final StringBuilder builder = new StringBuilder("MCQ(");
+        final Iterator<String> iterator = angleNames.iterator();
         builder.append(iterator.next());
 
         while (iterator.hasNext()) {
@@ -50,13 +50,13 @@ public class AverageTorsionAngleType extends TorsionAngleType
 
     private static String toExportName(
             final Iterable<MasterTorsionAngleType> consideredAngles) {
-        Collection<String> angleNames = new LinkedHashSet<>();
+        final Collection<String> angleNames = new LinkedHashSet<>();
         for (final MasterTorsionAngleType angleType : consideredAngles) {
             angleNames.add(angleType.getExportName());
         }
 
-        StringBuilder builder = new StringBuilder("MCQ_");
-        Iterator<String> iterator = angleNames.iterator();
+        final StringBuilder builder = new StringBuilder("MCQ_");
+        final Iterator<String> iterator = angleNames.iterator();
         builder.append(iterator.next());
 
         while (iterator.hasNext()) {
@@ -113,26 +113,26 @@ public class AverageTorsionAngleType extends TorsionAngleType
     @Override
     public TorsionAngleValue calculate(
             final List<PdbResidue> residues, final int currentIndex) {
-        PdbResidue residue = residues.get(currentIndex);
-        List<Angle> angles = new ArrayList<>();
+        final PdbResidue residue = residues.get(currentIndex);
+        final List<Angle> angles = new ArrayList<>();
 
         for (final TorsionAngleType type : residue.getTorsionAngleTypes()) {
             for (final MasterTorsionAngleType masterType : consideredAngles) {
                 if (masterType.getAngleTypes().contains(type)) {
-                    TorsionAngleValue angleValue =
+                    final TorsionAngleValue angleValue =
                             type.calculate(residues, currentIndex);
                     angles.add(angleValue.getValue());
                 }
             }
         }
 
-        AngleSample angleSample = new AngleSample(angles);
+        final AngleSample angleSample = new AngleSample(angles);
         return new TorsionAngleValue(this, angleSample.getMeanDirection());
     }
 
     public TorsionAngleValue calculate(
             final Iterable<TorsionAngleValue> values) {
-        List<Angle> angles = new ArrayList<>();
+        final List<Angle> angles = new ArrayList<>();
 
         for (final MasterTorsionAngleType masterType : consideredAngles) {
             for (final TorsionAngleValue angleValue : values) {
@@ -146,7 +146,7 @@ public class AverageTorsionAngleType extends TorsionAngleType
             }
         }
 
-        AngleSample angleSample = new AngleSample(angles);
+        final AngleSample angleSample = new AngleSample(angles);
         return new TorsionAngleValue(this, angleSample.getMeanDirection());
     }
 

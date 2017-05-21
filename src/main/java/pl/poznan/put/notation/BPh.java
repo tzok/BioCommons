@@ -36,14 +36,14 @@ public enum BPh {
 
     public static BPh detect(
             final PdbResidue base, final PdbResidue phosphate) {
-        ResidueInformationProvider provider =
+        final ResidueInformationProvider provider =
                 base.getResidueInformationProvider();
         if (!(provider instanceof NucleobaseType)) {
             throw new IllegalArgumentException(
                     "Provided residue is not a nucleotide");
         }
 
-        NucleobaseType nucleobaseType = (NucleobaseType) provider;
+        final NucleobaseType nucleobaseType = (NucleobaseType) provider;
         switch (nucleobaseType) {
             case ADENINE:
                 return BPh.detectForAdenine(base, phosphate);

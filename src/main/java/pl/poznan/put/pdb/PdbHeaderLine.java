@@ -49,7 +49,7 @@ public class PdbHeaderLine implements Serializable {
                     "PDB HEADER line is not at least 66 characters long");
         }
 
-        String recordName = line.substring(0, 6).trim();
+        final String recordName = line.substring(0, 6).trim();
 
         if (!Objects.equals(PdbHeaderLine.RECORD_NAME, recordName)) {
             throw new PdbParsingException(
@@ -57,10 +57,10 @@ public class PdbHeaderLine implements Serializable {
         }
 
         try {
-            String classification = line.substring(10, 50).trim();
-            Date depositionDate = PdbHeaderLine.DATE_FORMAT
+            final String classification = line.substring(10, 50).trim();
+            final Date depositionDate = PdbHeaderLine.DATE_FORMAT
                     .parse(line.substring(50, 59).trim());
-            String idCode = line.substring(62, 66).trim();
+            final String idCode = line.substring(62, 66).trim();
             return new PdbHeaderLine(classification, depositionDate, idCode);
         } catch (final ParseException e) {
             throw new PdbParsingException(

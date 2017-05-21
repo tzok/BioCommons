@@ -29,21 +29,21 @@ public final class CanonicalStructureExtractor {
     public static BpSeq getCanonicalSecondaryStructure(
             final ResidueCollection residueCollection)
             throws InvalidStructureException {
-        List<PdbResidue> residues = residueCollection.getResidues();
-        Collection<ClassifiedBasePair> basePairs = new ArrayList<>();
-        Collection<PdbResidueIdentifier> paired = new HashSet<>();
+        final List<PdbResidue> residues = residueCollection.getResidues();
+        final Collection<ClassifiedBasePair> basePairs = new ArrayList<>();
+        final Collection<PdbResidueIdentifier> paired = new HashSet<>();
 
         for (int i = 0; i < residues.size(); i++) {
-            PdbResidue left = residues.get(i);
-            PdbResidueIdentifier leftId = left.getResidueIdentifier();
+            final PdbResidue left = residues.get(i);
+            final PdbResidueIdentifier leftId = left.getResidueIdentifier();
 
             for (int j = i + 2; j < residues.size(); j++) {
-                PdbResidue right = residues.get(j);
-                PdbResidueIdentifier rightId = right.getResidueIdentifier();
+                final PdbResidue right = residues.get(j);
+                final PdbResidueIdentifier rightId = right.getResidueIdentifier();
 
                 if (BasePair.isCanonicalPair(left, right)) {
-                    BasePair basePair = new BasePair(leftId, rightId);
-                    ClassifiedBasePair classifiedBasePair =
+                    final BasePair basePair = new BasePair(leftId, rightId);
+                    final ClassifiedBasePair classifiedBasePair =
                             new ClassifiedBasePair(basePair,
                                                    RNAInteractionType.BASE_BASE,
                                                    Saenger.XIX,

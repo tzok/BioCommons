@@ -13,10 +13,8 @@ import pl.poznan.put.pdb.analysis.StructureParser;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -44,7 +42,7 @@ public final class StructureManager {
     }
 
     public static List<PdbModel> getAllStructures() {
-        List<PdbModel> result = new ArrayList<>();
+        final List<PdbModel> result = new ArrayList<>();
         for (final StructureInfo si : StructureManager.STRUCTURES) {
             result.add(si.getStructure());
         }
@@ -52,7 +50,7 @@ public final class StructureManager {
     }
 
     public static List<String> getAllNames() {
-        List<String> result = new ArrayList<>();
+        final List<String> result = new ArrayList<>();
         for (final StructureInfo si : StructureManager.STRUCTURES) {
             result.add(si.getName());
         }
@@ -78,7 +76,7 @@ public final class StructureManager {
     }
 
     public static List<String> getNames(final Iterable<PdbModel> structures) {
-        List<String> result = new ArrayList<>();
+        final List<String> result = new ArrayList<>();
         for (final PdbModel s : structures) {
             result.add(StructureManager.getName(s));
         }
@@ -101,16 +99,15 @@ public final class StructureManager {
      * @return Structure object..
      */
     public static List<? extends PdbModel> loadStructure(final File file)
-            throws IOException, PdbParsingException, FileNotFoundException,
-                   UnsupportedEncodingException {
-        List<PdbModel> models = StructureManager.getModels(file);
+            throws IOException, PdbParsingException {
+        final List<PdbModel> models = StructureManager.getModels(file);
         if (!models.isEmpty()) {
             return models;
         }
 
-        StructureParser parser;
-        String fileContent = StructureManager.readFileUnzipIfNeeded(file);
-        String name = file.getName();
+        final StructureParser parser;
+        final String fileContent = StructureManager.readFileUnzipIfNeeded(file);
+        final String name = file.getName();
 
         if (name.endsWith(".cif") || name.endsWith(".cif.gz")) {
             if (!StructureManager.isCif(fileContent)) {
@@ -124,13 +121,13 @@ public final class StructureManager {
             parser = StructureManager.PDB_PARSER;
         }
 
-        List<? extends PdbModel> structures = parser.parse(fileContent);
+        final List<? extends PdbModel> structures = parser.parse(fileContent);
         StructureManager.storeStructureInfo(file, structures);
         return structures;
     }
 
     public static List<PdbModel> getModels(final File file) {
-        List<PdbModel> result = new ArrayList<>();
+        final List<PdbModel> result = new ArrayList<>();
         for (final StructureInfo si : StructureManager.STRUCTURES) {
             if (Objects.equals(si.getPath(), file)) {
                 result.add(si.getStructure());
@@ -140,8 +137,7 @@ public final class StructureManager {
     }
 
     private static String readFileUnzipIfNeeded(final File file)
-            throws IOException, FileNotFoundException,
-                   UnsupportedEncodingException {
+            throws IOException {
         ByteArrayOutputStream copyStream = null;
         FileInputStream inputStream = null;
 
@@ -149,7 +145,7 @@ public final class StructureManager {
             inputStream = new FileInputStream(file);
             copyStream = new ByteArrayOutputStream();
             IOUtils.copy(inputStream, copyStream);
-            byte[] byteArray = copyStream.toByteArray();
+            final byte[] byteArray = copyStream.toByteArray();
 
             if (StructureManager.isGzipStream(byteArray)) {
                 return StructureManager.unzipContent(byteArray);
@@ -167,17 +163,18 @@ public final class StructureManager {
     }
 
     private static boolean isPdb(final CharSequence fileContent) {
-        Pattern pdbPattern = Pattern.compile("^ATOM", Pattern.MULTILINE);
-        Matcher matcher = pdbPattern.matcher(fileContent);
+        final Pattern pdbPattern = Pattern.compile("^ATOM", Pattern.MULTILINE);
+        final Matcher matcher = pdbPattern.matcher(fileContent);
         return matcher.find();
     }
 
-    private static void storeStructureInfo(
-            final File file, final List<? extends PdbModel> structures) {
+    private static void storeStructureInfo(final File file,
+                                           final List<? extends PdbModel>
+                                                   structures) {
         String format = "%s";
 
         if (structures.size() > 1) {
-            int count = structures.size();
+            final int count = structures.size();
             int order = 10;
             int leading = 1;
             while (order < count) {
@@ -188,16 +185,17 @@ public final class StructureManager {
         }
 
         for (int i = 0; i < structures.size(); i++) {
-            PdbModel model = structures.get(i);
+            final PdbModel model = structures.get(i);
             String name = model.getIdCode();
 
             if (StringUtils.isBlank(name)) {
                 name = file.getName();
                 if (name.endsWith(".pdb") || name.endsWith(".cif")) {
                     name = name.substring(0, name.length() - 4);
-                } else if (name.endsWith(".pdb.gz") || name
-                        .endsWith(".cif.gz")) {
-                    name = name.substring(0, name.length() - 7);
+                } else {
+                    if (name.endsWith(".pdb.gz") || name.endsWith(".cif.gz")) {
+                        name = name.substring(0, name.length() - 7);
+                    }
                 }
             }
 
@@ -214,7 +212,7 @@ public final class StructureManager {
             return false;
         }
 
-        int head = (bytes[0] & 0xff) | ((bytes[1] << 8) & 0xff00);
+        final int head = (bytes[0] & 0xff) | ((bytes[1] << 8) & 0xff00);
         return head == GZIPInputStream.GZIP_MAGIC;
     }
 
@@ -234,23 +232,23 @@ public final class StructureManager {
     }
 
     public static List<PdbModel> loadStructure(final String pdbId)
-            throws IOException, PdbParsingException,
-                   MalformedURLException {
+            throws IOException, PdbParsingException, MalformedURLException {
         InputStream stream = null;
 
         try {
-            URL url = new URL("http://www.rcsb.org/pdb/download/downloadFile"
-                              + ".do?fileFormat=pdb&compression=NO&structureId="
-                              + pdbId);
+            final URL url =
+                    new URL("http://www.rcsb.org/pdb/download/downloadFile" +
+                            ".do?fileFormat=pdb&compression=NO&structureId=" +
+                            pdbId);
             stream = url.openStream();
-            String pdbContent =
+            final String pdbContent =
                     IOUtils.toString(stream, StructureManager.ENCODING_UTF_8);
 
-            File pdbFile = File.createTempFile("mcq", ".pdb");
+            final File pdbFile = File.createTempFile("mcq", ".pdb");
             FileUtils.writeStringToFile(pdbFile, pdbContent,
                                         StructureManager.ENCODING_UTF_8);
 
-            List<PdbModel> models =
+            final List<PdbModel> models =
                     StructureManager.PDB_PARSER.parse(pdbContent);
             StructureManager.storeStructureInfo(pdbFile, models);
             return models;
@@ -260,10 +258,10 @@ public final class StructureManager {
     }
 
     public static void remove(final File path) {
-        Collection<Integer> toRemove = new ArrayList<>();
+        final Collection<Integer> toRemove = new ArrayList<>();
 
         for (int i = 0; i < StructureManager.STRUCTURES.size(); i++) {
-            StructureInfo si = StructureManager.STRUCTURES.get(i);
+            final StructureInfo si = StructureManager.STRUCTURES.get(i);
             if (Objects.equals(si.getPath(), path)) {
                 toRemove.add(i);
             }

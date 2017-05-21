@@ -19,25 +19,25 @@ public abstract class AbstractRegionRemover implements RegionRemover {
     @Override
     public final List<BpSeq> findPseudoknots(final BpSeq bpSeq)
             throws InvalidStructureException {
-        List<Region> regions = Region.createRegions(bpSeq);
-        ConflictMap conflictMap = new ConflictMap(regions);
+        final List<Region> regions = Region.createRegions(bpSeq);
+        final ConflictMap conflictMap = new ConflictMap(regions);
 
         while (conflictMap.hasAnyConflicts()) {
-            Region region = selectRegionToRemove(conflictMap);
+            final Region region = selectRegionToRemove(conflictMap);
             region.setRemoved(true);
             conflictMap.remove(region);
         }
 
         AbstractRegionRemover.restoreNonConflicting(regions);
 
-        Collection<BpSeq.Entry> validPairs = new ArrayList<>();
+        final Collection<BpSeq.Entry> validPairs = new ArrayList<>();
         for (final Region region : regions) {
             if (!region.isRemoved()) {
                 validPairs.addAll(region.getEntries());
             }
         }
 
-        BpSeq result = new BpSeq(bpSeq.getEntries());
+        final BpSeq result = new BpSeq(bpSeq.getEntries());
         for (final BpSeq.Entry validPair : validPairs) {
             result.removePair(validPair);
         }

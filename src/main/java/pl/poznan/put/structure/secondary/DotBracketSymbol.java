@@ -136,17 +136,17 @@ public class DotBracketSymbol
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null) {
+        if (o == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != o.getClass()) {
             return false;
         }
-        DotBracketSymbol other = (DotBracketSymbol) obj;
+        final DotBracketSymbol other = (DotBracketSymbol) o;
         return (index == other.index) && (sequence == other.sequence) && (
                 structure == other.structure);
     }
@@ -166,6 +166,7 @@ public class DotBracketSymbol
             return 0;
         }
 
-        return (index < t.index) ? -1 : ((index == t.index) ? 0 : 1);
+        if (index < t.index) return -1;
+        else return (index == t.index) ? 0 : 1;
     }
 }

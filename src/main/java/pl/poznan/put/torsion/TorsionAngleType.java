@@ -56,17 +56,17 @@ public abstract class TorsionAngleType implements DisplayableExportable {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null) {
+        if (o == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != o.getClass()) {
             return false;
         }
-        TorsionAngleType other = (TorsionAngleType) obj;
+        final TorsionAngleType other = (TorsionAngleType) o;
         return moleculeType == other.moleculeType;
     }
 

@@ -8,7 +8,6 @@ import pl.poznan.put.pdb.PdbAtomLine;
 public class ProteinBondRule implements ResidueBondRule {
     private static final long serialVersionUID = 7915583385829439315L;
 
-    @SuppressWarnings("StandardVariableNames")
     @Override
     public final boolean areConnected(
             final PdbResidue r1, final PdbResidue r2) {
@@ -16,8 +15,8 @@ public class ProteinBondRule implements ResidueBondRule {
             return false;
         }
 
-        PdbAtomLine c = r1.findAtom(AtomName.C);
-        PdbAtomLine n = r2.findAtom(AtomName.N);
+        final PdbAtomLine c = r1.findAtom(AtomName.C);
+        final PdbAtomLine n = r2.findAtom(AtomName.N);
         return c.distanceTo(n) <= (Bond.length(AtomType.C, AtomType.N).getMax()
                                    * 1.5);
     }

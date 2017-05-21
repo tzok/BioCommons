@@ -47,8 +47,8 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     protected static SubSolution[] solveSingleCase(
             final SubSolution[][][] matrix, final Clique clique, final int i,
             final int j) {
-        int size = clique.endpointCount();
-        Collection<SubSolution> candidates = new HashSet<>(size);
+        final int size = clique.endpointCount();
+        final Collection<SubSolution> candidates = new HashSet<>(size);
 
         // add solutions from the left
         if (matrix[i][j - 1].length > 0) {
@@ -62,10 +62,10 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
 
         // if there is a region from i to j, then add it and all from
         // the bottom left
-        Region region =
+        final Region region =
                 clique.findRegion(clique.getEndpoint(i), clique.getEndpoint(j));
         if (region != null) {
-            SubSolution current = new SubSolution(region);
+            final SubSolution current = new SubSolution(region);
 
             if (matrix[i + 1][j - 1].length > 0) {
                 for (final SubSolution subSolution : matrix[i + 1][j - 1]) {
@@ -81,7 +81,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
                 .addAll(AbstractDynamicProgramming.merge(matrix, clique, i, j));
 
         // select all candidates with highest score
-        List<SubSolution> bestCandidates =
+        final List<SubSolution> bestCandidates =
                 AbstractDynamicProgramming.selectBestCandidates(candidates);
         return bestCandidates.toArray(new SubSolution[bestCandidates.size()]);
     }
@@ -89,28 +89,28 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     protected static Collection<SubSolution> merge(
             final SubSolution[][][] matrix, final Clique clique, final int i,
             final int j) {
-        SubSolution[] left = matrix[i][j - 1];
-        SubSolution[] below = matrix[i + 1][j];
+        final SubSolution[] left = matrix[i][j - 1];
+        final SubSolution[] below = matrix[i + 1][j];
 
         if ((left.length == 0) || (below.length == 0)) {
             return Collections.emptyList();
         }
 
-        Collection<SubSolution> result = new ArrayList<>();
+        final Collection<SubSolution> result = new ArrayList<>();
 
         for (final SubSolution leftSub : left) {
-            int highestEndpoint = leftSub.getHighestEndpoint();
+            final int highestEndpoint = leftSub.getHighestEndpoint();
 
             for (final SubSolution belowSub : below) {
-                int lowestEndpoint = belowSub.getLowestEndpoint();
+                final int lowestEndpoint = belowSub.getLowestEndpoint();
 
                 if (highestEndpoint < lowestEndpoint) {
                     result.add(SubSolution.merge(leftSub, belowSub));
                     continue;
                 }
 
-                int begin = clique.indexOfEndpoint(lowestEndpoint) - 1;
-                int end = clique.indexOfEndpoint(highestEndpoint) + 1;
+                final int begin = clique.indexOfEndpoint(lowestEndpoint) - 1;
+                final int end = clique.indexOfEndpoint(highestEndpoint) + 1;
 
                 for (int k = begin; k < end; k++) {
                     for (final SubSolution s1 : matrix[i][k]) {
@@ -125,16 +125,16 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
         return result;
     }
 
-    protected static List<SubSolution> selectBestCandidates(
+    private static List<SubSolution> selectBestCandidates(
             final Collection<SubSolution> candidates) {
         if (candidates.isEmpty()) {
             return Collections.emptyList();
         }
 
-        SortedMap<Integer, List<SubSolution>> map = new TreeMap<>();
+        final SortedMap<Integer, List<SubSolution>> map = new TreeMap<>();
 
         for (final SubSolution candidate : candidates) {
-            int score = candidate.getScore();
+            final int score = candidate.getScore();
 
             if (!map.containsKey(score)) {
                 map.put(score, new ArrayList<>());
@@ -149,11 +149,11 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     @Override
     public final List<BpSeq> findPseudoknots(final BpSeq bpSeq)
             throws InvalidStructureException {
-        List<Region> regions = Region.createRegions(bpSeq);
+        final List<Region> regions = Region.createRegions(bpSeq);
         ConflictMap conflictMap = new ConflictMap(regions);
         conflictMap = AbstractDynamicProgramming.simplify(regions, conflictMap);
 
-        List<BpSeq.Entry> nonConflicting = new ArrayList<>();
+        final List<BpSeq.Entry> nonConflicting = new ArrayList<>();
         for (final Region region : regions) {
             if (!conflictMap.hasConflicts(region)) {
                 nonConflicting.addAll(region.getEntries());
@@ -170,21 +170,21 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
             }
             if (max > maxCliqueSize) {
                 conflictMap.remove(regionRemover
-                                           .selectRegionToRemove(conflictMap));
+                        .selectRegionToRemove(conflictMap));
             }
         } while (max > maxCliqueSize);
 
         List<List<BpSeq.Entry>> results = new ArrayList<>();
         results.add(nonConflicting);
-        List<Clique> cliques = conflictMap.getConflictCliques(false);
+        final List<Clique> cliques = conflictMap.getConflictCliques(false);
 
         for (final Clique clique : cliques) {
-            List<List<BpSeq.Entry>> nextResults = new ArrayList<>();
-            SubSolution[] solutions = findOptimalSolutions(clique);
+            final List<List<BpSeq.Entry>> nextResults = new ArrayList<>();
+            final SubSolution[] solutions = findOptimalSolutions(clique);
 
             for (final SubSolution solution : solutions) {
                 for (final List<BpSeq.Entry> previousResult : results) {
-                    List<BpSeq.Entry> nextResult =
+                    final List<BpSeq.Entry> nextResult =
                             new ArrayList<>(previousResult);
                     for (final Region region : solution.getRegions()) {
                         nextResult.addAll(region.getEntries());
@@ -196,10 +196,10 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
             results = nextResults;
         }
 
-        List<BpSeq> bpSeqs = new ArrayList<>();
+        final List<BpSeq> bpSeqs = new ArrayList<>();
 
         for (final List<BpSeq.Entry> result : results) {
-            BpSeq nextBpSeq = new BpSeq(bpSeq.getEntries());
+            final BpSeq nextBpSeq = new BpSeq(bpSeq.getEntries());
             for (final BpSeq.Entry entry : result) {
                 nextBpSeq.removePair(entry);
             }
@@ -212,30 +212,30 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     private static ConflictMap simplify(
             final List<Region> regions, final ConflictMap conflictMap) {
         ConflictMap result = conflictMap;
-        Collection<Region> toRemove = new ArrayList<>();
-        Collection<Region> toAdd = new ArrayList<>();
+        final Collection<Region> toRemove = new ArrayList<>();
+        final Collection<Region> toAdd = new ArrayList<>();
 
         do {
-            List<Region> conflicted =
+            final List<Region> conflicted =
                     new ArrayList<>(result.getRegionsWithConflicts());
             toRemove.clear();
             toAdd.clear();
 
             for (int i = 0; i < conflicted.size(); i++) {
-                Region ri = conflicted.get(i);
-                int riBegin = ri.getBegin();
-                int riEnd = ri.getEnd();
+                final Region ri = conflicted.get(i);
+                final int riBegin = ri.getBegin();
+                final int riEnd = ri.getEnd();
 
                 for (int j = i + 1; j < conflicted.size(); j++) {
-                    Region rj = conflicted.get(j);
-                    int rjBegin = rj.getBegin();
-                    int rjEnd = rj.getEnd();
+                    final Region rj = conflicted.get(j);
+                    final int rjBegin = rj.getBegin();
+                    final int rjEnd = rj.getEnd();
 
-                    boolean b1 = (riBegin <= rjBegin) && (riEnd >= rjEnd);
-                    boolean b2 = (rjBegin <= riBegin) && (rjEnd >= riEnd);
+                    final boolean b1 = (riBegin <= rjBegin) && (riEnd >= rjEnd);
+                    final boolean b2 = (rjBegin <= riBegin) && (rjEnd >= riEnd);
                     if ((b1 || b2) && CollectionUtils
                             .isEqualCollection(result.conflictsWith(ri),
-                                               result.conflictsWith(rj))) {
+                                    result.conflictsWith(rj))) {
                         toRemove.add(ri);
                         toRemove.add(rj);
                         toAdd.add(Region.merge(ri, rj));

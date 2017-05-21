@@ -18,7 +18,7 @@ public final class StructureHelper {
 
     public static Atom[] findAtoms(
             final Group residue, final AtomName... atomNames) {
-        List<Atom> atoms = new ArrayList<>();
+        final List<Atom> atoms = new ArrayList<>();
         for (final AtomName atomName : atomNames) {
             atoms.add(StructureHelper.findAtom(residue, atomName));
         }
@@ -36,9 +36,9 @@ public final class StructureHelper {
 
     public static Atom[] findAllAtoms(
             final Structure structure, final AtomName atomName) {
-        List<Atom> result = new ArrayList<>();
+        final List<Atom> result = new ArrayList<>();
         for (final Chain chain : structure.getChains()) {
-            Atom[] atomsChain = StructureHelper.findAllAtoms(chain, atomName);
+            final Atom[] atomsChain = StructureHelper.findAllAtoms(chain, atomName);
             result.addAll(Arrays.asList(atomsChain));
         }
         return result.toArray(new Atom[result.size()]);
@@ -46,10 +46,10 @@ public final class StructureHelper {
 
     public static Atom[] findAllAtoms(
             final Chain chain, final AtomName atomName) {
-        List<Atom> result = new ArrayList<>();
+        final List<Atom> result = new ArrayList<>();
 
         for (final Group group : chain.getAtomGroups()) {
-            Atom atom = StructureHelper.findAtom(group, atomName);
+            final Atom atom = StructureHelper.findAtom(group, atomName);
             if (atom != null) {
                 result.add(atom);
             }
@@ -59,7 +59,7 @@ public final class StructureHelper {
     }
 
     public static void mergeAltLocs(final Group group) {
-        LinkedHashSet<Atom> atoms = new LinkedHashSet<>(group.getAtoms());
+        final LinkedHashSet<Atom> atoms = new LinkedHashSet<>(group.getAtoms());
 
         for (final Group altloc : group.getAltLocs()) {
             for (final Atom atom : altloc.getAtoms()) {

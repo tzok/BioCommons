@@ -55,7 +55,7 @@ public class Strand implements Serializable {
     public TerminalMissing getMissingBegin() {
         int i = from;
         for (; i < to; i++) {
-            DotBracketSymbol symbol = parent.getSymbol(i);
+            final DotBracketSymbol symbol = parent.getSymbol(i);
             if (!symbol.isMissing()) {
                 break;
             }
@@ -66,7 +66,7 @@ public class Strand implements Serializable {
     public TerminalMissing getMissingEnd() {
         int i = to - 1;
         for (; i >= from; i--) {
-            DotBracketSymbol symbol = parent.getSymbol(i);
+            final DotBracketSymbol symbol = parent.getSymbol(i);
             if (!symbol.isMissing()) {
                 break;
             }
@@ -99,10 +99,10 @@ public class Strand implements Serializable {
      * strand.
      */
     public boolean isSingleStrand() {
-        List<DotBracketSymbol> symbols = getSymbols();
+        final List<DotBracketSymbol> symbols = getSymbols();
 
         for (int i = 1; i < (symbols.size() - 1); i++) {
-            DotBracketSymbol symbol = symbols.get(i);
+            final DotBracketSymbol symbol = symbols.get(i);
             if (symbol.isPairing() && symbols.contains(symbol.getPair())) {
                 return false;
             }
@@ -131,7 +131,7 @@ public class Strand implements Serializable {
     }
 
     public String getRSequence() {
-        char[] cs = getSequence().toCharArray();
+        final char[] cs = getSequence().toCharArray();
         for (int i = 0; i < cs.length; i++) {
             cs[i] = ((cs[i] == 'A') || (cs[i] == 'G')) ? 'R' : 'Y';
         }

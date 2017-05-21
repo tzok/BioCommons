@@ -42,7 +42,7 @@ public class SubSolution {
 
     public static SubSolution merge(
             final SubSolution left, final SubSolution below) {
-        List<Region> regions = new ArrayList<>(left.regions);
+        final List<Region> regions = new ArrayList<>(left.regions);
         regions.addAll(below.regions);
         return new SubSolution(regions);
     }
@@ -53,14 +53,14 @@ public class SubSolution {
     }
 
     @Override
-    public final boolean equals(final Object obj) {
-        if (this == obj) {
+    public final boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if ((obj == null) || (getClass() != obj.getClass())) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-        SubSolution other = (SubSolution) obj;
+        final SubSolution other = (SubSolution) o;
         return Objects.equals(regions, other.regions);
     }
 

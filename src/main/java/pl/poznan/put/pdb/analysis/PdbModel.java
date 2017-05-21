@@ -46,8 +46,8 @@ public class PdbModel implements Serializable, ResidueCollection {
     public PdbModel(final List<PdbAtomLine> atoms) throws PdbParsingException {
         this(PdbHeaderLine.emptyInstance(), PdbExpdtaLine.emptyInstance(),
              PdbRemark2Line.emptyInstance(), 1, atoms,
-             Collections.<PdbModresLine>emptyList(),
-             Collections.<PdbRemark465Line>emptyList());
+             Collections.emptyList(),
+             Collections.emptyList());
     }
 
     public PdbModel(
@@ -91,7 +91,7 @@ public class PdbModel implements Serializable, ResidueCollection {
                 PdbResidueIdentifier.fromChainNumberICode(atoms.get(0));
 
         for (final PdbAtomLine atom : atoms) {
-            PdbResidueIdentifier residueIdentifier =
+            final PdbResidueIdentifier residueIdentifier =
                     PdbResidueIdentifier.fromChainNumberICode(atom);
 
             if (!Objects.equals(residueIdentifier, lastResidueIdentifier)) {
@@ -106,18 +106,18 @@ public class PdbModel implements Serializable, ResidueCollection {
         saveExistingResidueIfValid(residueAtoms, lastResidueIdentifier);
 
         for (final PdbRemark465Line missingResidue : missingResidues) {
-            List<PdbAtomLine> emptyAtomList = Collections.emptyList();
-            PdbResidue residue = new PdbResidue(
+            final List<PdbAtomLine> emptyAtomList = Collections.emptyList();
+            final PdbResidue residue = new PdbResidue(
                     PdbResidueIdentifier.fromChainNumberICode(missingResidue),
                     missingResidue.getResidueName(), emptyAtomList, true);
 
-            String chain = residue.getChainIdentifier();
+            final String chain = residue.getChainIdentifier();
             boolean isChainFound = false;
             int i = 0;
 
             while (i < residues.size()) {
-                PdbResidue existing = residues.get(i);
-                String existingChain = existing.getChainIdentifier();
+                final PdbResidue existing = residues.get(i);
+                final String existingChain = existing.getChainIdentifier();
 
                 if (!isChainFound && Objects.equals(chain, existingChain)) {
                     isChainFound = true;
@@ -143,24 +143,24 @@ public class PdbModel implements Serializable, ResidueCollection {
     private void analyzeChains() {
         assert !residues.isEmpty();
 
-        Map<String, List<PdbResidue>> foundChains = new LinkedHashMap<>();
+        final Map<String, List<PdbResidue>> foundChains = new LinkedHashMap<>();
 
         for (final PdbResidue residue : residues) {
-            String chainIdentifier = residue.getChainIdentifier();
+            final String chainIdentifier = residue.getChainIdentifier();
 
             if (!foundChains.containsKey(chainIdentifier)) {
-                foundChains.put(chainIdentifier, new ArrayList<PdbResidue>());
+                foundChains.put(chainIdentifier, new ArrayList<>());
             }
 
-            List<PdbResidue> chainResidues = foundChains.get(chainIdentifier);
+            final List<PdbResidue> chainResidues = foundChains.get(chainIdentifier);
             chainResidues.add(residue);
         }
 
         for (final Map.Entry<String, List<PdbResidue>> entry : foundChains
                 .entrySet()) {
-            String chainIdentifier = entry.getKey();
-            List<PdbResidue> chainResidues = entry.getValue();
-            PdbChain chain = new PdbChain(chainIdentifier, chainResidues);
+            final String chainIdentifier = entry.getKey();
+            final List<PdbResidue> chainResidues = entry.getValue();
+            final PdbChain chain = new PdbChain(chainIdentifier, chainResidues);
             chains.add(chain);
 
             for (final PdbResidue residue : chainResidues) {
@@ -175,15 +175,15 @@ public class PdbModel implements Serializable, ResidueCollection {
         assert !isMissing(residueIdentifier);
         assert !residueAtoms.isEmpty();
 
-        String residueName = residueAtoms.get(0).getResidueName();
+        final String residueName = residueAtoms.get(0).getResidueName();
         String modifiedResidueName = residueName;
-        boolean isModified = isModified(residueIdentifier);
+        final boolean isModified = isModified(residueIdentifier);
 
         if (isModified) {
             modifiedResidueName = getModifiedResidueName(residueIdentifier);
         }
 
-        PdbResidue residue = new PdbResidue(residueIdentifier, residueName,
+        final PdbResidue residue = new PdbResidue(residueIdentifier, residueName,
                                             modifiedResidueName, residueAtoms,
                                             isModified, false);
 
@@ -280,22 +280,21 @@ public class PdbModel implements Serializable, ResidueCollection {
     }
 
     public final String getSequence() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         for (final PdbResidue residue : residues) {
             builder.append(residue.getOneLetterName());
         }
         return builder.toString();
     }
 
-    @SuppressWarnings("HardcodedLineSeparator")
     public final String toPdbString() {
-        Collection<Pair<PdbResidueIdentifier, AtomName>> resolved =
+        final Collection<Pair<PdbResidueIdentifier, AtomName>> resolved =
                 new HashSet<>();
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
 
         for (final PdbResidue residue : residues) {
             for (final PdbAtomLine atom : residue.getAtoms()) {
-                Pair<PdbResidueIdentifier, AtomName> pair =
+                final Pair<PdbResidueIdentifier, AtomName> pair =
                         Pair.of(residue.getResidueIdentifier(),
                                 atom.detectAtomName());
 
@@ -310,17 +309,16 @@ public class PdbModel implements Serializable, ResidueCollection {
         return builder.toString();
     }
 
-    @SuppressWarnings("HardcodedLineSeparator")
     public final String toCifString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("data_").append(getIdCode()).append('\n');
         builder.append(PdbAtomLine.CIF_LOOP).append('\n');
 
-        Collection<Pair<PdbResidueIdentifier, AtomName>> resolved =
+        final Collection<Pair<PdbResidueIdentifier, AtomName>> resolved =
                 new HashSet<>();
         for (final PdbResidue residue : residues) {
             for (final PdbAtomLine atom : residue.getAtoms()) {
-                Pair<PdbResidueIdentifier, AtomName> pair =
+                final Pair<PdbResidueIdentifier, AtomName> pair =
                         Pair.of(residue.getResidueIdentifier(),
                                 atom.detectAtomName());
 
@@ -346,8 +344,8 @@ public class PdbModel implements Serializable, ResidueCollection {
 
     public PdbModel filteredNewInstance(final MoleculeType moleculeType)
             throws PdbParsingException {
-        List<PdbAtomLine> filteredAtoms = filterAtoms(moleculeType);
-        List<PdbRemark465Line> filteredMissing = filterMissing(moleculeType);
+        final List<PdbAtomLine> filteredAtoms = filterAtoms(moleculeType);
+        final List<PdbRemark465Line> filteredMissing = filterMissing(moleculeType);
         return new PdbModel(headerLine, experimentalDataLine, resolutionLine,
                             modelNumber, filteredAtoms, modifiedResidues,
                             filteredMissing);
@@ -355,7 +353,7 @@ public class PdbModel implements Serializable, ResidueCollection {
 
     protected final List<PdbAtomLine> filterAtoms(
             final MoleculeType moleculeType) {
-        List<PdbAtomLine> filteredAtoms = new ArrayList<>();
+        final List<PdbAtomLine> filteredAtoms = new ArrayList<>();
 
         for (final PdbResidue residue : residues) {
             if ((residue.getMoleculeType() == moleculeType) && !residue
@@ -369,15 +367,15 @@ public class PdbModel implements Serializable, ResidueCollection {
 
     protected final List<PdbRemark465Line> filterMissing(
             final MoleculeType moleculeType) {
-        List<PdbRemark465Line> filteredMissing = new ArrayList<>();
+        final List<PdbRemark465Line> filteredMissing = new ArrayList<>();
 
         for (final PdbResidue residue : residues) {
             if ((residue.getMoleculeType() == moleculeType) && residue
                     .isMissing()) {
-                String residueName = residue.getOriginalResidueName();
-                String chainIdentifier = residue.getChainIdentifier();
-                int residueNumber = residue.getResidueNumber();
-                String insertionCode = residue.getInsertionCode();
+                final String residueName = residue.getOriginalResidueName();
+                final String chainIdentifier = residue.getChainIdentifier();
+                final int residueNumber = residue.getResidueNumber();
+                final String insertionCode = residue.getInsertionCode();
                 filteredMissing
                         .add(new PdbRemark465Line(modelNumber, residueName,
                                                   chainIdentifier,

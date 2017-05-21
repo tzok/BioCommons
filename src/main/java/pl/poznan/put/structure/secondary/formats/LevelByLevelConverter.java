@@ -44,7 +44,7 @@ public class LevelByLevelConverter implements Converter {
         }
 
         Collections.sort(states);
-        String structure = LevelByLevelConverter.traceback(states.get(0));
+        final String structure = LevelByLevelConverter.traceback(states.get(0));
         return new DotBracket(bpSeq.getSequence(), structure);
     }
 
@@ -59,10 +59,10 @@ public class LevelByLevelConverter implements Converter {
 
     protected final List<State> processStates(final Collection<State> states)
             throws InvalidStructureException {
-        List<State> nextStates = new ArrayList<>(states.size());
+        final List<State> nextStates = new ArrayList<>(states.size());
         for (final State state : states) {
             for (final BpSeq bpSeq : pkRemover.findPseudoknots(state.bpSeq)) {
-                State nextState = new State(state, bpSeq, state.level + 1);
+                final State nextState = new State(state, bpSeq, state.level + 1);
                 nextStates.add(nextState);
 
                 if (nextStates.size() > maxSolutions) {
@@ -74,14 +74,14 @@ public class LevelByLevelConverter implements Converter {
     }
 
     private static String traceback(final State state) {
-        char[] structure = new char[state.size()];
+        final char[] structure = new char[state.size()];
         Arrays.fill(structure, '.');
         State current = state.parent;
 
         while (current != null) {
             for (final BpSeq.Entry pairs : current.bpSeq.getPaired()) {
-                int i = pairs.getIndex();
-                int j = pairs.getPair();
+                final int i = pairs.getIndex();
+                final int j = pairs.getPair();
 
                 if (structure[i - 1] == '.') {
                     structure[i - 1] =
@@ -147,14 +147,14 @@ public class LevelByLevelConverter implements Converter {
         }
 
         @Override
-        public boolean equals(final Object obj) {
-            if (this == obj) {
+        public boolean equals(final Object o) {
+            if (this == o) {
                 return true;
             }
-            if ((obj == null) || (getClass() != obj.getClass())) {
+            if ((o == null) || (getClass() != o.getClass())) {
                 return false;
             }
-            State state = (State) obj;
+            final State state = (State) o;
             boolean result = level == state.level;
             result &= score == state.score;
             result &= Objects.equals(bpSeq, state.bpSeq);

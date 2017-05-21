@@ -58,15 +58,15 @@ public class PdbResidueIdentifier
     }
 
     @Override
-    public final boolean equals(final Object obj) {
-        if (this == obj) {
+    public final boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if ((obj == null) || (getClass() != obj.getClass())) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
 
-        PdbResidueIdentifier other = (PdbResidueIdentifier) obj;
+        final PdbResidueIdentifier other = (PdbResidueIdentifier) o;
         return (residueNumber == other.residueNumber) && Objects
                 .equals(chainIdentifier, other.chainIdentifier) && Objects
                        .equals(insertionCode, other.insertionCode);
@@ -74,7 +74,7 @@ public class PdbResidueIdentifier
 
     @Override
     public final String toString() {
-        String icode = Objects.equals(" ", insertionCode) ? "" : insertionCode;
+        final String icode = Objects.equals(" ", insertionCode) ? "" : insertionCode;
         return chainIdentifier + '.' + residueNumber + icode;
     }
 

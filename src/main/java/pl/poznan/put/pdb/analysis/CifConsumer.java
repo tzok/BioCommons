@@ -140,20 +140,20 @@ public class CifConsumer implements MMcifConsumer {
     @Override
     public final void newAtomSite(final AtomSite atomSite) {
         try {
-            int serialNumber = Integer.parseInt(atomSite.getId());
-            String atomName = atomSite.getAuth_atom_id();
+            final int serialNumber = Integer.parseInt(atomSite.getId());
+            final String atomName = atomSite.getAuth_atom_id();
             String alternateLocation = atomSite.getLabel_alt_id();
-            String residueName = atomSite.getAuth_comp_id();
-            String chainIdentifier = atomSite.getAuth_asym_id();
-            int residueNumber = Integer.parseInt(atomSite.getAuth_seq_id());
+            final String residueName = atomSite.getAuth_comp_id();
+            final String chainIdentifier = atomSite.getAuth_asym_id();
+            final int residueNumber = Integer.parseInt(atomSite.getAuth_seq_id());
             String insertionCode = atomSite.getPdbx_PDB_ins_code();
-            double x = Double.parseDouble(atomSite.getCartn_x());
-            double y = Double.parseDouble(atomSite.getCartn_y());
-            double z = Double.parseDouble(atomSite.getCartn_z());
-            double occupancy = Double.parseDouble(atomSite.getOccupancy());
-            double temperatureFactor =
+            final double x = Double.parseDouble(atomSite.getCartn_x());
+            final double y = Double.parseDouble(atomSite.getCartn_y());
+            final double z = Double.parseDouble(atomSite.getCartn_z());
+            final double occupancy = Double.parseDouble(atomSite.getOccupancy());
+            final double temperatureFactor =
                     Double.parseDouble(atomSite.getB_iso_or_equiv());
-            String elementSymbol = atomSite.getType_symbol();
+            final String elementSymbol = atomSite.getType_symbol();
             String charge = atomSite.getPdbx_formal_charge();
 
             if (Objects.equals("?", insertionCode)) {
@@ -166,13 +166,13 @@ public class CifConsumer implements MMcifConsumer {
                 charge = " ";
             }
 
-            PdbAtomLine atomLine =
+            final PdbAtomLine atomLine =
                     new PdbAtomLine(serialNumber, atomName, alternateLocation,
                                     residueName, chainIdentifier, residueNumber,
                                     insertionCode, x, y, z, occupancy,
                                     temperatureFactor, elementSymbol, charge);
 
-            String modelNumberString = atomSite.getPdbx_PDB_model_num();
+            final String modelNumberString = atomSite.getPdbx_PDB_model_num();
             int modelNumber = 1;
             if (StringUtils.isNotBlank(modelNumberString)) {
                 modelNumber = Integer.parseInt(modelNumberString);
@@ -182,7 +182,7 @@ public class CifConsumer implements MMcifConsumer {
                 modelAtoms.put(modelNumber, new ArrayList<>());
             }
 
-            List<PdbAtomLine> atomLines = modelAtoms.get(modelNumber);
+            final List<PdbAtomLine> atomLines = modelAtoms.get(modelNumber);
             atomLines.add(atomLine);
         } catch (final NumberFormatException e) {
             CifConsumer.LOGGER.warn("Failed to parse _atom_site", e);
@@ -243,7 +243,7 @@ public class CifConsumer implements MMcifConsumer {
 
     @Override
     public final void newExptl(final Exptl exptl) {
-        ExperimentalTechnique technique =
+        final ExperimentalTechnique technique =
                 ExperimentalTechnique.fromFullName(exptl.getMethod());
         if (technique == ExperimentalTechnique.UNKNOWN) {
             CifConsumer.LOGGER.warn("Failed to parse _exptl.method: {}",
@@ -413,90 +413,90 @@ public class CifConsumer implements MMcifConsumer {
     public final void newGenericData(
             final String s, final List<String> list, final List<String> list1) {
         if (Objects.equals(CifConsumer.PDBX_STRUCT_MOD_RESIDUE, s)) {
-            Map<String, String> map = CifConsumer.convertToMap(list, list1);
+            final Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
-            String residueName = map.get("auth_comp_id");
-            String chainIdentifier = map.get("auth_asym_id");
-            int residueNumber = Integer.parseInt(map.get("auth_seq_id"));
+            final String residueName = map.get("auth_comp_id");
+            final String chainIdentifier = map.get("auth_asym_id");
+            final int residueNumber = Integer.parseInt(map.get("auth_seq_id"));
             String insertionCode = map.get("PDB_ins_code");
-            String standardResidueName = map.get("parent_comp_id");
-            String comment = map.get("details");
+            final String standardResidueName = map.get("parent_comp_id");
+            final String comment = map.get("details");
 
             if (Objects.equals("?", insertionCode)) {
                 insertionCode = " ";
             }
 
-            PdbModresLine modresLine =
+            final PdbModresLine modresLine =
                     new PdbModresLine(idCode, residueName, chainIdentifier,
                                       residueNumber, insertionCode,
                                       standardResidueName, comment);
             modifiedResidues.add(modresLine);
         } else if (Objects
                 .equals(CifConsumer.PDBX_UNOBS_OR_ZERO_OCC_RESIDUES, s)) {
-            Map<String, String> map = CifConsumer.convertToMap(list, list1);
+            final Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
-            int modelNumber = Integer.parseInt(map.get("PDB_model_num"));
-            String residueName = map.get("auth_comp_id");
-            String chainIdentifier = map.get("auth_asym_id");
-            int residueNumber = Integer.parseInt(map.get("auth_seq_id"));
+            final int modelNumber = Integer.parseInt(map.get("PDB_model_num"));
+            final String residueName = map.get("auth_comp_id");
+            final String chainIdentifier = map.get("auth_asym_id");
+            final int residueNumber = Integer.parseInt(map.get("auth_seq_id"));
             String insertionCode = map.get("PDB_ins_code");
 
             if (Objects.equals("?", insertionCode)) {
                 insertionCode = " ";
             }
 
-            PdbRemark465Line remark465Line =
+            final PdbRemark465Line remark465Line =
                     new PdbRemark465Line(modelNumber, residueName,
                                          chainIdentifier, residueNumber,
                                          insertionCode);
             missingResidues.add(remark465Line);
         } else if (Objects.equals(CifConsumer.NDB_STRUCT_NA_BASE_PAIR, s)) {
-            Map<String, String> map = CifConsumer.convertToMap(list, list1);
+            final Map<String, String> map = CifConsumer.convertToMap(list, list1);
 
-            String chainL = map.get("i_auth_asym_id");
-            int resiL = Integer.parseInt(map.get("i_auth_seq_id"));
+            final String chainL = map.get("i_auth_asym_id");
+            final int resiL = Integer.parseInt(map.get("i_auth_seq_id"));
             String icodeL = map.get("i_PDB_ins_code");
             if (Objects.equals("?", icodeL)) {
                 icodeL = " ";
             }
-            PdbResidueIdentifier left =
+            final PdbResidueIdentifier left =
                     new PdbResidueIdentifier(chainL, resiL, icodeL);
 
-            String chainR = map.get("j_auth_asym_id");
-            int resiR = Integer.parseInt(map.get("j_auth_seq_id"));
+            final String chainR = map.get("j_auth_asym_id");
+            final int resiR = Integer.parseInt(map.get("j_auth_seq_id"));
             String icodeR = map.get("j_PDB_ins_code");
             if (Objects.equals("?", icodeR)) {
                 icodeR = " ";
             }
-            PdbResidueIdentifier right =
+            final PdbResidueIdentifier right =
                     new PdbResidueIdentifier(chainR, resiR, icodeR);
-            BasePair basePair = new BasePair(left, right);
+            final BasePair basePair = new BasePair(left, right);
 
-            String saengerString = map.get("hbond_type_28");
+            final String saengerString = map.get("hbond_type_28");
             Saenger saenger = Saenger.UNKNOWN;
             if (!Objects.equals("?", saengerString)) {
                 saenger = Saenger.fromOrdinal(Integer.parseInt(saengerString));
             }
 
-            String leontisWesthofString = map.get("hbond_type_12");
-            LeontisWesthof leontisWesthof =
+            final String leontisWesthofString = map.get("hbond_type_12");
+            final LeontisWesthof leontisWesthof =
                     Objects.equals("?", leontisWesthofString)
                     ? LeontisWesthof.UNKNOWN : LeontisWesthof.fromOrdinal(
                             Integer.parseInt(leontisWesthofString));
 
-            double shear =
+            final double shear =
                     CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.SHEAR);
-            double stretch = CifConsumer
+            final double stretch = CifConsumer
                     .getDoubleWithDefaultNaN(map, CifConsumer.STRETCH);
-            double stagger = CifConsumer
+            final double stagger = CifConsumer
                     .getDoubleWithDefaultNaN(map, CifConsumer.STAGGER);
-            double buckle = CifConsumer
+            final double buckle = CifConsumer
                     .getDoubleWithDefaultNaN(map, CifConsumer.BUCKLE);
-            double propeller = CifConsumer
+            final double propeller = CifConsumer
                     .getDoubleWithDefaultNaN(map, CifConsumer.PROPELLER);
-            double opening = CifConsumer
+            final double opening = CifConsumer
                     .getDoubleWithDefaultNaN(map, CifConsumer.OPENING);
-            QuantifiedBasePair quantifiedBasePair =
+            final QuantifiedBasePair quantifiedBasePair =
                     new QuantifiedBasePair(basePair, saenger, leontisWesthof,
                                            BPh.UNKNOWN, BR.UNKNOWN, shear,
                                            stretch, stagger, buckle, propeller,
@@ -507,7 +507,7 @@ public class CifConsumer implements MMcifConsumer {
 
     private static Map<String, String> convertToMap(
             final List<String> loopFields, final List<String> lineData) {
-        Map<String, String> map = new HashMap<>();
+        final Map<String, String> map = new HashMap<>();
         for (int i = 0; i < loopFields.size(); i++) {
             map.put(loopFields.get(i), lineData.get(i));
         }
@@ -521,24 +521,24 @@ public class CifConsumer implements MMcifConsumer {
     }
 
     public final List<CifModel> getModels() throws PdbParsingException {
-        Date date = (depositionDate == null) ? new Date(0) : depositionDate;
-        PdbHeaderLine headerLine =
+        final Date date = (depositionDate == null) ? new Date(0) : depositionDate;
+        final PdbHeaderLine headerLine =
                 new PdbHeaderLine(classification, date, idCode);
 
-        List<ExperimentalTechnique> techniques =
+        final List<ExperimentalTechnique> techniques =
                 experimentalTechniques.isEmpty() ? Collections
                         .singletonList(ExperimentalTechnique.UNKNOWN)
                                                  : experimentalTechniques;
-        PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(techniques);
+        final PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(techniques);
 
-        PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
-        List<CifModel> result = new ArrayList<>();
+        final PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
+        final List<CifModel> result = new ArrayList<>();
 
         for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms
                 .entrySet()) {
-            int modelNumber = entry.getKey();
-            List<PdbAtomLine> atoms = entry.getValue();
-            CifModel pdbModel = new CifModel(headerLine, experimentalDataLine,
+            final int modelNumber = entry.getKey();
+            final List<PdbAtomLine> atoms = entry.getValue();
+            final CifModel pdbModel = new CifModel(headerLine, experimentalDataLine,
                                              resolutionLine, modelNumber, atoms,
                                              modifiedResidues, missingResidues,
                                              basePairs);

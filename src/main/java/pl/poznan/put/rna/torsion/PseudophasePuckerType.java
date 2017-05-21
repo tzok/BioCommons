@@ -1,6 +1,8 @@
 package pl.poznan.put.rna.torsion;
 
+import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
@@ -42,15 +44,15 @@ public final class PseudophasePuckerType extends TorsionAngleType
     @Override
     public TorsionAngleValue calculate(
             final List<PdbResidue> residues, final int currentIndex) {
-        TorsionAngleValue nu0 =
+        final TorsionAngleValue nu0 =
                 Nu0.getInstance().calculate(residues, currentIndex);
-        TorsionAngleValue nu1 =
+        final TorsionAngleValue nu1 =
                 Nu1.getInstance().calculate(residues, currentIndex);
-        TorsionAngleValue nu2 =
+        final TorsionAngleValue nu2 =
                 Nu2.getInstance().calculate(residues, currentIndex);
-        TorsionAngleValue nu3 =
+        final TorsionAngleValue nu3 =
                 Nu3.getInstance().calculate(residues, currentIndex);
-        TorsionAngleValue nu4 =
+        final TorsionAngleValue nu4 =
                 Nu4.getInstance().calculate(residues, currentIndex);
 
         if (!nu0.isValid() || !nu1.isValid() || !nu2.isValid() || !nu3.isValid()
@@ -58,12 +60,13 @@ public final class PseudophasePuckerType extends TorsionAngleType
             return TorsionAngleValue.invalidInstance(this);
         }
 
-        double scale = 2 * (StrictMath.sin(Math.toRadians(36.0)) + StrictMath
+        final double scale = 2 * (FastMath.sin(Math.toRadians(36.0)) + FastMath
                 .sin(Math.toRadians(72.0)));
-        double y = (nu1.getValue().getRadians() + nu4.getValue().getRadians())
+        final double y = (nu1.getValue().getRadians() + nu4.getValue().getRadians())
                    - nu0.getValue().getRadians() - nu3.getValue().getRadians();
-        double x = nu2.getValue().getRadians() * scale;
-        return new TorsionAngleValue(this, new Angle(StrictMath.atan2(y, x)));
+        final double x = nu2.getValue().getRadians() * scale;
+        return new TorsionAngleValue(this, new Angle(FastMath.atan2(y, x),
+                                                     ValueType.RADIANS));
     }
 
     @Override

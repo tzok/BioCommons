@@ -6,9 +6,9 @@ import org.apache.commons.collections4.map.MultiKeyMap;
  * Values are taken from Charm36 parameters file
  */
 public final class Bond {
-    private static final MultiKeyMap<AtomType, Bond.Length> MAP =
+    private static final MultiKeyMap<AtomType, Length> MAP =
             new MultiKeyMap<>();
-    private static final Bond.Length INVALID =
+    private static final Length INVALID =
             new Length(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
                        Double.POSITIVE_INFINITY);
 
@@ -34,9 +34,10 @@ public final class Bond {
     }
 
     private Bond() {
+        super();
     }
 
-    public static Bond.Length length(
+    public static Length length(
             final AtomType left, final AtomType right) {
         Length length = Bond.MAP.get(left, right);
 

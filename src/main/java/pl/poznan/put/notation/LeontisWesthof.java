@@ -24,7 +24,7 @@ public enum LeontisWesthof {
     UNKNOWN;
 
     public static LeontisWesthof fromString(final String str) {
-        String lc = str.toLowerCase();
+        final String lc = str.toLowerCase();
 
         if (Objects.equals("cww", lc)) {
             return LeontisWesthof.CWW;
@@ -120,11 +120,10 @@ public enum LeontisWesthof {
             return "n/a";
         }
 
-        char[] cs = name().toCharArray();
+        final char[] cs = name().toCharArray();
 
-        return String.valueOf(cs[1]) + '/' + cs[2] + ' ' + (cs[0] == 'C' ? "cis"
-                                                                         :
-                                                            "trans");
+        return String.valueOf(cs[1]) + '/' + cs[2] + ' ' +
+               (cs[0] == 'C' ? "cis" : "trans");
     }
 
     public String getFullName() {
@@ -132,16 +131,13 @@ public enum LeontisWesthof {
             return "n/a";
         }
 
-        char[] cs = name().toCharArray();
+        final char[] cs = name().toCharArray();
 
-        return (cs[0] == 'C' ? "cis " : "trans ") + (cs[1] == 'W'
-                                                     ? "Watson-Crick"
-                                                     : cs[1] == 'H'
-                                                       ? "Hoogsteen"
-                                                       : "Sugar Edge") + '/' + (
-                       cs[2] == 'W' ? "Watson-Crick"
-                                    : cs[2] == 'H' ? "Hoogsteen"
-                                                   : "Sugar Edge");
+        return (cs[0] == 'C' ? "cis " : "trans ") +
+               (cs[1] == 'W' ? "Watson-Crick"
+                             : cs[1] == 'H' ? "Hoogsteen" : "Sugar Edge") +
+               '/' + (cs[2] == 'W' ? "Watson-Crick"
+                                   : cs[2] == 'H' ? "Hoogsteen" : "Sugar Edge");
     }
 
     public LeontisWesthof invert() {

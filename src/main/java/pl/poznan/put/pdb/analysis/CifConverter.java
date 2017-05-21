@@ -53,10 +53,10 @@ public final class CifConverter {
 
     public static ModelContainer convert(final File cifFile)
             throws IOException, PdbParsingException {
-        StructureParser cifParser = new CifParser();
-        String cifContents =
+        final StructureParser cifParser = new CifParser();
+        final String cifContents =
                 FileUtils.readFileToString(cifFile, Charset.defaultCharset());
-        Iterable<CifModel> models =
+        final Iterable<CifModel> models =
                 (Iterable<CifModel>) cifParser.parse(cifContents);
         return CifConverter.convert(cifFile, models);
     }
@@ -64,11 +64,11 @@ public final class CifConverter {
     private static ModelContainer convert(
             final File mmCifFile, final Iterable<CifModel> models)
             throws IOException, PdbParsingException {
-        List<CifModel> rnaModels = new ArrayList<>();
+        final List<CifModel> rnaModels = new ArrayList<>();
 
         for (final CifModel model : models) {
             if (model.containsAny(MoleculeType.RNA)) {
-                CifModel rnaModel = model.filteredNewInstance(MoleculeType.RNA);
+                final CifModel rnaModel = model.filteredNewInstance(MoleculeType.RNA);
                 rnaModels.add(rnaModel);
             }
         }
@@ -103,7 +103,7 @@ public final class CifConverter {
                         .writeModel(model, chainGroup, chainMap, pdbBuilder);
             }
 
-            String pdbData = pdbBuilder.toString();
+            final String pdbData = pdbBuilder.toString();
             FileUtils.write(pdbFile, pdbData, Charset.defaultCharset());
         }
 
@@ -148,11 +148,11 @@ public final class CifConverter {
             CifConverter.writeHeader(model, chainMap, pdbBuilder);
             CifConverter.writeModel(model, chainGroup, chainMap, pdbBuilder);
 
-            String pdbData = pdbBuilder.toString();
+            final String pdbData = pdbBuilder.toString();
             FileUtils.write(pdbFile, pdbData, Charset.defaultCharset());
         }
 
-        File cifFile = File.createTempFile("cif2pdb", ".cif");
+        final File cifFile = File.createTempFile("cif2pdb", ".cif");
         FileUtils.write(cifFile, model.toCifString(), Charset.defaultCharset());
         return new CifContainer(cifFile, fileChainMap);
     }
@@ -170,12 +170,7 @@ public final class CifConverter {
     private static List<Set<String>> packGroups(
             final List<Set<String>> chainGroups) {
         // sort chain groups in descending size order
-        Collections.sort(chainGroups, new Comparator<Set<String>>() {
-            @Override
-            public int compare(final Set<String> t, final Set<String> t1) {
-                return -Integer.compare(t.size(), t1.size());
-            }
-        });
+        chainGroups.sort((t, t1) -> -Integer.compare(t.size(), t1.size()));
 
         final List<Set<String>> packed = new ArrayList<>();
 
@@ -239,7 +234,7 @@ public final class CifConverter {
             if (toMerge == -1) {
                 i += 1;
             } else {
-                Set<String> groupToMerge = chainGroups.get(toMerge);
+                final Set<String> groupToMerge = chainGroups.get(toMerge);
                 groupL.addAll(groupToMerge);
                 chainGroups.remove(toMerge);
                 i = 0;
@@ -285,12 +280,12 @@ public final class CifConverter {
             final String right = basePair.getRight().getChainIdentifier();
 
             if (!chainContacts.containsKey(left)) {
-                chainContacts.put(left, new HashSet<String>());
+                chainContacts.put(left, new HashSet<>());
             }
             chainContacts.get(left).add(right);
 
             if (!chainContacts.containsKey(right)) {
-                chainContacts.put(right, new HashSet<String>());
+                chainContacts.put(right, new HashSet<>());
             }
             chainContacts.get(right).add(left);
         }
@@ -337,7 +332,7 @@ public final class CifConverter {
         pdbBuilder.append(firstModel.getHeaderLine())
                   .append(System.lineSeparator());
 
-        PdbExpdtaLine experimentalDataLine =
+        final PdbExpdtaLine experimentalDataLine =
                 firstModel.getExperimentalDataLine();
         if (experimentalDataLine.isValid()) {
             pdbBuilder.append(experimentalDataLine)

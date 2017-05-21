@@ -18,40 +18,45 @@ import java.util.Set;
  */
 public class ConflictMap {
     private final Map<Region, Set<Region>> conflicts;
+    private final int conflictsCount;
 
     // Create a basic 2DMap from which tells about conflicts. It can return
     // if given Region have conflicts and give these conflicts
     public ConflictMap(final List<Region> regions) {
         super();
-        int size = regions.size();
+        final int size = regions.size();
         conflicts = new HashMap<>(size);
+        int count = 0;
 
         for (int i = 0; i < size; i++) {
-            Region ri = regions.get(i);
+            final Region ri = regions.get(i);
 
             for (int j = i + 1; j < size; j++) {
-                Region rj = regions.get(j);
+                final Region rj = regions.get(j);
                 if (ConflictMap.isConflicting(ri, rj)) {
                     if (!conflicts.containsKey(ri)) {
-                        conflicts.put(ri, new HashSet<Region>(size));
+                        conflicts.put(ri, new HashSet<>(size));
                     }
                     if (!conflicts.containsKey(rj)) {
-                        conflicts.put(rj, new HashSet<Region>(size));
+                        conflicts.put(rj, new HashSet<>(size));
                     }
                     conflicts.get(ri).add(rj);
                     conflicts.get(rj).add(ri);
+                    count += 1;
                 }
             }
         }
+
+        conflictsCount = count;
     }
 
     // Check if given Regions are conflicting
-    public static boolean isConflicting(
-            final Region first, final Region second) {
-        int firstBegin = first.getBegin();
-        int firstEnd = first.getEnd();
-        int secondBegin = second.getBegin();
-        int secondEnd = second.getEnd();
+    public static boolean isConflicting(final Region first,
+                                        final Region second) {
+        final int firstBegin = first.getBegin();
+        final int firstEnd = first.getEnd();
+        final int secondBegin = second.getBegin();
+        final int secondEnd = second.getEnd();
 
         if (firstBegin < secondBegin) {
             if (firstEnd < secondEnd) {
@@ -110,20 +115,20 @@ public class ConflictMap {
             return Collections.singletonList(new Clique(conflicts.keySet()));
         }
 
-        List<Clique> cliques = new ArrayList<>();
-        Collection<Region> seen = new HashSet<>();
+        final List<Clique> cliques = new ArrayList<>();
+        final Collection<Region> seen = new HashSet<>();
 
         for (final Region region : conflicts.keySet()) {
             if (seen.contains(region)) {
                 continue;
             }
 
-            Collection<Region> todo = new HashSet<>();
+            final Collection<Region> todo = new HashSet<>();
             todo.add(region);
-            Set<Region> done = new HashSet<>();
+            final Set<Region> done = new HashSet<>();
 
             while (!CollectionUtils.isEqualCollection(todo, done)) {
-                Collection<Region> next = new ArrayList<>();
+                final Collection<Region> next = new ArrayList<>();
                 for (final Region r : todo) {
                     next.addAll(conflicts.get(r));
                     done.add(r);
@@ -135,9 +140,7 @@ public class ConflictMap {
                 cliques.add(new Clique(done));
             }
 
-            for (final Region r : done) {
-                seen.add(r);
-            }
+            seen.addAll(done);
         }
 
         return cliques;

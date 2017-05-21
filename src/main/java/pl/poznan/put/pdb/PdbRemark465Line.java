@@ -14,7 +14,6 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
             LoggerFactory.getLogger(PdbRemark465Line.class);
 
     // @formatter:off
-    @SuppressWarnings("HardcodedLineSeparator")
     public static final String PROLOGUE =
               "REMARK 465                                                                      \n"
             + "REMARK 465 MISSING RESIDUES                                                     \n"
@@ -27,20 +26,20 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
 
     // @formatter:off
     /*
-        REMARK 465                                                                       
-        REMARK 465 MISSING  RESIDUES                                                     
-        REMARK 465 THE FOLLOWING  RESIDUES WERE NOT LOCATED IN THE                       
-        REMARK 465 EXPERIMENT.  (M=MODEL NUMBER; RES=RESIDUE NAME; C=CHAIN               
-        REMARK 465 IDENTIFIER;  SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)                
-        REMARK 465                                                                      
-        REMARK 465   M RES C SSSEQI                                                     
-        REMARK 465     ARG A    46                                                      
-        REMARK 465     GLY A    47                                                      
-        REMARK 465     ALA A    48                                                      
-        REMARK 465     ARG A    49                                                      
+        REMARK 465
+        REMARK 465 MISSING  RESIDUES
+        REMARK 465 THE FOLLOWING  RESIDUES WERE NOT LOCATED IN THE
+        REMARK 465 EXPERIMENT.  (M=MODEL NUMBER; RES=RESIDUE NAME; C=CHAIN
+        REMARK 465 IDENTIFIER;  SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)
+        REMARK 465
+        REMARK 465   M RES C SSSEQI
+        REMARK 465     ARG A    46
+        REMARK 465     GLY A    47
+        REMARK 465     ALA A    48
+        REMARK 465     ARG A    49
         REMARK 465     MET A    50
-        
-        REMARK 465                                                                      
+
+        REMARK 465
         REMARK 465 MISSING RESIDUES
         REMARK 465 THE FOLLOWING RESIDUES WERE NOT LOCATED IN THE
         REMARK 465 EXPERIMENT. (RES=RESIDUE NAME; C=CHAIN IDENTIFIER;
@@ -87,7 +86,7 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
     }
 
     public static boolean isCommentLine(final String line) {
-        String lineTrimmed = StringUtils.normalizeSpace(line);
+        final String lineTrimmed = StringUtils.normalizeSpace(line);
 
         for (final String comment : PdbRemark465Line.COMMENT_LINES) {
             if (Objects
@@ -107,28 +106,28 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
         }
 
         try {
-            String recordName = line.substring(0, 6).trim();
+            final String recordName = line.substring(0, 6).trim();
 
             if (!Objects.equals("REMARK", recordName)) {
                 throw new PdbParsingException(
                         "PDB line does not start with REMARK");
             }
-            int remarkNumber = Integer.parseInt(line.substring(7, 10).trim());
+            final int remarkNumber = Integer.parseInt(line.substring(7, 10).trim());
             if (remarkNumber != 465) {
                 throw new PdbParsingException(
                         "Unsupported REMARK line occurred");
             }
 
-            String remarkContent =
+            final String remarkContent =
                     StringUtils.stripEnd(line.substring(11, 79), null);
-            int modelNumber = (remarkContent.charAt(2) == ' ') ? 0 : Integer
+            final int modelNumber = (remarkContent.charAt(2) == ' ') ? 0 : Integer
                     .parseInt(remarkContent.substring(2, 3));
-            String residueName = remarkContent.substring(4, 7).trim();
-            String chainIdentifier =
+            final String residueName = remarkContent.substring(4, 7).trim();
+            final String chainIdentifier =
                     Character.toString(remarkContent.charAt(8));
-            int residueNumber =
+            final int residueNumber =
                     Integer.parseInt(remarkContent.substring(10, 15).trim());
-            String insertionCode = (remarkContent.length() == 15) ? " "
+            final String insertionCode = (remarkContent.length() == 15) ? " "
                                                                   : Character
                                            .toString(remarkContent.charAt(15));
             return new PdbRemark465Line(modelNumber, residueName,
@@ -182,10 +181,10 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
                            + " first letter will be taken");
         }
 
-        String modelNumberString =
+        final String modelNumberString =
                 (modelNumber == 0) ? " " : String.valueOf(modelNumber);
-        char chain = chainIdentifier.charAt(0);
-        char icode = insertionCode.charAt(0);
+        final char chain = chainIdentifier.charAt(0);
+        final char icode = insertionCode.charAt(0);
 
         return String
                 .format(Locale.US, PdbRemark465Line.FORMAT, modelNumberString,

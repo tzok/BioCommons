@@ -25,7 +25,7 @@ public final class Chi5 extends AtomBasedTorsionAngleType {
     }
 
     public static Chi5[] getInstances() {
-        List<Chi5> instances = new ArrayList<>();
+        final List<Chi5> instances = new ArrayList<>();
         instances.add(Chi5.getInstance(Chi5.ARGININE_ATOMS));
         return instances.toArray(new Chi5[instances.size()]);
     }

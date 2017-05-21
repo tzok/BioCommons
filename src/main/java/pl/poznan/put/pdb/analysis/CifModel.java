@@ -38,8 +38,8 @@ public class CifModel extends PdbModel {
     @Override
     public final CifModel filteredNewInstance(final MoleculeType moleculeType)
             throws PdbParsingException {
-        List<PdbAtomLine> filteredAtoms = filterAtoms(moleculeType);
-        List<PdbRemark465Line> filteredMissing = filterMissing(moleculeType);
+        final List<PdbAtomLine> filteredAtoms = filterAtoms(moleculeType);
+        final List<PdbRemark465Line> filteredMissing = filterMissing(moleculeType);
         return new CifModel(headerLine, experimentalDataLine, resolutionLine,
                             modelNumber, filteredAtoms, modifiedResidues,
                             filteredMissing, basePairs);

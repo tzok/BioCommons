@@ -27,8 +27,8 @@ public class BasePair implements Serializable, Comparable<BasePair> {
 
     public static boolean isCanonicalPair(
             final PdbResidue left, final PdbResidue right) {
-        char leftName = Character.toUpperCase(left.getOneLetterName());
-        char rightName = Character.toUpperCase(right.getOneLetterName());
+        final char leftName = Character.toUpperCase(left.getOneLetterName());
+        final char rightName = Character.toUpperCase(right.getOneLetterName());
 
         if (leftName > rightName) {
             return BasePair.isCanonicalPair(right, left);
@@ -54,12 +54,12 @@ public class BasePair implements Serializable, Comparable<BasePair> {
             return false;
         }
 
-        PdbAtomLine n1 = guanine.findAtom(AtomName.N1);
-        PdbAtomLine o6 = guanine.findAtom(AtomName.O6);
-        PdbAtomLine o2 = uracil.findAtom(AtomName.O2);
-        PdbAtomLine n3 = uracil.findAtom(AtomName.N3);
-        double n1o2 = n1.distanceTo(o2);
-        double o6n3 = o6.distanceTo(n3);
+        final PdbAtomLine n1 = guanine.findAtom(AtomName.N1);
+        final PdbAtomLine o6 = guanine.findAtom(AtomName.O6);
+        final PdbAtomLine o2 = uracil.findAtom(AtomName.O2);
+        final PdbAtomLine n3 = uracil.findAtom(AtomName.N3);
+        final double n1o2 = n1.distanceTo(o2);
+        final double o6n3 = o6.distanceTo(n3);
         return (n1o2 <= BasePair.GU_DISTANCE_N1_O2) && (o6n3
                                                         <= BasePair
                                                                 .GU_DISTANCE_O6_N3);
@@ -74,12 +74,12 @@ public class BasePair implements Serializable, Comparable<BasePair> {
             return false;
         }
 
-        PdbAtomLine n1 = adenine.findAtom(AtomName.N1);
-        PdbAtomLine n6 = adenine.findAtom(AtomName.N6);
-        PdbAtomLine n3 = uracil.findAtom(AtomName.N3);
-        PdbAtomLine o4 = uracil.findAtom(AtomName.O4);
-        double n1n3 = n1.distanceTo(n3);
-        double n6o4 = n6.distanceTo(o4);
+        final PdbAtomLine n1 = adenine.findAtom(AtomName.N1);
+        final PdbAtomLine n6 = adenine.findAtom(AtomName.N6);
+        final PdbAtomLine n3 = uracil.findAtom(AtomName.N3);
+        final PdbAtomLine o4 = uracil.findAtom(AtomName.O4);
+        final double n1n3 = n1.distanceTo(n3);
+        final double n6o4 = n6.distanceTo(o4);
         return (n1n3 <= BasePair.AU_DISTANCE_N1_N3) && (n6o4
                                                         <= BasePair
                                                                 .AU_DISTANCE_N6_O4);
@@ -96,15 +96,15 @@ public class BasePair implements Serializable, Comparable<BasePair> {
             return false;
         }
 
-        PdbAtomLine n3 = cytosine.findAtom(AtomName.N3);
-        PdbAtomLine o2 = cytosine.findAtom(AtomName.O2);
-        PdbAtomLine n4 = cytosine.findAtom(AtomName.N4);
-        PdbAtomLine n1 = guanine.findAtom(AtomName.N1);
-        PdbAtomLine n2 = guanine.findAtom(AtomName.N2);
-        PdbAtomLine o6 = guanine.findAtom(AtomName.O6);
-        double n3n1 = n3.distanceTo(n1);
-        double o2n2 = o2.distanceTo(n2);
-        double n4o6 = n4.distanceTo(o6);
+        final PdbAtomLine n3 = cytosine.findAtom(AtomName.N3);
+        final PdbAtomLine o2 = cytosine.findAtom(AtomName.O2);
+        final PdbAtomLine n4 = cytosine.findAtom(AtomName.N4);
+        final PdbAtomLine n1 = guanine.findAtom(AtomName.N1);
+        final PdbAtomLine n2 = guanine.findAtom(AtomName.N2);
+        final PdbAtomLine o6 = guanine.findAtom(AtomName.O6);
+        final double n3n1 = n3.distanceTo(n1);
+        final double o2n2 = o2.distanceTo(n2);
+        final double n4o6 = n4.distanceTo(o6);
         return (n3n1 <= BasePair.CG_DISTANCE_N3_N1) && (o2n2
                                                         <= BasePair
                                                                 .CG_DISTANCE_O2_N2)
@@ -132,17 +132,17 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null) {
+        if (o == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != o.getClass()) {
             return false;
         }
-        BasePair other = (BasePair) obj;
+        final BasePair other = (BasePair) o;
         if (pair == null) {
             if (other.pair != null) {
                 return false;
