@@ -17,9 +17,8 @@ public final class Region {
     private final int end;
     private boolean isRemoved;
 
-    private Region(
-            final int id, final List<BpSeq.Entry> entries, final int begin,
-            final int end) {
+    private Region(final int id, final List<BpSeq.Entry> entries,
+                   final int begin, final int end) {
         super();
         this.id = id;
         this.entries = new ArrayList<>(entries);
@@ -32,7 +31,8 @@ public final class Region {
     public static List<Region> createRegions(final BpSeq bpSeq) {
         final List<Region> regions = new ArrayList<>();
         final List<BpSeq.Entry> regionEntries = new ArrayList<>();
-        final Iterable<BpSeq.Entry> allEntries = new ArrayList<>(bpSeq.getPaired());
+        final Iterable<BpSeq.Entry> allEntries =
+                new ArrayList<>(bpSeq.getPaired());
         int id = 0;
 
         for (final BpSeq.Entry entry : allEntries) {
@@ -41,10 +41,10 @@ public final class Region {
                 continue;
             }
 
-            final BpSeq.Entry last = regionEntries.get(regionEntries.size() - 1);
-            if ((entry.getIndex() == (last.getIndex() + 1)) && (entry.getPair()
-                                                                == (last.getPair()
-                                                                    - 1))) {
+            final BpSeq.Entry last =
+                    regionEntries.get(regionEntries.size() - 1);
+            if ((entry.getIndex() == (last.getIndex() + 1)) &&
+                (entry.getPair() == (last.getPair() - 1))) {
                 regionEntries.add(entry);
                 continue;
             }
@@ -131,5 +131,10 @@ public final class Region {
         }
         final Region region = (Region) o;
         return id == region.id;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%d[%d]", id, entries.size());
     }
 }
