@@ -21,8 +21,10 @@ import org.biojava.nbio.structure.io.mmcif.model.EntitySrcGen;
 import org.biojava.nbio.structure.io.mmcif.model.EntitySrcNat;
 import org.biojava.nbio.structure.io.mmcif.model.EntitySrcSyn;
 import org.biojava.nbio.structure.io.mmcif.model.Exptl;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxAuditRevisionHistory;
 import org.biojava.nbio.structure.io.mmcif.model.PdbxChemCompDescriptor;
 import org.biojava.nbio.structure.io.mmcif.model.PdbxChemCompIdentifier;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxDatabaseStatus;
 import org.biojava.nbio.structure.io.mmcif.model.PdbxEntityNonPoly;
 import org.biojava.nbio.structure.io.mmcif.model.PdbxNonPolyScheme;
 import org.biojava.nbio.structure.io.mmcif.model.PdbxPolySeqScheme;
@@ -99,12 +101,9 @@ public class CifConsumer implements MMcifConsumer {
             new ArrayList<>();
     private final List<QuantifiedBasePair> basePairs = new ArrayList<>();
 
-    @Nullable
-    private Date depositionDate;
-    @Nullable
-    private String classification;
-    @Nullable
-    private String idCode;
+    @Nullable private Date depositionDate;
+    @Nullable private String classification;
+    @Nullable private String idCode;
     private double resolution;
 
     private FileParsingParameters parameters;
@@ -145,12 +144,14 @@ public class CifConsumer implements MMcifConsumer {
             String alternateLocation = atomSite.getLabel_alt_id();
             final String residueName = atomSite.getAuth_comp_id();
             final String chainIdentifier = atomSite.getAuth_asym_id();
-            final int residueNumber = Integer.parseInt(atomSite.getAuth_seq_id());
+            final int residueNumber =
+                    Integer.parseInt(atomSite.getAuth_seq_id());
             String insertionCode = atomSite.getPdbx_PDB_ins_code();
             final double x = Double.parseDouble(atomSite.getCartn_x());
             final double y = Double.parseDouble(atomSite.getCartn_y());
             final double z = Double.parseDouble(atomSite.getCartn_z());
-            final double occupancy = Double.parseDouble(atomSite.getOccupancy());
+            final double occupancy =
+                    Double.parseDouble(atomSite.getOccupancy());
             final double temperatureFactor =
                     Double.parseDouble(atomSite.getB_iso_or_equiv());
             final String elementSymbol = atomSite.getType_symbol();
@@ -223,9 +224,9 @@ public class CifConsumer implements MMcifConsumer {
             }
         } catch (final ParseException e) {
             CifConsumer.LOGGER
-                    .warn("Failed to parse _database_PDB_rev.date_original as"
-                          + " yyyy-MM-dd: {}",
-                          databasePDBrev.getDate_original(), e);
+                    .warn("Failed to parse _database_PDB_rev.date_original as" +
+                          " yyyy-MM-dd: {}", databasePDBrev.getDate_original(),
+                          e);
         }
     }
 
@@ -269,8 +270,7 @@ public class CifConsumer implements MMcifConsumer {
     }
 
     @Override
-    public void newAtomSites(
-            final AtomSites atomSites) {
+    public void newAtomSites(final AtomSites atomSites) {
         // do nothing
     }
 
@@ -296,6 +296,18 @@ public class CifConsumer implements MMcifConsumer {
 
     @Override
     public void newStructSiteGen(final StructSiteGen structSiteGen) {
+        // do nothing
+    }
+
+    @Override
+    public void newPdbxAuditRevisionHistory(
+            final PdbxAuditRevisionHistory pdbxAuditRevisionHistory) {
+        // do nothing
+    }
+
+    @Override
+    public void newPdbxDatabaseStatus(
+            final PdbxDatabaseStatus pdbxDatabaseStatus) {
         // do nothing
     }
 
@@ -410,10 +422,11 @@ public class CifConsumer implements MMcifConsumer {
     }
 
     @Override
-    public final void newGenericData(
-            final String s, final List<String> list, final List<String> list1) {
+    public final void newGenericData(final String s, final List<String> list,
+                                     final List<String> list1) {
         if (Objects.equals(CifConsumer.PDBX_STRUCT_MOD_RESIDUE, s)) {
-            final Map<String, String> map = CifConsumer.convertToMap(list, list1);
+            final Map<String, String> map =
+                    CifConsumer.convertToMap(list, list1);
 
             final String residueName = map.get("auth_comp_id");
             final String chainIdentifier = map.get("auth_asym_id");
@@ -433,7 +446,8 @@ public class CifConsumer implements MMcifConsumer {
             modifiedResidues.add(modresLine);
         } else if (Objects
                 .equals(CifConsumer.PDBX_UNOBS_OR_ZERO_OCC_RESIDUES, s)) {
-            final Map<String, String> map = CifConsumer.convertToMap(list, list1);
+            final Map<String, String> map =
+                    CifConsumer.convertToMap(list, list1);
 
             final int modelNumber = Integer.parseInt(map.get("PDB_model_num"));
             final String residueName = map.get("auth_comp_id");
@@ -451,7 +465,8 @@ public class CifConsumer implements MMcifConsumer {
                                          insertionCode);
             missingResidues.add(remark465Line);
         } else if (Objects.equals(CifConsumer.NDB_STRUCT_NA_BASE_PAIR, s)) {
-            final Map<String, String> map = CifConsumer.convertToMap(list, list1);
+            final Map<String, String> map =
+                    CifConsumer.convertToMap(list, list1);
 
             final String chainL = map.get("i_auth_asym_id");
             final int resiL = Integer.parseInt(map.get("i_auth_seq_id"));
@@ -514,14 +529,15 @@ public class CifConsumer implements MMcifConsumer {
         return map;
     }
 
-    private static double getDoubleWithDefaultNaN(
-            final Map<String, String> map, final String key) {
+    private static double getDoubleWithDefaultNaN(final Map<String, String> map,
+                                                  final String key) {
         return map.containsKey(key) ? Double.parseDouble(map.get(key))
                                     : Double.NaN;
     }
 
     public final List<CifModel> getModels() throws PdbParsingException {
-        final Date date = (depositionDate == null) ? new Date(0) : depositionDate;
+        final Date date =
+                (depositionDate == null) ? new Date(0) : depositionDate;
         final PdbHeaderLine headerLine =
                 new PdbHeaderLine(classification, date, idCode);
 
@@ -529,7 +545,8 @@ public class CifConsumer implements MMcifConsumer {
                 experimentalTechniques.isEmpty() ? Collections
                         .singletonList(ExperimentalTechnique.UNKNOWN)
                                                  : experimentalTechniques;
-        final PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(techniques);
+        final PdbExpdtaLine experimentalDataLine =
+                new PdbExpdtaLine(techniques);
 
         final PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
         final List<CifModel> result = new ArrayList<>();
@@ -538,10 +555,10 @@ public class CifConsumer implements MMcifConsumer {
                 .entrySet()) {
             final int modelNumber = entry.getKey();
             final List<PdbAtomLine> atoms = entry.getValue();
-            final CifModel pdbModel = new CifModel(headerLine, experimentalDataLine,
-                                             resolutionLine, modelNumber, atoms,
-                                             modifiedResidues, missingResidues,
-                                             basePairs);
+            final CifModel pdbModel =
+                    new CifModel(headerLine, experimentalDataLine,
+                                 resolutionLine, modelNumber, atoms,
+                                 modifiedResidues, missingResidues, basePairs);
             result.add(pdbModel);
         }
 
