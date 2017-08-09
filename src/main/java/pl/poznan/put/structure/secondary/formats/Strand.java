@@ -6,14 +6,15 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Strand implements Serializable {
+    private static final long serialVersionUID = 8267967642039631099L;
+
     private final DotBracket parent;
     private final String name;
     private final int from;
     private final int to;
 
-    public Strand(
-            final DotBracket parent, final String name, final int from,
-            final int to) {
+    public Strand(final DotBracket parent, final String name, final int from,
+                  final int to) {
         super();
         this.parent = parent;
         this.name = name;
@@ -24,8 +25,9 @@ public class Strand implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return ">strand_" + name + '\n' + getSequence() + '\n' + getStructure();
+    public final String toString() {
+        return String
+                .format(">%s\n%s\n%s", name, getSequence(), getStructure());
     }
 
     public String getSequence() {
@@ -36,23 +38,23 @@ public class Strand implements Serializable {
         return parent.getStructure().substring(from, to);
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public int getFrom() {
+    public final int getFrom() {
         return from;
     }
 
-    public int getTo() {
+    public final int getTo() {
         return to;
     }
 
-    public int getLength() {
+    public final int getLength() {
         return to - from;
     }
 
-    public TerminalMissing getMissingBegin() {
+    public final TerminalMissing getMissingBegin() {
         int i = from;
         for (; i < to; i++) {
             final DotBracketSymbol symbol = parent.getSymbol(i);
@@ -63,7 +65,7 @@ public class Strand implements Serializable {
         return new TerminalMissing(parent.getSymbols().subList(from, i));
     }
 
-    public TerminalMissing getMissingEnd() {
+    public final TerminalMissing getMissingEnd() {
         int i = to - 1;
         for (; i >= from; i--) {
             final DotBracketSymbol symbol = parent.getSymbol(i);
@@ -74,7 +76,7 @@ public class Strand implements Serializable {
         return new TerminalMissing(parent.getSymbols().subList(i + 1, to));
     }
 
-    public int getPseudoknotOrder() {
+    public final int getPseudoknotOrder() {
         int order = 0;
         for (final DotBracketSymbol symbol : getSymbols()) {
             order = Math.max(order, symbol.getOrder());
@@ -82,11 +84,11 @@ public class Strand implements Serializable {
         return order;
     }
 
-    public List<DotBracketSymbol> getSymbols() {
+    public final List<DotBracketSymbol> getSymbols() {
         return parent.getSymbols().subList(from, to);
     }
 
-    public boolean contains(final DotBracketSymbol symbol) {
+    public final boolean contains(final DotBracketSymbol symbol) {
         return getSymbols().contains(symbol);
     }
 
@@ -98,7 +100,7 @@ public class Strand implements Serializable {
      * or closing bracket is allowed as long as it points somewhere outside this
      * strand.
      */
-    public boolean isSingleStrand() {
+    public final boolean isSingleStrand() {
         final List<DotBracketSymbol> symbols = getSymbols();
 
         for (int i = 1; i < (symbols.size() - 1); i++) {
@@ -111,7 +113,7 @@ public class Strand implements Serializable {
         return true;
     }
 
-    public boolean containsMissing() {
+    public final boolean containsMissing() {
         for (final DotBracketSymbol symbol : getSymbols()) {
             if (symbol.isMissing()) {
                 return true;
@@ -121,16 +123,16 @@ public class Strand implements Serializable {
         return false;
     }
 
-    public boolean containsFully(final Strand other) {
+    public final boolean containsFully(final Strand other) {
         return (from <= other.from) && (to >= other.to);
     }
 
-    public String getDescription() {
-        return from + 1 + " " + to + ' ' + getSequence() + ' ' + getStructure()
-               + ' ' + getRSequence();
+    public final String getDescription() {
+        return String.format("%d %d %s %s %s", from + 1, to, getSequence(),
+                             getStructure(), getRSequence());
     }
 
-    public String getRSequence() {
+    public final String getRSequence() {
         final char[] cs = getSequence().toCharArray();
         for (int i = 0; i < cs.length; i++) {
             cs[i] = ((cs[i] == 'A') || (cs[i] == 'G')) ? 'R' : 'Y';

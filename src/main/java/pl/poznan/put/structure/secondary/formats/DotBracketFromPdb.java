@@ -16,16 +16,17 @@ import java.util.List;
 import java.util.Map;
 
 public class DotBracketFromPdb extends DotBracket {
+    private static final long serialVersionUID = -4415694977869681897L;
+
     private final Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue =
             new HashMap<>();
     private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol =
             new HashMap<>();
 
-    public DotBracketFromPdb(
-            final DotBracket dotBracket, final PdbModel model,
-            final Iterable<ClassifiedBasePair> nonCanonical)
+    public DotBracketFromPdb(final DotBracket dotBracket, final PdbModel model,
+                             final Iterable<ClassifiedBasePair> nonCanonical)
             throws InvalidStructureException {
-        this(dotBracket.sequence, dotBracket.structure, model);
+        this(dotBracket.getSequence(), dotBracket.getStructure(), model);
         markRepresentedNonCanonicals(nonCanonical);
     }
 
@@ -49,7 +50,8 @@ public class DotBracketFromPdb extends DotBracket {
 
                 if (!cbp.isCanonical()) {
                     final DotBracketSymbol left = getSymbol(basePair.getLeft());
-                    final DotBracketSymbol right = getSymbol(basePair.getRight());
+                    final DotBracketSymbol right =
+                            getSymbol(basePair.getRight());
                     left.setNonCanonical(true);
                     right.setNonCanonical(true);
                 }
@@ -57,8 +59,8 @@ public class DotBracketFromPdb extends DotBracket {
         }
     }
 
-    public DotBracketFromPdb(
-            final String sequence, final String structure, final PdbModel model)
+    public DotBracketFromPdb(final String sequence, final String structure,
+                             final PdbModel model)
             throws InvalidStructureException {
         super(sequence,
               DotBracketFromPdb.updateMissingIndices(structure, model));
@@ -67,8 +69,8 @@ public class DotBracketFromPdb extends DotBracket {
         splitStrands(model);
     }
 
-    private static String updateMissingIndices(
-            final String structure, final ResidueCollection model) {
+    private static String updateMissingIndices(final String structure,
+                                               final ResidueCollection model) {
         final List<PdbResidue> residues = model.getResidues();
         final char[] dotBracket = structure.toCharArray();
         assert dotBracket.length == residues.size();
@@ -103,24 +105,25 @@ public class DotBracketFromPdb extends DotBracket {
 
         for (final PdbChain chain : model.getChains()) {
             end += chain.getResidues().size();
-            strands.add(new Strand(this, String.valueOf(chain.getIdentifier()),
+            strands.add(new Strand(this, String.format("strand_%s",
+                                                       chain.getIdentifier()),
                                    start, end));
             start = end;
         }
     }
 
-    public PdbResidueIdentifier getResidueIdentifier(
+    public final PdbResidueIdentifier getResidueIdentifier(
             final DotBracketSymbol symbol) {
         return symbolToResidue.get(symbol);
     }
 
-    public DotBracketSymbol getSymbol(
+    public final DotBracketSymbol getSymbol(
             final PdbResidueIdentifier residueIdentifier) {
         return residueToSymbol.get(residueIdentifier);
     }
 
     @Override
-    protected int getCtOriginalColumn(final DotBracketSymbol symbol) {
+    protected final int getCtOriginalColumn(final DotBracketSymbol symbol) {
         return symbolToResidue.get(symbol).getResidueNumber();
     }
 }

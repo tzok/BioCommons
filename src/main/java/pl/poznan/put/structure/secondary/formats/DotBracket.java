@@ -207,43 +207,21 @@ public class DotBracket implements Serializable {
     }
 
     @Override
-    public final int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) +
-                 ((sequence == null) ? 0 : sequence.hashCode());
-        result = (prime * result) +
-                 ((structure == null) ? 0 : structure.hashCode());
-        return result;
-    }
-
-    @Override
     public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
         final DotBracket other = (DotBracket) o;
-        if (sequence == null) {
-            if (other.sequence != null) {
-                return false;
-            }
-        } else if (!Objects.equals(sequence, other.sequence)) {
-            return false;
-        }
-        if (structure == null) {
-            if (other.structure != null) {
-                return false;
-            }
-        } else if (!Objects.equals(structure, other.structure)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(sequence, other.sequence) &&
+               Objects.equals(structure, other.structure);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(sequence, structure);
     }
 
     @Override
