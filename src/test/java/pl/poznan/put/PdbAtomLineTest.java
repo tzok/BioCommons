@@ -8,7 +8,7 @@ import pl.poznan.put.pdb.PdbParsingException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class TestPdbAtomLine {
+public class PdbAtomLineTest {
     // @formatter:off
     private static final String VALID_LINE =
             "ATOM      1  OP3   G A   1      50.193  51.190  50.534  1.00 99.85           O  ";
@@ -20,50 +20,51 @@ public class TestPdbAtomLine {
             "ATOM      1  N   GLU     1      42.189  22.849  47.437  1.00    N  ";
     // @formatter:on
 
-    private final String tooShortLine = TestPdbAtomLine.VALID_LINE
-            .substring(0, TestPdbAtomLine.VALID_LINE.length() - 10);
-    private final String misalignedLine =
-            StringUtils.normalizeSpace(TestPdbAtomLine.VALID_LINE);
+    private static final String TOO_SHORT_LINE = PdbAtomLineTest.VALID_LINE
+            .substring(0, PdbAtomLineTest.VALID_LINE.length() - 10);
+    private static final String MISALIGNED_LINE =
+            StringUtils.normalizeSpace(PdbAtomLineTest.VALID_LINE);
 
     @Test
     public final void testParseToString() throws PdbParsingException {
-        PdbAtomLine atomLine = PdbAtomLine.parse(TestPdbAtomLine.VALID_LINE);
-        String atomLineString = atomLine.toString();
-        assertThat(TestPdbAtomLine.VALID_LINE, is(atomLineString));
+        final PdbAtomLine atomLine =
+                PdbAtomLine.parse(PdbAtomLineTest.VALID_LINE);
+        final String atomLineString = atomLine.toString();
+        assertThat(PdbAtomLineTest.VALID_LINE, is(atomLineString));
     }
 
     @Test
     public final void testParseToStringOneLetterAtom()
             throws PdbParsingException {
-        PdbAtomLine atomLine = PdbAtomLine
-                .parse(TestPdbAtomLine.VALID_LINE_WITH_ONE_LETTER_ATOM);
-        String atomLineString = atomLine.toString();
-        assertThat(TestPdbAtomLine.VALID_LINE_WITH_ONE_LETTER_ATOM,
+        final PdbAtomLine atomLine = PdbAtomLine
+                .parse(PdbAtomLineTest.VALID_LINE_WITH_ONE_LETTER_ATOM);
+        final String atomLineString = atomLine.toString();
+        assertThat(PdbAtomLineTest.VALID_LINE_WITH_ONE_LETTER_ATOM,
                    is(atomLineString));
     }
 
     @Test(expected = PdbParsingException.class)
     public final void testShortLine() throws PdbParsingException {
-        PdbAtomLine.parse(tooShortLine);
+        PdbAtomLine.parse(PdbAtomLineTest.TOO_SHORT_LINE);
     }
 
     @Test(expected = PdbParsingException.class)
     public final void testMisalignedLine() throws PdbParsingException {
-        PdbAtomLine.parse(misalignedLine);
+        PdbAtomLine.parse(PdbAtomLineTest.MISALIGNED_LINE);
     }
 
     @Test(expected = PdbParsingException.class)
     public final void testMissingTempFactor() throws PdbParsingException {
-        PdbAtomLine.parse(TestPdbAtomLine.MISSING_TEMP_FACTOR);
+        PdbAtomLine.parse(PdbAtomLineTest.MISSING_TEMP_FACTOR);
     }
 
     @Test
     public final void testParseToStringFourLetterAtom()
             throws PdbParsingException {
-        PdbAtomLine atomLine = PdbAtomLine
-                .parse(TestPdbAtomLine.VALID_LINE_WITH_FOUR_LETTER_ATOM);
-        String atomLineString = atomLine.toString();
-        assertThat(TestPdbAtomLine.VALID_LINE_WITH_FOUR_LETTER_ATOM,
+        final PdbAtomLine atomLine = PdbAtomLine
+                .parse(PdbAtomLineTest.VALID_LINE_WITH_FOUR_LETTER_ATOM);
+        final String atomLineString = atomLine.toString();
+        assertThat(PdbAtomLineTest.VALID_LINE_WITH_FOUR_LETTER_ATOM,
                    is(atomLineString));
     }
 }

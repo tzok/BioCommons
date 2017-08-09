@@ -80,14 +80,13 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     private final String elementSymbol;
     private final String charge;
 
-    public PdbAtomLine(
-            final int serialNumber, final String atomName,
-            final String alternateLocation, final String residueName,
-            final String chainIdentifier, final int residueNumber,
-            final String insertionCode, final double x, final double y,
-            final double z, final double occupancy,
-            final double temperatureFactor, final String elementSymbol,
-            final String charge) {
+    public PdbAtomLine(final int serialNumber, final String atomName,
+                       final String alternateLocation, final String residueName,
+                       final String chainIdentifier, final int residueNumber,
+                       final String insertionCode, final double x,
+                       final double y, final double z, final double occupancy,
+                       final double temperatureFactor,
+                       final String elementSymbol, final String charge) {
         super();
         this.serialNumber = serialNumber;
         this.atomName = atomName;
@@ -111,16 +110,15 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         final ResidueNumber residueNumberObject = group.getResidueNumber();
         final String chainIdentifier = residueNumberObject.getChainName();
         final int residueNumber = residueNumberObject.getSeqNum();
-        final String insertionCode = (residueNumberObject.getInsCode() == null) ? " "
-                                                                          :
-                               Character
-                                       .toString(residueNumberObject
-                                                         .getInsCode());
+        final String insertionCode =
+                (residueNumberObject.getInsCode() == null) ? " " : Character
+                        .toString(residueNumberObject.getInsCode());
 
         final int serialNumber = atom.getPDBserial();
         final String atomName = atom.getName();
-        final String alternateLocation = (atom.getAltLoc() == null) ? " " : Character
-                .toString(atom.getAltLoc());
+        final String alternateLocation = (atom.getAltLoc() == null) ? " "
+                                                                    : Character
+                                                 .toString(atom.getAltLoc());
         final double x = atom.getX();
         final double y = atom.getY();
         final double z = atom.getZ();
@@ -151,18 +149,21 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         try {
             final String recordName = line.substring(0, 6).trim();
 
-            if (!Objects.equals(PdbAtomLine.RECORD_NAME, recordName) && !Objects
-                    .equals("HETATM", recordName)) {
+            if (!Objects.equals(PdbAtomLine.RECORD_NAME, recordName) &&
+                !Objects.equals("HETATM", recordName)) {
                 throw new PdbParsingException(
                         "PDB line does not start with ATOM or HETATM");
             }
 
-            final int serialNumber = Integer.parseInt(line.substring(6, 11).trim());
+            final int serialNumber =
+                    Integer.parseInt(line.substring(6, 11).trim());
             final String atomName = line.substring(12, 16).trim();
-            final String alternateLocation = Character.toString(line.charAt(16));
+            final String alternateLocation =
+                    Character.toString(line.charAt(16));
             final String residueName = line.substring(17, 20).trim();
             final String chainIdentifier = Character.toString(line.charAt(21));
-            final int residueNumber = Integer.parseInt(line.substring(22, 26).trim());
+            final int residueNumber =
+                    Integer.parseInt(line.substring(22, 26).trim());
             final String insertionCode = Character.toString(line.charAt(26));
             final double x = Double.parseDouble(line.substring(30, 38).trim());
             final double y = Double.parseDouble(line.substring(38, 46).trim());
@@ -171,8 +172,10 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
             final double occupancy = ((line.length() >= 60) && StringUtils
                     .isNotBlank(line.substring(54, 60))) ? Double.parseDouble(
                     line.substring(54, 60).trim()) : 0;
-            final double temperatureFactor = ((line.length() >= 66) && StringUtils
-                    .isNotBlank(line.substring(60, 66))) ? Double.parseDouble(
+            final double temperatureFactor = ((line.length() >= 66) &&
+                                              StringUtils.isNotBlank(
+                                                      line.substring(60, 66)))
+                                             ? Double.parseDouble(
                     line.substring(60, 66).trim()) : 0;
             final String elementSymbol =
                     (line.length() >= 78) ? line.substring(76, 78).trim() : "";
@@ -261,18 +264,18 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     public final String toString() {
         if (alternateLocation.length() != 1) {
             PdbAtomLine.LOGGER
-                    .error("Field 'alternateLocation' is longer than 1 char. "
-                           + "Only first letter will be taken");
+                    .error("Field 'alternateLocation' is longer than 1 char. " +
+                           "Only first letter will be taken");
         }
         if (chainIdentifier.length() != 1) {
             PdbAtomLine.LOGGER
-                    .error("Field 'chainIdentifier' is longer than 1 char. "
-                           + "Only first letter will be taken");
+                    .error("Field 'chainIdentifier' is longer than 1 char. " +
+                           "Only first letter will be taken");
         }
         if (insertionCode.length() != 1) {
             PdbAtomLine.LOGGER
-                    .error("Field 'insertionCode' is longer than 1 char. Only"
-                           + " first letter will be taken");
+                    .error("Field 'insertionCode' is longer than 1 char. Only" +
+                           " first letter will be taken");
         }
 
         final String format =
@@ -328,19 +331,20 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     public final Atom toBioJavaAtom() throws CifPdbIncompatibilityException {
         if (alternateLocation.length() != 1) {
             throw new CifPdbIncompatibilityException(
-                    "Cannot convert to PDB. Field 'alternateLocation' is "
-                    + "longer than 1 char");
+                    "Cannot convert to PDB. Field 'alternateLocation' is " +
+                    "longer than 1 char");
         }
         if (insertionCode.length() != 1) {
             throw new CifPdbIncompatibilityException(
-                    "Cannot convert to PDB. Field 'insertionCode' is longer "
-                    + "than 1 char");
+                    "Cannot convert to PDB. Field 'insertionCode' is longer " +
+                    "than 1 char");
         }
 
         final Group group = new HetatomImpl();
         final Character icode = Objects.equals(" ", insertionCode) ? null
-                                                             : insertionCode
-                                  .charAt(0);
+                                                                   :
+                                insertionCode
+                                        .charAt(0);
         group.setResidueNumber(String.valueOf(chainIdentifier), residueNumber,
                                icode);
         group.setPDBName(residueName);
@@ -392,5 +396,31 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
             builder.append('?');
         }
         return builder.toString();
+    }
+
+    @Override
+    public final boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if ((o == null) || (getClass() != o.getClass())) {
+            return false;
+        }
+        final PdbAtomLine other = (PdbAtomLine) o;
+        return (residueNumber == other.residueNumber) &&
+               (Double.compare(other.x, x) == 0) &&
+               (Double.compare(other.y, y) == 0) &&
+               (Double.compare(other.z, z) == 0) &&
+               Objects.equals(atomName, other.atomName) &&
+               Objects.equals(residueName, other.residueName) &&
+               Objects.equals(chainIdentifier, other.chainIdentifier) &&
+               Objects.equals(insertionCode, other.insertionCode);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects
+                .hash(atomName, residueName, chainIdentifier, residueNumber,
+                      insertionCode, x, y, z);
     }
 }

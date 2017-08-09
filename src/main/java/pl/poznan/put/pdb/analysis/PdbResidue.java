@@ -39,16 +39,17 @@ public class PdbResidue
     private final boolean isModified;
     private final boolean isMissing;
 
-    public PdbResidue(
-            final PdbResidueIdentifier identifier, final String residueName,
-            final List<PdbAtomLine> atoms, final boolean isMissing) {
+    public PdbResidue(final PdbResidueIdentifier identifier,
+                      final String residueName, final List<PdbAtomLine> atoms,
+                      final boolean isMissing) {
         this(identifier, residueName, residueName, atoms, false, isMissing);
     }
 
-    public PdbResidue(
-            final PdbResidueIdentifier identifier, final String residueName,
-            final String modifiedResidueName, final List<PdbAtomLine> atoms,
-            final boolean isModified, final boolean isMissing) {
+    public PdbResidue(final PdbResidueIdentifier identifier,
+                      final String residueName,
+                      final String modifiedResidueName,
+                      final List<PdbAtomLine> atoms, final boolean isModified,
+                      final boolean isMissing) {
         super();
         this.identifier = identifier;
         this.residueName = residueName;
@@ -97,7 +98,8 @@ public class PdbResidue
         final List<AtomName> actual = new ArrayList<>(atomNames);
         CollectionUtils.filter(actual, isHeavyAtomPredicate);
         CollectionUtils.filter(expected, isHeavyAtomPredicate);
-        final boolean result = CollectionUtils.isEqualCollection(actual, expected);
+        final boolean result =
+                CollectionUtils.isEqualCollection(actual, expected);
 
         if (!result) {
             final Collection<AtomName> intersection = new ArrayList<>(actual);
@@ -133,11 +135,9 @@ public class PdbResidue
         final ResidueNumber residueNumberObject = group.getResidueNumber();
         final String chainIdentifier = residueNumberObject.getChainName();
         final int residueNumber = residueNumberObject.getSeqNum();
-        final String insertionCode = (residueNumberObject.getInsCode() == null) ? " "
-                                                                          :
-                               Character
-                                       .toString(residueNumberObject
-                                                         .getInsCode());
+        final String insertionCode =
+                (residueNumberObject.getInsCode() == null) ? " " : Character
+                        .toString(residueNumberObject.getInsCode());
         final PdbResidueIdentifier residueIdentifier =
                 new PdbResidueIdentifier(chainIdentifier, residueNumber,
                                          insertionCode);
@@ -188,7 +188,8 @@ public class PdbResidue
     }
 
     public final char getOneLetterName() {
-        final char oneLetterName = residueInformationProvider.getOneLetterName();
+        final char oneLetterName =
+                residueInformationProvider.getOneLetterName();
         return isModified ? Character.toLowerCase(oneLetterName)
                           : oneLetterName;
     }
@@ -206,80 +207,28 @@ public class PdbResidue
     }
 
     @Override
-    public final int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + ((atomNames == null) ? 0 : atomNames
-                .hashCode());
-        result = (prime * result) + ((atoms == null) ? 0 : atoms.hashCode());
-        result = (prime * result) + ((identifier == null) ? 0 : identifier
-                .hashCode());
-        result = (prime * result) + (isMissing ? 1231 : 1237);
-        result = (prime * result) + (isModified ? 1231 : 1237);
-        result = (prime * result) + ((modifiedResidueName == null) ? 0
-                                                                   :
-                                     modifiedResidueName
-                                             .hashCode());
-        result = (prime * result) + ((residueName == null) ? 0 : residueName
-                .hashCode());
-        return result;
-    }
-
-    @Override
     public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
         final PdbResidue other = (PdbResidue) o;
-        if (atomNames == null) {
-            if (other.atomNames != null) {
-                return false;
-            }
-        } else if (!Objects.equals(atomNames, other.atomNames)) {
-            return false;
-        }
-        if (atoms == null) {
-            if (other.atoms != null) {
-                return false;
-            }
-        } else if (!Objects.equals(atoms, other.atoms)) {
-            return false;
-        }
-        if (identifier == null) {
-            if (other.identifier != null) {
-                return false;
-            }
-        } else if (!Objects.equals(identifier, other.identifier)) {
-            return false;
-        }
-        if (isMissing != other.isMissing) {
-            return false;
-        }
-        if (isModified != other.isModified) {
-            return false;
-        }
-        if (modifiedResidueName == null) {
-            if (other.modifiedResidueName != null) {
-                return false;
-            }
-        } else if (!Objects
-                .equals(modifiedResidueName, other.modifiedResidueName)) {
-            return false;
-        }
-        if (residueName == null) {
-            if (other.residueName != null) {
-                return false;
-            }
-        } else if (!Objects.equals(residueName, other.residueName)) {
-            return false;
-        }
-        return true;
+        return (isModified == other.isModified) &&
+               (isMissing == other.isMissing) &&
+               Objects.equals(atomNames, other.atomNames) &&
+               Objects.equals(identifier, other.identifier) &&
+               Objects.equals(residueName, other.residueName) &&
+               Objects.equals(modifiedResidueName, other.modifiedResidueName) &&
+               Objects.equals(atoms, other.atoms);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects
+                .hash(atomNames, identifier, residueName, modifiedResidueName,
+                      atoms, isModified, isMissing);
     }
 
     @Override
@@ -287,8 +236,8 @@ public class PdbResidue
         final String chainIdentifier = identifier.getChainIdentifier();
         final int residueNumber = identifier.getResidueNumber();
         final String insertionCode = identifier.getInsertionCode();
-        return chainIdentifier + '.' + modifiedResidueName + residueNumber + (
-                Objects.equals(" ", insertionCode) ? "" : insertionCode);
+        return chainIdentifier + '.' + modifiedResidueName + residueNumber +
+               (Objects.equals(" ", insertionCode) ? "" : insertionCode);
     }
 
     @Override
@@ -344,7 +293,7 @@ public class PdbResidue
         return builder.toString();
     }
 
-    public ResidueInformationProvider getResidueInformationProvider() {
+    public final ResidueInformationProvider getResidueInformationProvider() {
         return residueInformationProvider;
     }
 }

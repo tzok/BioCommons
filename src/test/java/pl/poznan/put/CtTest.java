@@ -1,136 +1,128 @@
 package pl.poznan.put;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.structure.secondary.formats.Ct;
 import pl.poznan.put.structure.secondary.formats.DotBracket;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
+import pl.poznan.put.utility.ResourcesHelper;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-
-public class TestCt {
+public class CtTest {
     //@formatter:off
-    private static String inputGood =
+    private static final String INPUT_GOOD =
                     "4 inputGood\n" +
                     "1 A 0 2 3 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputGoodMulti =
+    private static final String INPUT_GOOD_MULTI =
                     "4 inputGood\n" +
                     "1 A 0 2 3 12313\n" +
                     "2 C 1 0 0 12313\n" +
                     "3 U 0 2 1 12314\n" +
                     "4 C 1 0 0 12315\n";
-    private static String inputBadFirstLine1 =
+    private static final String INPUT_BAD_FIRST_LINE_1 =
                     "-100 inputBad\n" +
                     "1 A 0 2 3 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadFirstLine2 =
+    private static final String INPUT_BAD_FIRST_LINE_2 =
                     "xyz inputBad\n" +
                     "1 A 0 2 3 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadTooFew =
+    private static final String INPUT_BAD_TOO_FEW =
                     "4 inputBad\n" +
                     "1 A 0 2 3\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadTooMany =
+    private static final String INPUT_BAD_TOO_MANY =
                     "4 inputBad\n" +
                     "1 A 0 2 3 12313 50\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadIndex1 =
+    private static final String INPUT_BAD_INDEX_1 =
                     "4 inputBad\n" +
                     "-10 A 0 2 3 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadIndex2 =
+    private static final String INPUT_BAD_INDEX_2 =
                     "4 inputBad\n" +
                     "xyz A 0 2 3 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadBefore1 =
+    private static final String INPUT_BAD_BEFORE_1 =
                     "4 inputBad\n" +
                     "1 A -1 2 3 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadBefore2 =
+    private static final String INPUT_BAD_BEFORE_2 =
                     "4 inputBad\n" +
                     "1 A xyz 2 3 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadBefore3 =
+    private static final String INPUT_BAD_BEFORE_3 =
                     "4 inputBad\n" +
                     "1 A 1 2 3 12313\n" +
                     "2 C 1 0 0 12313\n" +
                     "3 U 0 2 1 12314\n" +
                     "4 C 1 0 0 12315\n";
-    private static String inputBadBefore4 =
+    private static final String INPUT_BAD_BEFORE_4 =
                     "4 inputBad\n" +
                     "1 A 0 2 3 12313\n" +
                     "2 C 1 0 0 12313\n" +
                     "3 U 1 2 1 12314\n" +
                     "4 C 1 0 0 12315\n";
-    private static String inputBadAfter1 =
+    private static final String INPUT_BAD_AFTER_1 =
                     "4 inputBad\n" +
                     "1 A 0 -1 3 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadAfter2 =
+    private static final String INPUT_BAD_AFTER_2 =
                     "4 inputBad\n" +
                     "1 A 0 xyz 3 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadAfter3 =
+    private static final String INPUT_BAD_AFTER_3 =
                     "4 inputBad\n" +
                     "1 A 0 2 3 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 0 2 1 12314\n" +
                     "4 C 1 0 0 12315\n";
-    private static String inputBadPair1 =
+    private static final String INPUT_BAD_PAIR_1 =
                     "4 inputBad\n" +
                     "1 A 0 2 -1 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadPair2 =
+    private static final String INPUT_BAD_PAIR_2 =
                     "4 inputBad\n" +
                     "1 A 0 2 xyz 12313\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadOriginal =
+    private static final String INPUT_BAD_ORIGINAL =
                     "4 inputBad\n" +
                     "1 A 0 2 3 xyz\n" +
                     "2 C 1 3 0 12313\n" +
                     "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadNumbering =
+    private static final String INPUT_BAD_NUMBERING =
                     "4 inputBad\n" +
                     "1 A 0 2 3 12313\n" +
                     "3 C 1 3 0 12313\n" +
                     "2 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadMapping =
+    private static final String INPUT_BAD_MAPPING =
                     "4 inputBad\n" +
                     "1 A 0 2 2 12313\n" +
                     "2 C 1 3 0 12313\n" +
@@ -138,167 +130,130 @@ public class TestCt {
                     "4 C 3 0 0 12315\n";
     //@formatter:on
 
-    private String dbn4UG0;
-
-    @Before
-    public void prepare() throws IOException {
-        dbn4UG0 = IOUtils.toString(TestCt.class.getClassLoader()
-                                               .getResourceAsStream(
-                                                       "4UG0-dotbracket.txt"),
-                                   Charset.defaultCharset());
-    }
-
-    @SuppressWarnings("static-method")
     @Test
-    public void testGood() throws InvalidStructureException {
-        Ct.fromString(TestCt.inputGood);
-    }
-
-    @SuppressWarnings("static-method")
-    @Test
-    public void testGoodMulti() throws InvalidStructureException {
-        Ct.fromString(TestCt.inputGoodMulti);
+    public final void testGood() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_GOOD);
     }
 
     @Test
-    public void testRnaStrand()
-            throws InvalidStructureException, URISyntaxException, IOException {
-        URI uri = getClass().getClassLoader().getResource(".").toURI();
-        File dir = new File(uri);
-        File ctFile = new File(dir, "../../src/test/resources/CRW_00528.ct");
+    public final void testGoodMulti() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_GOOD_MULTI);
+    }
 
-        String data = FileUtils.readFileToString(ctFile, "utf-8");
+    @Test
+    public final void testRnaStrand() throws Exception {
+        final String data = ResourcesHelper.loadResource("CRW_00528.ct");
         Ct.fromString(data);
     }
 
     @Test
-    public void testX3Dna()
-            throws InvalidStructureException, URISyntaxException, IOException {
-        URI uri = getClass().getClassLoader().getResource(".").toURI();
-        File dir = new File(uri);
-        File ctFile = new File(dir, "../../src/test/resources/3CC2-x3dna.ct");
-
-        String data = FileUtils.readFileToString(ctFile, "utf-8");
+    public final void testX3Dna() throws Exception {
+        final String data = ResourcesHelper.loadResource("3CC2-x3dna.ct");
         Ct.fromString(data);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidFirstLine1() throws InvalidStructureException {
-        Ct.fromString(TestCt.inputBadFirstLine1);
+    public final void testInvalidFirstLine1() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_FIRST_LINE_1);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidFirstLine2() throws InvalidStructureException {
-        Ct.fromString(TestCt.inputBadFirstLine2);
+    public final void testInvalidFirstLine2() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_FIRST_LINE_2);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidTooFew() throws InvalidStructureException {
-        Ct.fromString(TestCt.inputBadTooFew);
+    public final void testInvalidTooFew() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_TOO_FEW);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidTooMany() throws InvalidStructureException {
-        Ct.fromString(TestCt.inputBadTooMany);
+    public final void testInvalidTooMany() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_TOO_MANY);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadIndex1() throws InvalidStructureException {
-        Ct.fromString(inputBadIndex1);
+    public final void testInvalidBadIndex1() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_INDEX_1);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadIndex2() throws InvalidStructureException {
-        Ct.fromString(inputBadIndex2);
+    public final void testInvalidBadIndex2() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_INDEX_2);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadBefore1() throws InvalidStructureException {
-        Ct.fromString(inputBadBefore1);
+    public final void testInvalidBadBefore1() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_BEFORE_1);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadBefore2() throws InvalidStructureException {
-        Ct.fromString(inputBadBefore2);
+    public final void testInvalidBadBefore2() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_BEFORE_2);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadBefore3() throws InvalidStructureException {
-        Ct.fromString(inputBadBefore3);
+    public final void testInvalidBadBefore3() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_BEFORE_3);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadBefore4() throws InvalidStructureException {
-        Ct.fromString(inputBadBefore4);
+    public final void testInvalidBadBefore4() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_BEFORE_4);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadAfter1() throws InvalidStructureException {
-        Ct.fromString(inputBadAfter1);
+    public final void testInvalidBadAfter1() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_AFTER_1);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadAfter2() throws InvalidStructureException {
-        Ct.fromString(inputBadAfter2);
+    public final void testInvalidBadAfter2() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_AFTER_2);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadAfter3() throws InvalidStructureException {
-        Ct.fromString(inputBadAfter3);
+    public final void testInvalidBadAfter3() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_AFTER_3);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadPair1() throws InvalidStructureException {
-        Ct.fromString(inputBadPair1);
+    public final void testInvalidBadPair1() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_PAIR_1);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadPair2() throws InvalidStructureException {
-        Ct.fromString(inputBadPair2);
+    public final void testInvalidBadPair2() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_PAIR_2);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadOriginal() throws InvalidStructureException {
-        Ct.fromString(inputBadOriginal);
+    public final void testInvalidBadOriginal()
+            throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_ORIGINAL);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadNumbering() throws InvalidStructureException {
-        Ct.fromString(inputBadNumbering);
+    public final void testInvalidBadNumbering()
+            throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_NUMBERING);
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = InvalidStructureException.class)
-    public void testInvalidBadMapping() throws InvalidStructureException {
-        Ct.fromString(inputBadMapping);
+    public final void testInvalidBadMapping() throws InvalidStructureException {
+        Ct.fromString(CtTest.INPUT_BAD_MAPPING);
     }
 
-    @SuppressWarnings("static-method")
     @Test
-    public void fromDotBracket() throws InvalidStructureException {
+    public final void fromDotBracket() throws InvalidStructureException {
         Ct.fromDotBracket(DotBracket.fromString(DotBracketTest.FROM_2Z74));
     }
 
     @Test
-    public void test4UG0() throws InvalidStructureException {
-        DotBracket dotBracket = DotBracket.fromString(dbn4UG0);
+    public final void test4UG0() throws Exception {
+        final String dbn4UG0 =
+                ResourcesHelper.loadResource("4UG0-dotbracket.txt");
+        final DotBracket dotBracket = DotBracket.fromString(dbn4UG0);
         Ct.fromDotBracket(dotBracket);
     }
 }

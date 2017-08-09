@@ -1,50 +1,29 @@
 package pl.poznan.put;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.pdb.ExperimentalTechnique;
-import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.utility.ResourcesHelper;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.List;
 
-/**
- * Created by tzok on 24.05.16.
- */
-public class TestCifParser {
-    private String cif100D;
-    private String cif148L;
-    private String cif5A93;
-
-    @Before
-    public void readTestData() throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        cif100D = IOUtils.toString(classLoader.getResourceAsStream("100D.cif"),
-                                   Charset.defaultCharset());
-        cif148L = IOUtils.toString(classLoader.getResourceAsStream("148L.cif"),
-                                   Charset.defaultCharset());
-        cif5A93 = IOUtils.toString(classLoader.getResourceAsStream("5A93.cif"),
-                                   Charset.defaultCharset());
-    }
-
+public class CifParserTest {
     @Test
-    public void test100D() throws IOException, PdbParsingException {
-        CifParser parser = new CifParser();
-        List<CifModel> models = parser.parse(cif100D);
+    public final void test100D() throws Exception {
+        final String cif100D = ResourcesHelper.loadResource("100D.cif");
+        final CifParser parser = new CifParser();
+        final List<CifModel> models = parser.parse(cif100D);
         Assert.assertEquals(1, models.size());
 
-        CifModel model = models.get(0);
-        List<PdbChain> chains = model.getChains();
+        final CifModel model = models.get(0);
+        final List<PdbChain> chains = model.getChains();
         Assert.assertEquals(2, chains.size());
 
-        List<ExperimentalTechnique> experimentalTechniques =
+        final List<ExperimentalTechnique> experimentalTechniques =
                 model.getExperimentalDataLine().getExperimentalTechniques();
         Assert.assertEquals(1, experimentalTechniques.size());
         Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION,
@@ -54,11 +33,12 @@ public class TestCifParser {
     }
 
     @Test
-    public void test148L() throws IOException, PdbParsingException {
-        CifParser parser = new CifParser();
-        List<CifModel> models = parser.parse(cif148L);
+    public final void test148L() throws Exception {
+        final String cif148L = ResourcesHelper.loadResource("148L.cif");
+        final CifParser parser = new CifParser();
+        final List<CifModel> models = parser.parse(cif148L);
         Assert.assertEquals(1, models.size());
-        CifModel model = models.get(0);
+        final CifModel model = models.get(0);
 
         PdbResidue residue = model.findResidue("E", 164, " ");
         Assert.assertTrue(residue.isMissing());
@@ -67,7 +47,7 @@ public class TestCifParser {
         Assert.assertEquals("API", residue.getOriginalResidueName());
         Assert.assertEquals("LYS", residue.getModifiedResidueName());
 
-        List<ExperimentalTechnique> experimentalTechniques =
+        final List<ExperimentalTechnique> experimentalTechniques =
                 model.getExperimentalDataLine().getExperimentalTechniques();
         Assert.assertEquals(1, experimentalTechniques.size());
         Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION,
@@ -77,16 +57,17 @@ public class TestCifParser {
     }
 
     @Test
-    public void test5A93() throws IOException, PdbParsingException {
-        CifParser parser = new CifParser();
-        List<CifModel> models = parser.parse(cif5A93);
+    public final void test5A93() throws Exception {
+        final String cif5A93 = ResourcesHelper.loadResource("5A93.cif");
+        final CifParser parser = new CifParser();
+        final List<CifModel> models = parser.parse(cif5A93);
         Assert.assertEquals(1, models.size());
 
-        CifModel model = models.get(0);
-        List<PdbChain> chains = model.getChains();
+        final CifModel model = models.get(0);
+        final List<PdbChain> chains = model.getChains();
         Assert.assertEquals(1, chains.size());
 
-        List<ExperimentalTechnique> experimentalTechniques =
+        final List<ExperimentalTechnique> experimentalTechniques =
                 model.getExperimentalDataLine().getExperimentalTechniques();
         Assert.assertEquals(2, experimentalTechniques.size());
         Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION,
