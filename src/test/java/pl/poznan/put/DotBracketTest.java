@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
+import pl.poznan.put.structure.secondary.formats.Converter;
 import pl.poznan.put.structure.secondary.formats.DotBracket;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.structure.secondary.formats.LevelByLevelConverter;
@@ -16,11 +17,15 @@ import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestDotBracket {
+public class DotBracketTest {
     // @formatter:off
-    public static final String FROM_2Z74 = 
+    public static final String WITH_WINDOWS_NEWLINE =
+            ">strand_A\r\n" +
+            "ACAAGU\r\n" +
+            "((..))";
+    public static final String FROM_2Z74 =
             ">strand_A\n" +
-            "aGCGCCuGGACUUAAAGCCAUUGCACU\n" + 
+            "aGCGCCuGGACUUAAAGCCAUUGCACU\n" +
             "..[[[[.[(((((((((((..------\n" +
             ">strand_B\n" +
             "CCGGCUUUAAGUUGACGAGGGCAGGGUUuAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGuAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA\n" +
@@ -49,9 +54,9 @@ public class TestDotBracket {
     private String dotBracket1EHZ;
 
     @Before
-    public void loadPdbFile() throws URISyntaxException, IOException {
-        URI uri = getClass().getClassLoader().getResource(".").toURI();
-        File dir = new File(uri);
+    public final void loadPdbFile() throws URISyntaxException, IOException {
+        final URI uri = getClass().getClassLoader().getResource(".").toURI();
+        final File dir = new File(uri);
         bpseq1EHZ = FileUtils.readFileToString(
                 new File(dir, "../../src/test/resources/1EHZ-2D-bpseq.txt"),
                 "utf-8");
@@ -60,32 +65,39 @@ public class TestDotBracket {
                                                     "utf-8");
     }
 
-    @SuppressWarnings("static-method")
     @Test
-    public void from2Z74() throws InvalidStructureException {
-        DotBracket dotBracket = DotBracket.fromString(TestDotBracket.FROM_2Z74);
+    public final void from2Z74() throws InvalidStructureException {
+        final DotBracket dotBracket =
+                DotBracket.fromString(DotBracketTest.FROM_2Z74);
         assertEquals(2, dotBracket.getStrands().size());
     }
 
-    @SuppressWarnings("static-method")
     @Test
-    public void fromBpSeq() throws InvalidStructureException {
-        LevelByLevelConverter converter =
-                new LevelByLevelConverter(new MinGain(), 1);
-        BpSeq bpSeq = BpSeq.fromString(TestDotBracket.BPSEQ);
-        DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
-        DotBracket dotBracketFromString =
-                DotBracket.fromString(TestDotBracket.DOTBRACKET);
+    public final void fromBpSeq() throws InvalidStructureException {
+        final Converter converter = new LevelByLevelConverter(new MinGain(), 1);
+        final BpSeq bpSeq = BpSeq.fromString(DotBracketTest.BPSEQ);
+        final DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
+        final DotBracket dotBracketFromString =
+                DotBracket.fromString(DotBracketTest.DOTBRACKET);
         assertEquals(dotBracketFromString, dotBracketFromBpSeq);
     }
 
     @Test
-    public void fromBpSeq1EHZ() throws InvalidStructureException {
-        LevelByLevelConverter converter =
-                new LevelByLevelConverter(new MinGain(), 1);
-        BpSeq bpSeq = BpSeq.fromString(bpseq1EHZ);
-        DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
-        DotBracket dotBracketFromString = DotBracket.fromString(dotBracket1EHZ);
+    public final void fromBpSeq1EHZ() throws InvalidStructureException {
+        final Converter converter = new LevelByLevelConverter(new MinGain(), 1);
+        final BpSeq bpSeq = BpSeq.fromString(bpseq1EHZ);
+        final DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
+        final DotBracket dotBracketFromString =
+                DotBracket.fromString(dotBracket1EHZ);
         assertEquals(dotBracketFromString, dotBracketFromBpSeq);
+    }
+
+    @Test
+    public final void testWithWindowsNewline()
+            throws InvalidStructureException {
+        final DotBracket dotBracket =
+                DotBracket.fromString(DotBracketTest.WITH_WINDOWS_NEWLINE);
+        assertEquals("ACAAGU", dotBracket.getSequence());
+        assertEquals("((..))", dotBracket.getStructure());
     }
 }

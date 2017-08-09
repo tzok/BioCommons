@@ -122,7 +122,7 @@ public class BpSeqTest {
 
     @Test
     public final void fromDotBracket() throws InvalidStructureException {
-        DotBracket db = DotBracket.fromString(TestDotBracket.FROM_2Z74);
+        DotBracket db = DotBracket.fromString(DotBracketTest.FROM_2Z74);
         BpSeq.fromDotBracket(db);
     }
 

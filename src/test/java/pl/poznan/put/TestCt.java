@@ -16,125 +16,125 @@ import java.nio.charset.Charset;
 
 public class TestCt {
     //@formatter:off
-    private static String inputGood = 
-                    "4 inputGood\n" + 
-                    "1 A 0 2 3 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputGoodMulti = 
-                    "4 inputGood\n" + 
-                    "1 A 0 2 3 12313\n" + 
-                    "2 C 1 0 0 12313\n" + 
-                    "3 U 0 2 1 12314\n" + 
-                    "4 C 1 0 0 12315\n";    
-    private static String inputBadFirstLine1 = 
-                    "-100 inputBad\n" + 
-                    "1 A 0 2 3 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadFirstLine2 = 
-                    "xyz inputBad\n" + 
-                    "1 A 0 2 3 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadTooFew = 
-                    "4 inputBad\n" + 
-                    "1 A 0 2 3\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadTooMany = 
-                    "4 inputBad\n" + 
-                    "1 A 0 2 3 12313 50\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadIndex1 = 
-                    "4 inputBad\n" + 
-                    "-10 A 0 2 3 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadIndex2 = 
-                    "4 inputBad\n" + 
-                    "xyz A 0 2 3 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadBefore1 = 
-                    "4 inputBad\n" + 
-                    "1 A -1 2 3 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadBefore2 = 
-                    "4 inputBad\n" + 
-                    "1 A xyz 2 3 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadBefore3 = 
-                    "4 inputBad\n" + 
-                    "1 A 1 2 3 12313\n" + 
-                    "2 C 1 0 0 12313\n" + 
-                    "3 U 0 2 1 12314\n" + 
-                    "4 C 1 0 0 12315\n";    
-    private static String inputBadBefore4 = 
-                    "4 inputBad\n" + 
-                    "1 A 0 2 3 12313\n" + 
-                    "2 C 1 0 0 12313\n" + 
-                    "3 U 1 2 1 12314\n" + 
-                    "4 C 1 0 0 12315\n";    
-    private static String inputBadAfter1 = 
-                    "4 inputBad\n" + 
-                    "1 A 0 -1 3 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadAfter2 = 
-                    "4 inputBad\n" + 
-                    "1 A 0 xyz 3 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadAfter3 = 
-                    "4 inputBad\n" + 
-                    "1 A 0 2 3 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 0 2 1 12314\n" + 
-                    "4 C 1 0 0 12315\n";    
-    private static String inputBadPair1 = 
-                    "4 inputBad\n" + 
-                    "1 A 0 2 -1 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadPair2 = 
-                    "4 inputBad\n" + 
-                    "1 A 0 2 xyz 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
-                    "4 C 3 0 0 12315\n";
-    private static String inputBadOriginal = 
-                    "4 inputBad\n" + 
-                    "1 A 0 2 3 xyz\n" + 
+    private static String inputGood =
+                    "4 inputGood\n" +
+                    "1 A 0 2 3 12313\n" +
                     "2 C 1 3 0 12313\n" +
-                    "3 U 2 4 1 12314\n" + 
+                    "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadNumbering = 
-                    "4 inputBad\n" + 
-                    "1 A 0 2 3 12313\n" + 
-                    "3 C 1 3 0 12313\n" + 
-                    "2 U 2 4 1 12314\n" + 
+    private static String inputGoodMulti =
+                    "4 inputGood\n" +
+                    "1 A 0 2 3 12313\n" +
+                    "2 C 1 0 0 12313\n" +
+                    "3 U 0 2 1 12314\n" +
+                    "4 C 1 0 0 12315\n";
+    private static String inputBadFirstLine1 =
+                    "-100 inputBad\n" +
+                    "1 A 0 2 3 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
-    private static String inputBadMapping = 
-                    "4 inputBad\n" + 
-                    "1 A 0 2 2 12313\n" + 
-                    "2 C 1 3 0 12313\n" + 
-                    "3 U 2 4 1 12314\n" + 
+    private static String inputBadFirstLine2 =
+                    "xyz inputBad\n" +
+                    "1 A 0 2 3 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadTooFew =
+                    "4 inputBad\n" +
+                    "1 A 0 2 3\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadTooMany =
+                    "4 inputBad\n" +
+                    "1 A 0 2 3 12313 50\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadIndex1 =
+                    "4 inputBad\n" +
+                    "-10 A 0 2 3 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadIndex2 =
+                    "4 inputBad\n" +
+                    "xyz A 0 2 3 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadBefore1 =
+                    "4 inputBad\n" +
+                    "1 A -1 2 3 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadBefore2 =
+                    "4 inputBad\n" +
+                    "1 A xyz 2 3 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadBefore3 =
+                    "4 inputBad\n" +
+                    "1 A 1 2 3 12313\n" +
+                    "2 C 1 0 0 12313\n" +
+                    "3 U 0 2 1 12314\n" +
+                    "4 C 1 0 0 12315\n";
+    private static String inputBadBefore4 =
+                    "4 inputBad\n" +
+                    "1 A 0 2 3 12313\n" +
+                    "2 C 1 0 0 12313\n" +
+                    "3 U 1 2 1 12314\n" +
+                    "4 C 1 0 0 12315\n";
+    private static String inputBadAfter1 =
+                    "4 inputBad\n" +
+                    "1 A 0 -1 3 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadAfter2 =
+                    "4 inputBad\n" +
+                    "1 A 0 xyz 3 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadAfter3 =
+                    "4 inputBad\n" +
+                    "1 A 0 2 3 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 0 2 1 12314\n" +
+                    "4 C 1 0 0 12315\n";
+    private static String inputBadPair1 =
+                    "4 inputBad\n" +
+                    "1 A 0 2 -1 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadPair2 =
+                    "4 inputBad\n" +
+                    "1 A 0 2 xyz 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadOriginal =
+                    "4 inputBad\n" +
+                    "1 A 0 2 3 xyz\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadNumbering =
+                    "4 inputBad\n" +
+                    "1 A 0 2 3 12313\n" +
+                    "3 C 1 3 0 12313\n" +
+                    "2 U 2 4 1 12314\n" +
+                    "4 C 3 0 0 12315\n";
+    private static String inputBadMapping =
+                    "4 inputBad\n" +
+                    "1 A 0 2 2 12313\n" +
+                    "2 C 1 3 0 12313\n" +
+                    "3 U 2 4 1 12314\n" +
                     "4 C 3 0 0 12315\n";
     //@formatter:on
 
@@ -293,7 +293,7 @@ public class TestCt {
     @SuppressWarnings("static-method")
     @Test
     public void fromDotBracket() throws InvalidStructureException {
-        Ct.fromDotBracket(DotBracket.fromString(TestDotBracket.FROM_2Z74));
+        Ct.fromDotBracket(DotBracket.fromString(DotBracketTest.FROM_2Z74));
     }
 
     @Test

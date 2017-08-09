@@ -20,12 +20,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.biojava</groupId>
             <artifactId>biojava-structure</artifactId>
             <version>5.0.0-alpha12</version>
@@ -64,7 +58,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.8.0-alpha2</version>
+            <version>1.7.25</version>
         </dependency>
 
         <dependency>
@@ -73,6 +67,19 @@
             <version>3.0.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>pl.poznan.put</groupId>
+            <artifactId>circular</artifactId>
+            <version>1.3-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.poznan.put</groupId>
+            <artifactId>TzokCommons</artifactId>
+            <version>1.5-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Test scope -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -88,15 +95,10 @@
         </dependency>
 
         <dependency>
-            <groupId>pl.poznan.put</groupId>
-            <artifactId>circular</artifactId>
-            <version>1.3-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>pl.poznan.put</groupId>
-            <artifactId>TzokCommons</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -133,9 +135,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.0.0</version>
-                <configuration>
-                    <usedDependencies>ch.qos.logback:logback-classic</usedDependencies>
-                </configuration>
             </plugin>
 
             <plugin>
