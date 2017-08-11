@@ -73,8 +73,9 @@ public class TorsionAngleDelta {
 
     @Override
     public final String toString() {
-        return "AngleDelta [state=" + state + ", delta=" + delta
-               + ", rangeDifference=" + rangeDifference + ']';
+        return String.format("TorsionAngleDelta [state=%s, delta=%s, " +
+                             "rangeDifference=%s]", state, delta,
+                             rangeDifference);
     }
 
     /**
