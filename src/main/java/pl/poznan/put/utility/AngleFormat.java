@@ -8,9 +8,9 @@ import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 
-public class AngleFormat extends NumberFormat {
-    private static final AngleFormat INSTANCE = new AngleFormat();
+public final class AngleFormat extends NumberFormat {
     private static final long serialVersionUID = -5889250902960438432L;
+    private static final AngleFormat INSTANCE = new AngleFormat();
     private final ProperFractionFormat fractionFormat =
             new ProperFractionFormat();
 
@@ -39,8 +39,8 @@ public class AngleFormat extends NumberFormat {
         if (Double.isInfinite(radians)) {
             return Unicode.INFINITY;
         }
-        return CommonNumberFormat.formatDouble(Math.toDegrees(radians))
-               + Unicode.DEGREE;
+        return CommonNumberFormat.formatDouble(Math.toDegrees(radians)) +
+               Unicode.DEGREE;
     }
 
     public static String formatExport(final double radians) {
@@ -48,9 +48,9 @@ public class AngleFormat extends NumberFormat {
     }
 
     @Override
-    public final StringBuffer format(final double v,
-                                     final StringBuffer stringBuffer,
-                                     final FieldPosition fieldPosition) {
+    public StringBuffer format(final double v,
+                               final StringBuffer stringBuffer,
+                               final FieldPosition fieldPosition) {
         if (Precision.equals(v, 0.0)) {
             return stringBuffer.append('0');
         }
@@ -71,15 +71,15 @@ public class AngleFormat extends NumberFormat {
     }
 
     @Override
-    public final StringBuffer format(final long l,
-                                     final StringBuffer stringBuffer,
-                                     final FieldPosition fieldPosition) {
+    public StringBuffer format(final long l,
+                               final StringBuffer stringBuffer,
+                               final FieldPosition fieldPosition) {
         return fractionFormat.format(l, stringBuffer, fieldPosition);
     }
 
     @Override
-    public final Number parse(final String s,
-                              final ParsePosition parsePosition) {
+    public Number parse(final String s,
+                        final ParsePosition parsePosition) {
         return fractionFormat.parse(s, parsePosition);
     }
 }

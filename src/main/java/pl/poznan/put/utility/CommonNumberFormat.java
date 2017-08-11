@@ -12,42 +12,40 @@ import java.text.ParsePosition;
  *
  * @author tzok
  */
-public class CommonNumberFormat extends NumberFormat {
+public final class CommonNumberFormat extends NumberFormat {
+    private static final long serialVersionUID = 1131105371632338733L;
     private static final CommonNumberFormat INSTANCE = new CommonNumberFormat();
     private final NumberFormat numberFormat;
 
     private CommonNumberFormat() {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        super();
+        final DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setDecimalSeparator('.');
         numberFormat = new DecimalFormat("###.##", symbols);
-    }
-
-    public static CommonNumberFormat createInstance() {
-        return CommonNumberFormat.INSTANCE;
     }
 
     /**
      * Format the number such that at most three digits in fractional part are
      * exposed.
      */
-    public static String formatDouble(double value) {
+    public static String formatDouble(final double value) {
         return CommonNumberFormat.INSTANCE.numberFormat.format(value);
     }
 
     @Override
-    public StringBuffer format(double number, StringBuffer toAppendTo,
-                               FieldPosition pos) {
-        return numberFormat.format(number, toAppendTo, pos);
+    public StringBuffer format(final double v, final StringBuffer stringBuffer,
+                               final FieldPosition fieldPosition) {
+        return numberFormat.format(v, stringBuffer, fieldPosition);
     }
 
     @Override
-    public StringBuffer format(long number, StringBuffer toAppendTo,
-                               FieldPosition pos) {
-        return numberFormat.format(number, toAppendTo, pos);
+    public StringBuffer format(final long l, final StringBuffer stringBuffer,
+                               final FieldPosition fieldPosition) {
+        return numberFormat.format(l, stringBuffer, fieldPosition);
     }
 
     @Override
-    public Number parse(String source, ParsePosition parsePosition) {
-        return numberFormat.parse(source, parsePosition);
+    public Number parse(final String s, final ParsePosition parsePosition) {
+        return numberFormat.parse(s, parsePosition);
     }
 }
