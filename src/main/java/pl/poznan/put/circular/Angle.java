@@ -38,16 +38,16 @@ public class Angle extends Circular {
      *                                       value outside the range [0..360)
      */
     public static Angle fromHourMinuteString(final String hourMinute) {
-        String[] split = hourMinute.split("\\.");
+        final String[] split = hourMinute.split("[.]");
 
         if (split.length != 2) {
             throw new InvalidVectorFormatException(
-                    "Required format is HH.MM eg. 02.40. The input given was: "
-                    + hourMinute);
+                    "Required format is HH.MM eg. 02.40. The input given was:" +
+                    " " + hourMinute);
         }
 
         try {
-            int hours = Integer.parseInt(split[0]);
+            final int hours = Integer.parseInt(split[0]);
             int minutes = Integer.parseInt(split[1]);
             minutes += hours * 60;
             return new Angle(
@@ -55,8 +55,8 @@ public class Angle extends Circular {
                     ValueType.RADIANS);
         } catch (final NumberFormatException e) {
             throw new InvalidVectorFormatException(
-                    "Required format is HH.MM eg. 02.40. The input given was: "
-                    + hourMinute, e);
+                    "Required format is HH.MM eg. 02.40. The input given was:" +
+                    " " + hourMinute, e);
         }
     }
 
@@ -71,14 +71,14 @@ public class Angle extends Circular {
                 ValueType.RADIANS);
     }
 
-    public static double subtractByMinimum(
-            final double left, final double right) {
-        double d = Math.abs(left - right);
+    public static double subtractByMinimum(final double left,
+                                           final double right) {
+        final double d = Math.abs(left - right);
         return Math.min(d, MathUtils.TWO_PI - d);
     }
 
-    public static double subtractAsVectors(
-            final double left, final double right) {
+    public static double subtractAsVectors(final double left,
+                                           final double right) {
         double v = FastMath.sin(left) * FastMath.sin(right);
         v += FastMath.cos(left) * FastMath.cos(right);
         v = Math.min(1, v);
@@ -88,6 +88,7 @@ public class Angle extends Circular {
 
     @Override
     public String toString() {
-        return super.toString() + ' ' + Range.fromAngle(this).getDisplayName();
+        return String.format("%s, %s", super.toString(),
+                             Range.fromAngle(this).getDisplayName());
     }
 }

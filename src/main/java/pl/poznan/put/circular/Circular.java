@@ -2,6 +2,8 @@ package pl.poznan.put.circular;
 
 import org.apache.commons.math3.util.MathUtils;
 import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.utility.AngleFormat;
+import pl.poznan.put.utility.CommonNumberFormat;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -39,7 +41,7 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
         if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-        Circular circular = (Circular) o;
+        final Circular circular = (Circular) o;
         return Double.compare(circular.radians, radians) == 0;
     }
 
@@ -50,9 +52,12 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
 
     @Override
     public String toString() {
-        return !isValid() ? "invalid"
-                          : (radians + " rad\t" + Math.toDegrees(radians)
-                             + " deg");
+        if (isValid()) {
+            return String.format("%s rad, %s",
+                                 CommonNumberFormat.formatDouble(radians),
+                                 AngleFormat.formatDisplayShort(radians));
+        }
+        return "invalid";
     }
 
     public final boolean isValid() {

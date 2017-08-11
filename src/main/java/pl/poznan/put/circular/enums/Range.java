@@ -53,7 +53,8 @@ public enum Range {
             }
         }
 
-        throw new IllegalArgumentException("Invalid input value: " + angle);
+        throw new IllegalArgumentException(
+                "Invalid input value: " + degrees360);
     }
 
     /**

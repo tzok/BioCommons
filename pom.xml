@@ -59,6 +59,7 @@
             <artifactId>TzokCommons</artifactId>
             <version>1.5-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
