@@ -1,14 +1,18 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.apache.commons.collections4.CollectionUtils;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -16,14 +20,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+@Data
+@NoArgsConstructor
+@XmlRootElement
 public class PdbCompactFragment implements ResidueCollection {
-    private final String name;
-    private final List<PdbResidue> residues;
-    private final Map<PdbResidue, List<TorsionAngleValue>>
+    @XmlElement private String name;
+    @XmlElement private Map<PdbResidueIdentifier, List<TorsionAngleValue>>
             mapResidueAngleValue = new LinkedHashMap<>();
+    @XmlTransient private List<PdbResidue> residues;
 
-    public PdbCompactFragment(
-            final String name, final List<PdbResidue> residues) {
+    public PdbCompactFragment(final String name,
+                              final List<PdbResidue> residues) {
         super();
         this.name = name;
         this.residues = new ArrayList<>(residues);
@@ -37,36 +44,8 @@ public class PdbCompactFragment implements ResidueCollection {
                 values.add(value);
             }
 
-            mapResidueAngleValue.put(residue, values);
+            mapResidueAngleValue.put(residue.getResidueIdentifier(), values);
         }
-    }
-
-    public final String getName() {
-        return name;
-    }
-
-    @Override
-    public final List<PdbResidue> getResidues() {
-        return Collections.unmodifiableList(residues);
-    }
-
-    @Override
-    public final PdbResidue findResidue(
-            final String chainIdentifier, final int residueNumber,
-            final String insertionCode) {
-        return findResidue(
-                new PdbResidueIdentifier(chainIdentifier, residueNumber,
-                                         insertionCode));
-    }
-
-    @Override
-    public final PdbResidue findResidue(final PdbResidueIdentifier query) {
-        for (final PdbResidue residue : residues) {
-            if (Objects.equals(query, residue.getResidueIdentifier())) {
-                return residue;
-            }
-        }
-        throw new IllegalArgumentException("Failed to find residue: " + query);
     }
 
     public final String toPdb() {
@@ -92,22 +71,21 @@ public class PdbCompactFragment implements ResidueCollection {
 
     public final Set<TorsionAngleType> commonTorsionAngleTypes() {
         final Set<TorsionAngleType> set = new LinkedHashSet<>();
-        for (final Map.Entry<PdbResidue, List<TorsionAngleValue>> entry :
-                mapResidueAngleValue
-                .entrySet()) {
-            for (final TorsionAngleValue angleValue : entry.getValue()) {
-                set.add(angleValue.getAngleType());
-            }
-        }
+        mapResidueAngleValue.entrySet().stream().map(Map.Entry::getValue)
+                            .flatMap(Collection::stream)
+                            .map(TorsionAngleValue::getAngleType)
+                            .forEach(set::add);
         return set;
     }
 
     public final TorsionAngleValue getTorsionAngleValue(
-            final PdbResidue residue, final MasterTorsionAngleType masterType) {
+            final ChainNumberICode chainNumberICode,
+            final MasterTorsionAngleType masterType) {
         final Collection<? extends TorsionAngleType> angleTypes =
                 masterType.getAngleTypes();
+
         for (final TorsionAngleValue angleValue : mapResidueAngleValue
-                .get(residue)) {
+                .get(chainNumberICode.getResidueIdentifier())) {
             for (final TorsionAngleType angleType : angleTypes) {
                 if (Objects.equals(angleType, angleValue.getAngleType())) {
                     return angleValue;
@@ -124,18 +102,23 @@ public class PdbCompactFragment implements ResidueCollection {
         return residues.get(0).getMoleculeType();
     }
 
-    public final int size() {
-        return residues.size();
+    @Override
+    public final PdbResidue findResidue(final String chainIdentifier,
+                                        final int residueNumber,
+                                        final String insertionCode) {
+        return findResidue(
+                new PdbResidueIdentifier(chainIdentifier, residueNumber,
+                                         insertionCode));
     }
 
     @Override
-    public final int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + ((name == null) ? 0 : name.hashCode());
-        result = (prime * result) + ((residues == null) ? 0
-                                                        : residues.hashCode());
-        return result;
+    public final PdbResidue findResidue(final PdbResidueIdentifier query) {
+        for (final PdbResidue residue : residues) {
+            if (Objects.equals(query, residue.getResidueIdentifier())) {
+                return residue;
+            }
+        }
+        throw new IllegalArgumentException("Failed to find residue: " + query);
     }
 
     @Override
@@ -143,29 +126,20 @@ public class PdbCompactFragment implements ResidueCollection {
         if (this == o) {
             return true;
         }
-        if (o == null) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-        if (getClass() != o.getClass()) {
+        if (!super.equals(o)) {
             return false;
         }
         final PdbCompactFragment other = (PdbCompactFragment) o;
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!Objects.equals(name, other.name)) {
-            return false;
-        }
-        if (residues == null) {
-            if (other.residues != null) {
-                return false;
-            }
-        } else if (!CollectionUtils
-                .isEqualCollection(residues, other.residues)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(name, other.name) &&
+               Objects.equals(residues, other.residues);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(super.hashCode(), name, residues);
     }
 
     @Override
