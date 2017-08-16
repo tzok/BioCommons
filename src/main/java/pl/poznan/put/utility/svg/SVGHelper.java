@@ -50,7 +50,7 @@ public final class SVGHelper {
     }
 
     public static SVGDocument fromUri(final URI uri) throws IOException {
-        SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(
+        final SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(
                 XMLResourceDescriptor.getXMLParserClassName());
         return (SVGDocument) factory.createDocument(uri.toString());
     }
@@ -64,42 +64,40 @@ public final class SVGHelper {
     }
 
     public static LineMetrics getLineMetrics(final SVGGraphics2D svg) {
-        FontRenderContext renderContext = svg.getFontRenderContext();
-        Font font = svg.getFont();
+        final FontRenderContext renderContext = svg.getFontRenderContext();
+        final Font font = svg.getFont();
         return font.getLineMetrics(
                 "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM",
                 renderContext);
     }
 
-    public static NamespaceContext getSVGNamespaceContext() {
+    public static NamespaceContext svgNamespaceContext() {
         return SVGHelper.SVG_NAMESPACE;
     }
 
-    public static byte[] export(
-            final SVGDocument svgDocument, final Format format)
-            throws IOException {
-        return SVGHelper.export(svgDocument, format,
-                                Collections.<TranscodingHints.Key,
-                                        Object>emptyMap());
+    public static byte[] export(final SVGDocument svgDocument,
+                                final Format format) throws IOException {
+        return SVGHelper.export(svgDocument, format, Collections.emptyMap());
     }
 
-    public static byte[] export(
-            final SVGDocument svgDocument, final Format format,
-            final Map<TranscodingHints.Key, Object> transcodingHints)
+    public static byte[] export(final SVGDocument svgDocument,
+                                final Format format,
+                                final Map<TranscodingHints.Key, Object>
+                                        transcodingHints)
             throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        Writer writer =
+        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        final Writer writer =
                 new OutputStreamWriter(stream, Charset.defaultCharset());
 
-        Transcoder transcoder = format.getTranscoder();
+        final Transcoder transcoder = format.getTranscoder();
         for (final Map.Entry<TranscodingHints.Key, Object> entry :
                 transcodingHints
                 .entrySet()) {
             transcoder.addTranscodingHint(entry.getKey(), entry.getValue());
         }
 
-        TranscoderInput input = new TranscoderInput(svgDocument);
-        TranscoderOutput output =
+        final TranscoderInput input = new TranscoderInput(svgDocument);
+        final TranscoderOutput output =
                 (format == Format.SVG) ? new TranscoderOutput(writer)
                                        : new TranscoderOutput(stream);
 
@@ -117,37 +115,38 @@ public final class SVGHelper {
             return SVGHelper.emptyDocument();
         }
 
-        SVGDocument mergedSvg = svgs.get(0);
-        SVGSVGElement mergedRoot = mergedSvg.getRootElement();
-        double[] widths = new double[svgs.size()];
-        double[] heights = new double[svgs.size()];
+        final SVGDocument mergedSvg = svgs.get(0);
+        final SVGSVGElement mergedRoot = mergedSvg.getRootElement();
+        final double[] widths = new double[svgs.size()];
+        final double[] heights = new double[svgs.size()];
         double currentWidth = 0;
 
         for (int i = 0; i < svgs.size(); i++) {
-            SVGDocument svg = svgs.get(i);
+            final SVGDocument svg = svgs.get(i);
 
-            Rectangle2D box = SVGHelper.calculateBoundingBox(svg);
+            final Rectangle2D box = SVGHelper.calculateBoundingBox(svg);
             widths[i] = box.getWidth() + box.getX();
             heights[i] = box.getHeight() + box.getY();
 
-            SVGSVGElement rootElement = svg.getRootElement();
+            final SVGSVGElement rootElement = svg.getRootElement();
             rootElement.setAttribute("x", Double.toString(currentWidth));
 
             currentWidth += widths[i];
 
             if (i > 0) {
-                Node importedNode =
+                final Node importedNode =
                         mergedSvg.importNode(svg.getDocumentElement(), true);
                 mergedRoot.appendChild(importedNode);
             }
         }
 
-        double mergedWidth = StatUtils.sum(widths);
-        double mergedHeight = StatUtils.max(heights);
+        final double mergedWidth = StatUtils.sum(widths);
+        final double mergedHeight = StatUtils.max(heights);
         mergedRoot.setAttribute("width", Double.toString(mergedWidth));
         mergedRoot.setAttribute("height", Double.toString(mergedHeight));
         mergedRoot.setAttribute("viewBox",
-                                "0 0 " + mergedWidth + ' ' + mergedHeight);
+                                String.format("0 0 %s %s", mergedWidth,
+                                              mergedHeight));
 
         return mergedSvg;
     }
@@ -159,15 +158,15 @@ public final class SVGHelper {
     }
 
     public static Rectangle2D calculateBoundingBox(final Document doc) {
-        GVTBuilder builder = new GVTBuilder();
-        BridgeContext ctx = new BridgeContext(new UserAgentAdapter());
-        GraphicsNode gvtRoot = builder.build(ctx, doc);
+        final GVTBuilder builder = new GVTBuilder();
+        final BridgeContext ctx = new BridgeContext(new UserAgentAdapter());
+        final GraphicsNode gvtRoot = builder.build(ctx, doc);
         return gvtRoot.getSensitiveBounds();
     }
 
     private static class SVGNamespace implements NamespaceContext {
         @Override
-        public String getNamespaceURI(final String s) {
+        public final String getNamespaceURI(final String s) {
             if (s == null) {
                 throw new IllegalArgumentException("Null prefix for namespace");
             }
@@ -178,13 +177,13 @@ public final class SVGHelper {
         }
 
         @Override
-        public String getPrefix(final String s) {
-            throw new UnsupportedOperationException();
+        public final String getPrefix(final String s) {
+            throw new UnsupportedOperationException("N/A");
         }
 
         @Override
-        public Iterator getPrefixes(final String s) {
-            throw new UnsupportedOperationException();
+        public final Iterator getPrefixes(final String s) {
+            throw new UnsupportedOperationException("N/A");
         }
     }
 }
