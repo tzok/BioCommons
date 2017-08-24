@@ -5,12 +5,19 @@ import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.utility.AngleFormat;
 import pl.poznan.put.utility.CommonNumberFormat;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public abstract class Circular implements Comparable<Circular>, Serializable {
     private static final long serialVersionUID = -4674646476160594025L;
-    private final double radians;
+
+    @XmlElement private final double radians;
 
     protected Circular(final double value, final ValueType valueType) {
         super();

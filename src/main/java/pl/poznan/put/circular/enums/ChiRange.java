@@ -7,7 +7,8 @@ import pl.poznan.put.circular.Angle;
  */
 public enum ChiRange {
     SYN("syn", -75, 105),
-    ANTI("anti", 105, -75);
+    ANTI("anti", 105, -75),
+    INVALID("invalid", Double.NaN, Double.NaN);
 
     private final String displayName;
     private final Angle begin;
@@ -32,11 +33,15 @@ public enum ChiRange {
     }
 
     public static ChiRange fromAngle(final Angle angle) {
-        double degrees360 = angle.getDegrees360();
+        if (!angle.isValid()) {
+            return ChiRange.INVALID;
+        }
+
+        final double degrees360 = angle.getDegrees360();
 
         for (final ChiRange range : ChiRange.values()) {
-            double begin360 = range.begin.getDegrees360();
-            double end360 = range.end.getDegrees360();
+            final double begin360 = range.begin.getDegrees360();
+            final double end360 = range.end.getDegrees360();
 
             if (begin360 < end360) {
                 if ((degrees360 >= begin360) && (degrees360 < end360)) {

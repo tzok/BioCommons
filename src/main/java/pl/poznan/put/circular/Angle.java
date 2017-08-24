@@ -7,13 +7,18 @@ import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A class of measurements where one can distinguish a direction (i.e. [0..360)
  * degrees)
  *
  * @author tzok
  */
+@XmlRootElement
 public class Angle extends Circular {
+    private static final long serialVersionUID = 7888250116422842913L;
+
     private static final Angle INVALID =
             new Angle(Double.NaN, ValueType.RADIANS);
     private static final int MINUTES_IN_DAY = 24 * 60;
@@ -88,7 +93,10 @@ public class Angle extends Circular {
 
     @Override
     public String toString() {
-        return String.format("%s, %s", super.toString(),
-                             Range.fromAngle(this).getDisplayName());
+        if (isValid()) {
+            return String.format("%s, %s", super.toString(),
+                                 Range.fromAngle(this).getDisplayName());
+        }
+        return "invalid";
     }
 }

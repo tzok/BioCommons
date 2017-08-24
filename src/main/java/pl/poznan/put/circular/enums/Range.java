@@ -11,7 +11,8 @@ public enum Range {
     SYNCLINAL_GAUCHE_PLUS("+sc", 30, 90),
     SYNCLINAL_GAUCHE_MINUS("-sc", -90, -30),
     ANTICLINAL_PLUS("+ac", 90, 150),
-    ANTICLINAL_MINUS("-ac", -150, -90);
+    ANTICLINAL_MINUS("-ac", -150, -90),
+    INVALID("invalid", Double.NaN, Double.NaN);
 
     private final String displayName;
     private final Angle begin;
@@ -36,6 +37,10 @@ public enum Range {
     }
 
     public static Range fromAngle(final Angle angle) {
+        if (!angle.isValid()) {
+            return Range.INVALID;
+        }
+
         final double degrees360 = angle.getDegrees360();
 
         for (final Range range : Range.values()) {
