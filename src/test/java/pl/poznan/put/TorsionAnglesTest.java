@@ -74,7 +74,7 @@ public class TorsionAnglesTest {
         final Beta beta = Beta.getInstance();
         final TorsionAngleValue angleValue = beta.calculate(a1, a2, a3, a4);
 
-        assertTrue(angleValue.isValid());
+        assertTrue(angleValue.getValue().isValid());
         assertEquals(TorsionAnglesTest.RADIANS,
                      angleValue.getValue().getRadians(),
                      TorsionAnglesTest.EPSILON_E6);

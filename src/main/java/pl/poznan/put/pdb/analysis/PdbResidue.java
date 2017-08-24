@@ -151,7 +151,7 @@ public class PdbResidue
         return new PdbResidue(residueIdentifier, residueName, atoms, false);
     }
 
-    public final Collection<PdbAtomLine> getAtoms() {
+    public final List<PdbAtomLine> getAtoms() {
         return Collections.unmodifiableList(atoms);
     }
 

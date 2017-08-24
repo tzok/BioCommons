@@ -19,9 +19,9 @@ public class AverageTorsionAngleType extends TorsionAngleType
     private final String exportName;
     private final List<MasterTorsionAngleType> consideredAngles;
 
-    public AverageTorsionAngleType(
-            final MoleculeType moleculeType,
-            final MasterTorsionAngleType... masterTypes) {
+    public AverageTorsionAngleType(final MoleculeType moleculeType,
+                                   final MasterTorsionAngleType...
+                                           masterTypes) {
         super(moleculeType);
         consideredAngles = Arrays.asList(masterTypes);
         displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
@@ -67,19 +67,20 @@ public class AverageTorsionAngleType extends TorsionAngleType
         return builder.toString();
     }
 
-    public AverageTorsionAngleType(
-            final MoleculeType moleculeType,
-            final List<MasterTorsionAngleType> consideredAngles) {
+    public AverageTorsionAngleType(final MoleculeType moleculeType,
+                                   final List<MasterTorsionAngleType>
+                                           consideredAngles) {
         super(moleculeType);
         this.consideredAngles = new ArrayList<>(consideredAngles);
         displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
         exportName = AverageTorsionAngleType.toExportName(consideredAngles);
     }
 
-    private AverageTorsionAngleType(
-            final MoleculeType moleculeType,
-            final List<MasterTorsionAngleType> consideredAngles,
-            final String displayName, final String exportName) {
+    private AverageTorsionAngleType(final MoleculeType moleculeType,
+                                    final List<MasterTorsionAngleType>
+                                            consideredAngles,
+                                    final String displayName,
+                                    final String exportName) {
         super(moleculeType);
         this.consideredAngles = consideredAngles;
         this.displayName = displayName;
@@ -111,8 +112,8 @@ public class AverageTorsionAngleType extends TorsionAngleType
     }
 
     @Override
-    public TorsionAngleValue calculate(
-            final List<PdbResidue> residues, final int currentIndex) {
+    public TorsionAngleValue calculate(final List<PdbResidue> residues,
+                                       final int currentIndex) {
         final PdbResidue residue = residues.get(currentIndex);
         final List<Angle> angles = new ArrayList<>();
 
@@ -138,7 +139,7 @@ public class AverageTorsionAngleType extends TorsionAngleType
             for (final TorsionAngleValue angleValue : values) {
                 if (masterType.getAngleTypes()
                               .contains(angleValue.getAngleType())) {
-                    if (angleValue.isValid()) {
+                    if (angleValue.getValue().isValid()) {
                         angles.add(angleValue.getValue());
                     }
                     break;

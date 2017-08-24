@@ -1,9 +1,11 @@
 package pl.poznan.put.structure.secondary.formats;
 
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 public class Strand implements Serializable {
     private static final long serialVersionUID = 8267967642039631099L;
@@ -128,6 +130,17 @@ public class Strand implements Serializable {
     }
 
     public final String getDescription() {
+        if (parent instanceof DotBracketFromPdb) {
+            final DotBracketFromPdb fromPdb = (DotBracketFromPdb) parent;
+            final PdbResidueIdentifier fromIdentifier =
+                    fromPdb.getResidueIdentifier(fromPdb.getSymbol(from));
+            final PdbResidueIdentifier toIdentifier =
+                    fromPdb.getResidueIdentifier(fromPdb.getSymbol(to - 1));
+
+            return String.format("%s %s %s %s %s", fromIdentifier, toIdentifier,
+                                 getSequence(), getStructure(), getRSequence());
+        }
+
         return String.format("%d %d %s %s %s", from + 1, to, getSequence(),
                              getStructure(), getRSequence());
     }
@@ -138,5 +151,27 @@ public class Strand implements Serializable {
             cs[i] = ((cs[i] == 'A') || (cs[i] == 'G')) ? 'R' : 'Y';
         }
         return new String(cs);
+    }
+
+    public DotBracket getParent() {
+        return parent;
+    }
+
+    @Override
+    public final boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if ((o == null) || (getClass() != o.getClass())) {
+            return false;
+        }
+        final Strand strand = (Strand) o;
+        return (from == strand.from) && (to == strand.to) &&
+               Objects.equals(parent, strand.parent);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(parent, from, to);
     }
 }

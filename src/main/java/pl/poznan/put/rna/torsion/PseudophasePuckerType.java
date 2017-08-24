@@ -5,16 +5,12 @@ import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-public final class PseudophasePuckerType extends TorsionAngleType
-        implements MasterTorsionAngleType {
+public final class PseudophasePuckerType extends TorsionAngleType {
     private static final PseudophasePuckerType INSTANCE =
             new PseudophasePuckerType();
 
@@ -42,8 +38,8 @@ public final class PseudophasePuckerType extends TorsionAngleType
     }
 
     @Override
-    public TorsionAngleValue calculate(
-            final List<PdbResidue> residues, final int currentIndex) {
+    public TorsionAngleValue calculate(final List<PdbResidue> residues,
+                                       final int currentIndex) {
         final TorsionAngleValue nu0 =
                 Nu0.getInstance().calculate(residues, currentIndex);
         final TorsionAngleValue nu1 =
@@ -55,22 +51,19 @@ public final class PseudophasePuckerType extends TorsionAngleType
         final TorsionAngleValue nu4 =
                 Nu4.getInstance().calculate(residues, currentIndex);
 
-        if (!nu0.isValid() || !nu1.isValid() || !nu2.isValid() || !nu3.isValid()
-            || !nu4.isValid()) {
+        if (!nu0.getValue().isValid() || !nu1.getValue().isValid() ||
+            !nu2.getValue().isValid() || !nu3.getValue().isValid() ||
+            !nu4.getValue().isValid()) {
             return TorsionAngleValue.invalidInstance(this);
         }
 
-        final double scale = 2 * (FastMath.sin(Math.toRadians(36.0)) + FastMath
-                .sin(Math.toRadians(72.0)));
-        final double y = (nu1.getValue().getRadians() + nu4.getValue().getRadians())
-                   - nu0.getValue().getRadians() - nu3.getValue().getRadians();
+        final double scale = 2 * (FastMath.sin(Math.toRadians(36.0)) +
+                                  FastMath.sin(Math.toRadians(72.0)));
+        final double y =
+                (nu1.getValue().getRadians() + nu4.getValue().getRadians()) -
+                nu0.getValue().getRadians() - nu3.getValue().getRadians();
         final double x = nu2.getValue().getRadians() * scale;
         return new TorsionAngleValue(this, new Angle(FastMath.atan2(y, x),
                                                      ValueType.RADIANS));
-    }
-
-    @Override
-    public Collection<? extends TorsionAngleType> getAngleTypes() {
-        return Collections.singleton(this);
     }
 }

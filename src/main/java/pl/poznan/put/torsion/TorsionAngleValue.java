@@ -1,57 +1,54 @@
 package pl.poznan.put.torsion;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.interfaces.DisplayableExportable;
 import pl.poznan.put.utility.AngleFormat;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@Data
+@NoArgsConstructor
+@XmlRootElement
 public class TorsionAngleValue implements DisplayableExportable {
-    private final TorsionAngleType angleType;
-    private final Angle value;
-
-    public TorsionAngleValue(
-            final TorsionAngleType angleType, final Angle value) {
-        super();
-        this.angleType = angleType;
-        this.value = value;
-    }
-
     public static TorsionAngleValue invalidInstance(
             final TorsionAngleType type) {
         return new TorsionAngleValue(type, Angle.invalidInstance());
     }
 
-    public TorsionAngleType getAngleType() {
-        return angleType;
-    }
+    @XmlElement private TorsionAngleType angleType;
+    @XmlElement private Angle value;
 
-    public Angle getValue() {
-        return value;
+    public TorsionAngleValue(final TorsionAngleType angleType,
+                             final Angle value) {
+        super();
+        this.angleType = angleType;
+        this.value = value;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return getLongDisplayName();
     }
 
     @Override
-    public String getLongDisplayName() {
-        return angleType.getLongDisplayName() + ' ' + AngleFormat
-                .formatDisplayLong(value.getRadians());
+    public final String getLongDisplayName() {
+        return String.format("%s %s", angleType.getLongDisplayName(),
+                             AngleFormat.formatDisplayLong(value.getRadians()));
     }
 
     @Override
-    public String getShortDisplayName() {
-        return angleType.getShortDisplayName() + ' ' + AngleFormat
-                .formatDisplayShort(value.getRadians());
+    public final String getShortDisplayName() {
+        return String.format("%s %s", angleType.getShortDisplayName(),
+                             AngleFormat
+                                     .formatDisplayShort(value.getRadians()));
     }
 
     @Override
-    public String getExportName() {
-        return angleType.getExportName() + ' ' + AngleFormat
-                .formatExport(value.getRadians());
-    }
-
-    public boolean isValid() {
-        return value.isValid();
+    public final String getExportName() {
+        return String.format("%s %s", angleType.getExportName(),
+                             AngleFormat.formatExport(value.getRadians()));
     }
 }

@@ -1,11 +1,19 @@
 package pl.poznan.put.torsion;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import pl.poznan.put.interfaces.DisplayableExportable;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
+@Data
+@NoArgsConstructor
+@XmlRootElement
 public abstract class TorsionAngleType implements DisplayableExportable {
     private static final TorsionAngleType INVALID_INSTANCE =
             new TorsionAngleType(MoleculeType.UNKNOWN) {
@@ -31,7 +39,8 @@ public abstract class TorsionAngleType implements DisplayableExportable {
                     return TorsionAngleValue.invalidInstance(this);
                 }
             };
-    private final MoleculeType moleculeType;
+
+    @XmlElement private MoleculeType moleculeType;
 
     protected TorsionAngleType(final MoleculeType moleculeType) {
         super();
@@ -42,34 +51,26 @@ public abstract class TorsionAngleType implements DisplayableExportable {
         return TorsionAngleType.INVALID_INSTANCE;
     }
 
-    public MoleculeType getMoleculeType() {
-        return moleculeType;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + ((moleculeType == null) ? 0 : moleculeType
-                .hashCode());
-        return result;
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null) {
+        if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-        if (getClass() != o.getClass()) {
+        if (!super.equals(o)) {
             return false;
         }
         final TorsionAngleType other = (TorsionAngleType) o;
         return moleculeType == other.moleculeType;
     }
 
-    public abstract TorsionAngleValue calculate(
-            List<PdbResidue> residues, int currentIndex);
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), moleculeType);
+    }
+
+    public abstract TorsionAngleValue calculate(List<PdbResidue> residues,
+                                                int currentIndex);
 }

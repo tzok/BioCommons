@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.atom.AtomName;
 
+import javax.vecmath.Point3d;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
@@ -318,6 +319,15 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
                                temperatureFactor, elementSymbol, charge);
     }
 
+    public final PdbAtomLine replaceCoordinates(final double xNew,
+                                                final double yNew,
+                                                final double zNew) {
+        return new PdbAtomLine(serialNumber, atomName, alternateLocation,
+                               residueName, chainIdentifier, residueNumber,
+                               insertionCode, xNew, yNew, zNew, occupancy,
+                               temperatureFactor, elementSymbol, charge);
+    }
+
     public final AtomName detectAtomName() {
         return AtomName.fromString(atomName);
     }
@@ -396,6 +406,10 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
             builder.append('?');
         }
         return builder.toString();
+    }
+
+    public final Point3d toPoint3d() {
+        return new Point3d(x, y, z);
     }
 
     @Override

@@ -16,11 +16,11 @@ public class CombinedStrand {
         this.strands = new ArrayList<>(strands);
     }
 
-    public Iterable<Strand> getStrands() {
+    public final Iterable<Strand> getStrands() {
         return Collections.unmodifiableList(strands);
     }
 
-    public int getLength() {
+    public final int getLength() {
         int length = 0;
         for (final Strand strand : strands) {
             length += strand.getLength();
@@ -28,7 +28,7 @@ public class CombinedStrand {
         return length;
     }
 
-    public List<DotBracketSymbol> getSymbols() {
+    public final List<DotBracketSymbol> getSymbols() {
         final List<DotBracketSymbol> result = new ArrayList<>();
         for (final Strand strand : strands) {
             result.addAll(strand.getSymbols());
@@ -36,7 +36,7 @@ public class CombinedStrand {
         return result;
     }
 
-    public Iterable<TerminalMissing> getTerminalMissing() {
+    public final Iterable<TerminalMissing> getTerminalMissing() {
         final Collection<TerminalMissing> result = new ArrayList<>();
         for (final Strand strand : strands) {
             result.add(strand.getMissingBegin());
@@ -45,7 +45,7 @@ public class CombinedStrand {
         return result;
     }
 
-    public List<DotBracketSymbol> getInternalMissing() {
+    public final List<DotBracketSymbol> getInternalMissing() {
         final List<DotBracketSymbol> result = new ArrayList<>();
 
         for (final Strand strand : strands) {
@@ -73,7 +73,7 @@ public class CombinedStrand {
         return result;
     }
 
-    public int getPseudoknotOrder() {
+    public final int getPseudoknotOrder() {
         int order = 0;
         for (final Strand strand : strands) {
             order = Math.max(order, strand.getPseudoknotOrder());
@@ -81,7 +81,7 @@ public class CombinedStrand {
         return order;
     }
 
-    public boolean contains(final DotBracketSymbol symbol) {
+    public final boolean contains(final DotBracketSymbol symbol) {
         for (final Strand strand : strands) {
             if (strand.contains(symbol)) {
                 return true;
@@ -91,18 +91,18 @@ public class CombinedStrand {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         final StringBuilder builder = new StringBuilder();
 
         for (final Strand strand : strands) {
             builder.append(strand.getName());
         }
 
-        return ">strand_" + builder + '\n' + getSequence() + '\n'
-               + getStructure();
+        return ">strand_" + builder + '\n' + getSequence() + '\n' +
+               getStructure();
     }
 
-    public String getSequence() {
+    public final String getSequence() {
         final StringBuilder builder = new StringBuilder();
         for (final Strand strand : strands) {
             builder.append(strand.getSequence());
@@ -110,7 +110,7 @@ public class CombinedStrand {
         return builder.toString();
     }
 
-    public String getStructure() {
+    public final String getStructure() {
         final StringBuilder builder = new StringBuilder();
         for (final Strand strand : strands) {
             builder.append(strand.getStructure());
@@ -124,7 +124,7 @@ public class CombinedStrand {
      *
      * @return True if the strand contains only dots or minuses.
      */
-    public boolean isInvalid() {
+    public final boolean isInvalid() {
         for (final Strand strand : strands) {
             for (final char c : strand.getStructure().toCharArray()) {
                 if ((c != '.') && (c != '-')) {

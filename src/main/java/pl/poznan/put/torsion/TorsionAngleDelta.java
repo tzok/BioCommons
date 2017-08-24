@@ -37,11 +37,14 @@ public class TorsionAngleDelta {
         Angle delta = Angle.invalidInstance();
         RangeDifference rangeDifference = RangeDifference.INVALID;
 
-        if (!targetValue.isValid() && !modelValue.isValid()) {
+        if (!targetValue.getValue().isValid() &&
+            !modelValue.getValue().isValid()) {
             state = State.BOTH_INVALID;
-        } else if (!targetValue.isValid() && modelValue.isValid()) {
+        } else if (!targetValue.getValue().isValid() &&
+                   modelValue.getValue().isValid()) {
             state = State.TARGET_INVALID;
-        } else if (targetValue.isValid() && !modelValue.isValid()) {
+        } else if (targetValue.getValue().isValid() &&
+                   !modelValue.getValue().isValid()) {
             state = State.MODEL_INVALID;
         } else {
             final Angle target = targetValue.getValue();
