@@ -15,10 +15,11 @@ public abstract class AbstractDrawable implements Drawable {
 
     @Override
     public final SVGDocument finalizeDrawing() {
-        SVGSVGElement rootElement = svgDocument.getRootElement();
+        final SVGSVGElement rootElement = svgDocument.getRootElement();
         svgGraphics.getRoot(rootElement);
-        Rectangle2D box = SVGHelper.calculateBoundingBox(svgDocument);
-        String viewBox =
+
+        final Rectangle2D box = SVGHelper.calculateBoundingBox(svgDocument);
+        final String viewBox =
                 String.format(Locale.US, "%f %f %f %f", box.getX(), box.getY(),
                               box.getWidth(), box.getHeight());
         rootElement.setAttributeNS(null, SVGConstants.SVG_VIEW_BOX_ATTRIBUTE,
