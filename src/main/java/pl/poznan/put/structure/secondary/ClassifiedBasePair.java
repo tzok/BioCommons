@@ -23,10 +23,12 @@ public class ClassifiedBasePair
     private HelixOrigin helixOrigin;
     private boolean isRepresented;
 
-    public ClassifiedBasePair(
-            final BasePair basePair, final RNAInteractionType interactionType,
-            final Saenger saenger, final LeontisWesthof leontisWesthof,
-            final BPh bph, final BR br, final HelixOrigin helixOrigin) {
+    public ClassifiedBasePair(final BasePair basePair,
+                              final RNAInteractionType interactionType,
+                              final Saenger saenger,
+                              final LeontisWesthof leontisWesthof,
+                              final BPh bph, final BR br,
+                              final HelixOrigin helixOrigin) {
         super();
         this.basePair = basePair;
         this.interactionType = interactionType;
@@ -37,77 +39,82 @@ public class ClassifiedBasePair
         this.helixOrigin = helixOrigin;
     }
 
-    public BasePair getBasePair() {
+    public final BasePair getBasePair() {
         return basePair;
     }
 
-    public RNAInteractionType getInteractionType() {
+    public final RNAInteractionType getInteractionType() {
         return interactionType;
     }
 
-    public Saenger getSaenger() {
+    public final Saenger getSaenger() {
         return saenger;
     }
 
-    public LeontisWesthof getLeontisWesthof() {
+    public final LeontisWesthof getLeontisWesthof() {
         return leontisWesthof;
     }
 
-    public BPh getBph() {
+    public final BPh getBph() {
         return bph;
     }
 
-    public BR getBr() {
+    public final BR getBr() {
         return br;
     }
 
-    public HelixOrigin getHelixOrigin() {
+    public final HelixOrigin getHelixOrigin() {
         return helixOrigin;
     }
 
-    public void setHelixOrigin(final HelixOrigin helixOrigin) {
+    public final void setHelixOrigin(final HelixOrigin helixOrigin) {
         this.helixOrigin = helixOrigin;
     }
 
-    public boolean isRepresented() {
+    public final boolean isRepresented() {
         return isRepresented;
     }
 
-    public void setRepresented(final boolean isRepresented) {
+    public final void setRepresented(final boolean isRepresented) {
         this.isRepresented = isRepresented;
     }
 
     // required for Spring to get "isRepresented" field
-    public boolean getIsRepresented() {
+    public final boolean getIsRepresented() {
         return isRepresented;
     }
 
-    public boolean canUseInSecondaryStructure() {
+    public final boolean canUseInSecondaryStructure() {
         return interactionType.isPairing();
     }
 
-    public boolean isCanonical() {
+    public final boolean isCanonical() {
         return Saenger.isCanonical(saenger);
     }
 
-    public boolean isNonCanonical() {
-        return !Saenger.isCanonical(saenger) && (
-                Objects.equals(interactionType, RNAInteractionType.BASE_BASE)
-                || Objects.equals(interactionType,
-                                  RNAInteractionType.BASE_BASE_1H));
+    public final boolean isNonCanonical() {
+        return !Saenger.isCanonical(saenger) &&
+               (Objects.equals(interactionType, RNAInteractionType.BASE_BASE) ||
+                Objects.equals(interactionType,
+                               RNAInteractionType.BASE_BASE_1H));
     }
 
-    public boolean isStacking() {
+    public final boolean isStacking() {
         return Objects.equals(interactionType, RNAInteractionType.STACKING);
     }
 
-    public boolean isBasePhosphate() {
-        return Objects
-                .equals(interactionType, RNAInteractionType.BASE_PHOSPHATE);
+    public final boolean isBasePhosphate() {
+        return Objects.equals(interactionType,
+                              RNAInteractionType.BASE_PHOSPHATE) ||
+               Objects.equals(interactionType.invert(),
+                              RNAInteractionType.BASE_PHOSPHATE);
     }
 
-    public boolean isBaseRibose() {
-        return Objects.equals(interactionType, RNAInteractionType.BASE_RIBOSE);
+    public final boolean isBaseRibose() {
+        return Objects.equals(interactionType,
+                              RNAInteractionType.BASE_RIBOSE) ||
+               Objects.equals(interactionType.invert(),
+                              RNAInteractionType.BASE_RIBOSE);
     }
 
     @Override
@@ -118,15 +125,12 @@ public class ClassifiedBasePair
         if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-        final ClassifiedBasePair basePair1 = (ClassifiedBasePair) o;
-        return Objects.equals(basePair, basePair1.basePair) && Objects
-                .equals(interactionType, basePair1.interactionType) && (saenger
-                                                                        ==
-                                                                        basePair1.saenger)
-               && (leontisWesthof == basePair1.leontisWesthof) && (bph
-                                                                   ==
-                                                                   basePair1.bph)
-               && (br == basePair1.br);
+        final ClassifiedBasePair other = (ClassifiedBasePair) o;
+        return Objects.equals(basePair, other.basePair) &&
+               Objects.equals(interactionType, other.interactionType) &&
+               (saenger == other.saenger) &&
+               (leontisWesthof == other.leontisWesthof) && (bph == other.bph) &&
+               (br == other.br);
     }
 
     @Override
@@ -138,14 +142,14 @@ public class ClassifiedBasePair
 
     @Override
     public String toString() {
-        return "ClassifiedBasePair [basePair=" + basePair + ", interactionType="
-               + interactionType + ", saenger=" + saenger + ", leontisWesthof="
-               + leontisWesthof + ", helixOrigin=" + helixOrigin
-               + ", isRepresented=" + isRepresented + ']';
+        return "ClassifiedBasePair [basePair=" + basePair +
+               ", interactionType=" + interactionType + ", saenger=" + saenger +
+               ", leontisWesthof=" + leontisWesthof + ", helixOrigin=" +
+               helixOrigin + ", isRepresented=" + isRepresented + ']';
     }
 
     @Override
-    public int compareTo(@Nonnull final ClassifiedBasePair t) {
+    public final int compareTo(@Nonnull final ClassifiedBasePair t) {
         if (equals(t)) {
             return 0;
         }
@@ -159,9 +163,9 @@ public class ClassifiedBasePair
         return basePair.compareTo(t.basePair);
     }
 
-    public String generateComment() {
-        if ((saenger != Saenger.UNKNOWN) && (leontisWesthof
-                                             != LeontisWesthof.UNKNOWN)) {
+    public final String generateComment() {
+        if ((saenger != Saenger.UNKNOWN) &&
+            (leontisWesthof != LeontisWesthof.UNKNOWN)) {
             return "S:" + saenger + ", LW:" + leontisWesthof;
         }
         if (saenger != Saenger.UNKNOWN) {
@@ -173,7 +177,7 @@ public class ClassifiedBasePair
         return "unknown classification";
     }
 
-    public ClassifiedBasePair invert() {
+    public final ClassifiedBasePair invert() {
         return new ClassifiedBasePair(basePair.invert(),
                                       interactionType.invert(), saenger,
                                       leontisWesthof.invert(), bph, br,
