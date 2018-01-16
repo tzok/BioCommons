@@ -1,4 +1,2 @@
-/**
- * Contains classes providing various useful functions.
- */
+/** Contains classes providing various useful functions. */
 package pl.poznan.put.utility;

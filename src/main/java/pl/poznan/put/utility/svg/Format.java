@@ -8,35 +8,35 @@ import org.apache.fop.render.ps.EPSTranscoder;
 import org.apache.fop.svg.PDFTranscoder;
 
 public enum Format {
-    SVG("svg"),
-    EPS("eps"),
-    PDF("pdf"),
-    PNG("png"),
-    TIFF("tiff");
+  SVG("svg"),
+  EPS("eps"),
+  PDF("pdf"),
+  PNG("png"),
+  TIFF("tiff");
 
-    private final String extension;
+  private final String extension;
 
-    Format(final String extension) {
-        this.extension = extension;
+  Format(final String extension) {
+    this.extension = extension;
+  }
+
+  public Transcoder getTranscoder() {
+    switch (this) {
+      case EPS:
+        return new EPSTranscoder();
+      case PDF:
+        return new PDFTranscoder();
+      case PNG:
+        return new PNGTranscoder();
+      case TIFF:
+        return new TIFFTranscoder();
+      case SVG:
+      default:
+        return new SVGTranscoder();
     }
+  }
 
-    public Transcoder getTranscoder() {
-        switch (this) {
-            case EPS:
-                return new EPSTranscoder();
-            case PDF:
-                return new PDFTranscoder();
-            case PNG:
-                return new PNGTranscoder();
-            case TIFF:
-                return new TIFFTranscoder();
-            case SVG:
-            default:
-                return new SVGTranscoder();
-        }
-    }
-
-    public String getExtension() {
-        return extension;
-    }
+  public String getExtension() {
+    return extension;
+  }
 }

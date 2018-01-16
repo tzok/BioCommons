@@ -1,8 +1,8 @@
 package pl.poznan.put.types;
 
 public enum ExportFormat {
-    TXT,
-    CSV,
-    PDB,
-    SVG
+  TXT,
+  CSV,
+  PDB,
+  SVG
 }

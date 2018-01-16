@@ -3,7 +3,7 @@ package pl.poznan.put.interfaces;
 import org.w3c.dom.svg.SVGDocument;
 
 public interface Visualizable {
-    SVGDocument visualize();
+  SVGDocument visualize();
 
-    void visualize3D();
+  void visualize3D();
 }

@@ -1,4 +1,2 @@
-/**
- * Contains classes useful for SVG processing.
- */
+/** Contains classes useful for SVG processing. */
 package pl.poznan.put.utility.svg;
