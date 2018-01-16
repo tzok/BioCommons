@@ -7,15 +7,17 @@ import pl.poznan.put.torsion.PseudoTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
 public final class Eta extends PseudoTorsionAngleType {
-    private static final Eta INSTANCE = new Eta();
+  private static final Eta INSTANCE = new Eta();
 
-    private Eta() {
-        super(MoleculeType.RNA, Unicode.ETA,
-              new Quadruplet<>(AtomName.C4p, AtomName.P, AtomName.C4p,
-                               AtomName.P), new Quadruplet<>(-1, 0, 0, 1));
-    }
+  private Eta() {
+    super(
+        MoleculeType.RNA,
+        Unicode.ETA,
+        new Quadruplet<>(AtomName.C4p, AtomName.P, AtomName.C4p, AtomName.P),
+        new Quadruplet<>(-1, 0, 0, 1));
+  }
 
-    public static Eta getInstance() {
-        return Eta.INSTANCE;
-    }
+  public static Eta getInstance() {
+    return Eta.INSTANCE;
+  }
 }

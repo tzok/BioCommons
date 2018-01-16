@@ -6,18 +6,18 @@ import pl.poznan.put.protein.ProteinSidechain;
 import java.util.Arrays;
 
 public final class Glycine extends ProteinSidechain {
-    private static final Glycine INSTANCE = new Glycine();
+  private static final Glycine INSTANCE = new Glycine();
 
-    private Glycine() {
-        super(Arrays.asList(AtomName.HA1, AtomName.HA2), "Glycine", 'G', "GLY");
-    }
+  private Glycine() {
+    super(Arrays.asList(AtomName.HA1, AtomName.HA2), "Glycine", 'G', "GLY");
+  }
 
-    public static Glycine getInstance() {
-        return Glycine.INSTANCE;
-    }
+  public static Glycine getInstance() {
+    return Glycine.INSTANCE;
+  }
 
-    @Override
-    protected void fillChiAtomsMap() {
-        // empty method, Glycine does not have CHI angles
-    }
+  @Override
+  protected void fillChiAtomsMap() {
+    // empty method, Glycine does not have CHI angles
+  }
 }

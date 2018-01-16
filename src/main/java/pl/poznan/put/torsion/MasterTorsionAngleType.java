@@ -9,14 +9,14 @@ import pl.poznan.put.torsion.range.Range;
 import java.util.Collection;
 
 /**
- * This is to gather under one interface every "master" torsion angle type. A
- * {@link RNATorsionAngleType#CHI} is a master torsion angle type, and {@link
- * Chi#getPurineInstance()} is a non-master instance.
+ * This is to gather under one interface every "master" torsion angle type. A {@link
+ * RNATorsionAngleType#CHI} is a master torsion angle type, and {@link Chi#getPurineInstance()} is a
+ * non-master instance.
  *
  * @author tzok
  */
 public interface MasterTorsionAngleType extends DisplayableExportable {
-    Collection<? extends TorsionAngleType> getAngleTypes();
+  Collection<? extends TorsionAngleType> getAngleTypes();
 
-    Range getRange(Angle angle);
+  Range getRange(Angle angle);
 }

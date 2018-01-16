@@ -7,15 +7,17 @@ import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
 public final class Nu0 extends AtomBasedTorsionAngleType {
-    private static final Nu0 INSTANCE = new Nu0();
+  private static final Nu0 INSTANCE = new Nu0();
 
-    private Nu0() {
-        super(MoleculeType.RNA, Unicode.NU0,
-              new Quadruplet<>(AtomName.C4p, AtomName.O4p, AtomName.C1p,
-                               AtomName.C2p), new Quadruplet<>(0, 0, 0, 0));
-    }
+  private Nu0() {
+    super(
+        MoleculeType.RNA,
+        Unicode.NU0,
+        new Quadruplet<>(AtomName.C4p, AtomName.O4p, AtomName.C1p, AtomName.C2p),
+        new Quadruplet<>(0, 0, 0, 0));
+  }
 
-    public static Nu0 getInstance() {
-        return Nu0.INSTANCE;
-    }
+  public static Nu0 getInstance() {
+    return Nu0.INSTANCE;
+  }
 }

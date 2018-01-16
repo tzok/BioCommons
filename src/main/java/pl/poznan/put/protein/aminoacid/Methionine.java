@@ -10,30 +10,38 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 import java.util.Arrays;
 
 public final class Methionine extends ProteinSidechain {
-    private static final Methionine INSTANCE = new Methionine();
+  private static final Methionine INSTANCE = new Methionine();
 
-    private Methionine() {
-        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2,
-                            AtomName.CG, AtomName.HG1, AtomName.HG2,
-                            AtomName.SD, AtomName.CE, AtomName.HE1,
-                            AtomName.HE2, AtomName.HE3), "Methionine", 'M',
-              "MET");
-        torsionAngleTypes
-                .add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
-        torsionAngleTypes
-                .add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
-        torsionAngleTypes
-                .add(Chi3.getInstance(getChiAtoms(ProteinChiType.CHI3)));
-    }
+  private Methionine() {
+    super(
+        Arrays.asList(
+            AtomName.CB,
+            AtomName.HB1,
+            AtomName.HB2,
+            AtomName.CG,
+            AtomName.HG1,
+            AtomName.HG2,
+            AtomName.SD,
+            AtomName.CE,
+            AtomName.HE1,
+            AtomName.HE2,
+            AtomName.HE3),
+        "Methionine",
+        'M',
+        "MET");
+    torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
+    torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
+    torsionAngleTypes.add(Chi3.getInstance(getChiAtoms(ProteinChiType.CHI3)));
+  }
 
-    public static Methionine getInstance() {
-        return Methionine.INSTANCE;
-    }
+  public static Methionine getInstance() {
+    return Methionine.INSTANCE;
+  }
 
-    @Override
-    protected void fillChiAtomsMap() {
-        chiAtoms.put(ProteinChiType.CHI1, Chi1.METHIONINE_ATOMS);
-        chiAtoms.put(ProteinChiType.CHI2, Chi2.METHIONINE_ATOMS);
-        chiAtoms.put(ProteinChiType.CHI3, Chi3.METHIONINE_ATOMS);
-    }
+  @Override
+  protected void fillChiAtomsMap() {
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.METHIONINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.METHIONINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI3, Chi3.METHIONINE_ATOMS);
+  }
 }

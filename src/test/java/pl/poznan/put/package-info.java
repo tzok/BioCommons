@@ -1,4 +1,2 @@
-/**
- * Contains test classes for BioCommons project.
- */
+/** Contains test classes for BioCommons project. */
 package pl.poznan.put;

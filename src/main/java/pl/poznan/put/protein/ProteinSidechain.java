@@ -20,75 +20,75 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class ProteinSidechain extends ResidueComponent
-        implements ResidueInformationProvider {
-    protected final Map<ProteinChiType, Quadruplet<AtomName>> chiAtoms =
-            new EnumMap<>(ProteinChiType.class);
-    protected final List<TorsionAngleType> torsionAngleTypes =
-            new ArrayList<>();
+    implements ResidueInformationProvider {
+  protected final Map<ProteinChiType, Quadruplet<AtomName>> chiAtoms =
+      new EnumMap<>(ProteinChiType.class);
+  protected final List<TorsionAngleType> torsionAngleTypes = new ArrayList<>();
 
-    private final String longName;
-    private final char oneLetterName;
-    private final List<String> pdbNames;
+  private final String longName;
+  private final char oneLetterName;
+  private final List<String> pdbNames;
 
-    protected ProteinSidechain(
-            final List<AtomName> atoms, final String longName,
-            final char oneLetterName, final String... pdbNames) {
-        super("sidechain", MoleculeType.PROTEIN, atoms);
-        this.longName = longName;
-        this.oneLetterName = oneLetterName;
-        this.pdbNames = Arrays.asList(pdbNames);
+  protected ProteinSidechain(
+      final List<AtomName> atoms,
+      final String longName,
+      final char oneLetterName,
+      final String... pdbNames) {
+    super("sidechain", MoleculeType.PROTEIN, atoms);
+    this.longName = longName;
+    this.oneLetterName = oneLetterName;
+    this.pdbNames = Arrays.asList(pdbNames);
 
-        fillChiAtomsMap();
+    fillChiAtomsMap();
 
-        torsionAngleTypes.add(Phi.getInstance());
-        torsionAngleTypes.add(Psi.getInstance());
-        torsionAngleTypes.add(Omega.getInstance());
-        torsionAngleTypes.add(Calpha.getInstance());
+    torsionAngleTypes.add(Phi.getInstance());
+    torsionAngleTypes.add(Psi.getInstance());
+    torsionAngleTypes.add(Omega.getInstance());
+    torsionAngleTypes.add(Calpha.getInstance());
+  }
+
+  protected abstract void fillChiAtomsMap();
+
+  @Override
+  public List<ResidueComponent> getAllMoleculeComponents() {
+    return Arrays.asList(ProteinBackbone.getInstance(), this);
+  }
+
+  @Override
+  public String getDescription() {
+    return longName;
+  }
+
+  @Override
+  public char getOneLetterName() {
+    return oneLetterName;
+  }
+
+  @Override
+  public String getDefaultPdbName() {
+    assert !pdbNames.isEmpty();
+    return pdbNames.get(0);
+  }
+
+  @Override
+  public List<String> getPdbNames() {
+    return Collections.unmodifiableList(pdbNames);
+  }
+
+  @Override
+  public List<TorsionAngleType> getTorsionAngleTypes() {
+    return Collections.unmodifiableList(torsionAngleTypes);
+  }
+
+  public Quadruplet<AtomName> getChiAtoms(final ProteinChiType chiType) {
+    if (!hasChiDefined(chiType)) {
+      throw new IllegalArgumentException("Invalid " + chiType + " angle for " + longName);
     }
 
-    protected abstract void fillChiAtomsMap();
+    return chiAtoms.get(chiType);
+  }
 
-    @Override
-    public List<ResidueComponent> getAllMoleculeComponents() {
-        return Arrays.asList(ProteinBackbone.getInstance(), this);
-    }
-
-    @Override
-    public String getDescription() {
-        return longName;
-    }
-
-    @Override
-    public char getOneLetterName() {
-        return oneLetterName;
-    }
-
-    @Override
-    public String getDefaultPdbName() {
-        assert !pdbNames.isEmpty();
-        return pdbNames.get(0);
-    }
-
-    @Override
-    public List<String> getPdbNames() {
-        return Collections.unmodifiableList(pdbNames);
-    }
-
-    @Override
-    public List<TorsionAngleType> getTorsionAngleTypes() {
-        return Collections.unmodifiableList(torsionAngleTypes);
-    }
-
-    public Quadruplet<AtomName> getChiAtoms(final ProteinChiType chiType) {
-        if (!hasChiDefined(chiType)) {
-            throw new IllegalArgumentException(
-                    "Invalid " + chiType + " angle for " + longName);
-        }
-
-        return chiAtoms.get(chiType);
-    }
-
-    public boolean hasChiDefined(final ProteinChiType chiType) {
-        return chiAtoms.containsKey(chiType);
-    }
+  public boolean hasChiDefined(final ProteinChiType chiType) {
+    return chiAtoms.containsKey(chiType);
+  }
 }
