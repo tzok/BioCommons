@@ -20,169 +20,180 @@ import java.util.Collections;
 import java.util.List;
 
 public final class AngleSample {
-    private final List<Angle> data;
-    private final Angle meanDirection;
-    private final double meanResultantLength;
-    private final double circularVariance;
-    private final double circularStandardDeviation;
-    private final double circularDispersion;
-    private final double skewness;
-    private final double kurtosis;
-    private final Angle medianDirection;
-    private final double meanDeviation;
+  private final List<Angle> data;
+  private final Angle meanDirection;
+  private final double meanResultantLength;
+  private final double circularVariance;
+  private final double circularStandardDeviation;
+  private final double circularDispersion;
+  private final double skewness;
+  private final double kurtosis;
+  private final Angle medianDirection;
+  private final double meanDeviation;
 
-    public AngleSample(final Collection<Angle> data) {
-        super();
-        this.data = new ArrayList<>(data);
-        Collections.sort(this.data);
+  public AngleSample(final Collection<Angle> data) {
+    super();
+    this.data = new ArrayList<>(data);
+    Collections.sort(this.data);
 
-        TrigonometricMoment um1 = getUncenteredMoment(1);
-        meanDirection = um1.getMeanDirection();
-        meanResultantLength = um1.getMeanResultantLength();
-        circularVariance = 1 - meanResultantLength;
-        circularStandardDeviation =
-                Math.sqrt(-2 * FastMath.log(meanResultantLength));
+    TrigonometricMoment um1 = getUncenteredMoment(1);
+    meanDirection = um1.getMeanDirection();
+    meanResultantLength = um1.getMeanResultantLength();
+    circularVariance = 1 - meanResultantLength;
+    circularStandardDeviation = Math.sqrt(-2 * FastMath.log(meanResultantLength));
 
-        TrigonometricMoment cm2 = getCenteredMoment(2);
-        TrigonometricMoment um2 = getUncenteredMoment(2);
-        circularDispersion =
-                (1.0 - cm2.getMeanResultantLength()) / (2 * FastMath
-                        .pow(meanResultantLength, 2));
-        skewness = (cm2.getMeanResultantLength() * FastMath
-                .sin(cm2.getMeanDirection().subtract(meanDirection.multiply(2))
-                        .getRadians())) / Math.sqrt(circularVariance);
-        kurtosis = ((cm2.getMeanResultantLength() * FastMath
-                .cos(um2.getMeanDirection().subtract(meanDirection.multiply(2))
-                        .getRadians())) - FastMath.pow(meanResultantLength, 4))
-                   / FastMath.pow(circularVariance, 2);
+    TrigonometricMoment cm2 = getCenteredMoment(2);
+    TrigonometricMoment um2 = getUncenteredMoment(2);
+    circularDispersion =
+        (1.0 - cm2.getMeanResultantLength()) / (2 * FastMath.pow(meanResultantLength, 2));
+    skewness =
+        (cm2.getMeanResultantLength()
+                * FastMath.sin(
+                    cm2.getMeanDirection().subtract(meanDirection.multiply(2)).getRadians()))
+            / Math.sqrt(circularVariance);
+    kurtosis =
+        ((cm2.getMeanResultantLength()
+                    * FastMath.cos(
+                        um2.getMeanDirection().subtract(meanDirection.multiply(2)).getRadians()))
+                - FastMath.pow(meanResultantLength, 4))
+            / FastMath.pow(circularVariance, 2);
 
-        UnivariatePointValuePair medianFunctionRoot = minimizeMedianFunction();
-        medianDirection =
-                new Angle(medianFunctionRoot.getPoint(), ValueType.RADIANS);
-        meanDeviation = medianFunctionRoot.getValue();
-    }
+    UnivariatePointValuePair medianFunctionRoot = minimizeMedianFunction();
+    medianDirection = new Angle(medianFunctionRoot.getPoint(), ValueType.RADIANS);
+    meanDeviation = medianFunctionRoot.getValue();
+  }
 
-    public TrigonometricMoment getUncenteredMoment(final int p) {
-        return getMoment(p, false);
-    }
+  public TrigonometricMoment getUncenteredMoment(final int p) {
+    return getMoment(p, false);
+  }
 
-    public TrigonometricMoment getCenteredMoment(final int p) {
-        return getMoment(p, true);
-    }
+  public TrigonometricMoment getCenteredMoment(final int p) {
+    return getMoment(p, true);
+  }
 
-    private UnivariatePointValuePair minimizeMedianFunction() {
-        UnivariateFunction medianObjectiveFunction = new UnivariateFunction() {
-            @Override
-            public double value(final double v) {
-                double sum = 0;
+  private UnivariatePointValuePair minimizeMedianFunction() {
+    UnivariateFunction medianObjectiveFunction =
+        new UnivariateFunction() {
+          @Override
+          public double value(final double v) {
+            double sum = 0;
 
-                for (final Angle vector : data) {
-                    sum += Angle.subtractByMinimum(Math.PI,
-                                                   Angle.subtractByMinimum(
-                                                           vector.getRadians(),
-                                                           v));
-                }
-
-                return Math.PI - (sum / data.size());
+            for (final Angle vector : data) {
+              sum +=
+                  Angle.subtractByMinimum(Math.PI, Angle.subtractByMinimum(vector.getRadians(), v));
             }
+
+            return Math.PI - (sum / data.size());
+          }
         };
 
-        UnivariateOptimizer optimizer = new BrentOptimizer(1.0e-10, 1.0e-14);
-        return optimizer.optimize(
-                new UnivariateObjectiveFunction(medianObjectiveFunction),
-                GoalType.MINIMIZE, new SearchInterval(0, MathUtils.TWO_PI),
-                new MaxEval(1000));
+    UnivariateOptimizer optimizer = new BrentOptimizer(1.0e-10, 1.0e-14);
+    return optimizer.optimize(
+        new UnivariateObjectiveFunction(medianObjectiveFunction),
+        GoalType.MINIMIZE,
+        new SearchInterval(0, MathUtils.TWO_PI),
+        new MaxEval(1000));
+  }
+
+  private TrigonometricMoment getMoment(final int p, final boolean isCentered) {
+    double c = 0;
+    double s = 0;
+
+    for (final Angle vector : data) {
+      double radians = vector.getRadians();
+
+      if (isCentered) {
+        radians = vector.subtract(meanDirection).getRadians();
+      }
+
+      c += FastMath.cos(p * radians);
+      s += FastMath.sin(p * radians);
     }
 
-    private TrigonometricMoment getMoment(
-            final int p, final boolean isCentered) {
-        double c = 0;
-        double s = 0;
+    c /= data.size();
+    s /= data.size();
 
-        for (final Angle vector : data) {
-            double radians = vector.getRadians();
+    double rho = Math.sqrt(FastMath.pow(c, 2) + FastMath.pow(s, 2));
+    double mi;
 
-            if (isCentered) {
-                radians = vector.subtract(meanDirection).getRadians();
-            }
-
-            c += FastMath.cos(p * radians);
-            s += FastMath.sin(p * radians);
-        }
-
-        c /= data.size();
-        s /= data.size();
-
-        double rho = Math.sqrt(FastMath.pow(c, 2) + FastMath.pow(s, 2));
-        double mi;
-
-        if ((s > 0) && (c > 0)) {
-            mi = FastMath.atan(s / c);
-        } else if (c < 0) {
-            mi = FastMath.atan(s / c) + Math.PI;
-        } else {
-            // s < 0 && c > 0
-            mi = (FastMath.atan(s / c) + MathUtils.TWO_PI) % MathUtils.TWO_PI;
-        }
-
-        return new TrigonometricMoment(new Angle(mi, ValueType.RADIANS), rho);
+    if ((s > 0) && (c > 0)) {
+      mi = FastMath.atan(s / c);
+    } else if (c < 0) {
+      mi = FastMath.atan(s / c) + Math.PI;
+    } else {
+      // s < 0 && c > 0
+      mi = (FastMath.atan(s / c) + MathUtils.TWO_PI) % MathUtils.TWO_PI;
     }
 
-    public Angle getMeanDirection() {
-        return meanDirection;
+    return new TrigonometricMoment(new Angle(mi, ValueType.RADIANS), rho);
+  }
+
+  public Angle getMeanDirection() {
+    return meanDirection;
+  }
+
+  public double getMeanResultantLength() {
+    return meanResultantLength;
+  }
+
+  public double getCircularVariance() {
+    return circularVariance;
+  }
+
+  public double getCircularStandardDeviation() {
+    return circularStandardDeviation;
+  }
+
+  public double getCircularDispersion() {
+    return circularDispersion;
+  }
+
+  public double getSkewness() {
+    return skewness;
+  }
+
+  public double getKurtosis() {
+    return kurtosis;
+  }
+
+  public Angle getMedianDirection() {
+    return medianDirection;
+  }
+
+  public double getMeanDeviation() {
+    return meanDeviation;
+  }
+
+  public double getCircularRank(final Angle datapoint) {
+    if (!data.contains(datapoint)) {
+      throw new InvalidCircularOperationException(
+          "Cannot calculate circular rank for an observation " + "outside the sample range");
     }
 
-    public double getMeanResultantLength() {
-        return meanResultantLength;
-    }
+    int rank = data.indexOf(datapoint) + 1;
+    return (MathUtils.TWO_PI * rank) / data.size();
+  }
 
-    public double getCircularVariance() {
-        return circularVariance;
-    }
-
-    public double getCircularStandardDeviation() {
-        return circularStandardDeviation;
-    }
-
-    public double getCircularDispersion() {
-        return circularDispersion;
-    }
-
-    public double getSkewness() {
-        return skewness;
-    }
-
-    public double getKurtosis() {
-        return kurtosis;
-    }
-
-    public Angle getMedianDirection() {
-        return medianDirection;
-    }
-
-    public double getMeanDeviation() {
-        return meanDeviation;
-    }
-
-    public double getCircularRank(final Angle datapoint) {
-        if (!data.contains(datapoint)) {
-            throw new InvalidCircularOperationException(
-                    "Cannot calculate circular rank for an observation "
-                    + "outside the sample range");
-        }
-
-        int rank = data.indexOf(datapoint) + 1;
-        return (MathUtils.TWO_PI * rank) / data.size();
-    }
-
-    @Override
-    public String toString() {
-        return "AngleSample [meanDirection=" + meanDirection
-               + ", meanResultantLength=" + meanResultantLength
-               + ", circularVariance=" + circularVariance
-               + ", circularStandardDeviation=" + circularStandardDeviation
-               + ", circularDispersion=" + circularDispersion + ", skewness="
-               + skewness + ", kurtosis=" + kurtosis + ", medianDirection="
-               + medianDirection + ", meanDeviation=" + meanDeviation + ']';
-    }
+  @Override
+  public String toString() {
+    return "AngleSample [meanDirection="
+        + meanDirection
+        + ", meanResultantLength="
+        + meanResultantLength
+        + ", circularVariance="
+        + circularVariance
+        + ", circularStandardDeviation="
+        + circularStandardDeviation
+        + ", circularDispersion="
+        + circularDispersion
+        + ", skewness="
+        + skewness
+        + ", kurtosis="
+        + kurtosis
+        + ", medianDirection="
+        + medianDirection
+        + ", meanDeviation="
+        + meanDeviation
+        + ']';
+  }
 }

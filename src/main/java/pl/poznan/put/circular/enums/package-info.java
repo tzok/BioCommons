@@ -1,4 +1,2 @@
-/**
- * Package contains useful enums.
- */
+/** Package contains useful enums. */
 package pl.poznan.put.circular.enums;
