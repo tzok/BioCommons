@@ -26,8 +26,8 @@ public class LevelByLevelConverter implements Converter {
      * @param maxSolutions Maximum number of solutions to be considered in a
      *                     single step of the algorithm.
      */
-    public LevelByLevelConverter(
-            final PseudoknotFinder pkRemover, final int maxSolutions) {
+    public LevelByLevelConverter(final PseudoknotFinder pkRemover,
+                                 final int maxSolutions) {
         super();
         this.pkRemover = pkRemover;
         this.maxSolutions = maxSolutions;
@@ -48,7 +48,7 @@ public class LevelByLevelConverter implements Converter {
         return new DotBracket(bpSeq.getSequence(), structure);
     }
 
-    protected static boolean isProcessingNeeded(final Iterable<State> states) {
+    private static boolean isProcessingNeeded(final Iterable<State> states) {
         for (final State state : states) {
             if (!state.isFinal()) {
                 return true;
@@ -57,12 +57,13 @@ public class LevelByLevelConverter implements Converter {
         return false;
     }
 
-    protected final List<State> processStates(final Collection<State> states)
+    private List<State> processStates(final Collection<State> states)
             throws InvalidStructureException {
         final List<State> nextStates = new ArrayList<>(states.size());
         for (final State state : states) {
             for (final BpSeq bpSeq : pkRemover.findPseudoknots(state.bpSeq)) {
-                final State nextState = new State(state, bpSeq, state.level + 1);
+                final State nextState =
+                        new State(state, bpSeq, state.level + 1);
                 nextStates.add(nextState);
 
                 if (nextStates.size() > maxSolutions) {
