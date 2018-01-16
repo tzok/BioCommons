@@ -4,6 +4,8 @@ import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.samples.AngleSample;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.torsion.range.Range;
+import pl.poznan.put.torsion.range.TorsionRange;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,32 +90,32 @@ public class AverageTorsionAngleType extends TorsionAngleType
     }
 
     @Override
-    public String getLongDisplayName() {
+    public final String getLongDisplayName() {
         return displayName;
     }
 
     @Override
-    public String getShortDisplayName() {
+    public final String getShortDisplayName() {
         return displayName;
     }
 
     @Override
-    public String getExportName() {
+    public final String getExportName() {
         return exportName;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return displayName;
     }
 
-    public Iterable<MasterTorsionAngleType> getConsideredAngles() {
+    public final Iterable<MasterTorsionAngleType> getConsideredAngles() {
         return Collections.unmodifiableList(consideredAngles);
     }
 
     @Override
-    public TorsionAngleValue calculate(final List<PdbResidue> residues,
-                                       final int currentIndex) {
+    public final TorsionAngleValue calculate(final List<PdbResidue> residues,
+                                             final int currentIndex) {
         final PdbResidue residue = residues.get(currentIndex);
         final List<Angle> angles = new ArrayList<>();
 
@@ -131,7 +133,7 @@ public class AverageTorsionAngleType extends TorsionAngleType
         return new TorsionAngleValue(this, angleSample.getMeanDirection());
     }
 
-    public TorsionAngleValue calculate(
+    public final TorsionAngleValue calculate(
             final Iterable<TorsionAngleValue> values) {
         final List<Angle> angles = new ArrayList<>();
 
@@ -152,7 +154,12 @@ public class AverageTorsionAngleType extends TorsionAngleType
     }
 
     @Override
-    public Collection<? extends TorsionAngleType> getAngleTypes() {
+    public final Collection<? extends TorsionAngleType> getAngleTypes() {
         return Collections.singleton(this);
+    }
+
+    @Override
+    public final Range getRange(final Angle angle) {
+        return TorsionRange.getProvider().fromAngle(angle);
     }
 }

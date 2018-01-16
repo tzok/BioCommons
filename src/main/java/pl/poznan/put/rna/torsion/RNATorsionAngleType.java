@@ -1,6 +1,12 @@
 package pl.poznan.put.rna.torsion;
 
+import pl.poznan.put.circular.Angle;
 import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.rna.torsion.range.ChiRange;
+import pl.poznan.put.rna.torsion.range.Pseudorotation;
+import pl.poznan.put.torsion.range.Range;
+import pl.poznan.put.torsion.range.RangeProvider;
+import pl.poznan.put.torsion.range.TorsionRange;
 import pl.poznan.put.torsion.AverageTorsionAngleType;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
@@ -26,21 +32,30 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
     THETA(Theta.getInstance()),
     ETA_PRIM(EtaPrim.getInstance()),
     THETA_PRIM(ThetaPrim.getInstance()),
-    CHI(Chi.getPurineInstance(), Chi.getPyrimidineInstance()),
-    PSEUDOPHASE_PUCKER(PseudophasePuckerType.getInstance());
+    CHI(ChiRange.getProvider(), Chi.getPurineInstance(),
+        Chi.getPyrimidineInstance()),
+    PSEUDOPHASE_PUCKER(Pseudorotation.getProvider(),
+                       PseudophasePuckerType.getInstance());
 
-    private static final MasterTorsionAngleType[] MAIN = {
-            RNATorsionAngleType.ALPHA, RNATorsionAngleType.BETA,
-            RNATorsionAngleType.GAMMA, RNATorsionAngleType.DELTA,
-            RNATorsionAngleType.EPSILON, RNATorsionAngleType.ZETA,
-            RNATorsionAngleType.CHI, RNATorsionAngleType.PSEUDOPHASE_PUCKER};
+    private static final MasterTorsionAngleType[] MAIN =
+            {RNATorsionAngleType.ALPHA, RNATorsionAngleType.BETA,
+             RNATorsionAngleType.GAMMA, RNATorsionAngleType.DELTA,
+             RNATorsionAngleType.EPSILON, RNATorsionAngleType.ZETA,
+             RNATorsionAngleType.CHI, RNATorsionAngleType.PSEUDOPHASE_PUCKER};
     private static final AverageTorsionAngleType AVERAGE_TORSION_INSTANCE =
             new AverageTorsionAngleType(MoleculeType.RNA,
                                         RNATorsionAngleType.MAIN);
+    private final RangeProvider rangeProvider;
     private final List<TorsionAngleType> angleTypes;
 
-    RNATorsionAngleType(final TorsionAngleType... angleTypes) {
+    RNATorsionAngleType(final RangeProvider rangeProvider,
+                        final TorsionAngleType... angleTypes) {
+        this.rangeProvider = rangeProvider;
         this.angleTypes = Arrays.asList(angleTypes);
+    }
+
+    RNATorsionAngleType(final TorsionAngleType... angleTypes) {
+        this(TorsionRange.getProvider(), angleTypes);
     }
 
     public static MasterTorsionAngleType[] mainAngles() {
@@ -72,5 +87,10 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
     public String getExportName() {
         assert !angleTypes.isEmpty();
         return angleTypes.get(0).getExportName();
+    }
+
+    @Override
+    public Range getRange(final Angle angle) {
+        return rangeProvider.fromAngle(angle);
     }
 }

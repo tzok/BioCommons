@@ -1,23 +1,27 @@
 package pl.poznan.put.torsion;
 
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.Range;
-import pl.poznan.put.circular.enums.RangeDifference;
+import pl.poznan.put.torsion.range.Range;
+import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.utility.AngleFormat;
 
 public class TorsionAngleDelta {
     private final MasterTorsionAngleType masterTorsionAngleType;
     private final State state;
+    private final Angle target;
+    private final Angle model;
     private final Angle delta;
     private final RangeDifference rangeDifference;
 
     public TorsionAngleDelta(
             final MasterTorsionAngleType masterTorsionAngleType,
-            final State state, final Angle delta,
-            final RangeDifference rangeDifference) {
+            final State state, final Angle target, final Angle model,
+            final Angle delta, final RangeDifference rangeDifference) {
         super();
         this.masterTorsionAngleType = masterTorsionAngleType;
         this.state = state;
+        this.target = target;
+        this.model = model;
         this.delta = delta;
         this.rangeDifference = rangeDifference;
     }
@@ -26,6 +30,8 @@ public class TorsionAngleDelta {
             final MasterTorsionAngleType masterType) {
         return new TorsionAngleDelta(masterType, State.BOTH_INVALID,
                                      Angle.invalidInstance(),
+                                     Angle.invalidInstance(),
+                                     Angle.invalidInstance(),
                                      RangeDifference.INVALID);
     }
 
@@ -33,29 +39,37 @@ public class TorsionAngleDelta {
             final MasterTorsionAngleType masterType,
             final TorsionAngleValue targetValue,
             final TorsionAngleValue modelValue) {
-        final State state;
         Angle delta = Angle.invalidInstance();
         RangeDifference rangeDifference = RangeDifference.INVALID;
+        final Angle target = targetValue.getValue();
+        final Angle model = modelValue.getValue();
+        final State state;
 
-        if (!targetValue.getValue().isValid() &&
-            !modelValue.getValue().isValid()) {
+        if (!target.isValid() && !model.isValid()) {
             state = State.BOTH_INVALID;
-        } else if (!targetValue.getValue().isValid() &&
-                   modelValue.getValue().isValid()) {
+        } else if (!target.isValid() && model.isValid()) {
             state = State.TARGET_INVALID;
-        } else if (targetValue.getValue().isValid() &&
-                   !modelValue.getValue().isValid()) {
+        } else if (target.isValid() && !model.isValid()) {
             state = State.MODEL_INVALID;
         } else {
-            final Angle target = targetValue.getValue();
-            final Angle model = modelValue.getValue();
-            delta = target.subtract(model);
-            rangeDifference =
-                    Range.fromAngle(target).difference(Range.fromAngle(model));
             state = State.BOTH_VALID;
+            delta = target.subtract(model);
+
+            final Range targetRange = masterType.getRange(target);
+            final Range modelRange = masterType.getRange(model);
+            rangeDifference = targetRange.compare(modelRange);
         }
 
-        return new TorsionAngleDelta(masterType, state, delta, rangeDifference);
+        return new TorsionAngleDelta(masterType, state, target, model, delta,
+                                     rangeDifference);
+    }
+
+    public Angle getTarget() {
+        return target;
+    }
+
+    public Angle getModel() {
+        return model;
     }
 
     public final State getState() {
@@ -66,7 +80,7 @@ public class TorsionAngleDelta {
         return delta;
     }
 
-    public RangeDifference getRangeDifference() {
+    public final RangeDifference getRangeDifference() {
         return rangeDifference;
     }
 

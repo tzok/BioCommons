@@ -1,6 +1,9 @@
 package pl.poznan.put.protein.torsion;
 
+import pl.poznan.put.circular.Angle;
 import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.torsion.range.Range;
+import pl.poznan.put.torsion.range.TorsionRange;
 import pl.poznan.put.torsion.AverageTorsionAngleType;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
@@ -21,9 +24,9 @@ public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
     CHI4(Chi4.getInstances()),
     CHI5(Chi5.getInstances());
 
-    private static final MasterTorsionAngleType[] MAIN = {
-            ProteinTorsionAngleType.PHI, ProteinTorsionAngleType.PSI,
-            ProteinTorsionAngleType.OMEGA};
+    private static final MasterTorsionAngleType[] MAIN =
+            {ProteinTorsionAngleType.PHI, ProteinTorsionAngleType.PSI,
+             ProteinTorsionAngleType.OMEGA};
     private static final AverageTorsionAngleType AVERAGE_TORSION_INSTANCE =
             new AverageTorsionAngleType(MoleculeType.PROTEIN,
                                         ProteinTorsionAngleType.MAIN);
@@ -62,5 +65,10 @@ public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
     public String getExportName() {
         assert !angleTypes.isEmpty();
         return angleTypes.get(0).getExportName();
+    }
+
+    @Override
+    public Range getRange(final Angle angle) {
+        return TorsionRange.getProvider().fromAngle(angle);
     }
 }
