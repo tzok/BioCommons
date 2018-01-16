@@ -2,7 +2,6 @@ package pl.poznan.put.circular;
 
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
-import pl.poznan.put.circular.enums.Range;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
@@ -65,6 +64,28 @@ public class Angle extends Circular {
         }
     }
 
+    /**
+     * Return true if this instance is in range [begin; end). For example 45
+     * degrees is between 30 degrees and 60 degrees. Also, 15 degrees is
+     * between -30 and 30 degrees.
+     *
+     * @param begin Beginning of the range of values.
+     * @param end   Ending of the range of values.
+     * @return true if object is between [begin; end)
+     */
+    public final boolean isBetween(final Angle begin, final Angle end) {
+        final double degrees360 = getDegrees360();
+        final double begin360 = begin.getDegrees360();
+        final double end360 = end.getDegrees360();
+
+        if (begin360 < end360) {
+            return (degrees360 >= begin360) && (degrees360 < end360);
+        } else {
+            return (degrees360 >= begin360) || (degrees360 < end360);
+        }
+
+    }
+
     public final Angle multiply(final double n) {
         return new Angle((getRadians() * n) % MathUtils.TWO_PI,
                          ValueType.RADIANS);
@@ -89,14 +110,5 @@ public class Angle extends Circular {
         v = Math.min(1, v);
         v = Math.max(-1, v);
         return FastMath.acos(v);
-    }
-
-    @Override
-    public String toString() {
-        if (isValid()) {
-            return String.format("%s, %s", super.toString(),
-                                 Range.fromAngle(this).getDisplayName());
-        }
-        return "invalid";
     }
 }
