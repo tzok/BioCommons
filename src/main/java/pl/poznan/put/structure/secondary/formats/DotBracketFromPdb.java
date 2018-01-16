@@ -9,11 +9,16 @@ import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DotBracketFromPdb extends DotBracket {
     private static final long serialVersionUID = -4415694977869681897L;
@@ -125,5 +130,94 @@ public class DotBracketFromPdb extends DotBracket {
     @Override
     protected final int getCtOriginalColumn(final DotBracketSymbol symbol) {
         return symbolToResidue.get(symbol).getResidueNumber();
+    }
+
+    public final List<CombinedStrand> combineStrands(
+            final List<ClassifiedBasePair> nonCanonicalPairs) {
+        // map containing links between strands
+        final Map<Strand, Set<Strand>> strandMap = new LinkedHashMap<>();
+
+        // link strands connected by canonical base pairs
+        for (final Strand strand : strands) {
+            for (final DotBracketSymbol symbol : strand.getSymbols()) {
+                if (symbol.isPairing() && !strand.contains(symbol.getPair())) {
+                    linkStrands(strand, symbol.getPair(), strandMap);
+                }
+            }
+        }
+
+        // link strands connected by non-canonical base pairs
+        for (final ClassifiedBasePair nonCanonicalPair : nonCanonicalPairs) {
+            final DotBracketSymbol leftSymbol = residueToSymbol
+                    .get(nonCanonicalPair.getBasePair().getLeft());
+            final DotBracketSymbol rightSymbol = residueToSymbol
+                    .get(nonCanonicalPair.getBasePair().getRight());
+
+            for (final Strand strand : strands) {
+                if (strand.contains(leftSymbol) &&
+                    !strand.contains(rightSymbol)) {
+                    linkStrands(strand, rightSymbol, strandMap);
+                }
+            }
+        }
+
+        // now link in depth all the strands linked together even indirectly
+        final Map<Strand, Set<Strand>> solutionMap = new LinkedHashMap<>();
+        final Collection<Set<Strand>> strandClusters = new ArrayList<>();
+
+        for (final Map.Entry<Strand, Set<Strand>> entry : strandMap
+                .entrySet()) {
+            final Strand strand = entry.getKey();
+            final Set<Strand> linkedStrands = entry.getValue();
+
+            if (!solutionMap.containsKey(strand)) {
+                final Set<Strand> strandCluster = new LinkedHashSet<>();
+                solutionMap.put(strand, strandCluster);
+                strandClusters.add(strandCluster);
+            }
+
+            final Set<Strand> strandCluster = solutionMap.get(strand);
+            strandCluster.add(strand);
+
+            for (final Strand linkedStrand : linkedStrands) {
+                solutionMap.put(linkedStrand, strandCluster);
+                strandCluster.add(linkedStrand);
+            }
+        }
+
+        // prepare the final result
+        final List<CombinedStrand> result =
+                new ArrayList<>(strandClusters.size());
+        for (final Set<Strand> strandCluster : strandClusters) {
+            result.add(new CombinedStrand(new ArrayList<>(strandCluster)));
+        }
+
+        // add strands without inter-strand connections
+        for (final Strand strand : strands) {
+            if (!solutionMap.containsKey(strand)) {
+                result.add(
+                        new CombinedStrand(Collections.singletonList(strand)));
+            }
+        }
+        return result;
+    }
+
+    private void linkStrands(final Strand firstStrand,
+                             final DotBracketSymbol symbolInSecondStrand,
+                             final Map<Strand, Set<Strand>> strandMap) {
+        for (final Strand secondStrand : strands) {
+            if (!secondStrand.equals(firstStrand) &&
+                secondStrand.contains(symbolInSecondStrand)) {
+                if (!strandMap.containsKey(firstStrand)) {
+                    strandMap.put(firstStrand, new LinkedHashSet<>());
+                }
+                strandMap.get(firstStrand).add(secondStrand);
+                if (!strandMap.containsKey(secondStrand)) {
+                    strandMap.put(secondStrand, new LinkedHashSet<>());
+                }
+                strandMap.get(secondStrand).add(firstStrand);
+                return;
+            }
+        }
     }
 }

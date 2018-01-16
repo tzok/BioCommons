@@ -250,7 +250,7 @@ public class DotBracket implements Serializable {
         return Collections.unmodifiableList(symbols);
     }
 
-    public final Collection<Strand> getStrands() {
+    public final List<Strand> getStrands() {
         return Collections.unmodifiableList(strands);
     }
 
