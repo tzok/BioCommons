@@ -1,15 +1,15 @@
 package pl.poznan.put.structure.secondary;
 
+import java.io.Serializable;
+import java.util.Objects;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 public class BasePair implements Serializable, Comparable<BasePair> {
+  private static final long serialVersionUID = -8951633864787036880L;
   private static final double GU_DISTANCE_O6_N3 = 2.83 + (0.13 * 3);
   private static final double GU_DISTANCE_N1_O2 = 2.79 + (0.13 * 3);
   private static final double AU_DISTANCE_N6_O4 = 3.00 + (0.17 * 3);
@@ -24,6 +24,15 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     pair = Pair.of(left, right);
   }
 
+  /**
+   * Check if two residues are canonical base pairs by means of simple distance between atoms which
+   * form hydrogen bond. Data taken from http://bps.rutgers.edu.
+   *
+   * @param left First residue.
+   * @param right Second residue.
+   * @return True if we have a pair of C-G, A-U or G-U and atoms' distances are within limits to
+   *     form hydrogen bonds.
+   */
   public static boolean isCanonicalPair(final PdbResidue left, final PdbResidue right) {
     final char leftName = Character.toUpperCase(left.getOneLetterName());
     final char rightName = Character.toUpperCase(right.getOneLetterName());
