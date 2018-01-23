@@ -1,14 +1,5 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.pdb.analysis.PdbChain;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.ResidueCollection;
-import pl.poznan.put.structure.secondary.BasePair;
-import pl.poznan.put.structure.secondary.ClassifiedBasePair;
-import pl.poznan.put.structure.secondary.DotBracketSymbol;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,6 +10,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.analysis.PdbChain;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.pdb.analysis.ResidueCollection;
+import pl.poznan.put.structure.secondary.BasePair;
+import pl.poznan.put.structure.secondary.ClassifiedBasePair;
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class DotBracketFromPdb extends DotBracket {
   private static final long serialVersionUID = -4415694977869681897L;
@@ -115,6 +114,10 @@ public class DotBracketFromPdb extends DotBracket {
 
   public final DotBracketSymbol getSymbol(final PdbResidueIdentifier residueIdentifier) {
     return residueToSymbol.get(residueIdentifier);
+  }
+
+  public final boolean contains(final PdbResidueIdentifier residueIdentifier) {
+    return residueToSymbol.containsKey(residueIdentifier);
   }
 
   @Override

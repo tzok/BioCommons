@@ -1,11 +1,10 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.structure.secondary.DotBracketSymbol;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class Strand implements Serializable {
   private static final long serialVersionUID = 8267967642039631099L;
@@ -151,7 +150,7 @@ public class Strand implements Serializable {
     return new String(cs);
   }
 
-  public DotBracket getParent() {
+  public final DotBracket getParent() {
     return parent;
   }
 
@@ -170,5 +169,9 @@ public class Strand implements Serializable {
   @Override
   public final int hashCode() {
     return Objects.hash(parent, from, to);
+  }
+
+  public final int indexOfSymbol(final DotBracketSymbol symbol) {
+    return getSymbols().indexOf(symbol);
   }
 }

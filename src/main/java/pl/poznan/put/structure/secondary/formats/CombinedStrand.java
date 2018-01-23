@@ -1,13 +1,14 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import pl.poznan.put.structure.secondary.DotBracketSymbol;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
+@EqualsAndHashCode
 public class CombinedStrand {
   private final List<Strand> strands;
 
@@ -16,7 +17,7 @@ public class CombinedStrand {
     this.strands = new ArrayList<>(strands);
   }
 
-  public final Iterable<Strand> getStrands() {
+  public final List<Strand> getStrands() {
     return Collections.unmodifiableList(strands);
   }
 
@@ -94,21 +95,27 @@ public class CombinedStrand {
       builder.append(strand.getName());
     }
 
-    return ">strand_" + builder + '\n' + getSequence() + '\n' + getStructure();
+    return ">strand_" + builder + '\n' + getSequence(false) + '\n' + getStructure(false);
   }
 
-  public final String getSequence() {
+  public final String getSequence(final boolean separateStrands) {
     final StringBuilder builder = new StringBuilder();
     for (final Strand strand : strands) {
       builder.append(strand.getSequence());
+      if (separateStrands) {
+        builder.append('&');
+      }
     }
     return builder.toString();
   }
 
-  public final String getStructure() {
+  public final String getStructure(final boolean separateStrands) {
     final StringBuilder builder = new StringBuilder();
     for (final Strand strand : strands) {
       builder.append(strand.getStructure());
+      if (separateStrands) {
+        builder.append('&');
+      }
     }
     return builder.toString();
   }
@@ -128,5 +135,16 @@ public class CombinedStrand {
     }
 
     return true;
+  }
+
+  public final int indexOfSymbol(final DotBracketSymbol symbol) {
+    int baseIndex = 0;
+    for (final Strand strand : strands) {
+      if (strand.contains(symbol)) {
+        return baseIndex + strand.indexOfSymbol(symbol);
+      }
+      baseIndex += strand.getLength();
+    }
+    throw new IllegalArgumentException("Failed to find symbol " + symbol + " in strands:\n" + this);
   }
 }
