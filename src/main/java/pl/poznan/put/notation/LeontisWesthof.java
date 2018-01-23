@@ -3,25 +3,48 @@ package pl.poznan.put.notation;
 import java.util.Objects;
 
 public enum LeontisWesthof {
-  CWW,
-  CWH,
-  CWS,
-  CHW,
-  CHH,
-  CHS,
-  CSW,
-  CSH,
-  CSS,
-  TWW,
-  TWH,
-  TWS,
-  THW,
-  THH,
-  THS,
-  TSW,
-  TSH,
-  TSS,
-  UNKNOWN;
+  CWW(Stericity.CIS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.WATSON_CRICK),
+  CWH(Stericity.CIS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.HOOGSTEEN),
+  CWS(Stericity.CIS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.SUGAR),
+  CHW(Stericity.CIS, NucleobaseEdge.HOOGSTEEN, NucleobaseEdge.WATSON_CRICK),
+  CHH(Stericity.CIS, NucleobaseEdge.HOOGSTEEN, NucleobaseEdge.HOOGSTEEN),
+  CHS(Stericity.CIS, NucleobaseEdge.HOOGSTEEN, NucleobaseEdge.SUGAR),
+  CSW(Stericity.CIS, NucleobaseEdge.SUGAR, NucleobaseEdge.WATSON_CRICK),
+  CSH(Stericity.CIS, NucleobaseEdge.SUGAR, NucleobaseEdge.HOOGSTEEN),
+  CSS(Stericity.CIS, NucleobaseEdge.SUGAR, NucleobaseEdge.SUGAR),
+  TWW(Stericity.TRANS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.WATSON_CRICK),
+  TWH(Stericity.TRANS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.HOOGSTEEN),
+  TWS(Stericity.TRANS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.SUGAR),
+  THW(Stericity.TRANS, NucleobaseEdge.HOOGSTEEN, NucleobaseEdge.WATSON_CRICK),
+  THH(Stericity.TRANS, NucleobaseEdge.HOOGSTEEN, NucleobaseEdge.HOOGSTEEN),
+  THS(Stericity.TRANS, NucleobaseEdge.HOOGSTEEN, NucleobaseEdge.SUGAR),
+  TSW(Stericity.TRANS, NucleobaseEdge.SUGAR, NucleobaseEdge.WATSON_CRICK),
+  TSH(Stericity.TRANS, NucleobaseEdge.SUGAR, NucleobaseEdge.HOOGSTEEN),
+  TSS(Stericity.TRANS, NucleobaseEdge.SUGAR, NucleobaseEdge.SUGAR),
+  UNKNOWN(Stericity.UNKNOWN, NucleobaseEdge.UNKNOWN, NucleobaseEdge.UNKNOWN);
+
+  private final Stericity stericity;
+  private final NucleobaseEdge edge5;
+  private final NucleobaseEdge edge3;
+
+  LeontisWesthof(
+      final Stericity stericity, final NucleobaseEdge edge5, final NucleobaseEdge edge3) {
+    this.stericity = stericity;
+    this.edge5 = edge5;
+    this.edge3 = edge3;
+  }
+
+  public Stericity getStericity() {
+    return stericity;
+  }
+
+  public NucleobaseEdge getEdge5() {
+    return edge5;
+  }
+
+  public NucleobaseEdge getEdge3() {
+    return edge3;
+  }
 
   public static LeontisWesthof fromString(final String str) {
     final String lc = str.toLowerCase();
