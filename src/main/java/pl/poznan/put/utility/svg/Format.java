@@ -2,22 +2,22 @@ package pl.poznan.put.utility.svg;
 
 import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.apache.batik.transcoder.image.TIFFTranscoder;
 import org.apache.batik.transcoder.svg2svg.SVGTranscoder;
 import org.apache.fop.render.ps.EPSTranscoder;
 import org.apache.fop.svg.PDFTranscoder;
 
 public enum Format {
-  SVG("svg"),
-  EPS("eps"),
-  PDF("pdf"),
-  PNG("png"),
-  TIFF("tiff");
+  SVG("svg", "--export-plain-svg"),
+  EPS("eps", "--export-eps"),
+  PDF("pdf", "--export-pdf"),
+  PNG("png", "--export-png");
 
   private final String extension;
+  private final String inkscapeArgument;
 
-  Format(final String extension) {
+  Format(final String extension, final String inkscapeArgument) {
     this.extension = extension;
+    this.inkscapeArgument = inkscapeArgument;
   }
 
   public Transcoder getTranscoder() {
@@ -28,8 +28,6 @@ public enum Format {
         return new PDFTranscoder();
       case PNG:
         return new PNGTranscoder();
-      case TIFF:
-        return new TIFFTranscoder();
       case SVG:
       default:
         return new SVGTranscoder();
@@ -38,5 +36,9 @@ public enum Format {
 
   public String getExtension() {
     return extension;
+  }
+
+  public String getInkscapeArgument() {
+    return inkscapeArgument;
   }
 }

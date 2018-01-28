@@ -1,28 +1,5 @@
 package pl.poznan.put.utility.svg;
 
-import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
-import org.apache.batik.anim.dom.SVGDOMImplementation;
-import org.apache.batik.bridge.BridgeContext;
-import org.apache.batik.bridge.GVTBuilder;
-import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.gvt.GraphicsNode;
-import org.apache.batik.svggen.SVGGraphics2D;
-import org.apache.batik.transcoder.Transcoder;
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.TranscodingHints;
-import org.apache.batik.util.XMLResourceDescriptor;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.math3.stat.StatUtils;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.svg.SVGDocument;
-import org.w3c.dom.svg.SVGSVGElement;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.font.FontRenderContext;
@@ -39,7 +16,34 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
+import org.apache.batik.anim.dom.SVGDOMImplementation;
+import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.bridge.GVTBuilder;
+import org.apache.batik.bridge.UserAgentAdapter;
+import org.apache.batik.gvt.GraphicsNode;
+import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.batik.transcoder.Transcoder;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.TranscodingHints;
+import org.apache.batik.util.XMLResourceDescriptor;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.math3.stat.StatUtils;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGSVGElement;
+import pl.poznan.put.utility.ExecHelper;
 
+@Slf4j
 public final class SVGHelper {
   private static final NamespaceContext SVG_NAMESPACE = new SVGNamespace();
   private static final DOMImplementation DOM_IMPLEMENTATION =
@@ -76,10 +80,41 @@ public final class SVGHelper {
 
   public static byte[] export(final SVGDocument svgDocument, final Format format)
       throws IOException {
-    return SVGHelper.export(svgDocument, format, Collections.emptyMap());
+    if (format == Format.SVG) {
+      return SVGHelper.exportInternal(svgDocument, Format.SVG);
+    }
+
+    File inputFile = null;
+    File outputFile = null;
+
+    try {
+      inputFile = File.createTempFile("svg-helper", ".svg");
+      FileUtils.writeByteArrayToFile(inputFile, SVGHelper.export(svgDocument, Format.SVG));
+      outputFile = File.createTempFile("svg-helper", '.' + format.getExtension());
+
+      ExecHelper.execute(
+          "inkscape",
+          "--without-gui",
+          format.getInkscapeArgument(),
+          outputFile.getAbsolutePath(),
+          inputFile.getAbsolutePath());
+
+      return FileUtils.readFileToByteArray(outputFile);
+    } catch (final ExecuteException e) {
+      SVGHelper.log.warn("Failed to run inkscape to export image, will try to use Apache FOP");
+      return SVGHelper.exportInternal(svgDocument, format);
+    } finally {
+      FileUtils.deleteQuietly(inputFile);
+      FileUtils.deleteQuietly(outputFile);
+    }
   }
 
-  public static byte[] export(
+  public static byte[] exportInternal(final SVGDocument svgDocument, final Format format)
+      throws IOException {
+    return SVGHelper.exportInternal(svgDocument, format, Collections.emptyMap());
+  }
+
+  public static byte[] exportInternal(
       final SVGDocument svgDocument,
       final Format format,
       final Map<TranscodingHints.Key, Object> transcodingHints)

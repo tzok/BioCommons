@@ -25,23 +25,24 @@ public final class ExecHelper {
     super();
   }
 
-  public static String execute(
+  public static ExecutionResult execute(
       final File workingDirectory, final String command, final String... arguments)
       throws IOException {
     return ExecHelper.execute(workingDirectory, Collections.emptyMap(), command, arguments);
   }
 
-  public static String execute(final String command, final String... arguments) throws IOException {
+  public static ExecutionResult execute(final String command, final String... arguments)
+      throws IOException {
     return ExecHelper.execute(null, Collections.emptyMap(), command, arguments);
   }
 
-  public static String execute(
+  public static ExecutionResult execute(
       final Map<String, String> environment, final String command, final String... arguments)
       throws IOException {
     return ExecHelper.execute(null, environment, command, arguments);
   }
 
-  public static String execute(
+  public static ExecutionResult execute(
       @Nullable final File workingDirectory,
       final Map<String, String> environment,
       final String command,
@@ -81,14 +82,15 @@ public final class ExecHelper {
       }
 
       // execute the command
-      executor.execute(commandLine, environment);
+      final int exitCode = executor.execute(commandLine, environment);
 
       if (ExecHelper.LOGGER.isTraceEnabled()) {
         ExecHelper.LOGGER.trace("Standard output: {}", out);
         ExecHelper.LOGGER.trace("Standard error: {}", err);
       }
 
-      return out.toString(Charset.defaultCharset());
+      return new ExecutionResult(
+          exitCode, out.toString(Charset.defaultCharset()), err.toString(Charset.defaultCharset()));
     } catch (final IOException e) {
       ExecHelper.LOGGER.warn("Standard output: {}", out);
       ExecHelper.LOGGER.warn("Standard error: {}", err);
@@ -120,6 +122,32 @@ public final class ExecHelper {
       executor.execute(chmod);
     } catch (final IOException ignored) {
       // do nothing
+    }
+  }
+
+  public static final class ExecutionResult {
+    private final int exitCode;
+    private final String standardOutput;
+    private final String standardError;
+
+    private ExecutionResult(
+        final int exitCode, final String standardOutput, final String standardError) {
+      super();
+      this.exitCode = exitCode;
+      this.standardOutput = standardOutput;
+      this.standardError = standardError;
+    }
+
+    public int getExitCode() {
+      return exitCode;
+    }
+
+    public String getStandardOutput() {
+      return standardOutput;
+    }
+
+    public String getStandardError() {
+      return standardError;
     }
   }
 }
