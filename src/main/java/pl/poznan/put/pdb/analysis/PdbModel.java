@@ -380,4 +380,21 @@ public class PdbModel implements Serializable, ResidueCollection {
 
     return filteredMissing;
   }
+
+  @Override
+  public final boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if ((o == null) || (!getClass().equals(o.getClass()))) {
+      return false;
+    }
+    final PdbModel pdbModel = (PdbModel) o;
+    return Objects.equals(atoms, pdbModel.atoms);
+  }
+
+  @Override
+  public final int hashCode() {
+    return Objects.hash(atoms);
+  }
 }
