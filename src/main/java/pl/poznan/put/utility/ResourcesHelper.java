@@ -1,7 +1,5 @@
 package pl.poznan.put.utility;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,8 +7,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import org.apache.commons.io.IOUtils;
 
 public final class ResourcesHelper {
+  /**
+   * Load contents of a resource file available in the JAR of running process.
+   *
+   * @param resource Name of the resource.
+   * @return Contents of the file addressed by the resource name.
+   * @throws IOException If the file cannot be converted to {@link String}
+   */
   public static String loadResource(final String resource) throws IOException {
     final ClassLoader loader = ResourcesHelper.class.getClassLoader();
     try (InputStream stream = loader.getResourceAsStream(resource)) {
@@ -21,6 +27,13 @@ public final class ResourcesHelper {
     }
   }
 
+  /**
+   * Translate resource address to a URI.
+   *
+   * @param resource Name of the resource.
+   * @return URI of the resource.
+   * @throws URISyntaxException If the resource URI could not be created.
+   */
   public static URI loadResourceUri(final String resource) throws URISyntaxException {
     final ClassLoader loader = ResourcesHelper.class.getClassLoader();
     final URL url = loader.getResource(resource);

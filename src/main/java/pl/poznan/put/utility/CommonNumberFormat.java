@@ -5,6 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import org.apache.commons.math3.util.Precision;
 
 /**
  * A NumberFormat extension and a suitable static method to format numbers leaving at most three
@@ -15,6 +16,7 @@ import java.text.ParsePosition;
 public final class CommonNumberFormat extends NumberFormat {
   private static final long serialVersionUID = 1131105371632338733L;
   private static final CommonNumberFormat INSTANCE = new CommonNumberFormat();
+
   private final NumberFormat numberFormat;
 
   private CommonNumberFormat() {
@@ -24,9 +26,8 @@ public final class CommonNumberFormat extends NumberFormat {
     numberFormat = new DecimalFormat("###.##", symbols);
   }
 
-  /** Format the number such that at most three digits in fractional part are exposed. */
   public static String formatDouble(final double value) {
-    return CommonNumberFormat.INSTANCE.numberFormat.format(value);
+    return CommonNumberFormat.INSTANCE.numberFormat.format(Precision.round(value, 2));
   }
 
   @Override
