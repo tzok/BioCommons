@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.bridge.BridgeException;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.gvt.GraphicsNode;
@@ -145,6 +146,20 @@ public final class SVGHelper {
       return SVGHelper.emptyDocument();
     }
 
+    final Rectangle2D[] boxes = new Rectangle2D[svgs.size()];
+    final boolean[] isValid = new boolean[svgs.size()];
+
+    for (int i = 0, size = svgs.size(); i < size; i++) {
+      final SVGDocument svg = svgs.get(i);
+      try {
+        boxes[i] = SVGHelper.calculateBoundingBox(svg);
+        isValid[i] = true;
+      } catch (final BridgeException ignored) {
+        boxes[i] = new Rectangle2D.Double();
+        isValid[i] = false;
+      }
+    }
+
     final SVGDocument mergedSvg = svgs.get(0);
     final SVGSVGElement mergedRoot = mergedSvg.getRootElement();
     final double[] widths = new double[svgs.size()];
@@ -154,18 +169,20 @@ public final class SVGHelper {
     for (int i = 0; i < svgs.size(); i++) {
       final SVGDocument svg = svgs.get(i);
 
-      final Rectangle2D box = SVGHelper.calculateBoundingBox(svg);
-      widths[i] = box.getWidth() + box.getX();
-      heights[i] = box.getHeight() + box.getY();
+      if (isValid[i]) {
+        final Rectangle2D box = boxes[i];
+        widths[i] = box.getWidth() + box.getX();
+        heights[i] = box.getHeight() + box.getY();
 
-      final SVGSVGElement rootElement = svg.getRootElement();
-      rootElement.setAttribute("x", Double.toString(currentWidth));
+        final SVGSVGElement rootElement = svg.getRootElement();
+        rootElement.setAttribute("x", Double.toString(currentWidth));
 
-      currentWidth += widths[i];
+        currentWidth += widths[i];
 
-      if (i > 0) {
-        final Node importedNode = mergedSvg.importNode(svg.getDocumentElement(), true);
-        mergedRoot.appendChild(importedNode);
+        if (i > 0) {
+          final Node importedNode = mergedSvg.importNode(svg.getDocumentElement(), true);
+          mergedRoot.appendChild(importedNode);
+        }
       }
     }
 
