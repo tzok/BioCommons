@@ -1,21 +1,9 @@
 package pl.poznan.put.structure.tertiary;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.lang3.StringUtils;
-import pl.poznan.put.pdb.PdbParsingException;
-import pl.poznan.put.pdb.analysis.CifParser;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.pdb.analysis.PdbParser;
-import pl.poznan.put.pdb.analysis.StructureParser;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -25,6 +13,14 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.analysis.CifParser;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbParser;
+import pl.poznan.put.pdb.analysis.StructureParser;
 
 /**
  * A common manager of loaded PDB files shared between all classes.
@@ -106,7 +102,7 @@ public final class StructureManager {
     }
 
     final StructureParser parser;
-    final String fileContent = StructureManager.readFileUnzipIfNeeded(file);
+    final String fileContent = StructureManager.readFile(file);
     final String name = file.getName();
 
     if (name.endsWith(".cif") || name.endsWith(".cif.gz")) {
@@ -136,25 +132,14 @@ public final class StructureManager {
     return result;
   }
 
-  private static String readFileUnzipIfNeeded(final File file) throws IOException {
-    ByteArrayOutputStream copyStream = null;
-    FileInputStream inputStream = null;
+  private static String readFile(final File file) throws IOException {
+    final byte[] bytes = FileUtils.readFileToByteArray(file);
 
-    try {
-      inputStream = new FileInputStream(file);
-      copyStream = new ByteArrayOutputStream();
-      IOUtils.copy(inputStream, copyStream);
-      final byte[] byteArray = copyStream.toByteArray();
-
-      if (StructureManager.isGzipStream(byteArray)) {
-        return StructureManager.unzipContent(byteArray);
-      }
-
-      return copyStream.toString(StructureManager.ENCODING_UTF_8);
-    } finally {
-      IOUtils.closeQuietly(inputStream);
-      IOUtils.closeQuietly(copyStream);
+    if (StructureManager.isGzip(bytes)) {
+      return StructureManager.unzipContent(bytes);
     }
+
+    return new String(bytes, Charset.defaultCharset());
   }
 
   private static boolean isCif(final String fileContent) {
@@ -202,7 +187,7 @@ public final class StructureManager {
     }
   }
 
-  private static boolean isGzipStream(final byte[] bytes) {
+  private static boolean isGzip(final byte[] bytes) {
     if (bytes.length < 2) {
       return false;
     }
@@ -211,42 +196,27 @@ public final class StructureManager {
     return head == GZIPInputStream.GZIP_MAGIC;
   }
 
-  private static String unzipContent(final byte[] byteArray) throws IOException {
-    ByteArrayInputStream inputStream = null;
-    GZIPInputStream gzipInputStream = null;
-
-    try {
-      inputStream = new ByteArrayInputStream(byteArray);
-      gzipInputStream = new GZIPInputStream(inputStream);
+  private static String unzipContent(final byte[] bytes) throws IOException {
+    try (InputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(bytes))) {
       return IOUtils.toString(gzipInputStream, Charset.defaultCharset());
-    } finally {
-      IOUtils.closeQuietly(gzipInputStream);
-      IOUtils.closeQuietly(inputStream);
     }
   }
 
   public static List<PdbModel> loadStructure(final String pdbId)
-      throws IOException, PdbParsingException, MalformedURLException {
-    InputStream stream = null;
+      throws IOException, PdbParsingException {
+    final URL url =
+        new URL(
+            "http://www.rcsb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=YES&structureId="
+                + pdbId);
 
-    try {
-      final URL url =
-          new URL(
-              "http://www.rcsb.org/pdb/download/downloadFile"
-                  + ".do?fileFormat=pdb&compression=NO&structureId="
-                  + pdbId);
-      stream = url.openStream();
-      final String pdbContent = IOUtils.toString(stream, StructureManager.ENCODING_UTF_8);
+    final String pdbContent = StructureManager.unzipContent(IOUtils.toByteArray(url));
 
-      final File pdbFile = File.createTempFile("mcq", ".pdb");
-      FileUtils.writeStringToFile(pdbFile, pdbContent, StructureManager.ENCODING_UTF_8);
+    final File pdbFile = File.createTempFile("bc", ".pdb");
+    FileUtils.writeStringToFile(pdbFile, pdbContent, StructureManager.ENCODING_UTF_8);
 
-      final List<PdbModel> models = StructureManager.PDB_PARSER.parse(pdbContent);
-      StructureManager.storeStructureInfo(pdbFile, models);
-      return models;
-    } finally {
-      IOUtils.closeQuietly(stream);
-    }
+    final List<PdbModel> models = StructureManager.PDB_PARSER.parse(pdbContent);
+    StructureManager.storeStructureInfo(pdbFile, models);
+    return models;
   }
 
   public static void remove(final File path) {
