@@ -1,17 +1,5 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.ResidueCollection;
-import pl.poznan.put.structure.secondary.BasePair;
-import pl.poznan.put.structure.secondary.ClassifiedBasePair;
-import pl.poznan.put.structure.secondary.DotBracketSymbol;
-import pl.poznan.put.structure.secondary.pseudoknots.Region;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +12,17 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.pdb.analysis.ResidueCollection;
+import pl.poznan.put.structure.secondary.BasePair;
+import pl.poznan.put.structure.secondary.ClassifiedBasePair;
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
+import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
 public class BpSeq implements Serializable {
   private static final long serialVersionUID = 7463893480150381692L;
@@ -133,7 +132,8 @@ public class BpSeq implements Serializable {
     return new BpSeq(bpseqEntries);
   }
 
-  public static BpSeq fromDotBracket(final DotBracket db) throws InvalidStructureException {
+  public static BpSeq fromDotBracket(final DotBracketInterface db)
+      throws InvalidStructureException {
     final List<Entry> entries = new ArrayList<>();
 
     for (final DotBracketSymbol symbol : db.getSymbols()) {

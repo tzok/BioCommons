@@ -1,5 +1,15 @@
 package pl.poznan.put.structure.secondary.formats;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,16 +19,7 @@ import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
 public class Ct implements Serializable {
   private static final Logger LOGGER = LoggerFactory.getLogger(Ct.class);
@@ -278,7 +279,7 @@ public class Ct implements Serializable {
     Ct.printComments = printComments;
   }
 
-  public int getStrandCount() {
+  public final int getStrandCount() {
     int count = 0;
     for (final Entry entry : entries) {
       if (entry.getAfter() == 0) {
@@ -288,8 +289,36 @@ public class Ct implements Serializable {
     return count;
   }
 
-  public Iterable<Entry> getEntries() {
+  public final Iterable<Entry> getEntries() {
     return Collections.unmodifiableSortedSet(entries);
+  }
+
+  public final void removeIsolatedPairs() throws InvalidStructureException {
+    final BpSeq bpSeq = BpSeq.fromCt(this);
+    final List<Region> regions = Region.createRegions(bpSeq);
+    regions.forEach(
+        region -> {
+          if (region.getLength() == 1) {
+            removePair(region.getEntries().get(0).getIndex());
+          }
+        });
+  }
+
+  private void removePair(final int index) {
+    final Optional<Entry> entry = entries.stream().filter(e -> e.index == index).findFirst();
+    final Optional<Entry> paired = entries.stream().filter(e -> e.pair == index).findFirst();
+
+    if (entry.isPresent()) {
+      final Entry o = entry.get();
+      entries.remove(o);
+      entries.add(new Entry(o.index, 0, o.before, o.after, o.original, o.seq, o.comment));
+    }
+
+    if (paired.isPresent()) {
+      final Entry o = paired.get();
+      entries.remove(o);
+      entries.add(new Entry(o.index, 0, o.before, o.after, o.original, o.seq, o.comment));
+    }
   }
 
   public static class Entry implements Serializable, Comparable<Entry> {
@@ -336,32 +365,32 @@ public class Ct implements Serializable {
       this.comment = comment;
     }
 
-    public int getIndex() {
+    public final int getIndex() {
       return index;
     }
 
-    public int getPair() {
+    public final int getPair() {
       return pair;
     }
 
-    public int getBefore() {
+    public final int getBefore() {
       return before;
     }
 
-    public int getAfter() {
+    public final int getAfter() {
       return after;
     }
 
-    public int getOriginal() {
+    public final int getOriginal() {
       return original;
     }
 
-    public char getSeq() {
+    public final char getSeq() {
       return seq;
     }
 
     @Override
-    public int compareTo(final Entry t) {
+    public final int compareTo(final Entry t) {
       if (t == null) {
         throw new NullPointerException();
       }
@@ -380,7 +409,7 @@ public class Ct implements Serializable {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
       final int prime = 31;
       int result = 1;
       result = (prime * result) + after;
@@ -394,7 +423,7 @@ public class Ct implements Serializable {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public final boolean equals(final Object o) {
       if (this == o) {
         return true;
       }
@@ -425,7 +454,7 @@ public class Ct implements Serializable {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
       final StringBuilder builder = new StringBuilder();
       builder.append(index);
       builder.append(' ');
@@ -444,10 +473,14 @@ public class Ct implements Serializable {
       }
       return builder.toString();
     }
+
+    public boolean isPaired() {
+      return pair != 0;
+    }
   }
 
   @Override
-  public String toString() {
+  public final String toString() {
     final StringBuilder builder = new StringBuilder();
     builder.append(entries.size());
     builder.append('\n');

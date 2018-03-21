@@ -9,12 +9,12 @@ import pl.poznan.put.structure.secondary.DotBracketSymbol;
 public class Strand implements Serializable {
   private static final long serialVersionUID = 8267967642039631099L;
 
-  private final DotBracket parent;
+  private final DotBracketInterface parent;
   private final String name;
   private final int from;
   private final int to;
 
-  public Strand(final DotBracket parent, final String name, final int from, final int to) {
+  public Strand(final DotBracketInterface parent, final String name, final int from, final int to) {
     super();
     this.parent = parent;
     this.name = name;
@@ -150,7 +150,7 @@ public class Strand implements Serializable {
     return new String(cs);
   }
 
-  public final DotBracket getParent() {
+  public final DotBracketInterface getParent() {
     return parent;
   }
 

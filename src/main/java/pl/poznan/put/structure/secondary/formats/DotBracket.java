@@ -1,12 +1,5 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.TreeBidiMap;
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pl.poznan.put.structure.secondary.DotBracketSymbol;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,8 +11,14 @@ import java.util.Objects;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.TreeBidiMap;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
-public class DotBracket implements Serializable {
+public class DotBracket implements DotBracketInterface, Serializable {
   private static final Logger LOGGER = LoggerFactory.getLogger(DotBracket.class);
   private static final long serialVersionUID = -517503434874402102L;
 
@@ -177,6 +176,7 @@ public class DotBracket implements Serializable {
     return dotBracket;
   }
 
+  @Override
   public final String toStringWithStrands() {
     final StringBuilder builder = new StringBuilder(sequence.length() + structure.length());
     for (final Strand strand : strands) {
@@ -208,10 +208,12 @@ public class DotBracket implements Serializable {
     return ">strand\n" + sequence + '\n' + structure;
   }
 
+  @Override
   public final String getSequence() {
     return sequence;
   }
 
+  @Override
   public final String getStructure() {
     return structure;
   }
@@ -220,11 +222,13 @@ public class DotBracket implements Serializable {
     return structure.length();
   }
 
+  @Override
   public final DotBracketSymbol getSymbol(final int index) {
     assert index < symbols.size();
     return symbols.get(index);
   }
 
+  @Override
   public final List<DotBracketSymbol> getSymbols() {
     return Collections.unmodifiableList(symbols);
   }
@@ -254,7 +258,8 @@ public class DotBracket implements Serializable {
     }
   }
 
-  public final List<CombinedStrand> combineStrands() {
+  @Override
+  public List<? extends CombinedStrand> combineStrands() {
     final List<CombinedStrand> result = new ArrayList<>();
     final List<Strand> toCombine = new ArrayList<>();
     int level = 0;

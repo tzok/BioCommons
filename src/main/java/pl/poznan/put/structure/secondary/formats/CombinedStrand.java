@@ -3,18 +3,57 @@ package pl.poznan.put.structure.secondary.formats;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 @EqualsAndHashCode
-public class CombinedStrand {
+public class CombinedStrand implements DotBracketInterface {
   private final List<Strand> strands;
+  protected final List<DotBracketSymbol> symbols;
 
   public CombinedStrand(final List<Strand> strands) {
     super();
     this.strands = new ArrayList<>(strands);
+    symbols = CombinedStrand.reindexSymbols(strands);
+  }
+
+  private static List<DotBracketSymbol> reindexSymbols(final Iterable<Strand> strands) {
+    final Map<DotBracketSymbol, Integer> symbolToIndex = new HashMap<>();
+    int i = 0;
+    for (final Strand strand : strands) {
+      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+        symbolToIndex.put(symbol, i);
+        i += 1;
+      }
+    }
+
+    final List<DotBracketSymbol> symbols = new ArrayList<>();
+    for (final Strand strand : strands) {
+      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+        final char sequence = symbol.getSequence();
+        final char structure = symbol.getStructure();
+        final int index = symbolToIndex.get(symbol);
+        final DotBracketSymbol renumbered = new DotBracketSymbol(sequence, structure, index);
+        symbols.add(renumbered);
+      }
+    }
+
+    for (final Strand strand : strands) {
+      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+        if (symbol.isPairing()) {
+          final DotBracketSymbol u = symbols.get(symbolToIndex.get(symbol));
+          final DotBracketSymbol v = symbols.get(symbolToIndex.get(symbol.getPair()));
+          u.setPair(v);
+          v.setPair(u);
+        }
+      }
+    }
+
+    return symbols;
   }
 
   public final List<Strand> getStrands() {
@@ -29,12 +68,14 @@ public class CombinedStrand {
     return length;
   }
 
+  @Override
   public final List<DotBracketSymbol> getSymbols() {
-    final List<DotBracketSymbol> result = new ArrayList<>();
-    for (final Strand strand : strands) {
-      result.addAll(strand.getSymbols());
-    }
-    return result;
+    return Collections.unmodifiableList(symbols);
+  }
+
+  @Override
+  public final DotBracketSymbol getSymbol(final int index) {
+    return symbols.get(index);
   }
 
   public final Iterable<TerminalMissing> getTerminalMissing() {
@@ -98,6 +139,21 @@ public class CombinedStrand {
     return ">strand_" + builder + '\n' + getSequence(false) + '\n' + getStructure(false);
   }
 
+  @Override
+  public final String toStringWithStrands() {
+    final StringBuilder builder = new StringBuilder();
+    for (final Strand strand : strands) {
+      builder.append(strand);
+      builder.append('\n');
+    }
+    return builder.toString();
+  }
+
+  @Override
+  public final List<? extends CombinedStrand> combineStrands() {
+    return Collections.singletonList(this);
+  }
+
   public final String getSequence(final boolean separateStrands) {
     final StringBuilder builder = new StringBuilder();
     for (final Strand strand : strands) {
@@ -118,6 +174,16 @@ public class CombinedStrand {
       }
     }
     return builder.toString();
+  }
+
+  @Override
+  public final String getSequence() {
+    return getSequence(false);
+  }
+
+  @Override
+  public final String getStructure() {
+    return getStructure(false);
   }
 
   /**

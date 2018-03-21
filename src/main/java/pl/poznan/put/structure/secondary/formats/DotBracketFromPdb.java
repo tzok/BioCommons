@@ -19,14 +19,14 @@ import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
-public class DotBracketFromPdb extends DotBracket {
+public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbInterface {
   private static final long serialVersionUID = -4415694977869681897L;
 
   private final Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue = new HashMap<>();
   private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<>();
 
   public DotBracketFromPdb(
-      final DotBracket dotBracket,
+      final DotBracketInterface dotBracket,
       final PdbModel model,
       final Iterable<ClassifiedBasePair> nonCanonical)
       throws InvalidStructureException {
@@ -108,14 +108,17 @@ public class DotBracketFromPdb extends DotBracket {
     }
   }
 
+  @Override
   public final PdbResidueIdentifier getResidueIdentifier(final DotBracketSymbol symbol) {
     return symbolToResidue.get(symbol);
   }
 
+  @Override
   public final DotBracketSymbol getSymbol(final PdbResidueIdentifier residueIdentifier) {
     return residueToSymbol.get(residueIdentifier);
   }
 
+  @Override
   public final boolean contains(final PdbResidueIdentifier residueIdentifier) {
     return residueToSymbol.containsKey(residueIdentifier);
   }
@@ -125,7 +128,17 @@ public class DotBracketFromPdb extends DotBracket {
     return symbolToResidue.get(symbol).getResidueNumber();
   }
 
-  public final List<CombinedStrand> combineStrands(
+  @Override
+  public final List<? extends CombinedStrand> combineStrands() {
+    final List<CombinedStrand> result = new ArrayList<>();
+    for (final CombinedStrand combinedStrand : super.combineStrands()) {
+      result.add(new CombinedStrandFromPdb(combinedStrand.getStrands(), symbolToResidue));
+    }
+    return result;
+  }
+
+  @Override
+  public final List<CombinedStrandFromPdb> combineStrands(
       final List<ClassifiedBasePair> nonCanonicalPairs) {
     // map containing links between strands
     final Map<Strand, Set<Strand>> strandMap = new LinkedHashMap<>();
@@ -177,15 +190,15 @@ public class DotBracketFromPdb extends DotBracket {
     }
 
     // prepare the final result
-    final List<CombinedStrand> result = new ArrayList<>(strandClusters.size());
+    final List<CombinedStrandFromPdb> result = new ArrayList<>(strandClusters.size());
     for (final Set<Strand> strandCluster : strandClusters) {
-      result.add(new CombinedStrand(new ArrayList<>(strandCluster)));
+      result.add(new CombinedStrandFromPdb(new ArrayList<>(strandCluster), symbolToResidue));
     }
 
     // add strands without inter-strand connections
     for (final Strand strand : strands) {
       if (!solutionMap.containsKey(strand)) {
-        result.add(new CombinedStrand(Collections.singletonList(strand)));
+        result.add(new CombinedStrandFromPdb(Collections.singletonList(strand), symbolToResidue));
       }
     }
     return result;
