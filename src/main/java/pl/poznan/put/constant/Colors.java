@@ -110,6 +110,7 @@ public final class Colors {
 
   public static Color interpolateColor(final double value, final double min, final double max) {
     double v = value;
+    assert min <= max;
 
     if (v < min) {
       v = min;
