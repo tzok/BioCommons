@@ -101,7 +101,7 @@ public final class SVGHelper {
           inputFile.getAbsolutePath());
 
       return FileUtils.readFileToByteArray(outputFile);
-    } catch (final ExecuteException e) {
+    } catch (final ExecuteException ignored) {
       SVGHelper.log.warn("Failed to run inkscape to export image, will try to use Apache FOP");
       return SVGHelper.exportInternal(svgDocument, format);
     } finally {
@@ -110,15 +110,13 @@ public final class SVGHelper {
     }
   }
 
-  public static byte[] exportInternal(final SVGDocument svgDocument, final Format format)
+  private static byte[] exportInternal(final SVGDocument svgDocument, final Format format)
       throws IOException {
     return SVGHelper.exportInternal(svgDocument, format, Collections.emptyMap());
   }
 
-  public static byte[] exportInternal(
-      final SVGDocument svgDocument,
-      final Format format,
-      final Map<TranscodingHints.Key, Object> transcodingHints)
+  private static byte[] exportInternal(final SVGDocument svgDocument, final Format format,
+                                       final Map<TranscodingHints.Key, Object> transcodingHints)
       throws IOException {
     final ByteArrayOutputStream stream = new ByteArrayOutputStream();
     final Writer writer = new OutputStreamWriter(stream, Charset.defaultCharset());
@@ -195,13 +193,13 @@ public final class SVGHelper {
     return mergedSvg;
   }
 
-  public static SVGDocument emptyDocument() {
+  private static SVGDocument emptyDocument() {
     return (SVGDocument)
         SVGHelper.DOM_IMPLEMENTATION.createDocument(
             SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
   }
 
-  public static Rectangle2D calculateBoundingBox(final Document doc) {
+  private static Rectangle2D calculateBoundingBox(final Document doc) {
     final GVTBuilder builder = new GVTBuilder();
     final BridgeContext ctx = new BridgeContext(new UserAgentAdapter());
     final GraphicsNode gvtRoot = builder.build(ctx, doc);

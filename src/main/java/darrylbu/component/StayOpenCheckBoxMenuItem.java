@@ -3,8 +3,6 @@ package darrylbu.component;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.MenuElement;
 import javax.swing.MenuSelectionManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  * An extension of JCheckBoxMenuItem that doesn't close the menu when selected.
@@ -21,12 +19,9 @@ public class StayOpenCheckBoxMenuItem extends JCheckBoxMenuItem {
 
     getModel()
         .addChangeListener(
-            new ChangeListener() {
-              @Override
-              public void stateChanged(final ChangeEvent changeEvent) {
-                if (getModel().isArmed() && isShowing()) {
-                  path = MenuSelectionManager.defaultManager().getSelectedPath();
-                }
+            event -> {
+              if (getModel().isArmed() && isShowing()) {
+                path = MenuSelectionManager.defaultManager().getSelectedPath();
               }
             });
   }

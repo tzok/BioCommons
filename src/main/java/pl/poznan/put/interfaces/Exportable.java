@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public interface Exportable {
-  void export(OutputStream stream) throws IOException;
+  void export(OutputStream stream);
 
   ExportFormat getExportFormat();
 

@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class ExecHelper {
-  public static final Logger LOGGER = LoggerFactory.getLogger(ExecHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExecHelper.class);
 
   private ExecHelper() {
     super();
@@ -42,11 +42,8 @@ public final class ExecHelper {
     return ExecHelper.execute(null, environment, command, arguments);
   }
 
-  public static ExecutionResult execute(
-      @Nullable final File workingDirectory,
-      final Map<String, String> environment,
-      final String command,
-      final String... arguments)
+  private static ExecutionResult execute(@Nullable final File workingDirectory, final Map<String, String> environment,
+                                         final String command, final String... arguments)
       throws IOException {
     // run `chmod a+x` on the command
     ExecHelper.makeExecutable(command);

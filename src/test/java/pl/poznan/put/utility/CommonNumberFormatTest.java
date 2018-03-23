@@ -6,7 +6,7 @@ import org.junit.Test;
 
 public class CommonNumberFormatTest {
   @Test
-  public void formatDouble() {
+  public final void formatDouble() {
     assertEquals("123", CommonNumberFormat.formatDouble(123.0));
     assertEquals("123.4", CommonNumberFormat.formatDouble(123.4));
     assertEquals("123.45", CommonNumberFormat.formatDouble(123.45));
