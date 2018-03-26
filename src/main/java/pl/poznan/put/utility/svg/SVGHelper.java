@@ -32,6 +32,7 @@ import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.TranscodingHints;
+import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.io.FileUtils;
@@ -115,8 +116,10 @@ public final class SVGHelper {
     return SVGHelper.exportInternal(svgDocument, format, Collections.emptyMap());
   }
 
-  private static byte[] exportInternal(final SVGDocument svgDocument, final Format format,
-                                       final Map<TranscodingHints.Key, Object> transcodingHints)
+  private static byte[] exportInternal(
+      final SVGDocument svgDocument,
+      final Format format,
+      final Map<TranscodingHints.Key, Object> transcodingHints)
       throws IOException {
     final ByteArrayOutputStream stream = new ByteArrayOutputStream();
     final Writer writer = new OutputStreamWriter(stream, Charset.defaultCharset());
@@ -153,6 +156,10 @@ public final class SVGHelper {
         boxes[i] = SVGHelper.calculateBoundingBox(svg);
         isValid[i] = true;
       } catch (final BridgeException ignored) {
+        // do nothing
+      }
+
+      if (boxes[i] == null) {
         boxes[i] = new Rectangle2D.Double();
         isValid[i] = false;
       }
@@ -173,7 +180,7 @@ public final class SVGHelper {
         heights[i] = box.getHeight() + box.getY();
 
         final SVGSVGElement rootElement = svg.getRootElement();
-        rootElement.setAttribute("x", Double.toString(currentWidth));
+        rootElement.setAttribute(SVGConstants.SVG_X_ATTRIBUTE, Double.toString(currentWidth));
 
         currentWidth += widths[i];
 
@@ -186,14 +193,15 @@ public final class SVGHelper {
 
     final double mergedWidth = StatUtils.sum(widths);
     final double mergedHeight = StatUtils.max(heights);
-    mergedRoot.setAttribute("width", Double.toString(mergedWidth));
-    mergedRoot.setAttribute("height", Double.toString(mergedHeight));
-    mergedRoot.setAttribute("viewBox", String.format("0 0 %s %s", mergedWidth, mergedHeight));
+    mergedRoot.setAttribute(SVGConstants.SVG_WIDTH_ATTRIBUTE, Double.toString(mergedWidth));
+    mergedRoot.setAttribute(SVGConstants.SVG_HEIGHT_ATTRIBUTE, Double.toString(mergedHeight));
+    mergedRoot.setAttribute(
+        SVGConstants.SVG_VIEW_BOX_ATTRIBUTE, String.format("0 0 %s %s", mergedWidth, mergedHeight));
 
     return mergedSvg;
   }
 
-  private static SVGDocument emptyDocument() {
+  public static SVGDocument emptyDocument() {
     return (SVGDocument)
         SVGHelper.DOM_IMPLEMENTATION.createDocument(
             SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -204,6 +212,18 @@ public final class SVGHelper {
     final BridgeContext ctx = new BridgeContext(new UserAgentAdapter());
     final GraphicsNode gvtRoot = builder.build(ctx, doc);
     return gvtRoot.getSensitiveBounds();
+  }
+
+  public static double getWidth(final SVGDocument document) {
+    final SVGSVGElement rootElement = document.getRootElement();
+    final String attribute = rootElement.getAttribute(SVGConstants.SVG_WIDTH_ATTRIBUTE);
+    return Double.parseDouble(attribute);
+  }
+
+  public static double getHeight(final SVGDocument document) {
+    final SVGSVGElement rootElement = document.getRootElement();
+    final String attribute = rootElement.getAttribute(SVGConstants.SVG_HEIGHT_ATTRIBUTE);
+    return Double.parseDouble(attribute);
   }
 
   private static class SVGNamespace implements NamespaceContext {

@@ -37,8 +37,6 @@ public class Quadruplet<T> {
   }
 
   public final T get(final int index) {
-    assert (index >= 0) && (index <= 3);
-
     switch (index) {
       case 0:
         return a;
@@ -49,10 +47,8 @@ public class Quadruplet<T> {
       case 3:
         return d;
       default:
-        break;
+        throw new IllegalArgumentException(
+            "UniTypeQuadruplet.get(index) was called with index < 0 or index > 3");
     }
-
-    throw new IllegalArgumentException(
-        "UniTypeQuadruplet.get(index) was called with index < 0 or index > 3");
   }
 }

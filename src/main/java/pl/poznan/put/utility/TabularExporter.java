@@ -11,7 +11,8 @@ public final class TabularExporter {
     super();
   }
 
-  public static void export(final TableModel tableModel, final OutputStream stream) throws IOException {
+  public static void export(final TableModel tableModel, final OutputStream stream)
+      throws IOException {
     final CsvWriter csvWriter = new CsvWriter(stream, ',', Charset.forName("UTF-8"));
 
     for (int i = 0; i < tableModel.getColumnCount(); i++) {

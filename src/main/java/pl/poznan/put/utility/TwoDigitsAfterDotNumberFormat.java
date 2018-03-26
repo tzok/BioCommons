@@ -13,13 +13,13 @@ import org.apache.commons.math3.util.Precision;
  *
  * @author tzok
  */
-public final class CommonNumberFormat extends NumberFormat {
+public final class TwoDigitsAfterDotNumberFormat extends NumberFormat {
   private static final long serialVersionUID = 1131105371632338733L;
-  private static final CommonNumberFormat INSTANCE = new CommonNumberFormat();
+  private static final TwoDigitsAfterDotNumberFormat INSTANCE = new TwoDigitsAfterDotNumberFormat();
 
   private final NumberFormat numberFormat;
 
-  private CommonNumberFormat() {
+  private TwoDigitsAfterDotNumberFormat() {
     super();
     final DecimalFormatSymbols symbols = new DecimalFormatSymbols();
     symbols.setDecimalSeparator('.');
@@ -27,7 +27,7 @@ public final class CommonNumberFormat extends NumberFormat {
   }
 
   public static String formatDouble(final double value) {
-    return CommonNumberFormat.INSTANCE.numberFormat.format(Precision.round(value, 2));
+    return TwoDigitsAfterDotNumberFormat.INSTANCE.numberFormat.format(Precision.round(value, 2));
   }
 
   @Override
