@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
@@ -29,6 +30,7 @@ public class PdbModel implements Serializable, ResidueCollection {
   protected final PdbRemark2Line resolutionLine;
   protected final int modelNumber;
   protected final List<PdbModresLine> modifiedResidues;
+  @Getter protected final String title;
   private final List<PdbChain> chains = new ArrayList<>();
   private final List<PdbResidue> residues = new ArrayList<>();
   private final Collection<PdbResidueIdentifier> missingResiduesIdentifiers = new HashSet<>();
@@ -46,7 +48,8 @@ public class PdbModel implements Serializable, ResidueCollection {
         1,
         atoms,
         Collections.emptyList(),
-        Collections.emptyList());
+        Collections.emptyList(),
+        "");
   }
 
   public PdbModel(
@@ -56,9 +59,11 @@ public class PdbModel implements Serializable, ResidueCollection {
       final int modelNumber,
       final List<PdbAtomLine> atoms,
       final List<PdbModresLine> modifiedResidues,
-      final List<PdbRemark465Line> missingResidues)
+      final List<PdbRemark465Line> missingResidues,
+      final String title)
       throws PdbParsingException {
     super();
+    this.title = title;
     this.headerLine = headerLine;
     this.experimentalDataLine = experimentalDataLine;
     this.resolutionLine = resolutionLine;
@@ -348,7 +353,8 @@ public class PdbModel implements Serializable, ResidueCollection {
         modelNumber,
         filteredAtoms,
         modifiedResidues,
-        filteredMissing);
+        filteredMissing,
+        title);
   }
 
   protected final List<PdbAtomLine> filterAtoms(final MoleculeType moleculeType) {
