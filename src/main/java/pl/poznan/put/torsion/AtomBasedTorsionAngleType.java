@@ -1,5 +1,12 @@
 package pl.poznan.put.torsion;
 
+import java.util.List;
+import java.util.Objects;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.poznan.put.atom.AtomName;
@@ -7,14 +14,6 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.types.Quadruplet;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import java.util.List;
-import java.util.Objects;
 
 @Data
 @NoArgsConstructor

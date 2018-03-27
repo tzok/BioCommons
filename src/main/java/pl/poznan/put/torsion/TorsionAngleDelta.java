@@ -114,8 +114,8 @@ public class TorsionAngleDelta {
         return isDisplayable ? "" : null;
       case BOTH_VALID:
         return isDisplayable
-            ? AngleFormat.formatDisplayShort(delta.getRadians())
-            : AngleFormat.formatExport(delta.getRadians());
+            ? AngleFormat.degreesRoundedToHundredth(delta.getRadians())
+            : AngleFormat.degrees(delta.getRadians());
       case TARGET_INVALID:
         return "Missing atoms in target";
       case MODEL_INVALID:
