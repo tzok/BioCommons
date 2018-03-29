@@ -1,16 +1,15 @@
 package pl.poznan.put.circular;
 
-import org.apache.commons.math3.util.MathUtils;
-import pl.poznan.put.circular.enums.ValueType;
-import pl.poznan.put.utility.AngleFormat;
-import pl.poznan.put.utility.CommonNumberFormat;
-
+import java.io.Serializable;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
-import java.util.Objects;
+import org.apache.commons.math3.util.MathUtils;
+import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.utility.AngleFormat;
+import pl.poznan.put.utility.TwoDigitsAfterDotNumberFormat;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
@@ -62,7 +61,8 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
     if (isValid()) {
       return String.format(
           "%s rad, %s",
-          CommonNumberFormat.formatDouble(radians), AngleFormat.formatDisplayShort(radians));
+          TwoDigitsAfterDotNumberFormat.formatDouble(radians),
+          AngleFormat.degreesRoundedToHundredth(radians));
     }
     return "invalid";
   }

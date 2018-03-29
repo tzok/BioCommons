@@ -1,13 +1,12 @@
 package pl.poznan.put.circular;
 
-import org.apache.commons.math3.util.MathUtils;
-import org.apache.commons.math3.util.Precision;
-import pl.poznan.put.circular.exception.InvalidCircularValueException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.math3.util.MathUtils;
+import org.apache.commons.math3.util.Precision;
+import pl.poznan.put.circular.exception.InvalidCircularValueException;
 
 public class Histogram {
   private final Collection<Bin> histogram = new ArrayList<>();
