@@ -103,7 +103,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
     for (final PdbChain chain : model.getChains()) {
       end += chain.getResidues().size();
-      strands.add(new Strand(this, String.format("strand_%s", chain.getIdentifier()), start, end));
+      strands.add(new StrandView(chain.getIdentifier(), this, start, end));
       start = end;
     }
   }
@@ -124,7 +124,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
   }
 
   @Override
-  protected final int getCtOriginalColumn(final DotBracketSymbol symbol) {
+  public final int getRealSymbolIndex(final DotBracketSymbol symbol) {
     return symbolToResidue.get(symbol).getResidueNumber();
   }
 
@@ -145,8 +145,9 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
     // link strands connected by canonical base pairs
     for (final Strand strand : strands) {
-      for (final DotBracketSymbol symbol : strand.getSymbols()) {
-        if (symbol.isPairing() && !strand.contains(symbol.getPair())) {
+      final List<DotBracketSymbol> strandSymbols = strand.getSymbols();
+      for (final DotBracketSymbol symbol : strandSymbols) {
+        if (symbol.isPairing() && !strandSymbols.contains(symbol.getPair())) {
           linkStrands(strand, symbol.getPair(), strandMap);
         }
       }
@@ -160,7 +161,8 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
           residueToSymbol.get(nonCanonicalPair.getBasePair().getRight());
 
       for (final Strand strand : strands) {
-        if (strand.contains(leftSymbol) && !strand.contains(rightSymbol)) {
+        final List<DotBracketSymbol> strandSymbols = strand.getSymbols();
+        if (strandSymbols.contains(leftSymbol) && !strandSymbols.contains(rightSymbol)) {
           linkStrands(strand, rightSymbol, strandMap);
         }
       }
@@ -209,7 +211,8 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
       final DotBracketSymbol symbolInSecondStrand,
       final Map<Strand, Set<Strand>> strandMap) {
     for (final Strand secondStrand : strands) {
-      if (!secondStrand.equals(firstStrand) && secondStrand.contains(symbolInSecondStrand)) {
+      if (!secondStrand.equals(firstStrand)
+          && secondStrand.getSymbols().contains(symbolInSecondStrand)) {
         if (!strandMap.containsKey(firstStrand)) {
           strandMap.put(firstStrand, new LinkedHashSet<>());
         }

@@ -55,7 +55,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
     buildSymbolList();
     analyzePairing();
 
-    strands.add(new Strand(this, "", 0, structure.length()));
+    strands.add(new StrandView("", this, 0, structure.length()));
   }
 
   private void buildSymbolList() {
@@ -149,7 +149,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
         throw new InvalidStructureException("Invalid dot-bracket string:\n" + data);
       }
 
-      strandNames.add(strandName);
+      strandNames.add(strandName.replaceFirst("strand_", ""));
       sequenceBuilder.append(sequence);
       structureBuilder.append(structure);
 
@@ -169,7 +169,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
     int index = 0;
     for (final Pair<Integer, Integer> pair : pairBeginEnd) {
       dotBracket.strands.add(
-          new Strand(dotBracket, strandNames.get(index), pair.getLeft(), pair.getRight()));
+          new StrandView(strandNames.get(index), dotBracket, pair.getLeft(), pair.getRight()));
       index += 1;
     }
 
@@ -233,6 +233,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
     return Collections.unmodifiableList(symbols);
   }
 
+  @Override
   public final List<Strand> getStrands() {
     return Collections.unmodifiableList(strands);
   }
@@ -249,7 +250,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
 
     for (final Ct.Entry e : ct.getEntries()) {
       if (e.getAfter() == 0) {
-        final Strand strand = new Strand(this, "", start, i + 1);
+        final Strand strand = new StrandView("", this, start, i + 1);
         strands.add(strand);
         start = i + 1;
       }
@@ -281,7 +282,8 @@ public class DotBracket implements DotBracketInterface, Serializable {
     return result;
   }
 
-  protected int getCtOriginalColumn(final DotBracketSymbol symbol) {
+  @Override
+  public int getRealSymbolIndex(final DotBracketSymbol symbol) {
     return symbol.getIndex() + 1;
   }
 }

@@ -254,18 +254,21 @@ public class Ct implements Serializable {
     return new Ct(ctEntries);
   }
 
-  public static Ct fromDotBracket(final DotBracket dotBracket) throws InvalidStructureException {
+  public static Ct fromDotBracket(final DotBracketInterface dotBracket)
+      throws InvalidStructureException {
     final List<Entry> entries = new ArrayList<>();
 
-    for (final Strand s : dotBracket.getStrands()) {
-      for (int i = 0, j = s.getFrom(); j < s.getTo(); i++, j++) {
-        final DotBracketSymbol symbol = dotBracket.getSymbol(j);
+    for (final Strand strand : dotBracket.getStrands()) {
+      final List<DotBracketSymbol> symbols = strand.getSymbols();
+
+      for (int i = 0, symbolsSize = symbols.size(); i < symbolsSize; i++) {
+        final DotBracketSymbol symbol = symbols.get(i);
         final DotBracketSymbol pair = symbol.getPair();
 
         final int index = symbol.getIndex() + 1;
         final int pairIndex = (pair != null) ? (pair.getIndex() + 1) : 0;
-        final int after = (j == (s.getTo() - 1)) ? 0 : (i + 2);
-        final int original = dotBracket.getCtOriginalColumn(symbol);
+        final int after = (i == (symbolsSize - 1)) ? 0 : (i + 2);
+        final int original = dotBracket.getRealSymbolIndex(symbol);
         final char seq = symbol.getSequence();
 
         entries.add(new Entry(index, pairIndex, i, after, original, seq));

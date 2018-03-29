@@ -1,8 +1,9 @@
 package pl.poznan.put.pdb;
 
-import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Objects;
+import javax.annotation.Nonnull;
+import org.apache.commons.lang3.StringUtils;
 
 public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier>, Serializable {
   private static final long serialVersionUID = -573135765487167710L;
@@ -13,6 +14,7 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier>, S
   private final String chainIdentifier;
   private final int residueNumber;
   private final String insertionCode;
+  private char residueOneLetterName = ' ';
 
   public PdbResidueIdentifier(
       final String chainIdentifier, final int residueNumber, final String insertionCode) {
@@ -45,6 +47,14 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier>, S
     return insertionCode;
   }
 
+  public final char getResidueOneLetterName() {
+    return residueOneLetterName;
+  }
+
+  public final void setResidueOneLetterName(final char residueOneLetterName) {
+    this.residueOneLetterName = residueOneLetterName;
+  }
+
   @Override
   public final int hashCode() {
     int result = chainIdentifier.hashCode();
@@ -70,8 +80,11 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier>, S
 
   @Override
   public final String toString() {
-    final String icode = Objects.equals(" ", insertionCode) ? "" : insertionCode;
-    return chainIdentifier + '.' + residueNumber + icode;
+    final String chain = StringUtils.isBlank(chainIdentifier) ? "" : (chainIdentifier + '.');
+    final String icode = StringUtils.isBlank(insertionCode) ? "" : insertionCode;
+    final String name =
+        (residueOneLetterName == ' ') ? "" : Character.toString(residueOneLetterName);
+    return chain + name + residueNumber + icode;
   }
 
   @Override
@@ -87,7 +100,7 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier>, S
     return insertionCode.compareTo(t.insertionCode);
   }
 
-  public PdbResidueIdentifier replaceChainIdentifier(final String chain) {
+  public final PdbResidueIdentifier replaceChainIdentifier(final String chain) {
     return new PdbResidueIdentifier(chain, residueNumber, insertionCode);
   }
 }

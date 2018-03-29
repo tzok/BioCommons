@@ -12,16 +12,12 @@ import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 @EqualsAndHashCode
 public class CombinedStrand implements DotBracketInterface {
-  private final List<Strand> strands;
-  protected final List<DotBracketSymbol> symbols;
+  protected final List<Strand> strands = new ArrayList<>();
+  protected final List<DotBracketSymbol> symbols = new ArrayList<>();
 
-  public CombinedStrand(final List<Strand> strands) {
+  public CombinedStrand(final Iterable<Strand> strands) {
     super();
-    this.strands = new ArrayList<>(strands);
-    symbols = CombinedStrand.reindexSymbols(strands);
-  }
 
-  private static List<DotBracketSymbol> reindexSymbols(final Iterable<Strand> strands) {
     final Map<DotBracketSymbol, Integer> symbolToIndex = new HashMap<>();
     int i = 0;
     for (final Strand strand : strands) {
@@ -31,15 +27,17 @@ public class CombinedStrand implements DotBracketInterface {
       }
     }
 
-    final List<DotBracketSymbol> symbols = new ArrayList<>();
     for (final Strand strand : strands) {
+      final List<DotBracketSymbol> strandSymbols = new ArrayList<>();
       for (final DotBracketSymbol symbol : strand.getSymbols()) {
         final char sequence = symbol.getSequence();
         final char structure = symbol.getStructure();
         final int index = symbolToIndex.get(symbol);
         final DotBracketSymbol renumbered = new DotBracketSymbol(sequence, structure, index);
+        strandSymbols.add(renumbered);
         symbols.add(renumbered);
       }
+      this.strands.add(new StrandDirect(strand.getName(), strandSymbols));
     }
 
     for (final Strand strand : strands) {
@@ -52,8 +50,10 @@ public class CombinedStrand implements DotBracketInterface {
         }
       }
     }
+  }
 
-    return symbols;
+  protected CombinedStrand() {
+    super();
   }
 
   public final List<Strand> getStrands() {
@@ -70,12 +70,12 @@ public class CombinedStrand implements DotBracketInterface {
 
   @Override
   public final List<DotBracketSymbol> getSymbols() {
-    return Collections.unmodifiableList(symbols);
+    return symbols;
   }
 
   @Override
   public final DotBracketSymbol getSymbol(final int index) {
-    return symbols.get(index);
+    return getSymbols().get(index);
   }
 
   public final Iterable<TerminalMissing> getTerminalMissing() {
@@ -121,7 +121,7 @@ public class CombinedStrand implements DotBracketInterface {
 
   public final boolean contains(final DotBracketSymbol symbol) {
     for (final Strand strand : strands) {
-      if (strand.contains(symbol)) {
+      if (strand.getSymbols().contains(symbol)) {
         return true;
       }
     }
@@ -152,6 +152,11 @@ public class CombinedStrand implements DotBracketInterface {
   @Override
   public final List<? extends CombinedStrand> combineStrands() {
     return Collections.singletonList(this);
+  }
+
+  @Override
+  public int getRealSymbolIndex(final DotBracketSymbol symbol) {
+    return symbol.getIndex() + 1;
   }
 
   public final String getSequence(final boolean separateStrands) {
@@ -206,11 +211,20 @@ public class CombinedStrand implements DotBracketInterface {
   public final int indexOfSymbol(final DotBracketSymbol symbol) {
     int baseIndex = 0;
     for (final Strand strand : strands) {
-      if (strand.contains(symbol)) {
-        return baseIndex + strand.indexOfSymbol(symbol);
+      if (strand.getSymbols().contains(symbol)) {
+        return baseIndex + strand.getSymbols().indexOf(symbol);
       }
       baseIndex += strand.getLength();
     }
     throw new IllegalArgumentException("Failed to find symbol " + symbol + " in strands:\n" + this);
+  }
+
+  public final Strand getStrand(final DotBracketSymbol symbol) {
+    for (final Strand strand : strands) {
+      if (strand.getSymbols().contains(symbol)) {
+        return strand;
+      }
+    }
+    throw new IllegalArgumentException("Failed to find strand containing symbol: " + symbol);
   }
 }
