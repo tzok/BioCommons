@@ -5,10 +5,10 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 public class Quadruplet<T> {
-  private final T a;
-  private final T b;
-  private final T c;
-  private final T d;
+  public final T a;
+  public final T b;
+  public final T c;
+  public final T d;
 
   public Quadruplet(final List<T> list) {
     super();

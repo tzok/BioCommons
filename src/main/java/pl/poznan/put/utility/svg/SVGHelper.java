@@ -207,7 +207,7 @@ public final class SVGHelper {
             SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
   }
 
-  private static Rectangle2D calculateBoundingBox(final Document doc) {
+  public static Rectangle2D calculateBoundingBox(final Document doc) {
     final GVTBuilder builder = new GVTBuilder();
     final BridgeContext ctx = new BridgeContext(new UserAgentAdapter());
     final GraphicsNode gvtRoot = builder.build(ctx, doc);
