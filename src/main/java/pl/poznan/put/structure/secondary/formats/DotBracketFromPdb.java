@@ -225,4 +225,12 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
       }
     }
   }
+
+  public final Map<DotBracketSymbol, PdbResidueIdentifier> getSymbolToResidue() {
+    return Collections.unmodifiableMap(symbolToResidue);
+  }
+
+  public final Map<PdbResidueIdentifier, DotBracketSymbol> getResidueToSymbol() {
+    return Collections.unmodifiableMap(residueToSymbol);
+  }
 }

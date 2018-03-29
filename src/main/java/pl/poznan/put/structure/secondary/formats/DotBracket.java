@@ -22,6 +22,28 @@ public class DotBracket implements DotBracketInterface, Serializable {
   private static final Logger LOGGER = LoggerFactory.getLogger(DotBracket.class);
   private static final long serialVersionUID = -517503434874402102L;
 
+  public static List<List<Strand>> candidatesToCombine(final List<Strand> strands) {
+    final List<List<Strand>> result = new ArrayList<>();
+    final List<Strand> toCombine = new ArrayList<>();
+    int level = 0;
+
+    for (final Strand strand : strands) {
+      toCombine.add(strand);
+
+      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+        level += symbol.isOpening() ? 1 : 0;
+        level -= symbol.isClosing() ? 1 : 0;
+      }
+
+      if (level == 0) {
+        result.add(new ArrayList<>(toCombine));
+        toCombine.clear();
+      }
+    }
+
+    return result;
+  }
+
   /*
    * Regex:
    * (>.+\r?\n)?([ACGUTRYNacgutryn]+)\r?\n([-.()\[\]{}<>A-Za-z]+)
@@ -262,23 +284,9 @@ public class DotBracket implements DotBracketInterface, Serializable {
   @Override
   public List<? extends CombinedStrand> combineStrands() {
     final List<CombinedStrand> result = new ArrayList<>();
-    final List<Strand> toCombine = new ArrayList<>();
-    int level = 0;
-
-    for (final Strand strand : strands) {
-      toCombine.add(strand);
-
-      for (final DotBracketSymbol symbol : strand.getSymbols()) {
-        level += symbol.isOpening() ? 1 : 0;
-        level -= symbol.isClosing() ? 1 : 0;
-      }
-
-      if (level == 0) {
-        result.add(new CombinedStrand(toCombine));
-        toCombine.clear();
-      }
+    for (final List<Strand> toCombine : DotBracket.candidatesToCombine(strands)) {
+      result.add(new CombinedStrand(toCombine));
     }
-
     return result;
   }
 
