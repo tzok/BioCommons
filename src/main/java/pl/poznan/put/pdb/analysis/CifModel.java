@@ -25,7 +25,8 @@ public class CifModel extends PdbModel {
       final List<PdbAtomLine> atoms,
       final List<PdbModresLine> modifiedResidues,
       final List<PdbRemark465Line> missingResidues,
-      final List<QuantifiedBasePair> basePairs)
+      final List<QuantifiedBasePair> basePairs,
+      final String title)
       throws PdbParsingException {
     super(
         headerLine,
@@ -34,7 +35,7 @@ public class CifModel extends PdbModel {
         modelNumber,
         atoms,
         modifiedResidues,
-        missingResidues);
+        missingResidues, title);
     this.basePairs = new ArrayList<>(basePairs);
   }
 
@@ -55,6 +56,6 @@ public class CifModel extends PdbModel {
         filteredAtoms,
         modifiedResidues,
         filteredMissing,
-        basePairs);
+        basePairs, title);
   }
 }
