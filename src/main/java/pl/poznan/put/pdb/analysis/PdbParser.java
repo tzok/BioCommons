@@ -1,15 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.PdbAtomLine;
@@ -19,7 +10,13 @@ import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
-import pl.poznan.put.pdb.PdbTitleLine;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class PdbParser implements StructureParser {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbParser.class);
@@ -29,7 +26,6 @@ public class PdbParser implements StructureParser {
   private final Collection<String> terminatedChainIdentifiers = new HashSet<>();
   private final Collection<Integer> endedModelNumbers = new HashSet<>();
   private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
-  private final List<PdbTitleLine> titleLines = new ArrayList<>();
 
   private final boolean strictMode;
 
@@ -71,14 +67,7 @@ public class PdbParser implements StructureParser {
         handleExperimentalDataLine(line);
       } else if (line.startsWith("REMARK   2 RESOLUTION.")) {
         handleResolutionLine(line);
-      } else if (line.startsWith("TITLE ")) {
-        handleTitleLine(line);
       }
-    }
-
-    final StringBuilder titleBuilder = new StringBuilder();
-    for (PdbTitleLine titleLine : titleLines) {
-      titleBuilder.append(titleLine.getTitle());
     }
 
     final List<PdbModel> result = new ArrayList<>();
@@ -94,8 +83,7 @@ public class PdbParser implements StructureParser {
               modelNumber,
               atoms,
               modifiedResidues,
-              missingResidues,
-              titleBuilder.toString());
+              missingResidues);
       result.add(pdbModel);
     }
 
@@ -108,7 +96,6 @@ public class PdbParser implements StructureParser {
     terminatedChainIdentifiers.clear();
     endedModelNumbers.clear();
     modelAtoms.clear();
-    titleLines.clear();
 
     // on default, the ' ' chain id is terminated
     terminatedChainIdentifiers.add(" ");
@@ -151,19 +138,6 @@ public class PdbParser implements StructureParser {
       atomList.add(atomLine);
     } catch (final PdbParsingException e) {
       PdbParser.LOGGER.warn("Invalid ATOM line: {}", line, e);
-    }
-  }
-
-  private void handleTitleLine(final String line) {
-    try {
-      PdbTitleLine titleLine = PdbTitleLine.parse(line);
-      if (((CollectionUtils.isEmpty(titleLines))
-              && (StringUtils.isBlank(titleLine.getContinuation())))
-          || (StringUtils.isNotBlank(titleLine.getContinuation()))) {
-        titleLines.add(titleLine);
-      }
-    } catch (final PdbParsingException | ParseException e) {
-      PdbParser.LOGGER.warn("Invalid TITLE line: {}", line, e);
     }
   }
 

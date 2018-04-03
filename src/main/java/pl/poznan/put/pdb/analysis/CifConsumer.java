@@ -99,7 +99,6 @@ public class CifConsumer implements MMcifConsumer {
   @Nullable private Date depositionDate;
   @Nullable private String classification;
   @Nullable private String idCode;
-  @Nullable private String title;
   private double resolution;
 
   private FileParsingParameters parameters;
@@ -216,7 +215,7 @@ public class CifConsumer implements MMcifConsumer {
 
   @Override
   public void setStruct(final Struct struct) {
-	  this.title = StringUtils.upperCase(struct.getTitle());
+    // do nothing
   }
 
   @Override
@@ -546,7 +545,7 @@ public class CifConsumer implements MMcifConsumer {
               atoms,
               modifiedResidues,
               missingResidues,
-              basePairs, title);
+              basePairs);
       result.add(pdbModel);
     }
 
