@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.math3.util.MathUtils;
+import org.apache.commons.math3.util.Precision;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.utility.AngleFormat;
 import pl.poznan.put.utility.TwoDigitsAfterDotNumberFormat;
@@ -48,7 +49,7 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
       return false;
     }
     final Circular circular = (Circular) o;
-    return Double.compare(circular.radians, radians) == 0;
+    return Precision.equals(getRadians2PI(), circular.getRadians2PI(), 1.0e-3);
   }
 
   @Override
