@@ -1,38 +1,21 @@
 package pl.poznan.put.structure.tertiary;
 
+import java.io.File;
+import java.util.Comparator;
+import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.pdb.analysis.PdbModel;
 
-import java.io.File;
-
+@Data
 public class StructureInfo implements Comparable<StructureInfo> {
   private final PdbModel structure;
   private final File path;
   private final String name;
 
-  public StructureInfo(final PdbModel structure, final File path, final String name) {
-    super();
-    this.structure = structure;
-    this.path = path;
-    this.name = name;
-  }
-
-  public PdbModel getStructure() {
-    return structure;
-  }
-
-  public File getPath() {
-    return path;
-  }
-
-  public String getName() {
-    return name;
-  }
+  private final Comparator<StructureInfo> comparator = Comparator.comparing(StructureInfo::getName);
 
   @Override
-  public int compareTo(final StructureInfo t) {
-    if (t == null) {
-      throw new NullPointerException();
-    }
-    return name.compareTo(t.name);
+  public final int compareTo(final @NotNull StructureInfo t) {
+    return comparator.compare(this, t);
   }
 }

@@ -16,6 +16,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NonNls;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbModel;
@@ -73,8 +74,8 @@ public final class StructureManager {
 
   public static List<String> getNames(final Iterable<PdbModel> structures) {
     final List<String> result = new ArrayList<>();
-    for (final PdbModel s : structures) {
-      result.add(StructureManager.getName(s));
+    for (final PdbModel model : structures) {
+      result.add(StructureManager.getName(model));
     }
     return result;
   }
@@ -154,7 +155,7 @@ public final class StructureManager {
 
   private static void storeStructureInfo(
       final File file, final List<? extends PdbModel> structures) {
-    String format = "%s";
+    @NonNls String format = "%s";
 
     if (structures.size() > 1) {
       final int count = structures.size();
@@ -197,7 +198,7 @@ public final class StructureManager {
   }
 
   private static String unzipContent(final byte[] bytes) throws IOException {
-    try (InputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(bytes))) {
+    try (final InputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(bytes))) {
       return IOUtils.toString(gzipInputStream, Charset.defaultCharset());
     }
   }
