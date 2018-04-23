@@ -54,6 +54,14 @@ public final class StructureManager {
     return result;
   }
 
+  public static List<String> getNames(final Iterable<PdbModel> structures) {
+    final List<String> result = new ArrayList<>();
+    for (final PdbModel model : structures) {
+      result.add(StructureManager.getName(model));
+    }
+    return result;
+  }
+
   public static File getFile(final PdbModel structure) {
     for (final StructureInfo si : StructureManager.STRUCTURES) {
       if (Objects.equals(si.getStructure(), structure)) {
@@ -69,15 +77,7 @@ public final class StructureManager {
         return si.getStructure();
       }
     }
-    throw new IllegalArgumentException("Failed to find PdbModel");
-  }
-
-  public static List<String> getNames(final Iterable<PdbModel> structures) {
-    final List<String> result = new ArrayList<>();
-    for (final PdbModel model : structures) {
-      result.add(StructureManager.getName(model));
-    }
-    return result;
+    throw new IllegalArgumentException("Failed to find structure");
   }
 
   public static String getName(final PdbModel structure) {
@@ -95,8 +95,7 @@ public final class StructureManager {
    * @param file Path to the PDB file.
    * @return Structure object..
    */
-  public static List<? extends PdbModel> loadStructure(final File file)
-      throws IOException, PdbParsingException {
+  public static List<? extends PdbModel> loadStructure(final File file) throws IOException, PdbParsingException {
     final List<PdbModel> models = StructureManager.getModels(file);
     if (!models.isEmpty()) {
       return models;
@@ -153,8 +152,7 @@ public final class StructureManager {
     return matcher.find();
   }
 
-  private static void storeStructureInfo(
-      final File file, final List<? extends PdbModel> structures) {
+  private static void storeStructureInfo(final File file, final List<? extends PdbModel> structures) {
     @NonNls String format = "%s";
 
     if (structures.size() > 1) {
@@ -183,8 +181,7 @@ public final class StructureManager {
         }
       }
 
-      StructureManager.STRUCTURES.add(
-          new StructureInfo(model, file, String.format(format, name, i + 1)));
+      StructureManager.STRUCTURES.add(new StructureInfo(model, file, String.format(format, name, i + 1)));
     }
   }
 
@@ -203,16 +200,20 @@ public final class StructureManager {
     }
   }
 
-  public static List<PdbModel> loadStructure(final String pdbId)
-      throws IOException, PdbParsingException {
-    final URL url =
-        new URL(
-            "http://www.rcsb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=YES&structureId="
-                + pdbId);
+  public static List<PdbModel> loadStructure(final String pdbId) throws IOException, PdbParsingException {
+    if (pdbId.length() != 4) {
+      throw new IllegalArgumentException("Invalid PDB id: " + pdbId);
+    }
+
+    final String lowercase = pdbId.toLowerCase();
+    final String middle = lowercase.substring(1, 3);
+    final URL url = new URL(String.format(
+        "http://ftp.ebi.ac.uk/pub/databases/rcsb/pdb-remediated/data/structures/divided/pdb/%s/pdb%s.ent.gz", middle,
+        lowercase));
 
     final String pdbContent = StructureManager.unzipContent(IOUtils.toByteArray(url));
 
-    final File pdbFile = File.createTempFile("bc", ".pdb");
+    final File pdbFile = File.createTempFile("bio-commons", ".pdb");
     FileUtils.writeStringToFile(pdbFile, pdbContent, StructureManager.ENCODING_UTF_8);
 
     final List<PdbModel> models = StructureManager.PDB_PARSER.parse(pdbContent);
@@ -221,17 +222,17 @@ public final class StructureManager {
   }
 
   public static void remove(final File path) {
-    final Collection<Integer> toRemove = new ArrayList<>();
+    final Collection<StructureInfo> toRemove = new ArrayList<>();
 
     for (int i = 0; i < StructureManager.STRUCTURES.size(); i++) {
       final StructureInfo si = StructureManager.STRUCTURES.get(i);
       if (Objects.equals(si.getPath(), path)) {
-        toRemove.add(i);
+        toRemove.add(si);
       }
     }
 
-    for (final int i : toRemove) {
-      StructureManager.STRUCTURES.remove(i);
+    for (final StructureInfo si : toRemove) {
+      StructureManager.STRUCTURES.remove(si);
     }
   }
 }
