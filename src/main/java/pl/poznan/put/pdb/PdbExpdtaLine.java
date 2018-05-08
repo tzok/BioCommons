@@ -8,79 +8,73 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class PdbExpdtaLine implements Serializable {
-    private static final long serialVersionUID = 6276886553884351623L;
+  private static final long serialVersionUID = 6276886553884351623L;
 
-    // @formatter:off
-    //  COLUMNS       DATA TYPE      FIELD         DEFINITION
-    //  ------------------------------------------------------------------------------------
-    //  1 -  6       Record name    "EXPDTA"
-    //  9 - 10       Continuation   continuation  Allows concatenation of multiple records.
-    // 11 - 79       SList          technique     The experimental technique(s) with
-    //                                            optional comment describing the
-    //                                            sample or experiment.
-    // @formatter:on
-    private static final String FORMAT = "EXPDTA    %-70s"; //NON-NLS
-    private static final String RECORD_NAME = "EXPDTA";
-    private static final PdbExpdtaLine EMPTY_INSTANCE = new PdbExpdtaLine(
-            Collections.singletonList(ExperimentalTechnique.UNKNOWN));
-    private final List<ExperimentalTechnique> experimentalTechniques;
+  // @formatter:off
+  //  COLUMNS       DATA TYPE      FIELD         DEFINITION
+  //  ------------------------------------------------------------------------------------
+  //  1 -  6       Record name    "EXPDTA"
+  //  9 - 10       Continuation   continuation  Allows concatenation of multiple records.
+  // 11 - 79       SList          technique     The experimental technique(s) with
+  //                                            optional comment describing the
+  //                                            sample or experiment.
+  // @formatter:on
+  private static final String FORMAT = "EXPDTA    %-70s"; // NON-NLS
+  private static final String RECORD_NAME = "EXPDTA";
+  private static final PdbExpdtaLine EMPTY_INSTANCE =
+      new PdbExpdtaLine(Collections.singletonList(ExperimentalTechnique.UNKNOWN));
+  private final List<ExperimentalTechnique> experimentalTechniques;
 
-    public PdbExpdtaLine(
-            final List<ExperimentalTechnique> experimentalTechniques) {
-        super();
-        this.experimentalTechniques = new ArrayList<>(experimentalTechniques);
+  public PdbExpdtaLine(final List<ExperimentalTechnique> experimentalTechniques) {
+    super();
+    this.experimentalTechniques = new ArrayList<>(experimentalTechniques);
+  }
+
+  public static PdbExpdtaLine emptyInstance() {
+    return PdbExpdtaLine.EMPTY_INSTANCE;
+  }
+
+  public static PdbExpdtaLine parse(final String line) throws PdbParsingException {
+    final String recordName = line.substring(0, 6).trim();
+
+    if (!Objects.equals(PdbExpdtaLine.RECORD_NAME, recordName)) {
+      throw new PdbParsingException("PDB line does not start with EXPDTA");
     }
 
-    public static PdbExpdtaLine emptyInstance() {
-        return PdbExpdtaLine.EMPTY_INSTANCE;
+    final List<ExperimentalTechnique> experimentalTechniques = new ArrayList<>();
+    for (final String techniqueFullName : line.substring(10).trim().split(";")) {
+      final ExperimentalTechnique technique =
+          ExperimentalTechnique.fromFullName(techniqueFullName.trim());
+      if (technique == ExperimentalTechnique.UNKNOWN) {
+        throw new PdbParsingException("Failed to parse line: " + line);
+      }
+      experimentalTechniques.add(technique);
     }
+    return new PdbExpdtaLine(experimentalTechniques);
+  }
 
-    public static PdbExpdtaLine parse(final String line)
-            throws PdbParsingException {
-        String recordName = line.substring(0, 6).trim();
+  public final List<ExperimentalTechnique> getExperimentalTechniques() {
+    return Collections.unmodifiableList(experimentalTechniques);
+  }
 
-        if (!Objects.equals(PdbExpdtaLine.RECORD_NAME, recordName)) {
-            throw new PdbParsingException(
-                    "PDB line does not start with EXPDTA");
-        }
+  public final boolean isValid() {
+    return !experimentalTechniques.isEmpty()
+        && (experimentalTechniques.get(0) != ExperimentalTechnique.UNKNOWN);
+  }
 
-        List<ExperimentalTechnique> experimentalTechniques = new ArrayList<>();
-        for (final String techniqueFullName : line.substring(10).trim()
-                                                  .split(";")) {
-            ExperimentalTechnique technique = ExperimentalTechnique
-                    .fromFullName(techniqueFullName.trim());
-            if (technique == ExperimentalTechnique.UNKNOWN) {
-                throw new PdbParsingException("Failed to parse line: " + line);
-            }
-            experimentalTechniques.add(technique);
-        }
-        return new PdbExpdtaLine(experimentalTechniques);
+  @Override
+  public final String toString() {
+    final StringBuilder builder = new StringBuilder();
+
+    if (experimentalTechniques.isEmpty()) {
+      builder.append(ExperimentalTechnique.UNKNOWN);
+    } else {
+      builder.append(experimentalTechniques.get(0).getFullName());
+      for (int i = 1; i < experimentalTechniques.size(); i++) {
+        builder.append("; ");
+        builder.append(experimentalTechniques.get(i).getFullName());
+      }
     }
-
-    public final List<ExperimentalTechnique> getExperimentalTechniques() {
-        return Collections.unmodifiableList(experimentalTechniques);
-    }
-
-    public final boolean isValid() {
-        return !experimentalTechniques.isEmpty() && (
-                experimentalTechniques.get(0) != ExperimentalTechnique.UNKNOWN);
-    }
-
-    @Override
-    public final String toString() {
-        StringBuilder builder = new StringBuilder();
-
-        if (experimentalTechniques.isEmpty()) {
-            builder.append(ExperimentalTechnique.UNKNOWN);
-        } else {
-            builder.append(experimentalTechniques.get(0).getFullName());
-            for (int i = 1; i < experimentalTechniques.size(); i++) {
-                builder.append("; ");
-                builder.append(experimentalTechniques.get(i).getFullName());
-            }
-        }
-        return String
-                .format(Locale.US, PdbExpdtaLine.FORMAT, builder.toString());
-    }
-
+    return String.format(Locale.US, PdbExpdtaLine.FORMAT, builder.toString());
+  }
 }

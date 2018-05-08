@@ -9,26 +9,33 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 import java.util.Arrays;
 
 public final class Asparagine extends ProteinSidechain {
-    private static final Asparagine INSTANCE = new Asparagine();
+  private static final Asparagine INSTANCE = new Asparagine();
 
-    private Asparagine() {
-        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2,
-                            AtomName.CG, AtomName.OD1, AtomName.ND2,
-                            AtomName.HD21, AtomName.HD22), "Asparagine", 'N',
-              "ASN");
-        torsionAngleTypes
-                .add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
-        torsionAngleTypes
-                .add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
-    }
+  private Asparagine() {
+    super(
+        Arrays.asList(
+            AtomName.CB,
+            AtomName.HB1,
+            AtomName.HB2,
+            AtomName.CG,
+            AtomName.OD1,
+            AtomName.ND2,
+            AtomName.HD21,
+            AtomName.HD22),
+        "Asparagine",
+        'N',
+        "ASN");
+    torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
+    torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
+  }
 
-    public static Asparagine getInstance() {
-        return Asparagine.INSTANCE;
-    }
+  public static Asparagine getInstance() {
+    return Asparagine.INSTANCE;
+  }
 
-    @Override
-    protected void fillChiAtomsMap() {
-        chiAtoms.put(ProteinChiType.CHI1, Chi1.ASPARAGINE_ATOMS);
-        chiAtoms.put(ProteinChiType.CHI2, Chi2.ASPARAGINE_ATOMS);
-    }
+  @Override
+  protected void fillChiAtomsMap() {
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.ASPARAGINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.ASPARAGINE_ATOMS);
+  }
 }

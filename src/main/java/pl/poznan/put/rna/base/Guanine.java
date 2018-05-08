@@ -8,22 +8,39 @@ import pl.poznan.put.rna.Sugar;
 import java.util.Arrays;
 
 public final class Guanine extends Purine {
-    private static final Guanine INSTANCE = new Guanine();
+  private static final Guanine INSTANCE = new Guanine();
 
-    private Guanine() {
-        super(Arrays.asList(AtomName.N9, AtomName.C4, AtomName.N2, AtomName.H21,
-                            AtomName.H22, AtomName.N3, AtomName.C2, AtomName.N1,
-                            AtomName.H1, AtomName.C6, AtomName.O6, AtomName.C5,
-                            AtomName.N7, AtomName.C8, AtomName.H8), "Guanine",
-              'G', "G", "GUA", "DG");
-    }
+  private Guanine() {
+    super(
+        Arrays.asList(
+            AtomName.N9,
+            AtomName.C4,
+            AtomName.N2,
+            AtomName.H21,
+            AtomName.H22,
+            AtomName.N3,
+            AtomName.C2,
+            AtomName.N1,
+            AtomName.H1,
+            AtomName.C6,
+            AtomName.O6,
+            AtomName.C5,
+            AtomName.N7,
+            AtomName.C8,
+            AtomName.H8),
+        "Guanine",
+        'G',
+        "G",
+        "GUA",
+        "DG");
+  }
 
-    public static Guanine getInstance() {
-        return Guanine.INSTANCE;
-    }
+  public static Guanine getInstance() {
+    return Guanine.INSTANCE;
+  }
 
-    @Override
-    public Sugar getDefaultSugarInstance() {
-        return Ribose.getInstance();
-    }
+  @Override
+  public Sugar getDefaultSugarInstance() {
+    return Ribose.getInstance();
+  }
 }

@@ -7,15 +7,17 @@ import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
 public final class Zeta extends AtomBasedTorsionAngleType {
-    private static final Zeta INSTANCE = new Zeta();
+  private static final Zeta INSTANCE = new Zeta();
 
-    private Zeta() {
-        super(MoleculeType.RNA, Unicode.ZETA,
-              new Quadruplet<>(AtomName.C3p, AtomName.O3p, AtomName.P,
-                               AtomName.O5p), new Quadruplet<>(0, 0, 1, 1));
-    }
+  private Zeta() {
+    super(
+        MoleculeType.RNA,
+        Unicode.ZETA,
+        new Quadruplet<>(AtomName.C3p, AtomName.O3p, AtomName.P, AtomName.O5p),
+        new Quadruplet<>(0, 0, 1, 1));
+  }
 
-    public static Zeta getInstance() {
-        return Zeta.INSTANCE;
-    }
+  public static Zeta getInstance() {
+    return Zeta.INSTANCE;
+  }
 }

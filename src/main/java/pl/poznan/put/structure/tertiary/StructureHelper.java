@@ -1,85 +1,80 @@
 package pl.poznan.put.structure.tertiary;
 
-import org.biojava.nbio.structure.Atom;
-import org.biojava.nbio.structure.Chain;
-import org.biojava.nbio.structure.Group;
-import org.biojava.nbio.structure.Structure;
-import pl.poznan.put.atom.AtomName;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
+import org.biojava.nbio.structure.Atom;
+import org.biojava.nbio.structure.Chain;
+import org.biojava.nbio.structure.Group;
+import org.biojava.nbio.structure.Structure;
+import org.jetbrains.annotations.NotNull;
+import pl.poznan.put.atom.AtomName;
 
 public final class StructureHelper {
-    private StructureHelper() {
-        super();
-    }
+  public static @NotNull Atom[] findAtoms(final Group residue, final AtomName... atomNames) {
+    return Arrays.stream(atomNames)
+        .map(atomName -> StructureHelper.findAtom(residue, atomName))
+        .toArray(Atom[]::new);
+  }
 
-    public static Atom[] findAtoms(
-            final Group residue, final AtomName... atomNames) {
-        List<Atom> atoms = new ArrayList<>();
-        for (final AtomName atomName : atomNames) {
-            atoms.add(StructureHelper.findAtom(residue, atomName));
+  public static Atom findAtom(final Group residue, final AtomName atomName) {
+    return residue
+        .getAtoms()
+        .stream()
+        .filter(atom -> atomName.matchesName(atom.getName()))
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new IllegalArgumentException(
+                    String.format("Failed to find %s in residue %s", atomName, residue)));
+  }
+
+  public static @NotNull Atom[] findAllAtoms(final Structure structure, final AtomName atomName) {
+    final List<Atom> result = new ArrayList<>();
+    structure
+        .getChains()
+        .stream()
+        .map(chain -> StructureHelper.findAllAtoms(chain, atomName))
+        .map(Arrays::asList)
+        .forEach(result::addAll);
+    return result.toArray(new Atom[0]);
+  }
+
+  public static @NotNull Atom[] findAllAtoms(final Chain chain, final AtomName atomName) {
+    return chain
+        .getAtomGroups()
+        .stream()
+        .map(group -> StructureHelper.findAtom(group, atomName))
+        .filter(Objects::nonNull)
+        .toArray(Atom[]::new);
+  }
+
+  public static void mergeAltLocs(final Group group) {
+    final LinkedHashSet<Atom> atoms = new LinkedHashSet<>(group.getAtoms());
+
+    for (final Group altloc : group.getAltLocs()) {
+      for (final Atom atom : altloc.getAtoms()) {
+        if (!atoms.contains(atom)) {
+          atoms.add(atom);
         }
-        return atoms.toArray(new Atom[atoms.size()]);
+      }
     }
 
-    public static Atom findAtom(final Group residue, final AtomName atomName) {
-        for (final Atom atom : residue.getAtoms()) {
-            if (atomName.matchesName(atom.getName())) {
-                return atom;
-            }
-        }
-        return null;
+    group.setAtoms(new ArrayList<>(atoms));
+  }
+
+  public static boolean isModified(final Group group, final AtomName... atomNames) {
+    for (final AtomName atomName : atomNames) {
+      if (atomName.getType().isHeavy() && (StructureHelper.findAtom(group, atomName) == null)) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    public static Atom[] findAllAtoms(
-            final Structure structure, final AtomName atomName) {
-        List<Atom> result = new ArrayList<>();
-        for (final Chain chain : structure.getChains()) {
-            Atom[] atomsChain = StructureHelper.findAllAtoms(chain, atomName);
-            result.addAll(Arrays.asList(atomsChain));
-        }
-        return result.toArray(new Atom[result.size()]);
-    }
-
-    public static Atom[] findAllAtoms(
-            final Chain chain, final AtomName atomName) {
-        List<Atom> result = new ArrayList<>();
-
-        for (final Group group : chain.getAtomGroups()) {
-            Atom atom = StructureHelper.findAtom(group, atomName);
-            if (atom != null) {
-                result.add(atom);
-            }
-        }
-
-        return result.toArray(new Atom[result.size()]);
-    }
-
-    public static void mergeAltLocs(final Group group) {
-        LinkedHashSet<Atom> atoms = new LinkedHashSet<>(group.getAtoms());
-
-        for (final Group altloc : group.getAltLocs()) {
-            for (final Atom atom : altloc.getAtoms()) {
-                if (!atoms.contains(atom)) {
-                    atoms.add(atom);
-                }
-            }
-        }
-
-        group.setAtoms(new ArrayList<>(atoms));
-    }
-
-    public static boolean isModified(
-            final Group group, final AtomName... atomNames) {
-        for (final AtomName atomName : atomNames) {
-            if (atomName.getType().isHeavy() && (
-                    StructureHelper.findAtom(group, atomName) == null)) {
-                return true;
-            }
-        }
-        return false;
-    }
+  private StructureHelper() {
+    super();
+  }
 }

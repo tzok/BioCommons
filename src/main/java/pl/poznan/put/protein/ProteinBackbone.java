@@ -7,15 +7,16 @@ import pl.poznan.put.pdb.analysis.ResidueComponent;
 import java.util.Arrays;
 
 public final class ProteinBackbone extends ResidueComponent {
-    private static final ProteinBackbone INSTANCE = new ProteinBackbone();
+  private static final ProteinBackbone INSTANCE = new ProteinBackbone();
 
-    private ProteinBackbone() {
-        super("backbone", MoleculeType.PROTEIN,
-              Arrays.asList(AtomName.N, AtomName.HN, AtomName.CA, AtomName.HA,
-                            AtomName.C, AtomName.O));
-    }
+  private ProteinBackbone() {
+    super(
+        "backbone",
+        MoleculeType.PROTEIN,
+        Arrays.asList(AtomName.N, AtomName.HN, AtomName.CA, AtomName.HA, AtomName.C, AtomName.O));
+  }
 
-    public static ProteinBackbone getInstance() {
-        return ProteinBackbone.INSTANCE;
-    }
+  public static ProteinBackbone getInstance() {
+    return ProteinBackbone.INSTANCE;
+  }
 }

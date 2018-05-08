@@ -7,15 +7,17 @@ import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
 public final class Omega extends AtomBasedTorsionAngleType {
-    private static final Omega INSTANCE = new Omega();
+  private static final Omega INSTANCE = new Omega();
 
-    private Omega() {
-        super(MoleculeType.PROTEIN, Unicode.OMEGA,
-              new Quadruplet<>(AtomName.CA, AtomName.C, AtomName.N,
-                               AtomName.CA), new Quadruplet<>(0, 0, 1, 1));
-    }
+  private Omega() {
+    super(
+        MoleculeType.PROTEIN,
+        Unicode.OMEGA,
+        new Quadruplet<>(AtomName.CA, AtomName.C, AtomName.N, AtomName.CA),
+        new Quadruplet<>(0, 0, 1, 1));
+  }
 
-    public static Omega getInstance() {
-        return Omega.INSTANCE;
-    }
+  public static Omega getInstance() {
+    return Omega.INSTANCE;
+  }
 }

@@ -7,15 +7,17 @@ import pl.poznan.put.torsion.PseudoTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
 public final class Calpha extends PseudoTorsionAngleType {
-    private static final Calpha INSTANCE = new Calpha();
+  private static final Calpha INSTANCE = new Calpha();
 
-    private Calpha() {
-        super(MoleculeType.PROTEIN, Unicode.CALPHA,
-              new Quadruplet<>(AtomName.CA, AtomName.CA, AtomName.CA,
-                               AtomName.CA), new Quadruplet<>(0, 1, 2, 3));
-    }
+  private Calpha() {
+    super(
+        MoleculeType.PROTEIN,
+        Unicode.CALPHA,
+        new Quadruplet<>(AtomName.CA, AtomName.CA, AtomName.CA, AtomName.CA),
+        new Quadruplet<>(0, 1, 2, 3));
+  }
 
-    public static Calpha getInstance() {
-        return Calpha.INSTANCE;
-    }
+  public static Calpha getInstance() {
+    return Calpha.INSTANCE;
+  }
 }

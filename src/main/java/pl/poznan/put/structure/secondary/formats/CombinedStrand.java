@@ -1,138 +1,230 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import pl.poznan.put.structure.secondary.DotBracketSymbol;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
-public class CombinedStrand {
-    private final List<Strand> strands;
+@EqualsAndHashCode
+public class CombinedStrand implements DotBracketInterface {
+  protected final List<Strand> strands = new ArrayList<>();
+  protected final List<DotBracketSymbol> symbols = new ArrayList<>();
 
-    public CombinedStrand(final List<Strand> strands) {
-        super();
-        this.strands = new ArrayList<>(strands);
+  public CombinedStrand(final Iterable<Strand> strands) {
+    super();
+
+    final Map<DotBracketSymbol, Integer> symbolToIndex = new HashMap<>();
+    int i = 0;
+    for (final Strand strand : strands) {
+      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+        symbolToIndex.put(symbol, i);
+        i += 1;
+      }
     }
 
-    public Iterable<Strand> getStrands() {
-        return Collections.unmodifiableList(strands);
+    for (final Strand strand : strands) {
+      final List<DotBracketSymbol> strandSymbols = new ArrayList<>();
+      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+        final char sequence = symbol.getSequence();
+        final char structure = symbol.getStructure();
+        final int index = symbolToIndex.get(symbol);
+        final DotBracketSymbol renumbered = new DotBracketSymbol(sequence, structure, index);
+        strandSymbols.add(renumbered);
+        symbols.add(renumbered);
+      }
+      this.strands.add(new StrandDirect(strand.getName(), strandSymbols));
     }
 
-    public int getLength() {
-        int length = 0;
-        for (final Strand strand : strands) {
-            length += strand.getLength();
+    for (final Strand strand : strands) {
+      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+        if (symbol.isPairing()) {
+          final DotBracketSymbol u = symbols.get(symbolToIndex.get(symbol));
+          final DotBracketSymbol v = symbols.get(symbolToIndex.get(symbol.getPair()));
+          u.setPair(v);
+          v.setPair(u);
         }
-        return length;
+      }
+    }
+  }
+
+  protected CombinedStrand() {
+    super();
+  }
+
+  public final List<Strand> getStrands() {
+    return Collections.unmodifiableList(strands);
+  }
+
+  public final int getLength() {
+    int length = 0;
+    for (final Strand strand : strands) {
+      length += strand.getLength();
+    }
+    return length;
+  }
+
+  @Override
+  public final List<DotBracketSymbol> getSymbols() {
+    return symbols;
+  }
+
+  @Override
+  public final DotBracketSymbol getSymbol(final int index) {
+    return getSymbols().get(index);
+  }
+
+  public final Iterable<TerminalMissing> getTerminalMissing() {
+    final Collection<TerminalMissing> result = new ArrayList<>();
+    for (final Strand strand : strands) {
+      result.add(strand.getMissingBegin());
+      result.add(strand.getMissingEnd());
+    }
+    return result;
+  }
+
+  public final List<DotBracketSymbol> getInternalMissing() {
+    final List<DotBracketSymbol> result = new ArrayList<>();
+
+    for (final Strand strand : strands) {
+      final TerminalMissing missingBegin = strand.getMissingBegin();
+      final TerminalMissing missingEnd = strand.getMissingEnd();
+      final List<DotBracketSymbol> symbols = strand.getSymbols();
+
+      DotBracketSymbol symbol =
+          (missingBegin.getLength() > 0) ? missingBegin.getLast().getNext() : symbols.get(0);
+      final DotBracketSymbol lastSymbol =
+          (missingEnd.getLength() > 0) ? missingEnd.getFirst() : symbols.get(symbols.size() - 1);
+
+      while ((symbol != null) && !Objects.equals(symbol, lastSymbol)) {
+        if (symbol.isMissing()) {
+          result.add(symbol);
+        }
+        symbol = symbol.getNext();
+      }
     }
 
-    public List<DotBracketSymbol> getSymbols() {
-        List<DotBracketSymbol> result = new ArrayList<>();
-        for (final Strand strand : strands) {
-            result.addAll(strand.getSymbols());
-        }
-        return result;
+    return result;
+  }
+
+  public final int getPseudoknotOrder() {
+    int order = 0;
+    for (final Strand strand : strands) {
+      order = Math.max(order, strand.getPseudoknotOrder());
     }
+    return order;
+  }
 
-    public Iterable<TerminalMissing> getTerminalMissing() {
-        Collection<TerminalMissing> result = new ArrayList<>();
-        for (final Strand strand : strands) {
-            result.add(strand.getMissingBegin());
-            result.add(strand.getMissingEnd());
-        }
-        return result;
-    }
-
-    public List<DotBracketSymbol> getInternalMissing() {
-        List<DotBracketSymbol> result = new ArrayList<>();
-
-        for (final Strand strand : strands) {
-            TerminalMissing missingBegin = strand.getMissingBegin();
-            TerminalMissing missingEnd = strand.getMissingEnd();
-            List<DotBracketSymbol> symbols = strand.getSymbols();
-
-            DotBracketSymbol symbol =
-                    (missingBegin.getLength() > 0) ? missingBegin.getLast()
-                                                                 .getNext()
-                                                   : symbols.get(0);
-            DotBracketSymbol lastSymbol =
-                    (missingEnd.getLength() > 0) ? missingEnd.getFirst()
-                                                 : symbols
-                            .get(symbols.size() - 1);
-
-            while ((symbol != null) && !Objects.equals(symbol, lastSymbol)) {
-                if (symbol.isMissing()) {
-                    result.add(symbol);
-                }
-                symbol = symbol.getNext();
-            }
-        }
-
-        return result;
-    }
-
-    public int getPseudoknotOrder() {
-        int order = 0;
-        for (final Strand strand : strands) {
-            order = Math.max(order, strand.getPseudoknotOrder());
-        }
-        return order;
-    }
-
-    public boolean contains(final DotBracketSymbol symbol) {
-        for (final Strand strand : strands) {
-            if (strand.contains(symbol)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-
-        for (final Strand strand : strands) {
-            builder.append(strand.getName());
-        }
-
-        return ">strand_" + builder + '\n' + getSequence() + '\n'
-               + getStructure();
-    }
-
-    public String getSequence() {
-        StringBuilder builder = new StringBuilder();
-        for (final Strand strand : strands) {
-            builder.append(strand.getSequence());
-        }
-        return builder.toString();
-    }
-
-    public String getStructure() {
-        StringBuilder builder = new StringBuilder();
-        for (final Strand strand : strands) {
-            builder.append(strand.getStructure());
-        }
-        return builder.toString();
-    }
-
-    /**
-     * Check if the strand is invalid i.e. if it contains ONLY dots and minuses
-     * (no base-pairs).
-     *
-     * @return True if the strand contains only dots or minuses.
-     */
-    public boolean isInvalid() {
-        for (final Strand strand : strands) {
-            for (final char c : strand.getStructure().toCharArray()) {
-                if ((c != '.') && (c != '-')) {
-                    return false;
-                }
-            }
-        }
-
+  public final boolean contains(final DotBracketSymbol symbol) {
+    for (final Strand strand : strands) {
+      if (strand.getSymbols().contains(symbol)) {
         return true;
+      }
     }
+    return false;
+  }
+
+  @Override
+  public final String toString() {
+    final StringBuilder builder = new StringBuilder();
+
+    for (final Strand strand : strands) {
+      builder.append(strand.getName());
+    }
+
+    return ">strand_" + builder + '\n' + getSequence(false) + '\n' + getStructure(false);
+  }
+
+  @Override
+  public final String toStringWithStrands() {
+    final StringBuilder builder = new StringBuilder();
+    for (final Strand strand : strands) {
+      builder.append(strand);
+      builder.append('\n');
+    }
+    return builder.toString();
+  }
+
+  @Override
+  public final List<? extends CombinedStrand> combineStrands() {
+    return Collections.singletonList(this);
+  }
+
+  @Override
+  public int getRealSymbolIndex(final DotBracketSymbol symbol) {
+    return symbol.getIndex() + 1;
+  }
+
+  public final String getSequence(final boolean separateStrands) {
+    final StringBuilder builder = new StringBuilder();
+    for (final Strand strand : strands) {
+      builder.append(strand.getSequence());
+      if (separateStrands) {
+        builder.append('&');
+      }
+    }
+    return builder.toString();
+  }
+
+  public final String getStructure(final boolean separateStrands) {
+    final StringBuilder builder = new StringBuilder();
+    for (final Strand strand : strands) {
+      builder.append(strand.getStructure());
+      if (separateStrands) {
+        builder.append('&');
+      }
+    }
+    return builder.toString();
+  }
+
+  @Override
+  public final String getSequence() {
+    return getSequence(false);
+  }
+
+  @Override
+  public final String getStructure() {
+    return getStructure(false);
+  }
+
+  /**
+   * Check if the strand is invalid i.e. if it contains ONLY dots and minuses (no base-pairs).
+   *
+   * @return True if the strand contains only dots or minuses.
+   */
+  public final boolean isInvalid() {
+    for (final Strand strand : strands) {
+      for (final char c : strand.getStructure().toCharArray()) {
+        if ((c != '.') && (c != '-')) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  public final int indexOfSymbol(final DotBracketSymbol symbol) {
+    int baseIndex = 0;
+    for (final Strand strand : strands) {
+      if (strand.getSymbols().contains(symbol)) {
+        return baseIndex + strand.getSymbols().indexOf(symbol);
+      }
+      baseIndex += strand.getLength();
+    }
+    throw new IllegalArgumentException("Failed to find symbol " + symbol + " in strands:\n" + this);
+  }
+
+  public final Strand getStrand(final DotBracketSymbol symbol) {
+    for (final Strand strand : strands) {
+      if (strand.getSymbols().contains(symbol)) {
+        return strand;
+      }
+    }
+    throw new IllegalArgumentException("Failed to find strand containing symbol: " + symbol);
+  }
 }

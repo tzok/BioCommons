@@ -9,27 +9,38 @@ import pl.poznan.put.protein.torsion.ProteinChiType;
 import java.util.Arrays;
 
 public final class Leucine extends ProteinSidechain {
-    private static final Leucine INSTANCE = new Leucine();
+  private static final Leucine INSTANCE = new Leucine();
 
-    private Leucine() {
-        super(Arrays.asList(AtomName.CB, AtomName.HB1, AtomName.HB2,
-                            AtomName.CG, AtomName.HG, AtomName.CD1,
-                            AtomName.HD11, AtomName.HD12, AtomName.HD13,
-                            AtomName.CD2, AtomName.HD21, AtomName.HD22,
-                            AtomName.HD23), "Leucine", 'L', "LEU");
-        torsionAngleTypes
-                .add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
-        torsionAngleTypes
-                .add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
-    }
+  private Leucine() {
+    super(
+        Arrays.asList(
+            AtomName.CB,
+            AtomName.HB1,
+            AtomName.HB2,
+            AtomName.CG,
+            AtomName.HG,
+            AtomName.CD1,
+            AtomName.HD11,
+            AtomName.HD12,
+            AtomName.HD13,
+            AtomName.CD2,
+            AtomName.HD21,
+            AtomName.HD22,
+            AtomName.HD23),
+        "Leucine",
+        'L',
+        "LEU");
+    torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
+    torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
+  }
 
-    public static Leucine getInstance() {
-        return Leucine.INSTANCE;
-    }
+  public static Leucine getInstance() {
+    return Leucine.INSTANCE;
+  }
 
-    @Override
-    protected void fillChiAtomsMap() {
-        chiAtoms.put(ProteinChiType.CHI1, Chi1.LEUCINE_ATOMS);
-        chiAtoms.put(ProteinChiType.CHI2, Chi2.LEUCINE_ATOMS);
-    }
+  @Override
+  protected void fillChiAtomsMap() {
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.LEUCINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.LEUCINE_ATOMS);
+  }
 }

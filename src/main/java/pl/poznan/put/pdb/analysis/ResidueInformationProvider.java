@@ -6,17 +6,17 @@ import java.io.Serializable;
 import java.util.List;
 
 public interface ResidueInformationProvider extends Serializable {
-    MoleculeType getMoleculeType();
+  MoleculeType getMoleculeType();
 
-    List<ResidueComponent> getAllMoleculeComponents();
+  List<ResidueComponent> getAllMoleculeComponents();
 
-    String getDescription();
+  String getDescription();
 
-    char getOneLetterName();
+  char getOneLetterName();
 
-    String getDefaultPdbName();
+  String getDefaultPdbName();
 
-    List<String> getPdbNames();
+  List<String> getPdbNames();
 
-    List<TorsionAngleType> getTorsionAngleTypes();
+  List<TorsionAngleType> getTorsionAngleTypes();
 }

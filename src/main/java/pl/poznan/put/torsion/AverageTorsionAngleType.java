@@ -1,10 +1,5 @@
 package pl.poznan.put.torsion;
 
-import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.samples.AngleSample;
-import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.pdb.analysis.PdbResidue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,146 +7,159 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.samples.AngleSample;
+import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.torsion.range.Range;
+import pl.poznan.put.torsion.range.TorsionRange;
 
-public class AverageTorsionAngleType extends TorsionAngleType
-        implements MasterTorsionAngleType {
-    private final String displayName;
-    private final String exportName;
-    private final List<MasterTorsionAngleType> consideredAngles;
+public class AverageTorsionAngleType extends TorsionAngleType implements MasterTorsionAngleType {
+  private final String displayName;
+  private final String exportName;
+  private final List<MasterTorsionAngleType> consideredAngles;
 
-    public AverageTorsionAngleType(
-            final MoleculeType moleculeType,
-            final MasterTorsionAngleType... masterTypes) {
-        super(moleculeType);
-        consideredAngles = Arrays.asList(masterTypes);
-        displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
-        exportName = AverageTorsionAngleType.toExportName(consideredAngles);
+  public AverageTorsionAngleType(
+      final MoleculeType moleculeType, final MasterTorsionAngleType... masterTypes) {
+    super(moleculeType);
+    consideredAngles = Arrays.asList(masterTypes);
+    displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
+    exportName = AverageTorsionAngleType.toExportName(consideredAngles);
+  }
+
+  private static @NotNull String toDisplayName(
+      final Iterable<MasterTorsionAngleType> consideredAngles) {
+    final Collection<String> angleNames = new LinkedHashSet<>();
+    for (final MasterTorsionAngleType angleType : consideredAngles) {
+      angleNames.add(angleType.getShortDisplayName());
     }
 
-    private static String toDisplayName(
-            final Iterable<MasterTorsionAngleType> consideredAngles) {
-        Collection<String> angleNames = new LinkedHashSet<>();
-        for (final MasterTorsionAngleType angleType : consideredAngles) {
-            angleNames.add(angleType.getShortDisplayName());
+    final StringBuilder builder = new StringBuilder("MCQ(");
+    final Iterator<String> iterator = angleNames.iterator();
+    builder.append(iterator.next());
+
+    while (iterator.hasNext()) {
+      builder.append(", ");
+      builder.append(iterator.next());
+    }
+
+    builder.append(')');
+    return builder.toString();
+  }
+
+  private static @NotNull String toExportName(
+      final Iterable<MasterTorsionAngleType> consideredAngles) {
+    final Collection<String> angleNames = new LinkedHashSet<>();
+    for (final MasterTorsionAngleType angleType : consideredAngles) {
+      angleNames.add(angleType.getExportName());
+    }
+
+    final StringBuilder builder = new StringBuilder("MCQ_");
+    final Iterator<String> iterator = angleNames.iterator();
+    builder.append(iterator.next());
+
+    while (iterator.hasNext()) {
+      builder.append('_');
+      builder.append(iterator.next());
+    }
+
+    return builder.toString();
+  }
+
+  public AverageTorsionAngleType(
+      final MoleculeType moleculeType, final List<MasterTorsionAngleType> consideredAngles) {
+    super(moleculeType);
+    this.consideredAngles = new ArrayList<>(consideredAngles);
+    displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
+    exportName = AverageTorsionAngleType.toExportName(consideredAngles);
+  }
+
+  private AverageTorsionAngleType(
+      final MoleculeType moleculeType,
+      final List<MasterTorsionAngleType> consideredAngles,
+      final String displayName,
+      final String exportName) {
+    super(moleculeType);
+    this.consideredAngles = consideredAngles;
+    this.displayName = displayName;
+    this.exportName = exportName;
+  }
+
+  @Contract(pure = true)
+  @Override
+  public final String getLongDisplayName() {
+    return displayName;
+  }
+
+  @Contract(pure = true)
+  @Override
+  public final String getShortDisplayName() {
+    return displayName;
+  }
+
+  @Contract(pure = true)
+  @Override
+  public final String getExportName() {
+    return exportName;
+  }
+
+  @Contract(pure = true)
+  @Override
+  public final String toString() {
+    return displayName;
+  }
+
+  @Contract(pure = true)
+  public final @NotNull List<MasterTorsionAngleType> getConsideredAngles() {
+    return Collections.unmodifiableList(consideredAngles);
+  }
+
+  @Override
+  public final @NotNull TorsionAngleValue calculate(
+      final List<PdbResidue> residues, final int currentIndex) {
+    final PdbResidue residue = residues.get(currentIndex);
+    final List<Angle> angles = new ArrayList<>();
+
+    for (final TorsionAngleType type : residue.getTorsionAngleTypes()) {
+      for (final MasterTorsionAngleType masterType : consideredAngles) {
+        if (masterType.getAngleTypes().contains(type)) {
+          final TorsionAngleValue angleValue = type.calculate(residues, currentIndex);
+          angles.add(angleValue.getValue());
         }
+      }
+    }
 
-        StringBuilder builder = new StringBuilder("MCQ(");
-        Iterator<String> iterator = angleNames.iterator();
-        builder.append(iterator.next());
+    final AngleSample angleSample = new AngleSample(angles);
+    return new TorsionAngleValue(this, angleSample.getMeanDirection());
+  }
 
-        while (iterator.hasNext()) {
-            builder.append(", ");
-            builder.append(iterator.next());
+  public final @NotNull TorsionAngleValue calculate(final Iterable<TorsionAngleValue> values) {
+    final List<Angle> angles = new ArrayList<>();
+
+    for (final MasterTorsionAngleType masterType : consideredAngles) {
+      for (final TorsionAngleValue angleValue : values) {
+        if (masterType.getAngleTypes().contains(angleValue.getAngleType())) {
+          if (angleValue.getValue().isValid()) {
+            angles.add(angleValue.getValue());
+          }
         }
-
-        builder.append(')');
-        return builder.toString();
+      }
     }
 
-    private static String toExportName(
-            final Iterable<MasterTorsionAngleType> consideredAngles) {
-        Collection<String> angleNames = new LinkedHashSet<>();
-        for (final MasterTorsionAngleType angleType : consideredAngles) {
-            angleNames.add(angleType.getExportName());
-        }
+    final AngleSample angleSample = new AngleSample(angles);
+    return new TorsionAngleValue(this, angleSample.getMeanDirection());
+  }
 
-        StringBuilder builder = new StringBuilder("MCQ_");
-        Iterator<String> iterator = angleNames.iterator();
-        builder.append(iterator.next());
+  @Override
+  @Contract(pure = true)
+  public final @NotNull Collection<? extends TorsionAngleType> getAngleTypes() {
+    return Collections.singleton(this);
+  }
 
-        while (iterator.hasNext()) {
-            builder.append('_');
-            builder.append(iterator.next());
-        }
-
-        return builder.toString();
-    }
-
-    public AverageTorsionAngleType(
-            final MoleculeType moleculeType,
-            final List<MasterTorsionAngleType> consideredAngles) {
-        super(moleculeType);
-        this.consideredAngles = new ArrayList<>(consideredAngles);
-        displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
-        exportName = AverageTorsionAngleType.toExportName(consideredAngles);
-    }
-
-    private AverageTorsionAngleType(
-            final MoleculeType moleculeType,
-            final List<MasterTorsionAngleType> consideredAngles,
-            final String displayName, final String exportName) {
-        super(moleculeType);
-        this.consideredAngles = consideredAngles;
-        this.displayName = displayName;
-        this.exportName = exportName;
-    }
-
-    @Override
-    public String getLongDisplayName() {
-        return displayName;
-    }
-
-    @Override
-    public String getShortDisplayName() {
-        return displayName;
-    }
-
-    @Override
-    public String getExportName() {
-        return exportName;
-    }
-
-    @Override
-    public String toString() {
-        return displayName;
-    }
-
-    public Iterable<MasterTorsionAngleType> getConsideredAngles() {
-        return Collections.unmodifiableList(consideredAngles);
-    }
-
-    @Override
-    public TorsionAngleValue calculate(
-            final List<PdbResidue> residues, final int currentIndex) {
-        PdbResidue residue = residues.get(currentIndex);
-        List<Angle> angles = new ArrayList<>();
-
-        for (final TorsionAngleType type : residue.getTorsionAngleTypes()) {
-            for (final MasterTorsionAngleType masterType : consideredAngles) {
-                if (masterType.getAngleTypes().contains(type)) {
-                    TorsionAngleValue angleValue =
-                            type.calculate(residues, currentIndex);
-                    angles.add(angleValue.getValue());
-                }
-            }
-        }
-
-        AngleSample angleSample = new AngleSample(angles);
-        return new TorsionAngleValue(this, angleSample.getMeanDirection());
-    }
-
-    public TorsionAngleValue calculate(
-            final Iterable<TorsionAngleValue> values) {
-        List<Angle> angles = new ArrayList<>();
-
-        for (final MasterTorsionAngleType masterType : consideredAngles) {
-            for (final TorsionAngleValue angleValue : values) {
-                if (masterType.getAngleTypes()
-                              .contains(angleValue.getAngleType())) {
-                    if (angleValue.isValid()) {
-                        angles.add(angleValue.getValue());
-                    }
-                    break;
-                }
-            }
-        }
-
-        AngleSample angleSample = new AngleSample(angles);
-        return new TorsionAngleValue(this, angleSample.getMeanDirection());
-    }
-
-    @Override
-    public Collection<? extends TorsionAngleType> getAngleTypes() {
-        return Collections.singleton(this);
-    }
+  @Override
+  public final Range getRange(final Angle angle) {
+    return TorsionRange.getProvider().fromAngle(angle);
+  }
 }
