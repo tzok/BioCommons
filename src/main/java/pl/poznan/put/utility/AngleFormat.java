@@ -1,85 +1,68 @@
 package pl.poznan.put.utility;
 
-import org.apache.commons.math3.fraction.ProperFractionFormat;
 import org.apache.commons.math3.util.Precision;
 import pl.poznan.put.constant.Unicode;
 
-import java.text.FieldPosition;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
-
-public class AngleFormat extends NumberFormat {
-    private static final AngleFormat INSTANCE = new AngleFormat();
-    private static final long serialVersionUID = -5889250902960438432L;
-    private final ProperFractionFormat fractionFormat =
-            new ProperFractionFormat();
-
-    private AngleFormat() {
-        super();
+public final class AngleFormat {
+  /**
+   * Format an angle value given in radians. The method detects NaN and infinity. Values is rounded
+   * to the nearest degree.
+   *
+   * @param radians Input value in radians to be formatted.
+   * @return A {@link String} with the value of input in degrees and a unicode degree symbol.
+   */
+  public static String degreesRoundedToOne(final double radians) {
+    if (Double.isNaN(radians)) {
+      return "NaN";
+    }
+    if (Double.isInfinite(radians)) {
+      return Unicode.INFINITY;
+    }
+    if (Precision.equals(radians, 0)) {
+      return "0";
     }
 
-    public static AngleFormat createInstance() {
-        return AngleFormat.INSTANCE;
+    final double degrees = Math.toDegrees(radians);
+    final long rounded = Math.round(degrees);
+    return Long.toString(rounded) + Unicode.DEGREE;
+  }
+
+  /**
+   * Format an angle value given in radians. The method detects NaN and infinity. Value in degrees
+   * is displayed with two digits after comma.
+   *
+   * @param radians Input value in radians to be formatted.
+   * @return A {@link String} with the value of input in degrees (two digits after comma precision)
+   *     and a unicode degree symbol.
+   */
+  public static String degreesRoundedToHundredth(final double radians) {
+    if (Double.isNaN(radians)) {
+      return "NaN";
+    }
+    if (Double.isInfinite(radians)) {
+      return Unicode.INFINITY;
+    }
+    if (Precision.equals(radians, 0)) {
+      return "0";
     }
 
-    public static String formatDisplayLong(final double radians) {
-        if (Double.isNaN(radians)) {
-            return "NaN";
-        }
-        if (Double.isInfinite(radians)) {
-            return Unicode.INFINITY;
-        }
-        return AngleFormat.INSTANCE.format(radians);
-    }
+    final double degrees = Math.toDegrees(radians);
+    return TwoDigitsAfterDotNumberFormat.formatDouble(degrees) + Unicode.DEGREE;
+  }
 
-    public static String formatDisplayShort(final double radians) {
-        if (Double.isNaN(radians)) {
-            return "NaN";
-        }
-        if (Double.isInfinite(radians)) {
-            return Unicode.INFINITY;
-        }
-        return CommonNumberFormat.formatDouble(Math.toDegrees(radians))
-               + Unicode.DEGREE;
-    }
+  /**
+   * Format an angle value given in radians. The method uses no rounding and displays raw result of
+   * {@link Double#toString()}.
+   *
+   * @param radians Input value in radians to be formatted.
+   * @return A {@link String} with the value of input in degrees.
+   */
+  public static String degrees(final double radians) {
+    final double degrees = Math.toDegrees(radians);
+    return Double.toString(degrees);
+  }
 
-    public static String formatExport(final double radians) {
-        return Double.toString(Math.toDegrees(radians));
-    }
-
-    @Override
-    public final StringBuffer format(final double v,
-                                     final StringBuffer stringBuffer,
-                                     final FieldPosition fieldPosition) {
-        if (Precision.equals(v, 0.0)) {
-            return stringBuffer.append('0');
-        }
-        if (Precision.equals(v, Math.PI)) {
-            stringBuffer.append(Unicode.PI);
-            stringBuffer.append(" = 180");
-            stringBuffer.append(Unicode.DEGREE);
-            return stringBuffer;
-        }
-
-        fractionFormat.format(v / Math.PI, stringBuffer, fieldPosition);
-        stringBuffer.append(" * ");
-        stringBuffer.append(Unicode.PI);
-        stringBuffer.append(" = ");
-        stringBuffer.append(Math.round(Math.toDegrees(v)));
-        stringBuffer.append(Unicode.DEGREE);
-        return stringBuffer;
-    }
-
-    @Override
-    public final StringBuffer format(final long l,
-                                     final StringBuffer stringBuffer,
-                                     final FieldPosition fieldPosition) {
-        return fractionFormat.format(l, stringBuffer, fieldPosition);
-    }
-
-    @Override
-    public final Number parse(final String s,
-                              final ParsePosition parsePosition) {
-        return fractionFormat.parse(s, parsePosition);
-    }
+  private AngleFormat() {
+    super();
+  }
 }
