@@ -10,23 +10,23 @@ import java.awt.geom.Rectangle2D;
 import java.util.Locale;
 
 public abstract class AbstractDrawable implements Drawable {
-    protected SVGDocument svgDocument = SVGHelper.emptyDocument();
-    protected SVGGraphics2D svgGraphics = new SVGGraphics2D(svgDocument);
+  protected SVGDocument svgDocument = SVGHelper.emptyDocument();
+  protected SVGGraphics2D svgGraphics = new SVGGraphics2D(svgDocument);
 
-    @Override
-    public final SVGDocument finalizeDrawing() {
-        SVGSVGElement rootElement = svgDocument.getRootElement();
-        svgGraphics.getRoot(rootElement);
-        Rectangle2D box = SVGHelper.calculateBoundingBox(svgDocument);
-        String viewBox =
-                String.format(Locale.US, "%f %f %f %f", box.getX(), box.getY(),
-                              box.getWidth(), box.getHeight());
-        rootElement.setAttributeNS(null, SVGConstants.SVG_VIEW_BOX_ATTRIBUTE,
-                                   viewBox);
-        rootElement.setAttributeNS(null, SVGConstants.SVG_WIDTH_ATTRIBUTE,
-                                   Double.toString(box.getWidth()));
-        rootElement.setAttributeNS(null, SVGConstants.SVG_HEIGHT_ATTRIBUTE,
-                                   Double.toString(box.getHeight()));
-        return svgDocument;
-    }
+  @Override
+  public final SVGDocument finalizeDrawing() {
+    final SVGSVGElement rootElement = svgDocument.getRootElement();
+    svgGraphics.getRoot(rootElement);
+
+    final Rectangle2D box = SVGHelper.calculateBoundingBox(svgDocument);
+    final String viewBox =
+        String.format(
+            Locale.US, "%f %f %f %f", box.getX(), box.getY(), box.getWidth(), box.getHeight());
+    rootElement.setAttributeNS(null, SVGConstants.SVG_VIEW_BOX_ATTRIBUTE, viewBox);
+    rootElement.setAttributeNS(
+        null, SVGConstants.SVG_WIDTH_ATTRIBUTE, Double.toString(box.getWidth()));
+    rootElement.setAttributeNS(
+        null, SVGConstants.SVG_HEIGHT_ATTRIBUTE, Double.toString(box.getHeight()));
+    return svgDocument;
+  }
 }

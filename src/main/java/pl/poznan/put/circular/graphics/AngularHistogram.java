@@ -10,87 +10,82 @@ import pl.poznan.put.circular.enums.AngleTransformation;
 import java.util.Collection;
 
 public class AngularHistogram extends RawDataPlot {
-    private final double binRadians;
-    private double scalingFactor;
+  private final double binRadians;
+  private double scalingFactor;
 
-    public AngularHistogram(
-            final Collection<? extends Circular> data, final double binRadians,
-            final double diameter, final double majorTickSpread,
-            final double minorTickSpread,
-            final AngleTransformation angleTransformation) {
-        super(data, diameter, majorTickSpread, minorTickSpread,
-              angleTransformation);
-        this.binRadians = binRadians;
+  public AngularHistogram(
+      final Collection<? extends Circular> data,
+      final double binRadians,
+      final double diameter,
+      final double majorTickSpread,
+      final double minorTickSpread,
+      final AngleTransformation angleTransformation) {
+    super(data, diameter, majorTickSpread, minorTickSpread, angleTransformation);
+    this.binRadians = binRadians;
+  }
+
+  public AngularHistogram(
+      final Collection<? extends Circular> data, final double binRadians, final double diameter) {
+    super(data, diameter);
+    this.binRadians = binRadians;
+  }
+
+  public AngularHistogram(final Collection<? extends Circular> data, final double binRadians) {
+    super(data);
+    this.binRadians = binRadians;
+  }
+
+  public AngularHistogram(final Collection<? extends Circular> data) {
+    super(data);
+    binRadians = Math.PI / 12;
+  }
+
+  @Override
+  public final void draw() {
+    super.draw();
+
+    Histogram histogram = new Histogram(getData(), binRadians);
+    double maxFrequency = Double.NEGATIVE_INFINITY;
+
+    for (double d = 0; d < MathUtils.TWO_PI; d += binRadians) {
+      double frequency = (double) histogram.getBinSize(d) / getData().size();
+      maxFrequency = Math.max(frequency, maxFrequency);
     }
 
-    public AngularHistogram(
-            final Collection<? extends Circular> data, final double binRadians,
-            final double diameter) {
-        super(data, diameter);
-        this.binRadians = binRadians;
+    // the 0.8 is here because up to 0.85 the majorTick can be drawn and we
+    // do not want overlaps
+    scalingFactor = 0.8 / Math.sqrt(maxFrequency);
+
+    for (double d = 0; d < MathUtils.TWO_PI; d += binRadians) {
+      double frequency = (double) histogram.getBinSize(d) / getData().size();
+      if (frequency > 0) {
+        drawHistogramTriangle(d, frequency);
+      }
+
+      if (isAxes()) {
+        drawHistogramTriangle((d + Math.PI) % MathUtils.TWO_PI, frequency);
+      }
     }
+  }
 
-    public AngularHistogram(
-            final Collection<? extends Circular> data,
-            final double binRadians) {
-        super(data);
-        this.binRadians = binRadians;
-    }
+  private void drawHistogramTriangle(final double circularValue, final double frequency) {
+    double sectorRadius = FastMath.sqrt(frequency) * getRadius() * scalingFactor;
 
-    public AngularHistogram(final Collection<? extends Circular> data) {
-        super(data);
-        binRadians = Math.PI / 12;
-    }
+    // angle as in XY coordinate system
+    double t1 = transform(circularValue);
+    double x1 = getCenterX() + (sectorRadius * FastMath.cos(t1));
+    double y1 = getCenterY() + (sectorRadius * FastMath.sin(t1));
 
-    @Override
-    public final void draw() {
-        super.draw();
+    double t2 = transform(circularValue + binRadians);
+    double x2 = getCenterX() + (sectorRadius * FastMath.cos(t2));
+    double y2 = getCenterY() + (sectorRadius * FastMath.sin(t2));
 
-        Histogram histogram = new Histogram(getData(), binRadians);
-        double maxFrequency = Double.NEGATIVE_INFINITY;
-
-        for (double d = 0; d < MathUtils.TWO_PI; d += binRadians) {
-            double frequency =
-                    (double) histogram.getBinSize(d) / getData().size();
-            maxFrequency = Math.max(frequency, maxFrequency);
-        }
-
-        // the 0.8 is here because up to 0.85 the majorTick can be drawn and we
-        // do not want overlaps
-        scalingFactor = 0.8 / Math.sqrt(maxFrequency);
-
-        for (double d = 0; d < MathUtils.TWO_PI; d += binRadians) {
-            double frequency =
-                    (double) histogram.getBinSize(d) / getData().size();
-            if (frequency > 0) {
-                drawHistogramTriangle(d, frequency);
-            }
-
-            if (isAxes()) {
-                drawHistogramTriangle((d + Math.PI) % MathUtils.TWO_PI,
-                                      frequency);
-            }
-        }
-    }
-
-    private void drawHistogramTriangle(
-            final double circularValue, final double frequency) {
-        double sectorRadius =
-                FastMath.sqrt(frequency) * getRadius() * scalingFactor;
-
-        // angle as in XY coordinate system
-        double t1 = transform(circularValue);
-        double x1 = getCenterX() + (sectorRadius * FastMath.cos(t1));
-        double y1 = getCenterY() + (sectorRadius * FastMath.sin(t1));
-
-        double t2 = transform(circularValue + binRadians);
-        double x2 = getCenterX() + (sectorRadius * FastMath.cos(t2));
-        double y2 = getCenterY() + (sectorRadius * FastMath.sin(t2));
-
-        float[] xs = {(float) x1, (float) x2, (float) getCenterX()};
-        float[] ys = {
-                (float) (getDiameter() - y1), (float) (getDiameter() - y2),
-                (float) (getDiameter() - getCenterY())};
-        svgGraphics.draw(new Polygon2D(xs, ys, 3));
-    }
+    float[] xs = {(float) x1, (float) x2, (float) getCenterX()};
+    float[] ys = {
+      (float) (getDiameter() - y1),
+      (float) (getDiameter() - y2),
+      (float) (getDiameter() - getCenterY())
+    };
+    svgGraphics.draw(new Polygon2D(xs, ys, 3));
+  }
 }
