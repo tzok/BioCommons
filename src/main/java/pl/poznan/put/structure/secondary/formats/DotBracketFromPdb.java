@@ -3,6 +3,7 @@ package pl.poznan.put.structure.secondary.formats;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -194,7 +195,9 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     // prepare the final result
     final List<CombinedStrandFromPdb> result = new ArrayList<>(strandClusters.size());
     for (final Set<Strand> strandCluster : strandClusters) {
-      result.add(new CombinedStrandFromPdb(new ArrayList<>(strandCluster), symbolToResidue));
+      final ArrayList<Strand> combinedStrands = new ArrayList<>(strandCluster);
+      combinedStrands.sort(Comparator.comparingInt(strands::indexOf));
+      result.add(new CombinedStrandFromPdb(combinedStrands, symbolToResidue));
     }
 
     // add strands without inter-strand connections
