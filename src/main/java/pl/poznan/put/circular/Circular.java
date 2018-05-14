@@ -74,9 +74,6 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
 
   @Override
   public final int compareTo(final Circular t) {
-    if (equals(t)) {
-      return 0;
-    }
-    return Double.compare(radians, t.radians);
+    return Double.compare(getRadians2PI(), t.getRadians2PI());
   }
 }
