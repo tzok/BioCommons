@@ -1,12 +1,11 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.apache.commons.io.FileUtils;
 
 /** An implementation of {@link ModelContainer} which uses a single PDB file inside. */
 public class PdbContainer implements ModelContainer {

@@ -1,13 +1,12 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import pl.poznan.put.structure.secondary.pseudoknots.PseudoknotFinder;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import pl.poznan.put.structure.secondary.pseudoknots.PseudoknotFinder;
 
 public class LevelByLevelConverter implements Converter {
   private static final char[] BRACKETS_OPENING = "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();

@@ -1,9 +1,8 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import pl.poznan.put.structure.secondary.DotBracketSymbol;
-
 import java.util.ArrayList;
 import java.util.List;
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class TerminalMissing {
   private final List<DotBracketSymbol> symbols;

@@ -1,5 +1,18 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.io.mmcif.MMcifConsumer;
@@ -60,20 +73,6 @@ import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
-
-import javax.annotation.Nullable;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
 
 public class CifConsumer implements MMcifConsumer {
   private static final Logger LOGGER = LoggerFactory.getLogger(CifConsumer.class);
@@ -216,7 +215,7 @@ public class CifConsumer implements MMcifConsumer {
 
   @Override
   public void setStruct(final Struct struct) {
-	  this.title = StringUtils.upperCase(struct.getTitle());
+    this.title = StringUtils.upperCase(struct.getTitle());
   }
 
   @Override
@@ -546,7 +545,8 @@ public class CifConsumer implements MMcifConsumer {
               atoms,
               modifiedResidues,
               missingResidues,
-              basePairs, title);
+              basePairs,
+              title);
       result.add(pdbModel);
     }
 

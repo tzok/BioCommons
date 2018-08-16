@@ -1,12 +1,11 @@
 package pl.poznan.put.pdb;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PdbRemark465Line implements ChainNumberICode, Serializable {
   private static final long serialVersionUID = -6551046160002695423L;

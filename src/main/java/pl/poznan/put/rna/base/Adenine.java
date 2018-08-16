@@ -1,11 +1,10 @@
 package pl.poznan.put.rna.base;
 
+import java.util.Arrays;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.rna.Purine;
 import pl.poznan.put.rna.Ribose;
 import pl.poznan.put.rna.Sugar;
-
-import java.util.Arrays;
 
 public final class Adenine extends Purine {
   private static final Adenine INSTANCE = new Adenine();

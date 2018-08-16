@@ -1,12 +1,11 @@
 package pl.poznan.put.protein.aminoacid;
 
+import java.util.Arrays;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.protein.ProteinSidechain;
 import pl.poznan.put.protein.torsion.Chi1;
 import pl.poznan.put.protein.torsion.Chi2;
 import pl.poznan.put.protein.torsion.ProteinChiType;
-
-import java.util.Arrays;
 
 public final class Asparagine extends ProteinSidechain {
   private static final Asparagine INSTANCE = new Asparagine();

@@ -1,12 +1,5 @@
 package pl.poznan.put.structure.secondary.pseudoknots.dp;
 
-import org.apache.commons.collections4.CollectionUtils;
-import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
-import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
-import pl.poznan.put.structure.secondary.pseudoknots.Region;
-import pl.poznan.put.structure.secondary.pseudoknots.elimination.RegionRemover;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,6 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.apache.commons.collections4.CollectionUtils;
+import pl.poznan.put.structure.secondary.formats.BpSeq;
+import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
+import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
+import pl.poznan.put.structure.secondary.pseudoknots.Region;
+import pl.poznan.put.structure.secondary.pseudoknots.elimination.RegionRemover;
 
 /**
  * Java implementation of OPT ALL algorithm as presented in: Smit, S. et al., 2008. From knotted to

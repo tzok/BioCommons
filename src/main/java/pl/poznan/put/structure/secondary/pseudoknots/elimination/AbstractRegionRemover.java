@@ -1,14 +1,13 @@
 package pl.poznan.put.structure.secondary.pseudoknots.elimination;
 
-import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
-import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
-import pl.poznan.put.structure.secondary.pseudoknots.Region;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import pl.poznan.put.structure.secondary.formats.BpSeq;
+import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
+import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
+import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
 /**
  * Java implementation of region removal algorithm as presented in: Smit, S. et al., 2008. From

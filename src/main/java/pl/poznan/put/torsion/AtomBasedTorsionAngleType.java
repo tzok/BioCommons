@@ -1,14 +1,8 @@
 package pl.poznan.put.torsion;
 
 import java.util.List;
-import java.util.Objects;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.MoleculeType;
@@ -16,13 +10,11 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.types.Quadruplet;
 
 @Data
-@NoArgsConstructor
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement
+@EqualsAndHashCode(callSuper = true)
 public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
-  @XmlElement private String displayName;
-  @XmlTransient private Quadruplet<AtomName> atoms;
-  @XmlTransient private Quadruplet<Integer> residueRule;
+  private String displayName;
+  private Quadruplet<AtomName> atoms;
+  private Quadruplet<Integer> residueRule;
 
   protected AtomBasedTorsionAngleType(
       final MoleculeType moleculeType,
@@ -49,28 +41,6 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
   @Override
   public final String getExportName() {
     return getClass().getSimpleName().toLowerCase();
-  }
-
-  @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    final AtomBasedTorsionAngleType other = (AtomBasedTorsionAngleType) o;
-    return Objects.equals(displayName, other.displayName)
-        && Objects.equals(atoms, other.atoms)
-        && Objects.equals(residueRule, other.residueRule);
-  }
-
-  @Override
-  public final int hashCode() {
-    return Objects.hash(super.hashCode(), displayName, atoms, residueRule);
   }
 
   @Override

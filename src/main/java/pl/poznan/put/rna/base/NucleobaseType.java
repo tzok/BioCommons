@@ -1,12 +1,11 @@
 package pl.poznan.put.rna.base;
 
+import java.util.List;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.rna.Base;
 import pl.poznan.put.torsion.TorsionAngleType;
-
-import java.util.List;
 
 public enum NucleobaseType implements ResidueInformationProvider {
   ADENINE(Adenine.getInstance()),

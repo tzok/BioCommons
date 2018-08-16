@@ -1,5 +1,9 @@
 package pl.poznan.put.rna;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
@@ -21,11 +25,6 @@ import pl.poznan.put.rna.torsion.ThetaPrim;
 import pl.poznan.put.rna.torsion.Zeta;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public abstract class Base extends NucleicAcidResidueComponent
     implements ResidueInformationProvider {

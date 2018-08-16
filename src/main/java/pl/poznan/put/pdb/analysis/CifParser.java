@@ -1,14 +1,13 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.apache.commons.io.IOUtils;
-import org.biojava.nbio.structure.io.mmcif.MMcifParser;
-import org.biojava.nbio.structure.io.mmcif.SimpleMMcifParser;
-import pl.poznan.put.pdb.PdbParsingException;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
+import org.apache.commons.io.IOUtils;
+import org.biojava.nbio.structure.io.mmcif.MMcifParser;
+import org.biojava.nbio.structure.io.mmcif.SimpleMMcifParser;
+import pl.poznan.put.pdb.PdbParsingException;
 
 public class CifParser implements StructureParser {
   private final MMcifParser parser = new SimpleMMcifParser();

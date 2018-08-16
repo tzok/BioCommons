@@ -1,13 +1,12 @@
 package pl.poznan.put.structure.secondary.pseudoknots.dp;
 
-import org.apache.commons.collections4.map.MultiKeyMap;
-import pl.poznan.put.structure.secondary.pseudoknots.Region;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.collections4.map.MultiKeyMap;
+import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
 /**
  * A collection of regions conflicting with each other. Precisely, this is not a real clique. Each

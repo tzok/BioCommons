@@ -95,7 +95,8 @@ public final class StructureManager {
    * @param file Path to the PDB file.
    * @return Structure object..
    */
-  public static List<? extends PdbModel> loadStructure(final File file) throws IOException, PdbParsingException {
+  public static List<? extends PdbModel> loadStructure(final File file)
+      throws IOException, PdbParsingException {
     final List<PdbModel> models = StructureManager.getModels(file);
     if (!models.isEmpty()) {
       return models;
@@ -152,7 +153,8 @@ public final class StructureManager {
     return matcher.find();
   }
 
-  private static void storeStructureInfo(final File file, final List<? extends PdbModel> structures) {
+  private static void storeStructureInfo(
+      final File file, final List<? extends PdbModel> structures) {
     @NonNls String format = "%s";
 
     if (structures.size() > 1) {
@@ -181,7 +183,8 @@ public final class StructureManager {
         }
       }
 
-      StructureManager.STRUCTURES.add(new StructureInfo(model, file, String.format(format, name, i + 1)));
+      StructureManager.STRUCTURES.add(
+          new StructureInfo(model, file, String.format(format, name, i + 1)));
     }
   }
 
@@ -200,16 +203,19 @@ public final class StructureManager {
     }
   }
 
-  public static List<PdbModel> loadStructure(final String pdbId) throws IOException, PdbParsingException {
+  public static List<PdbModel> loadStructure(final String pdbId)
+      throws IOException, PdbParsingException {
     if (pdbId.length() != 4) {
       throw new IllegalArgumentException("Invalid PDB id: " + pdbId);
     }
 
     final String lowercase = pdbId.toLowerCase();
     final String middle = lowercase.substring(1, 3);
-    final URL url = new URL(String.format(
-        "http://ftp.ebi.ac.uk/pub/databases/rcsb/pdb-remediated/data/structures/divided/pdb/%s/pdb%s.ent.gz", middle,
-        lowercase));
+    final URL url =
+        new URL(
+            String.format(
+                "http://ftp.ebi.ac.uk/pub/databases/rcsb/pdb-remediated/data/structures/divided/pdb/%s/pdb%s.ent.gz",
+                middle, lowercase));
 
     final String pdbContent = StructureManager.unzipContent(IOUtils.toByteArray(url));
 
