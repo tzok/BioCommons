@@ -11,7 +11,6 @@ import java.util.Date;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import pl.poznan.put.interfaces.ExportFormat;
 import pl.poznan.put.interfaces.Exportable;
 
 @Data
@@ -36,11 +35,6 @@ public class SequenceAlignment implements Exportable {
       SequenceAlignment.log.error("Failed to export sequence alignment", e);
       throw new IOException(e);
     }
-  }
-
-  @Override
-  public final ExportFormat getExportFormat() {
-    return ExportFormat.TXT;
   }
 
   @Override

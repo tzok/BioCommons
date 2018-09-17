@@ -49,9 +49,10 @@ public final class CifConverter {
   }
 
   public static ModelContainer convert(final File cifFile) throws IOException, PdbParsingException {
-    final StructureParser cifParser = new CifParser();
+    @SuppressWarnings("TypeMayBeWeakened")
+    final CifParser cifParser = new CifParser();
     final String cifContents = FileUtils.readFileToString(cifFile, Charset.defaultCharset());
-    final Iterable<CifModel> models = (Iterable<CifModel>) cifParser.parse(cifContents);
+    final Iterable<CifModel> models = cifParser.parse(cifContents);
     return CifConverter.convert(cifFile, models);
   }
 
@@ -106,7 +107,7 @@ public final class CifConverter {
       for (final PdbResidue residue : chain.getResidues()) {
         if (residue.getResidueNumber() > CifConverter.MAX_RESIDUE_NUMBER) {
           CifConverter.LOGGER.error(
-              "Cannot continue. Chain {} has residue" + " of index > 9999", chain.getIdentifier());
+              "Cannot continue. Chain {} has residue of index > 9999", chain.getIdentifier());
           return false;
         }
       }
