@@ -14,7 +14,6 @@ import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.python.jline.internal.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +41,11 @@ public final class ExecHelper {
     return ExecHelper.execute(null, environment, command, arguments);
   }
 
-  public static ExecutionResult execute(@Nullable final File workingDirectory, final Map<String, String> environment,
-                                        final String command, final String... arguments)
+  public static ExecutionResult execute(
+      final File workingDirectory,
+      final Map<String, String> environment,
+      final String command,
+      final String... arguments)
       throws IOException {
     // run `chmod a+x` on the command
     ExecHelper.makeExecutable(command);
