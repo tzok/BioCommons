@@ -1,7 +1,6 @@
 package pl.poznan.put.circular;
 
 import java.util.regex.Pattern;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
@@ -16,7 +15,6 @@ import pl.poznan.put.circular.exception.InvalidVectorFormatException;
  *
  * @author tzok
  */
-@XmlRootElement
 public class Angle extends Circular {
   private static final long serialVersionUID = 7888250116422842913L;
 
