@@ -3,16 +3,6 @@ package pl.poznan.put.circular.utility;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.svg.SVGDocument;
-import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.Axis;
-import pl.poznan.put.circular.Circular;
-import pl.poznan.put.circular.enums.ValueType;
-import pl.poznan.put.utility.svg.Format;
-import pl.poznan.put.utility.svg.SVGHelper;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -23,6 +13,15 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.svg.SVGDocument;
+import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.Axis;
+import pl.poznan.put.circular.Circular;
+import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.utility.svg.Format;
+import pl.poznan.put.utility.svg.SVGHelper;
 
 /** A class providing helper functions. */
 public final class Helper {

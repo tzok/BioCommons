@@ -1,13 +1,12 @@
 package pl.poznan.put.circular.graphics;
 
+import java.awt.geom.Rectangle2D;
+import java.util.Locale;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
 import pl.poznan.put.utility.svg.SVGHelper;
-
-import java.awt.geom.Rectangle2D;
-import java.util.Locale;
 
 public abstract class AbstractDrawable implements Drawable {
   protected SVGDocument svgDocument = SVGHelper.emptyDocument();

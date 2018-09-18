@@ -3,16 +3,6 @@ package pl.poznan.put.circular.graphics;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
-import org.apache.commons.math3.util.FastMath;
-import org.apache.commons.math3.util.MathUtils;
-import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.Circular;
-import pl.poznan.put.circular.Histogram;
-import pl.poznan.put.circular.enums.ValueType;
-import pl.poznan.put.circular.utility.Helper;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,6 +12,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+import org.apache.commons.math3.util.FastMath;
+import org.apache.commons.math3.util.MathUtils;
+import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.Circular;
+import pl.poznan.put.circular.Histogram;
+import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.utility.Helper;
 
 /** Draws a histogram using one of predefined templates. */
 public class TemplateHistogram {

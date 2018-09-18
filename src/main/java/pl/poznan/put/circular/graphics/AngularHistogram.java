@@ -1,13 +1,12 @@
 package pl.poznan.put.circular.graphics;
 
+import java.util.Collection;
 import org.apache.batik.ext.awt.geom.Polygon2D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Histogram;
 import pl.poznan.put.circular.enums.AngleTransformation;
-
-import java.util.Collection;
 
 public class AngularHistogram extends RawDataPlot {
   private final double binRadians;
