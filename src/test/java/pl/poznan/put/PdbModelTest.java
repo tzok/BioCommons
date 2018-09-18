@@ -1,5 +1,10 @@
 package pl.poznan.put;
 
+import static org.junit.Assert.*;
+
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.biojava.nbio.structure.Structure;
@@ -20,12 +25,6 @@ import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.utility.ResourcesHelper;
-
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class PdbModelTest {
   @Test

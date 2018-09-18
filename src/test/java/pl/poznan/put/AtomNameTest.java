@@ -1,13 +1,13 @@
 package pl.poznan.put;
 
+import static org.junit.Assert.assertNotEquals;
+
 import org.junit.Test;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.utility.ResourcesHelper;
-
-import static org.junit.Assert.assertNotEquals;
 
 public class AtomNameTest {
   @Test

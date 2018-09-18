@@ -1,5 +1,7 @@
 package pl.poznan.put;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.Converter;
@@ -8,8 +10,6 @@ import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.structure.secondary.formats.LevelByLevelConverter;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.MinGain;
 import pl.poznan.put.utility.ResourcesHelper;
-
-import static org.junit.Assert.assertEquals;
 
 public class DotBracketTest {
   // @formatter:off

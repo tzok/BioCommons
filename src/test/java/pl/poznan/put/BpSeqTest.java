@@ -1,5 +1,9 @@
 package pl.poznan.put;
 
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.pdb.analysis.PdbModel;
@@ -9,11 +13,6 @@ import pl.poznan.put.structure.secondary.formats.Ct;
 import pl.poznan.put.structure.secondary.formats.DotBracket;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.utility.ResourcesHelper;
-
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class BpSeqTest {
   // @formatter:off

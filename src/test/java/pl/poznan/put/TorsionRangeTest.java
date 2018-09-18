@@ -1,12 +1,12 @@
 package pl.poznan.put;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.torsion.range.TorsionRange;
-
-import static org.junit.Assert.assertEquals;
 
 public class TorsionRangeTest {
   @Test

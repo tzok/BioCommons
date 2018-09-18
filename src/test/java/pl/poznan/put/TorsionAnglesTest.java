@@ -1,5 +1,8 @@
 package pl.poznan.put;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
@@ -8,9 +11,6 @@ import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.rna.torsion.Beta;
 import pl.poznan.put.torsion.TorsionAngleValue;
 import pl.poznan.put.torsion.TorsionAnglesHelper;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TorsionAnglesTest {
   private static final double EPSILON_E6 = 1.0e-6;

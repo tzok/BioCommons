@@ -1,5 +1,6 @@
 package pl.poznan.put;
 
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.pdb.ExperimentalTechnique;
@@ -8,8 +9,6 @@ import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.utility.ResourcesHelper;
-
-import java.util.List;
 
 public class CifParserTest {
   @Test
