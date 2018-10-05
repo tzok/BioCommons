@@ -24,7 +24,7 @@ public final class AngleFormat {
 
     final double degrees = Math.toDegrees(radians);
     final long rounded = Math.round(degrees);
-    return Long.toString(rounded) + Unicode.DEGREE;
+    return rounded + Unicode.DEGREE;
   }
 
   /**
@@ -47,7 +47,7 @@ public final class AngleFormat {
     }
 
     final double degrees = Math.toDegrees(radians);
-    return TwoDigitsAfterDotNumberFormat.formatDouble(degrees) + Unicode.DEGREE;
+    return NumberFormatUtils.threeDecimalDigits().format(degrees) + Unicode.DEGREE;
   }
 
   /**

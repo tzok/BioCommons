@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteStreamHandler;
@@ -14,12 +15,9 @@ import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public final class ExecHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ExecHelper.class);
-
   private ExecHelper() {
     super();
   }
@@ -69,30 +67,32 @@ public final class ExecHelper {
     }
 
     try {
-      if (workingDirectory != null) {
-        ExecHelper.LOGGER.info(
-            "Running {} with arguments {} in {}",
-            command,
-            Arrays.toString(arguments),
-            workingDirectory);
-      } else {
-        ExecHelper.LOGGER.info(
-            "Running {} with arguments {} in", command, Arrays.toString(arguments));
+      if (ExecHelper.log.isInfoEnabled()) {
+        if (workingDirectory != null) {
+          ExecHelper.log.info(
+              "Running {} with arguments {} in {}",
+              command,
+              Arrays.toString(arguments),
+              workingDirectory);
+        } else {
+          ExecHelper.log.info(
+              "Running {} with arguments {} in", command, Arrays.toString(arguments));
+        }
       }
 
       // execute the command
       final int exitCode = executor.execute(commandLine, environment);
 
-      if (ExecHelper.LOGGER.isTraceEnabled()) {
-        ExecHelper.LOGGER.trace("Standard output: {}", out);
-        ExecHelper.LOGGER.trace("Standard error: {}", err);
+      if (ExecHelper.log.isTraceEnabled()) {
+        ExecHelper.log.trace("Standard output: {}", out);
+        ExecHelper.log.trace("Standard error: {}", err);
       }
 
       return new ExecutionResult(
           exitCode, out.toString(Charset.defaultCharset()), err.toString(Charset.defaultCharset()));
     } catch (final IOException e) {
-      ExecHelper.LOGGER.warn("Standard output: {}", out);
-      ExecHelper.LOGGER.warn("Standard error: {}", err);
+      ExecHelper.log.warn("Standard output: {}", out);
+      ExecHelper.log.warn("Standard error: {}", err);
       throw e;
     }
   }

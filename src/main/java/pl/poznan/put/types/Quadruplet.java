@@ -1,6 +1,5 @@
 package pl.poznan.put.types;
 
-import java.util.List;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
@@ -10,30 +9,12 @@ public class Quadruplet<T> {
   public final T c;
   public final T d;
 
-  public Quadruplet(final List<T> list) {
-    super();
-    assert list.size() == 4;
-    a = list.get(0);
-    b = list.get(1);
-    c = list.get(2);
-    d = list.get(3);
-  }
-
   public Quadruplet(final T a, final T b, final T c, final T d) {
     super();
     this.a = a;
     this.b = b;
     this.c = c;
     this.d = d;
-  }
-
-  public Quadruplet(final T[] array) {
-    super();
-    assert array.length == 4;
-    a = array[0];
-    b = array[1];
-    c = array[2];
-    d = array[3];
   }
 
   public final T get(final int index) {

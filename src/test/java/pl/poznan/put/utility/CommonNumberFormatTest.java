@@ -7,10 +7,12 @@ import org.junit.Test;
 public class CommonNumberFormatTest {
   @Test
   public final void formatDouble() {
-    assertEquals("123", TwoDigitsAfterDotNumberFormat.formatDouble(123.0));
-    assertEquals("123.4", TwoDigitsAfterDotNumberFormat.formatDouble(123.4));
-    assertEquals("123.45", TwoDigitsAfterDotNumberFormat.formatDouble(123.45));
-    assertEquals("123.45", TwoDigitsAfterDotNumberFormat.formatDouble(123.454));
-    assertEquals("123.46", TwoDigitsAfterDotNumberFormat.formatDouble(123.455));
+    assertEquals("123.0", NumberFormatUtils.threeDecimalDigits().format(123.0));
+    assertEquals("123.4", NumberFormatUtils.threeDecimalDigits().format(123.4));
+    assertEquals("123.45", NumberFormatUtils.threeDecimalDigits().format(123.45));
+    assertEquals("123.454", NumberFormatUtils.threeDecimalDigits().format(123.454));
+    assertEquals("123.455", NumberFormatUtils.threeDecimalDigits().format(123.455));
+    assertEquals("123.455", NumberFormatUtils.threeDecimalDigits().format(123.4554));
+    assertEquals("123.456", NumberFormatUtils.threeDecimalDigits().format(123.4556));
   }
 }
