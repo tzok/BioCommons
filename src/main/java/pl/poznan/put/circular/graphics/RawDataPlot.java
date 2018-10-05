@@ -113,74 +113,85 @@ public class RawDataPlot extends AbstractDrawable {
       final double x = centerX + (radius * FastMath.cos(t));
       final double y = centerY + (radius * FastMath.sin(t));
       // 'a', 'b' = equation for a line from center to this point
-      final double a = (x - centerX) / (y - centerY);
+      final double slope = (x - centerX) / (y - centerY);
 
       int i = 0;
       for (final Circular circular : entry.getValue()) {
         // point on virtual circle
         final double virtualRadius = radius + tickTextWidth + ((i + 1) * observationSize);
-        double xv = centerX + (virtualRadius * FastMath.cos(t));
-        double yv = centerY + (virtualRadius * FastMath.sin(t));
+        final double xv = centerX + (virtualRadius * FastMath.cos(t));
+        final double yv = centerY + (virtualRadius * FastMath.sin(t));
 
         if (circular instanceof Angle) {
-          final double x1;
-          final double y1;
-          final double x2;
-          final double y2;
-
-          // special case for 90 and 270 degrees
-          int td = (int) FastMath.round(Math.toDegrees(t));
-          td += (td < 0) ? 360 : 0;
-          if ((td == 0) || (td == 180)) {
-            // special case for 90 and 270 degrees
-            x1 = xv;
-            y1 = yv + (observationSize / 2);
-            x2 = xv;
-            y2 = yv - (observationSize / 2);
-          } else {
-            // 'ap', 'bp' = equation for perpendicular line to 'a',
-            // 'b'
-            final double ap = -a;
-            final double bp = yv + (a * xv);
-            // 'sa', 'sb', 'sc' = quadratic equation parameters
-            final double sa = 1 + FastMath.pow(ap, 2);
-            final double sb = (-2 * xv) + (2 * ap * (bp - yv));
-            final double sc =
-                (FastMath.pow(xv, 2) + FastMath.pow(bp - yv, 2))
-                    - FastMath.pow(observationSize / 2, 2);
-            // solve
-            final double delta = (sb * sb) - (4 * sa * sc);
-            x1 = (-sb - FastMath.sqrt(delta)) / (2 * sa);
-            y1 = (ap * x1) + bp;
-            x2 = (-sb + FastMath.sqrt(delta)) / (2 * sa);
-            y2 = (ap * x2) + bp;
-          }
-
-          // last point is one step further
-          final double x3 = centerX + ((virtualRadius + observationSize) * FastMath.cos(t));
-          final double y3 = centerY + ((virtualRadius + observationSize) * FastMath.sin(t));
-
-          final float[] xs = {(float) x1, (float) x2, (float) x3};
-          final float[] ys = {
-            (float) (diameter - y1), (float) (diameter - y2), (float) (diameter - y3)
-          };
-          svgGraphics.draw(new Polygon2D(xs, ys, 3));
+          drawObservationTriangle(t, slope, virtualRadius, xv, yv);
           i += 2;
         } else if (circular instanceof Axis) {
-          xv -= observationSize / 2.0;
-          yv += observationSize / 2.0;
-
-          svgGraphics.draw(
-              new Ellipse2D.Double(xv, diameter - yv, observationSize, observationSize));
-          xv =
-              (centerX + (virtualRadius * FastMath.cos(t + FastMath.PI))) - (observationSize / 2.0);
-          yv = centerY + (virtualRadius * FastMath.sin(t + FastMath.PI)) + (observationSize / 2.0);
-          svgGraphics.draw(
-              new Ellipse2D.Double(xv, diameter - yv, observationSize, observationSize));
+          drawObservationCircles(t, virtualRadius, xv, yv);
           i += 1;
         }
       }
     }
+  }
+
+  private void drawObservationCircles(
+      final double t, final double virtualRadius, final double xv, final double yv) {
+    final double x = xv - (observationSize / 2.0);
+    final double y = yv + (observationSize / 2.0);
+    svgGraphics.draw(new Ellipse2D.Double(x, diameter - y, observationSize, observationSize));
+    final double xPlusPI =
+        (centerX + (virtualRadius * FastMath.cos(t + FastMath.PI))) - (observationSize / 2.0);
+    final double yPlusPI =
+        centerY + (virtualRadius * FastMath.sin(t + FastMath.PI)) + (observationSize / 2.0);
+    svgGraphics.draw(
+        new Ellipse2D.Double(xPlusPI, diameter - yPlusPI, observationSize, observationSize));
+  }
+
+  private void drawObservationTriangle(
+      final double t,
+      final double a,
+      final double virtualRadius,
+      final double xv,
+      final double yv) {
+    // special case for 90 and 270 degrees
+    int td = (int) FastMath.round(Math.toDegrees(t));
+    td += (td < 0) ? 360 : 0;
+
+    final double x1;
+    final double y1;
+    final double x2;
+    final double y2;
+
+    if ((td == 0) || (td == 180)) {
+      // special case for 90 and 270 degrees
+      x1 = xv;
+      y1 = yv + (observationSize / 2);
+      x2 = xv;
+      y2 = yv - (observationSize / 2);
+    } else {
+      // 'ap', 'bp' = equation for perpendicular line to 'a',
+      // 'b'
+      final double ap = -a;
+      final double bp = yv + (a * xv);
+      // 'sa', 'sb', 'sc' = quadratic equation parameters
+      final double sa = 1 + FastMath.pow(ap, 2);
+      final double sb = (-2 * xv) + (2 * ap * (bp - yv));
+      final double sc =
+          (FastMath.pow(xv, 2) + FastMath.pow(bp - yv, 2)) - FastMath.pow(observationSize / 2, 2);
+      // solve
+      final double delta = (sb * sb) - (4 * sa * sc);
+      x1 = (-sb - FastMath.sqrt(delta)) / (2 * sa);
+      y1 = (ap * x1) + bp;
+      x2 = (-sb + FastMath.sqrt(delta)) / (2 * sa);
+      y2 = (ap * x2) + bp;
+    }
+
+    // last point is one step further
+    final double x3 = centerX + ((virtualRadius + observationSize) * FastMath.cos(t));
+    final double y3 = centerY + ((virtualRadius + observationSize) * FastMath.sin(t));
+
+    final float[] xs = {(float) x1, (float) x2, (float) x3};
+    final float[] ys = {(float) (diameter - y1), (float) (diameter - y2), (float) (diameter - y3)};
+    svgGraphics.draw(new Polygon2D(xs, ys, 3));
   }
 
   private void drawTicks(final double tickSpread, final double virtualRadius) {
@@ -235,7 +246,7 @@ public class RawDataPlot extends AbstractDrawable {
     }
   }
 
-  public final Collection<? extends Circular> getData() {
+  public final Collection<Circular> getData() {
     return Collections.unmodifiableCollection(data);
   }
 

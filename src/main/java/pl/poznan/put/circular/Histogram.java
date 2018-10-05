@@ -4,13 +4,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import lombok.Data;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 
 public class Histogram {
-  private final Collection<Bin> histogram = new ArrayList<>();
+  @Data
+  private static final class Bin {
+    private final double radiansStart;
+    private final List<Circular> data;
+  }
+
+  private final Collection<Bin> bins = new ArrayList<>();
   private final double binWidth;
   private final double dataSize;
 
@@ -20,7 +27,7 @@ public class Histogram {
     dataSize = data.size();
 
     if ((binWidth < 0) || (binWidth >= FastMath.PI)) {
-      throw new InvalidCircularValueException("A histogram bin size must be in range [0..180)");
+      throw new InvalidCircularValueException("A bins bin size must be in range [0..180)");
     }
 
     for (double radiansStart = 0; radiansStart < MathUtils.TWO_PI; radiansStart += binWidth) {
@@ -33,7 +40,7 @@ public class Histogram {
         }
       }
 
-      histogram.add(new Bin(radiansStart, binData));
+      bins.add(new Bin(radiansStart, binData));
     }
   }
 
@@ -42,9 +49,9 @@ public class Histogram {
   }
 
   private Collection<Circular> getBin(final double radiansStart) {
-    for (final Bin bin : histogram) {
-      if (Precision.equals(bin.radiansStart, radiansStart, 1.0e-3)) {
-        return bin.data;
+    for (final Bin bin : bins) {
+      if (Precision.equals(bin.getRadiansStart(), radiansStart, 1.0e-3)) {
+        return bin.getData();
       }
     }
     return Collections.emptyList();
@@ -57,16 +64,5 @@ public class Histogram {
       maxFrequency = FastMath.max(frequency, maxFrequency);
     }
     return maxFrequency;
-  }
-
-  private static final class Bin {
-    private final double radiansStart;
-    private final List<Circular> data;
-
-    private Bin(final double radiansStart, final List<Circular> data) {
-      super();
-      this.radiansStart = radiansStart;
-      this.data = new ArrayList<>(data);
-    }
   }
 }

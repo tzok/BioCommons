@@ -1,15 +1,10 @@
 package pl.poznan.put.circular.utility;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +20,6 @@ import pl.poznan.put.utility.svg.SVGHelper;
 
 /** A class providing helper functions. */
 public final class Helper {
-  private static final MustacheFactory FACTORY = new DefaultMustacheFactory();
-
   /**
    * Read a resource of this project.
    *
@@ -35,22 +28,9 @@ public final class Helper {
    * @throws IOException If the I/O on resource reading fails.
    */
   public static String readResource(final String name) throws IOException {
-    ClassLoader classLoader = Helper.class.getClassLoader();
-    try (InputStream stream = classLoader.getResourceAsStream(name)) {
+    final ClassLoader classLoader = Helper.class.getClassLoader();
+    try (final InputStream stream = classLoader.getResourceAsStream(name)) {
       return IOUtils.toString(stream, Charset.defaultCharset());
-    }
-  }
-
-  /**
-   * Read a {@link Mustache} template from resources.
-   *
-   * @param name Name of template file.
-   * @return A {@link Mustache} compiled template.
-   * @throws IOException When reading of the file in resources fails.
-   */
-  public static Mustache readTemplateResource(final String name) throws IOException {
-    try (Reader reader = Helper.FACTORY.getReader(name)) {
-      return Helper.FACTORY.compile(reader, name);
     }
   }
 
@@ -60,11 +40,9 @@ public final class Helper {
    * @param svg Input SVG image.
    * @param file Output file.
    * @throws IOException When writing to file fails.
-   * @throws FileNotFoundException When the files is not present.
    */
-  public static void exportSvg(final SVGDocument svg, final File file)
-      throws IOException, FileNotFoundException {
-    try (OutputStream stream = new FileOutputStream(file)) {
+  public static void exportSvg(final SVGDocument svg, final File file) throws IOException {
+    try (final OutputStream stream = new FileOutputStream(file)) {
       IOUtils.write(SVGHelper.export(svg, Format.SVG), stream);
     }
   }
@@ -77,8 +55,8 @@ public final class Helper {
    * @return A list of {@link Circular} values as parsed from the input.
    */
   public static List<Angle> loadHourMinuteData(final String content) {
-    String[] lines = StringUtils.split(content, '\n');
-    List<Angle> data = new ArrayList<>(lines.length);
+    final String[] lines = StringUtils.split(content, '\n');
+    final List<Angle> data = new ArrayList<>(lines.length);
 
     for (final String line : lines) {
       if (!line.isEmpty() && (line.charAt(0) == '#')) {
@@ -103,8 +81,8 @@ public final class Helper {
    * @return A list of {@link Axis} values as parsed from the input.
    */
   public static List<Axis> loadAxisData(final String content) {
-    String[] lines = StringUtils.split(content, '\n');
-    List<Axis> data = new ArrayList<>(lines.length);
+    final String[] lines = StringUtils.split(content, '\n');
+    final List<Axis> data = new ArrayList<>(lines.length);
 
     for (final String line : lines) {
       if (!line.isEmpty() && (line.charAt(0) == '#')) {
@@ -113,7 +91,7 @@ public final class Helper {
 
       for (final String token : StringUtils.split(line)) {
         if (!StringUtils.isBlank(token)) {
-          double degrees = Double.parseDouble(token);
+          final double degrees = Double.parseDouble(token);
           data.add(new Axis(degrees, ValueType.DEGREES));
         }
       }
