@@ -23,18 +23,18 @@ import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.utility.Helper;
 
 /** Draws a histogram using one of predefined templates. */
-public class TemplateHistogram {
+public final class TemplateHistogram {
   private static final MustacheFactory FACTORY = new DefaultMustacheFactory();
 
   public static void main(final String[] args) throws IOException {
-    List<Circular> circulars = new ArrayList<>();
+    final List<Circular> circulars = new ArrayList<>();
     for (final String line : Helper.readResource("1EHZ-chi").split("\n")) {
       circulars.add(new Angle(Double.parseDouble(line), ValueType.DEGREES));
     }
 
-    Mustache template = Helper.readTemplateResource("pgfplots.mustache");
-    TemplateHistogram histogram = new TemplateHistogram(circulars, template);
-    File tempFile = File.createTempFile("histogram", ".tex");
+    final Mustache template = Helper.readTemplateResource("pgfplots.mustache");
+    final TemplateHistogram histogram = new TemplateHistogram(circulars, template);
+    final File tempFile = File.createTempFile("histogram", ".tex");
     FileUtils.write(tempFile, histogram.generateFromTemplate(), Charset.defaultCharset());
     System.out.println(tempFile);
   }
@@ -43,7 +43,7 @@ public class TemplateHistogram {
   private final Mustache template;
   private final double binRadians;
 
-  public TemplateHistogram(
+  private TemplateHistogram(
       final List<Circular> data, final Mustache template, final double binRadians) {
     super();
     this.data = new ArrayList<>(data);
@@ -51,37 +51,37 @@ public class TemplateHistogram {
     this.binRadians = binRadians;
   }
 
-  public TemplateHistogram(final List<Circular> data, final Mustache template) {
-    this(data, template, Math.PI / 12);
+  private TemplateHistogram(final List<Circular> data, final Mustache template) {
+    this(data, template, FastMath.PI / 12);
   }
 
-  public final String generateFromTemplate() throws IOException {
-    Map<String, Object> fragments = new HashMap<>();
+  private String generateFromTemplate() throws IOException {
+    final Map<String, Object> fragments = new HashMap<>();
     fragments.put("points", generatePolarCoordinates());
 
-    Map<String, Object> scopes = new HashMap<>();
+    final Map<String, Object> scopes = new HashMap<>();
     scopes.put("fragments", fragments);
 
-    try (Writer stringWriter = new StringWriter()) {
-      try (Writer writer = template.execute(stringWriter, scopes)) {
+    try (final Writer stringWriter = new StringWriter()) {
+      try (final Writer writer = template.execute(stringWriter, scopes)) {
         return writer.toString();
       }
     }
   }
 
   private List<Vector2D> generatePolarCoordinates() {
-    Histogram histogram = new Histogram(data, binRadians);
-    double maxFrequency = histogram.getMaxFrequency();
+    final Histogram histogram = new Histogram(data, binRadians);
+    final double maxFrequency = histogram.getMaxFrequency();
 
-    List<Vector2D> polarCoordinates = new ArrayList<>();
+    final List<Vector2D> polarCoordinates = new ArrayList<>();
 
     for (double d = 0; d < MathUtils.TWO_PI; d += binRadians) {
       polarCoordinates.add(new Vector2D(0, 0));
 
-      double frequency = (double) histogram.getBinSize(d) / data.size();
-      double x = Math.toDegrees(d);
+      final double frequency = (double) histogram.getBinSize(d) / data.size();
+      final double x = FastMath.toDegrees(d);
       // sqrt allows to see even some smaller clusters
-      double y = FastMath.sqrt(frequency);
+      final double y = FastMath.sqrt(frequency);
       polarCoordinates.add(new Vector2D(Math.toDegrees(d), y));
       polarCoordinates.add(new Vector2D(Math.toDegrees(d + binRadians), y));
     }

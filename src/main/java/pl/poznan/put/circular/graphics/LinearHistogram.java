@@ -4,6 +4,7 @@ import java.awt.FontMetrics;
 import java.awt.font.LineMetrics;
 import java.util.ArrayList;
 import java.util.Collection;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Histogram;
@@ -30,7 +31,7 @@ public class LinearHistogram extends AbstractDrawable {
   }
 
   public LinearHistogram(final Collection<? extends Circular> data) {
-    this(data, Math.PI / 12, 20);
+    this(data, FastMath.PI / 12, 20);
   }
 
   @Override
@@ -45,10 +46,10 @@ public class LinearHistogram extends AbstractDrawable {
       final int height = frequency * drawingUnitSize;
       svgGraphics.drawRect(i * drawingUnitSize, -height, drawingUnitSize, height);
 
-      maxFrequency = Math.max(frequency, maxFrequency);
-      maxHeight = Math.max(height, maxHeight);
+      maxFrequency = FastMath.max(frequency, maxFrequency);
+      maxHeight = FastMath.max(height, maxHeight);
     }
-    final double maxWidth = i * drawingUnitSize;
+    final double maxWidth = (double) i * drawingUnitSize;
 
     /*
      * X axis lines

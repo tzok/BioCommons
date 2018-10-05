@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
@@ -18,15 +19,15 @@ public class Histogram {
     this.binWidth = binWidth;
     dataSize = data.size();
 
-    if ((binWidth < 0) || (binWidth >= Math.PI)) {
+    if ((binWidth < 0) || (binWidth >= FastMath.PI)) {
       throw new InvalidCircularValueException("A histogram bin size must be in range [0..180)");
     }
 
     for (double radiansStart = 0; radiansStart < MathUtils.TWO_PI; radiansStart += binWidth) {
-      List<Circular> binData = new ArrayList<>();
+      final List<Circular> binData = new ArrayList<>();
 
       for (final Circular circular : data) {
-        double radians = circular.getRadians2PI();
+        final double radians = circular.getRadians2PI();
         if ((radians >= radiansStart) && (radians < (radiansStart + binWidth))) {
           binData.add(circular);
         }
@@ -36,7 +37,7 @@ public class Histogram {
     }
   }
 
-  public int getBinSize(final double radiansStart) {
+  public final int getBinSize(final double radiansStart) {
     return getBin(radiansStart).size();
   }
 
@@ -49,20 +50,20 @@ public class Histogram {
     return Collections.emptyList();
   }
 
-  public double getMaxFrequency() {
+  public final double getMaxFrequency() {
     double maxFrequency = Double.NEGATIVE_INFINITY;
     for (double d = 0; d < MathUtils.TWO_PI; d += binWidth) {
-      double frequency = getBinSize(d) / dataSize;
-      maxFrequency = Math.max(frequency, maxFrequency);
+      final double frequency = getBinSize(d) / dataSize;
+      maxFrequency = FastMath.max(frequency, maxFrequency);
     }
     return maxFrequency;
   }
 
-  public static class Bin {
+  private static final class Bin {
     private final double radiansStart;
     private final List<Circular> data;
 
-    public Bin(final double radiansStart, final List<Circular> data) {
+    private Bin(final double radiansStart, final List<Circular> data) {
       super();
       this.radiansStart = radiansStart;
       this.data = new ArrayList<>(data);

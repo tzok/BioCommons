@@ -125,8 +125,8 @@ public class Angle extends Circular {
   }
 
   public static double subtractByMinimum(final double left, final double right) {
-    final double d = Math.abs(left - right);
-    return Math.min(d, MathUtils.TWO_PI - d);
+    final double d = FastMath.abs(left - right);
+    return FastMath.min(d, MathUtils.TWO_PI - d);
   }
 
   /**
@@ -139,8 +139,8 @@ public class Angle extends Circular {
   public static double subtractAsVectors(final double left, final double right) {
     double v = FastMath.sin(left) * FastMath.sin(right);
     v += FastMath.cos(left) * FastMath.cos(right);
-    v = Math.min(1, v);
-    v = Math.max(-1, v);
+    v = FastMath.min(1, v);
+    v = FastMath.max(-1, v);
     return FastMath.acos(v);
   }
 
@@ -153,11 +153,11 @@ public class Angle extends Circular {
    */
   public final @NotNull Angle orderedSubtract(final @NotNull Angle other) {
     double d = getRadians() - other.getRadians();
-    while (Precision.compareTo(d, -Math.PI, 1.0e-3) < 0) {
-      d += 2.0 * Math.PI;
+    while (Precision.compareTo(d, -FastMath.PI, 1.0e-3) < 0) {
+      d += MathUtils.TWO_PI;
     }
-    while (Precision.compareTo(d, Math.PI, 1.0e-3) > 0) {
-      d -= 2.0 * Math.PI;
+    while (Precision.compareTo(d, FastMath.PI, 1.0e-3) > 0) {
+      d -= MathUtils.TWO_PI;
     }
     return new Angle(d, ValueType.RADIANS);
   }
