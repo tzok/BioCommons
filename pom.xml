@@ -4,7 +4,7 @@
 
   <groupId>pl.poznan.put</groupId>
   <artifactId>circular</artifactId>
-  <version>1.4-conversion-to-and-from-cartesian-coordinates-SNAPSHOT</version>
+  <version>1.4-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>circular</name>
