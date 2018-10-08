@@ -4,9 +4,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.pdb.ExperimentalTechnique;
-import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbChain;
+import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.utility.ResourcesHelper;
 
@@ -15,10 +15,10 @@ public class CifParserTest {
   public final void test100D() throws Exception {
     final String cif100D = ResourcesHelper.loadResource("100D.cif");
     final CifParser parser = new CifParser();
-    final List<CifModel> models = parser.parse(cif100D);
+    final List<PdbModel> models = parser.parse(cif100D);
     Assert.assertEquals(1, models.size());
 
-    final CifModel model = models.get(0);
+    final PdbModel model = models.get(0);
     final List<PdbChain> chains = model.getChains();
     Assert.assertEquals(2, chains.size());
 
@@ -33,9 +33,9 @@ public class CifParserTest {
   public final void test148L() throws Exception {
     final String cif148L = ResourcesHelper.loadResource("148L.cif");
     final CifParser parser = new CifParser();
-    final List<CifModel> models = parser.parse(cif148L);
+    final List<PdbModel> models = parser.parse(cif148L);
     Assert.assertEquals(1, models.size());
-    final CifModel model = models.get(0);
+    final PdbModel model = models.get(0);
 
     PdbResidue residue = model.findResidue("E", 164, " ");
     Assert.assertTrue(residue.isMissing());
@@ -55,10 +55,10 @@ public class CifParserTest {
   public final void test5A93() throws Exception {
     final String cif5A93 = ResourcesHelper.loadResource("5A93.cif");
     final CifParser parser = new CifParser();
-    final List<CifModel> models = parser.parse(cif5A93);
+    final List<PdbModel> models = parser.parse(cif5A93);
     Assert.assertEquals(1, models.size());
 
-    final CifModel model = models.get(0);
+    final PdbModel model = models.get(0);
     final List<PdbChain> chains = model.getChains();
     Assert.assertEquals(1, chains.size());
 

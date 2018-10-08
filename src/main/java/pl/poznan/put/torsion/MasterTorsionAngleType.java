@@ -15,7 +15,7 @@ import pl.poznan.put.torsion.range.Range;
  * @author tzok
  */
 public interface MasterTorsionAngleType extends DisplayableExportable {
-  Collection<? extends TorsionAngleType> getAngleTypes();
+  Collection<TorsionAngleType> getAngleTypes();
 
   Range getRange(Angle angle);
 }

@@ -520,7 +520,7 @@ public class CifConsumer implements MMcifConsumer {
     return map.containsKey(key) ? Double.parseDouble(map.get(key)) : Double.NaN;
   }
 
-  public final List<CifModel> getModels() throws PdbParsingException {
+  public final List<PdbModel> getModels() throws PdbParsingException {
     final Date date = (depositionDate == null) ? new Date(0) : depositionDate;
     final PdbHeaderLine headerLine = new PdbHeaderLine(classification, date, idCode);
 
@@ -531,7 +531,7 @@ public class CifConsumer implements MMcifConsumer {
     final PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(techniques);
 
     final PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
-    final List<CifModel> result = new ArrayList<>();
+    final List<PdbModel> result = new ArrayList<>();
 
     for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
       final int modelNumber = entry.getKey();

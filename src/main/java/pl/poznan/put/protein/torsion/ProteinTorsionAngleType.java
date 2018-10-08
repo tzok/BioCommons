@@ -43,7 +43,7 @@ public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
   }
 
   @Override
-  public Collection<? extends TorsionAngleType> getAngleTypes() {
+  public Collection<TorsionAngleType> getAngleTypes() {
     return Collections.unmodifiableList(angleTypes);
   }
 

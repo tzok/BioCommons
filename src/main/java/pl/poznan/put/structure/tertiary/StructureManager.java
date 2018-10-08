@@ -95,7 +95,7 @@ public final class StructureManager {
    * @param file Path to the PDB file.
    * @return Structure object..
    */
-  public static List<? extends PdbModel> loadStructure(final File file)
+  public static List<PdbModel> loadStructure(final File file)
       throws IOException, PdbParsingException {
     final List<PdbModel> models = StructureManager.getModels(file);
     if (!models.isEmpty()) {
@@ -118,7 +118,7 @@ public final class StructureManager {
       parser = StructureManager.PDB_PARSER;
     }
 
-    final List<? extends PdbModel> structures = parser.parse(fileContent);
+    final List<PdbModel> structures = parser.parse(fileContent);
     StructureManager.storeStructureInfo(file, structures);
     return structures;
   }

@@ -52,17 +52,17 @@ public final class CifConverter {
     @SuppressWarnings("TypeMayBeWeakened")
     final CifParser cifParser = new CifParser();
     final String cifContents = FileUtils.readFileToString(cifFile, Charset.defaultCharset());
-    final Iterable<CifModel> models = cifParser.parse(cifContents);
+    final List<PdbModel> models = cifParser.parse(cifContents);
     return CifConverter.convert(cifFile, models);
   }
 
-  private static ModelContainer convert(final File mmCifFile, final Iterable<CifModel> models)
+  private static ModelContainer convert(final File mmCifFile, final Iterable<PdbModel> models)
       throws IOException, PdbParsingException {
-    final List<CifModel> rnaModels = new ArrayList<>();
+    final List<PdbModel> rnaModels = new ArrayList<>();
 
-    for (final CifModel model : models) {
+    for (final PdbModel model : models) {
       if (model.containsAny(MoleculeType.RNA)) {
-        final CifModel rnaModel = model.filteredNewInstance(MoleculeType.RNA);
+        final PdbModel rnaModel = model.filteredNewInstance(MoleculeType.RNA);
         rnaModels.add(rnaModel);
       }
     }
@@ -78,7 +78,7 @@ public final class CifConverter {
       }
     }
 
-    final CifModel firstModel = rnaModels.get(0);
+    final PdbModel firstModel = rnaModels.get(0);
     List<Set<String>> chainGroups = CifConverter.groupContactingChains(firstModel);
     chainGroups = CifConverter.packGroups(chainGroups);
     final Map<File, BidiMap<String, String>> fileChainMap = new HashMap<>();
@@ -187,9 +187,12 @@ public final class CifConverter {
    * @return A list of sets of chains' identifiers. Each set contains chains which are in contact
    *     with each other (single linkage i.e. each chain has at least one contact in its set).
    */
-  private static List<Set<String>> groupContactingChains(final CifModel model) {
+  private static List<Set<String>> groupContactingChains(final PdbModel model) {
+    assert model instanceof CifModel;
+
     final List<Set<String>> chainGroups = CifConverter.initializeChainGroups(model);
-    final Map<String, Set<String>> chainContacts = CifConverter.initializeChainContactMap(model);
+    final Map<String, Set<String>> chainContacts =
+        CifConverter.initializeChainContactMap((CifModel) model);
     int i = 0;
 
     while ((chainGroups.size() > 1) && (i < chainGroups.size())) {
@@ -229,7 +232,7 @@ public final class CifConverter {
    * @param model A parsed coordinates of a mmCIF file.
    * @return A list of sets, each containing one chain.
    */
-  private static List<Set<String>> initializeChainGroups(final CifModel model) {
+  private static List<Set<String>> initializeChainGroups(final PdbModel model) {
     final List<Set<String>> chainGroups = new ArrayList<>();
     for (final PdbChain chain : model.getChains()) {
       chainGroups.add(new HashSet<>(Collections.singleton(chain.getIdentifier())));
