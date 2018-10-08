@@ -45,34 +45,23 @@ public final class CartesianUtilities {
       final Angle torsionABCD) {
     final Vector3D vectorBC = coordC.subtract(coordB);
     final Vector3D unitBC = vectorBC.normalize();
-    final Plane plane = new Plane(coordA, coordB, coordC, 1.0e-3);
+    final Plane plane = new Plane(coordC, coordB, coordA, 1.0e-3);
 
     final Rotation rotationFirst =
-        new Rotation(plane.getNormal(), angleBCD.getRadians(), RotationConvention.VECTOR_OPERATOR);
+        new Rotation(plane.getNormal().normalize(), angleBCD.getRadians(), RotationConvention.VECTOR_OPERATOR);
     final Rotation rotationSecond =
         new Rotation(unitBC, torsionABCD.getRadians(), RotationConvention.VECTOR_OPERATOR);
 
     final Vector3D coordD0 = CartesianUtilities.coordD0(coordB, coordC, lengthCD);
-    System.out.println(Vector3D.distance(coordC, coordC.add(coordD0)));
-    System.out.println();
-
     final Vector3D coordD1 = rotationFirst.applyTo(coordD0);
-    System.out.println(Vector3D.distance(coordC, coordC.add(coordD1)));
-    System.out.println(Angle.betweenPoints(coordB, coordC, coordC.add(coordD1)));
-    System.out.println();
-
     final Vector3D coordD2 = rotationSecond.applyTo(coordD1);
-    System.out.println(Vector3D.distance(coordC, coordC.add(coordD2)));
-    System.out.println(Angle.betweenPoints(coordB, coordC, coordC.add(coordD2)));
-    System.out.println(Angle.torsionAngle(coordA, coordB, coordC, coordC.add(coordD2)));
-    System.out.println();
 
     return coordD2.add(coordC);
   }
 
   private static Vector3D coordD0(
       final Vector3D coordB, final Vector3D coordC, final double lengthCD) {
-    return coordC.subtract(coordB).normalize().scalarMultiply(lengthCD);
+    return coordB.subtract(coordC).normalize().scalarMultiply(lengthCD);
   }
 
   private CartesianUtilities() {
