@@ -2,12 +2,12 @@ package pl.poznan.put.circular;
 
 import static org.junit.Assert.*;
 
+import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 
 public class AngleTest {
-
   private static final Angle DEGREES_0 = new Angle(0, ValueType.DEGREES);
   private static final Angle DEGREES_45 = new Angle(45, ValueType.DEGREES);
   private static final Angle DEGREES_90 = new Angle(90, ValueType.DEGREES);
@@ -47,9 +47,9 @@ public class AngleTest {
   @Test
   public final void subtract() {
     for (int i = 0; i < 360; i++) {
-      final double ri = Math.toRadians(i);
+      final double ri = FastMath.toRadians(i);
       for (int j = 0; j < 360; j++) {
-        final double rj = Math.toRadians(j);
+        final double rj = FastMath.toRadians(j);
         assertEquals(
             String.format("Difference in subtraction for: %d and %d", i, j),
             Angle.subtractByMinimum(ri, rj),

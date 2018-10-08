@@ -1,5 +1,7 @@
 package pl.poznan.put.circular.enums;
 
+import org.apache.commons.math3.util.FastMath;
+
 /** Type of value passed as regular double. */
 public enum ValueType {
   DEGREES,
@@ -15,7 +17,7 @@ public enum ValueType {
   public double toRadians(final double value) {
     switch (this) {
       case DEGREES:
-        return Math.toRadians(value);
+        return FastMath.toRadians(value);
       case RADIANS:
         return value;
       default:

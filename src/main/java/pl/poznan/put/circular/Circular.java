@@ -2,6 +2,7 @@ package pl.poznan.put.circular;
 
 import java.io.Serializable;
 import java.util.Objects;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
 import pl.poznan.put.circular.enums.ValueType;
@@ -23,11 +24,11 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
   }
 
   public final double getDegrees() {
-    return Math.toDegrees(radians);
+    return FastMath.toDegrees(radians);
   }
 
   public final double getDegrees360() {
-    return Math.toDegrees(getRadians2PI());
+    return FastMath.toDegrees(getRadians2PI());
   }
 
   public final double getRadians2PI() {

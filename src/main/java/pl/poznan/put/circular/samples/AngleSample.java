@@ -32,24 +32,29 @@ public final class AngleSample {
 
   public AngleSample(final Collection<Angle> data) {
     super();
+
+    if (data.isEmpty()) {
+      throw new IllegalArgumentException("The sample cannot be empty");
+    }
+
     this.data = new ArrayList<>(data);
     Collections.sort(this.data);
 
-    TrigonometricMoment um1 = getUncenteredMoment(1);
+    final TrigonometricMoment um1 = getUncenteredMoment(1);
     meanDirection = um1.getMeanDirection();
     meanResultantLength = um1.getMeanResultantLength();
     circularVariance = 1 - meanResultantLength;
-    circularStandardDeviation = Math.sqrt(-2 * FastMath.log(meanResultantLength));
+    circularStandardDeviation = FastMath.sqrt(-2 * FastMath.log(meanResultantLength));
 
-    TrigonometricMoment cm2 = getCenteredMoment(2);
-    TrigonometricMoment um2 = getUncenteredMoment(2);
+    final TrigonometricMoment cm2 = getCenteredMoment(2);
+    final TrigonometricMoment um2 = getUncenteredMoment(2);
     circularDispersion =
         (1.0 - cm2.getMeanResultantLength()) / (2 * FastMath.pow(meanResultantLength, 2));
     skewness =
         (cm2.getMeanResultantLength()
                 * FastMath.sin(
                     cm2.getMeanDirection().subtract(meanDirection.multiply(2)).getRadians()))
-            / Math.sqrt(circularVariance);
+            / FastMath.sqrt(circularVariance);
     kurtosis =
         ((cm2.getMeanResultantLength()
                     * FastMath.cos(
@@ -57,7 +62,7 @@ public final class AngleSample {
                 - FastMath.pow(meanResultantLength, 4))
             / FastMath.pow(circularVariance, 2);
 
-    UnivariatePointValuePair medianFunctionRoot = minimizeMedianFunction();
+    final UnivariatePointValuePair medianFunctionRoot = minimizeMedianFunction();
     medianDirection = new Angle(medianFunctionRoot.getPoint(), ValueType.RADIANS);
     meanDeviation = medianFunctionRoot.getValue();
   }
@@ -71,22 +76,17 @@ public final class AngleSample {
   }
 
   private UnivariatePointValuePair minimizeMedianFunction() {
-    UnivariateFunction medianObjectiveFunction =
-        new UnivariateFunction() {
-          @Override
-          public double value(final double v) {
-            double sum = 0;
-
-            for (final Angle vector : data) {
-              sum +=
-                  Angle.subtractByMinimum(Math.PI, Angle.subtractByMinimum(vector.getRadians(), v));
-            }
-
-            return Math.PI - (sum / data.size());
+    final UnivariateFunction medianObjectiveFunction =
+        v -> {
+          double sum = 0;
+          for (final Angle vector : data) {
+            sum +=
+                Angle.subtractByMinimum(Math.PI, Angle.subtractByMinimum(vector.getRadians(), v));
           }
+          return FastMath.PI - (sum / data.size());
         };
 
-    UnivariateOptimizer optimizer = new BrentOptimizer(1.0e-10, 1.0e-14);
+    final UnivariateOptimizer optimizer = new BrentOptimizer(1.0e-10, 1.0e-14);
     return optimizer.optimize(
         new UnivariateObjectiveFunction(medianObjectiveFunction),
         GoalType.MINIMIZE,
@@ -95,6 +95,8 @@ public final class AngleSample {
   }
 
   private TrigonometricMoment getMoment(final int p, final boolean isCentered) {
+    assert !data.isEmpty();
+
     double c = 0;
     double s = 0;
 
@@ -112,18 +114,8 @@ public final class AngleSample {
     c /= data.size();
     s /= data.size();
 
-    double rho = Math.sqrt(FastMath.pow(c, 2) + FastMath.pow(s, 2));
-    double mi;
-
-    if ((s > 0) && (c > 0)) {
-      mi = FastMath.atan(s / c);
-    } else if (c < 0) {
-      mi = FastMath.atan(s / c) + Math.PI;
-    } else {
-      // s < 0 && c > 0
-      mi = (FastMath.atan(s / c) + MathUtils.TWO_PI) % MathUtils.TWO_PI;
-    }
-
+    final double rho = FastMath.sqrt(FastMath.pow(c, 2) + FastMath.pow(s, 2));
+    final double mi = FastMath.atan2(s, c);
     return new TrigonometricMoment(new Angle(mi, ValueType.RADIANS), rho);
   }
 
@@ -169,7 +161,7 @@ public final class AngleSample {
           "Cannot calculate circular rank for an observation " + "outside the sample range");
     }
 
-    int rank = data.indexOf(datapoint) + 1;
+    final int rank = data.indexOf(datapoint) + 1;
     return (MathUtils.TWO_PI * rank) / data.size();
   }
 
