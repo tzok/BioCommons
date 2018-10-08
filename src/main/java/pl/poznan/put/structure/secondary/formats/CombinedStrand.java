@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
@@ -93,18 +92,17 @@ public class CombinedStrand implements DotBracketInterface {
     for (final Strand strand : strands) {
       final TerminalMissing missingBegin = strand.getMissingBegin();
       final TerminalMissing missingEnd = strand.getMissingEnd();
-      final List<DotBracketSymbol> symbols = strand.getSymbols();
+      final List<DotBracketSymbol> strandSymbols = strand.getSymbols();
 
-      DotBracketSymbol symbol =
-          (missingBegin.getLength() > 0) ? missingBegin.getLast().getNext() : symbols.get(0);
-      final DotBracketSymbol lastSymbol =
-          (missingEnd.getLength() > 0) ? missingEnd.getFirst() : symbols.get(symbols.size() - 1);
+      int i = missingBegin.isEmpty() ? 0 : (1 + strandSymbols.indexOf(missingBegin.last()));
+      final int lastIndex =
+          missingEnd.isEmpty() ? strandSymbols.size() : strandSymbols.indexOf(missingEnd.first());
 
-      while ((symbol != null) && !Objects.equals(symbol, lastSymbol)) {
+      for (; i < lastIndex; i++) {
+        final DotBracketSymbol symbol = strandSymbols.get(i);
         if (symbol.isMissing()) {
           result.add(symbol);
         }
-        symbol = symbol.getNext();
       }
     }
 

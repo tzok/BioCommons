@@ -12,24 +12,28 @@ public class TerminalMissing {
     this.symbols = new ArrayList<>(symbols);
   }
 
-  public int getLength() {
+  public final boolean isEmpty() {
+    return symbols.isEmpty();
+  }
+
+  public final int size() {
     return symbols.size();
   }
 
-  public boolean contains(final DotBracketSymbol symbol) {
+  public final boolean contains(final DotBracketSymbol symbol) {
     return symbols.contains(symbol);
   }
 
   @Override
-  public String toString() {
-    return "TerminalMissing, first " + getFirst() + ", last " + getLast();
+  public final String toString() {
+    return "TerminalMissing, first " + first() + ", last " + last();
   }
 
-  public DotBracketSymbol getFirst() {
+  public final DotBracketSymbol first() {
     return !symbols.isEmpty() ? symbols.get(0) : null;
   }
 
-  public DotBracketSymbol getLast() {
+  public final DotBracketSymbol last() {
     return !symbols.isEmpty() ? symbols.get(symbols.size() - 1) : null;
   }
 }
