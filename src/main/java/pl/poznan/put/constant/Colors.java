@@ -63,9 +63,9 @@ public final class Colors {
   }
 
   public static Color interpolateColor(final double value, final double min, final double max) {
-    if (max >= min) {
+    if (min >= max) {
       throw new IllegalArgumentException(
-          "Cannot interpolate color when max >= min. Arguments provided: value="
+          "Cannot interpolate color when min >= max. Arguments provided: value="
               + value
               + ", min="
               + min
