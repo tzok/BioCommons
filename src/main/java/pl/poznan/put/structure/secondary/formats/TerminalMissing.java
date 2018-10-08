@@ -1,16 +1,12 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
+@Data
 public class TerminalMissing {
   private final List<DotBracketSymbol> symbols;
-
-  public TerminalMissing(final List<DotBracketSymbol> symbols) {
-    super();
-    this.symbols = new ArrayList<>(symbols);
-  }
 
   public final boolean isEmpty() {
     return symbols.isEmpty();

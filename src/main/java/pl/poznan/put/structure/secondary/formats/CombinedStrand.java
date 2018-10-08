@@ -7,7 +7,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.EqualsAndHashCode;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
@@ -89,13 +91,22 @@ public class CombinedStrand implements DotBracketInterface {
   }
 
   public final List<DotBracketSymbol> getInternalMissing() {
-    final TerminalMissing missingBegin = strands.get(0).getMissingBegin();
-    final TerminalMissing missingEnd = strands.get(strands.size() - 1).getMissingEnd();
+    // collect all missing from beginning and ends of strands
+    final Set<DotBracketSymbol> missingNonInternal =
+        strands
+            .parallelStream()
+            .flatMap(
+                strand ->
+                    Stream.concat(
+                        strand.getMissingBegin().getSymbols().stream(),
+                        strand.getMissingEnd().getSymbols().stream()))
+            .collect(Collectors.toSet());
+
+    // get all missing symbols which are internal
     return strands
         .stream()
         .flatMap(strand -> strand.getSymbols().stream())
-        .filter(dotBracketSymbol -> !missingBegin.contains(dotBracketSymbol))
-        .filter(dotBracketSymbol -> !missingEnd.contains(dotBracketSymbol))
+        .filter(dotBracketSymbol -> !missingNonInternal.contains(dotBracketSymbol))
         .filter(DotBracketSymbol::isMissing)
         .collect(Collectors.toList());
   }

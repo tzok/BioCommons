@@ -37,10 +37,10 @@ public class CombinedStrandTest {
         new CombinedStrand(Collections.singletonList(strandSecond));
     assertEquals(0, combinedSecond.getInternalMissing().size());
 
-    // but combined, the strands have 2 internal missing residues, because they form ".--."
+    // combined, the strands still have 0 internal missing residues, even though they form ".--."
     // structure
     final CombinedStrand combinedBoth =
         new CombinedStrand(Arrays.asList(strandFirst, strandSecond));
-    assertEquals(2, combinedBoth.getInternalMissing().size());
+    assertEquals(0, combinedBoth.getInternalMissing().size());
   }
 }
