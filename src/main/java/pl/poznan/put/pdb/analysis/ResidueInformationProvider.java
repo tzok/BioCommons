@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import pl.poznan.put.torsion.TorsionAngleType;
 
-public interface ResidueInformationProvider extends Serializable {
+public interface ResidueInformationProvider {
   MoleculeType getMoleculeType();
 
   List<ResidueComponent> getAllMoleculeComponents();

@@ -24,8 +24,8 @@ public class PdbHeaderLine implements Serializable {
   // @formatter:on
   private static final String FORMAT = "HEADER    %-40s%9s   %4s              "; // NON-NLS
   private static final String RECORD_NAME = "HEADER"; // NON-NLS
-  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMM-yy", Locale.US);
   private static final PdbHeaderLine EMPTY_INSTANCE = new PdbHeaderLine("", new Date(0), "");
+  private final DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy", Locale.US);
   private final String classification;
   private final Date depositionDate;
   private final String idCode;
@@ -49,9 +49,11 @@ public class PdbHeaderLine implements Serializable {
       throw new PdbParsingException("PDB line does not start with HEADER");
     }
 
+    final DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy", Locale.US);
+
     try {
       final String classification = line.substring(10, 50).trim();
-      final Date depositionDate = PdbHeaderLine.DATE_FORMAT.parse(line.substring(50, 59).trim());
+      final Date depositionDate = dateFormat.parse(line.substring(50, 59).trim());
       final String idCode = line.substring(62, 66).trim();
       return new PdbHeaderLine(classification, depositionDate, idCode);
     } catch (final ParseException e) {
@@ -85,7 +87,7 @@ public class PdbHeaderLine implements Serializable {
         Locale.US,
         PdbHeaderLine.FORMAT,
         classification,
-        PdbHeaderLine.DATE_FORMAT.format(depositionDate).toUpperCase(Locale.US),
+        dateFormat.format(depositionDate).toUpperCase(Locale.US),
         idCode);
   }
 }
