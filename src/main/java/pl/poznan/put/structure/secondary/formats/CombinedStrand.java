@@ -3,9 +3,11 @@ package pl.poznan.put.structure.secondary.formats;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
@@ -87,34 +89,23 @@ public class CombinedStrand implements DotBracketInterface {
   }
 
   public final List<DotBracketSymbol> getInternalMissing() {
-    final List<DotBracketSymbol> result = new ArrayList<>();
-
-    for (final Strand strand : strands) {
-      final TerminalMissing missingBegin = strand.getMissingBegin();
-      final TerminalMissing missingEnd = strand.getMissingEnd();
-      final List<DotBracketSymbol> strandSymbols = strand.getSymbols();
-
-      int i = missingBegin.isEmpty() ? 0 : (1 + strandSymbols.indexOf(missingBegin.last()));
-      final int lastIndex =
-          missingEnd.isEmpty() ? strandSymbols.size() : strandSymbols.indexOf(missingEnd.first());
-
-      for (; i < lastIndex; i++) {
-        final DotBracketSymbol symbol = strandSymbols.get(i);
-        if (symbol.isMissing()) {
-          result.add(symbol);
-        }
-      }
-    }
-
-    return result;
+    final TerminalMissing missingBegin = strands.get(0).getMissingBegin();
+    final TerminalMissing missingEnd = strands.get(strands.size() - 1).getMissingEnd();
+    return strands
+        .stream()
+        .flatMap(strand -> strand.getSymbols().stream())
+        .filter(dotBracketSymbol -> !missingBegin.contains(dotBracketSymbol))
+        .filter(dotBracketSymbol -> !missingEnd.contains(dotBracketSymbol))
+        .filter(DotBracketSymbol::isMissing)
+        .collect(Collectors.toList());
   }
 
   public final int getPseudoknotOrder() {
-    int order = 0;
-    for (final Strand strand : strands) {
-      order = Math.max(order, strand.getPseudoknotOrder());
-    }
-    return order;
+    return strands
+        .stream()
+        .max(Comparator.comparingInt(Strand::getPseudoknotOrder))
+        .map(Strand::getPseudoknotOrder)
+        .orElse(0);
   }
 
   public final boolean contains(final DotBracketSymbol symbol) {

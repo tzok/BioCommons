@@ -10,7 +10,7 @@ import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public class CombinedStrandTest {
   @Test
-  public final void getInternalMissingOneStrans() throws InvalidStructureException {
+  public final void getInternalMissingOneStrand() throws InvalidStructureException {
     final DotBracket dotBracket = DotBracket.fromString(">strand_A\nACGUACGUACGU\n.((------)).");
     final CombinedStrand combinedStrand =
         new CombinedStrand(
