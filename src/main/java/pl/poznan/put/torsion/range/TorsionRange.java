@@ -1,9 +1,11 @@
 package pl.poznan.put.torsion.range;
 
+import lombok.Getter;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
 
 /** Torsion angle ranges as defined in Saenger's "Principles...". */
+@Getter
 public enum TorsionRange implements Range {
   SYN_CIS("sp", -30, 30),
   ANTI_TRANS("ap", 150, -150),
@@ -37,21 +39,6 @@ public enum TorsionRange implements Range {
     this.displayName = displayName;
     this.begin = new Angle(begin, ValueType.DEGREES);
     this.end = new Angle(end, ValueType.DEGREES);
-  }
-
-  @Override
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  @Override
-  public Angle getBegin() {
-    return begin;
-  }
-
-  @Override
-  public Angle getEnd() {
-    return end;
   }
 
   /**

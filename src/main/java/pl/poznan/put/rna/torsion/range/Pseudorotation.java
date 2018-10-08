@@ -1,11 +1,13 @@
 package pl.poznan.put.rna.torsion.range;
 
+import lombok.Getter;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.torsion.range.RangeProvider;
 
+@Getter
 public enum Pseudorotation implements Range {
   TWIST_3_2("C2'-exo-C3'-endo", 0 * 18.0),
   ENVELOPE_3_ENDO("C3'-endo", 1 * 18.0),
@@ -53,21 +55,6 @@ public enum Pseudorotation implements Range {
     this.displayName = displayName;
     begin = new Angle(degrees - 9.0, ValueType.DEGREES);
     end = new Angle(degrees + 9.0, ValueType.DEGREES);
-  }
-
-  @Override
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  @Override
-  public Angle getBegin() {
-    return begin;
-  }
-
-  @Override
-  public Angle getEnd() {
-    return end;
   }
 
   @Override
