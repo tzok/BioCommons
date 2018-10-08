@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -283,20 +284,14 @@ public class BpSeq implements Serializable {
     return flag[0];
   }
 
+  @Data
   public static class Entry implements Comparable<Entry>, Serializable {
-    private static final long serialVersionUID = -2263073800915995485L;
-    private final int index;
-    private final int pair;
-    private final char seq;
-    private final String comment;
+    private static final long serialVersionUID = 9199473682103805007L;
 
-    public Entry(final int index, final int pair, final char seq) {
-      super();
-      this.index = index;
-      this.pair = pair;
-      this.seq = seq;
-      comment = "";
-    }
+    protected final int index;
+    protected final int pair;
+    protected final char seq;
+    protected final String comment;
 
     public Entry(final int index, final int pair, final char seq, final String comment) {
       super();
@@ -306,20 +301,8 @@ public class BpSeq implements Serializable {
       this.comment = comment;
     }
 
-    public final int getIndex() {
-      return index;
-    }
-
-    public final int getPair() {
-      return pair;
-    }
-
-    public final char getSeq() {
-      return seq;
-    }
-
-    public final String getComment() {
-      return comment;
+    public Entry(final int index, final int pair, final char seq) {
+      this(index, pair, seq, "");
     }
 
     public final boolean isPaired() {
@@ -339,43 +322,11 @@ public class BpSeq implements Serializable {
       if (equals(t)) {
         return 0;
       }
-
-      if (index < t.index) {
-        return -1;
-      }
-      if (index > t.index) {
-        return 1;
-      }
-      return 0;
+      return Integer.compare(index, t.index);
     }
 
     @Override
-    public final int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + index;
-      result = (prime * result) + pair;
-      result = (prime * result) + seq;
-      return result;
-    }
-
-    @Override
-    public final boolean equals(final Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null) {
-        return false;
-      }
-      if (getClass() != o.getClass()) {
-        return false;
-      }
-      final Entry other = (Entry) o;
-      return (index == other.index) && (pair == other.pair) && (seq == other.seq);
-    }
-
-    @Override
-    public final String toString() {
+    public String toString() {
       final StringBuilder builder = new StringBuilder(10 + comment.length());
       if (BpSeq.WRITE_COMMENTS && StringUtils.isNotBlank(comment)) {
         builder.append('#');
