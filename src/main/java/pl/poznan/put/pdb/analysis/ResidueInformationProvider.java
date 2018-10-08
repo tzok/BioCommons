@@ -1,6 +1,5 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.io.Serializable;
 import java.util.List;
 import pl.poznan.put.torsion.TorsionAngleType;
 

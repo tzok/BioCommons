@@ -6,10 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lombok.EqualsAndHashCode;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
+@EqualsAndHashCode(callSuper = true)
 public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketFromPdbInterface {
   private final Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue = new HashMap<>();
   private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<>();

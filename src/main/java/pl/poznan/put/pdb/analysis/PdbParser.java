@@ -1,6 +1,5 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,7 +28,7 @@ public class PdbParser implements StructureParser {
   private final Collection<String> terminatedChainIdentifiers = new HashSet<>();
   private final Collection<Integer> endedModelNumbers = new HashSet<>();
   private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
-  private final List<PdbTitleLine> titleLines = new ArrayList<>();
+  private final Collection<PdbTitleLine> titleLines = new ArrayList<>();
 
   private final boolean strictMode;
 
@@ -77,7 +76,7 @@ public class PdbParser implements StructureParser {
     }
 
     final StringBuilder titleBuilder = new StringBuilder();
-    for (PdbTitleLine titleLine : titleLines) {
+    for (final PdbTitleLine titleLine : titleLines) {
       titleBuilder.append(titleLine.getTitle());
     }
 
@@ -156,13 +155,13 @@ public class PdbParser implements StructureParser {
 
   private void handleTitleLine(final String line) {
     try {
-      PdbTitleLine titleLine = PdbTitleLine.parse(line);
+      final PdbTitleLine titleLine = PdbTitleLine.parse(line);
       if (((CollectionUtils.isEmpty(titleLines))
               && (StringUtils.isBlank(titleLine.getContinuation())))
           || (StringUtils.isNotBlank(titleLine.getContinuation()))) {
         titleLines.add(titleLine);
       }
-    } catch (final PdbParsingException | ParseException e) {
+    } catch (final PdbParsingException e) {
       PdbParser.LOGGER.warn("Invalid TITLE line: {}", line, e);
     }
   }

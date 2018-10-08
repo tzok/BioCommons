@@ -1,12 +1,11 @@
 package pl.poznan.put.pdb;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.Locale;
 import java.util.Objects;
 import lombok.Getter;
 
-public class PdbTitleLine implements Serializable {
+public final class PdbTitleLine implements Serializable {
   private static final long serialVersionUID = 6843804077423547537L;
   // @formatter:off
   /*
@@ -23,22 +22,24 @@ public class PdbTitleLine implements Serializable {
   @Getter private final String continuation;
   @Getter private final String title;
 
-  public PdbTitleLine(final String continuation, final String title) {
+  private PdbTitleLine(final String continuation, final String title) {
     super();
     this.continuation = continuation;
     this.title = title;
   }
 
-  public static PdbTitleLine parse(final String line) throws PdbParsingException, ParseException {
+  public static PdbTitleLine parse(final String line) throws PdbParsingException {
     if (line.length() < 80) {
       throw new PdbParsingException(
-          String.format("PDB %s line is not shorter than %d characters", RECORD_NAME, 80));
+          String.format(
+              "PDB %s line is not shorter than %d characters", PdbTitleLine.RECORD_NAME, 80));
     }
 
     final String recordName = line.substring(0, 6).trim();
 
-    if (!Objects.equals(RECORD_NAME, recordName)) {
-      throw new PdbParsingException(String.format("PDB line does not start with %s", RECORD_NAME));
+    if (!Objects.equals(PdbTitleLine.RECORD_NAME, recordName)) {
+      throw new PdbParsingException(
+          String.format("PDB line does not start with %s", PdbTitleLine.RECORD_NAME));
     }
 
     final String continuation = line.substring(8, 10).trim();
@@ -47,15 +48,15 @@ public class PdbTitleLine implements Serializable {
   }
 
   public static PdbTitleLine emptyInstance() {
-    return EMPTY_INSTANCE;
+    return PdbTitleLine.EMPTY_INSTANCE;
   }
 
   public static String getRecordName() {
-    return RECORD_NAME;
+    return PdbTitleLine.RECORD_NAME;
   }
 
   @Override
-  public final String toString() {
-    return String.format(Locale.US, FORMAT, continuation, title);
+  public String toString() {
+    return String.format(Locale.US, PdbTitleLine.FORMAT, continuation, title);
   }
 }

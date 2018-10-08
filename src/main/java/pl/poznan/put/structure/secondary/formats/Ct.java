@@ -67,15 +67,9 @@ public class Ct implements Serializable {
 
         if (map.get(pair) != e.index) {
           throw new InvalidStructureException(
-              "Inconsistency in CT format: ("
-                  + e.index
-                  + " -> "
-                  + pair
-                  + ") and ("
-                  + pair
-                  + " -> "
-                  + map.get(pair)
-                  + ')');
+              String.format(
+                  "Inconsistency in CT format: (%d -> %d) and (%d -> %d)",
+                  e.index, pair, pair, map.get(pair)));
         }
       }
     }

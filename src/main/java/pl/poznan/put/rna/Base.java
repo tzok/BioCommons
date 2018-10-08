@@ -90,29 +90,28 @@ public abstract class Base extends NucleicAcidResidueComponent
   }
 
   @Override
-  public List<ResidueComponent> getAllMoleculeComponents() {
-    return Arrays.asList(
-        new ResidueComponent[] {Phosphate.getInstance(), getDefaultSugarInstance(), this});
+  public final List<ResidueComponent> getAllMoleculeComponents() {
+    return Arrays.asList(Phosphate.getInstance(), getDefaultSugarInstance(), this);
   }
 
   @Override
-  public String getDescription() {
+  public final String getDescription() {
     return longName;
   }
 
   @Override
-  public char getOneLetterName() {
+  public final char getOneLetterName() {
     return oneLetterName;
   }
 
   @Override
-  public String getDefaultPdbName() {
+  public final String getDefaultPdbName() {
     assert !pdbNames.isEmpty();
     return pdbNames.get(0);
   }
 
   @Override
-  public List<String> getPdbNames() {
+  public final List<String> getPdbNames() {
     return Collections.unmodifiableList(pdbNames);
   }
 
