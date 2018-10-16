@@ -21,9 +21,9 @@ public class AngleFormatTest {
     assertEquals("NaN", AngleFormat.degreesRoundedToHundredth(Double.NaN));
     assertEquals(Unicode.INFINITY, AngleFormat.degreesRoundedToHundredth(Double.POSITIVE_INFINITY));
     assertEquals("0", AngleFormat.degreesRoundedToHundredth(0.0));
-    assertEquals("57.3" + Unicode.DEGREE, AngleFormat.degreesRoundedToHundredth(1.0));
-    assertEquals("114.59" + Unicode.DEGREE, AngleFormat.degreesRoundedToHundredth(2.0));
-    assertEquals("180" + Unicode.DEGREE, AngleFormat.degreesRoundedToHundredth(Math.PI));
+    assertEquals("57.296" + Unicode.DEGREE, AngleFormat.degreesRoundedToHundredth(1.0));
+    assertEquals("114.592" + Unicode.DEGREE, AngleFormat.degreesRoundedToHundredth(2.0));
+    assertEquals("180.0" + Unicode.DEGREE, AngleFormat.degreesRoundedToHundredth(Math.PI));
   }
 
   @Test
