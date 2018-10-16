@@ -1,11 +1,10 @@
 package pl.poznan.put.pdb;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PdbModresLine implements ChainNumberICode, Serializable {
   private static final long serialVersionUID = 1679492136825436435L;

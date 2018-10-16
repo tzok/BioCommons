@@ -6,10 +6,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,15 +67,9 @@ public class Ct implements Serializable {
 
         if (map.get(pair) != e.index) {
           throw new InvalidStructureException(
-              "Inconsistency in CT format: ("
-                  + e.index
-                  + " -> "
-                  + pair
-                  + ") and ("
-                  + pair
-                  + " -> "
-                  + map.get(pair)
-                  + ')');
+              String.format(
+                  "Inconsistency in CT format: (%d -> %d) and (%d -> %d)",
+                  e.index, pair, pair, map.get(pair)));
         }
       }
     }
@@ -324,31 +319,12 @@ public class Ct implements Serializable {
     }
   }
 
-  public static class Entry implements Serializable, Comparable<Entry> {
-    private final int index;
-    private final int pair;
+  @Data
+  @EqualsAndHashCode(callSuper = true)
+  public static class Entry extends BpSeq.Entry {
     private final int before;
     private final int after;
     private final int original;
-    private final char seq;
-    private final String comment;
-
-    public Entry(
-        final int index,
-        final int pair,
-        final int before,
-        final int after,
-        final int original,
-        final char seq) {
-      super();
-      this.index = index;
-      this.pair = pair;
-      this.before = before;
-      this.after = after;
-      this.seq = seq;
-      this.original = original;
-      comment = "";
-    }
 
     public Entry(
         final int index,
@@ -358,22 +334,20 @@ public class Ct implements Serializable {
         final int original,
         final char seq,
         final String comment) {
-      super();
-      this.index = index;
-      this.pair = pair;
+      super(index, pair, seq, comment);
       this.before = before;
       this.after = after;
-      this.seq = seq;
       this.original = original;
-      this.comment = comment;
     }
 
-    public final int getIndex() {
-      return index;
-    }
-
-    public final int getPair() {
-      return pair;
+    public Entry(
+        final int index,
+        final int pair,
+        final int before,
+        final int after,
+        final int original,
+        final char seq) {
+      this(index, pair, before, after, original, seq, "");
     }
 
     public final int getBefore() {
@@ -386,74 +360,6 @@ public class Ct implements Serializable {
 
     public final int getOriginal() {
       return original;
-    }
-
-    public final char getSeq() {
-      return seq;
-    }
-
-    @Override
-    public final int compareTo(final Entry t) {
-      if (t == null) {
-        throw new NullPointerException();
-      }
-
-      if (equals(t)) {
-        return 0;
-      }
-
-      if (index < t.index) {
-        return -1;
-      }
-      if (index > t.index) {
-        return 1;
-      }
-      return 0;
-    }
-
-    @Override
-    public final int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + after;
-      result = (prime * result) + before;
-      result = (prime * result) + ((comment == null) ? 0 : comment.hashCode());
-      result = (prime * result) + index;
-      result = (prime * result) + original;
-      result = (prime * result) + pair;
-      result = (prime * result) + seq;
-      return result;
-    }
-
-    @Override
-    public final boolean equals(final Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null) {
-        return false;
-      }
-      if (getClass() != o.getClass()) {
-        return false;
-      }
-      final Entry other = (Entry) o;
-      if (after != other.after) {
-        return false;
-      }
-      if (before != other.before) {
-        return false;
-      }
-      if (comment == null) {
-        if (other.comment != null) {
-          return false;
-        }
-      } else if (!Objects.equals(comment, other.comment)) {
-        return false;
-      }
-      return (index == other.index)
-          && (original == other.original)
-          && (pair == other.pair)
-          && (seq == other.seq);
     }
 
     @Override
@@ -475,10 +381,6 @@ public class Ct implements Serializable {
         builder.append(comment);
       }
       return builder.toString();
-    }
-
-    public boolean isPaired() {
-      return pair != 0;
     }
   }
 

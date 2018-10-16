@@ -148,6 +148,16 @@ public enum LeontisWesthof {
     return String.valueOf(cs[1]) + '/' + cs[2] + ' ' + (cs[0] == 'C' ? "cis" : "trans");
   }
 
+  public String getShortName() {
+    if (this == LeontisWesthof.UNKNOWN) {
+      return "n/a";
+    }
+
+    final char[] chars = name().toCharArray();
+    chars[0] = Character.toLowerCase(chars[0]);
+    return new String(chars);
+  }
+
   public String getFullName() {
     if (this == LeontisWesthof.UNKNOWN) {
       return "n/a";

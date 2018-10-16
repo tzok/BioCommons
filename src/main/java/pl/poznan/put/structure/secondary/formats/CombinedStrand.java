@@ -3,10 +3,13 @@ package pl.poznan.put.structure.secondary.formats;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.EqualsAndHashCode;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
@@ -88,35 +91,32 @@ public class CombinedStrand implements DotBracketInterface {
   }
 
   public final List<DotBracketSymbol> getInternalMissing() {
-    final List<DotBracketSymbol> result = new ArrayList<>();
+    // collect all missing from beginning and ends of strands
+    final Set<DotBracketSymbol> missingNonInternal =
+        strands
+            .parallelStream()
+            .flatMap(
+                strand ->
+                    Stream.concat(
+                        strand.getMissingBegin().getSymbols().stream(),
+                        strand.getMissingEnd().getSymbols().stream()))
+            .collect(Collectors.toSet());
 
-    for (final Strand strand : strands) {
-      final TerminalMissing missingBegin = strand.getMissingBegin();
-      final TerminalMissing missingEnd = strand.getMissingEnd();
-      final List<DotBracketSymbol> symbols = strand.getSymbols();
-
-      DotBracketSymbol symbol =
-          (missingBegin.getLength() > 0) ? missingBegin.getLast().getNext() : symbols.get(0);
-      final DotBracketSymbol lastSymbol =
-          (missingEnd.getLength() > 0) ? missingEnd.getFirst() : symbols.get(symbols.size() - 1);
-
-      while ((symbol != null) && !Objects.equals(symbol, lastSymbol)) {
-        if (symbol.isMissing()) {
-          result.add(symbol);
-        }
-        symbol = symbol.getNext();
-      }
-    }
-
-    return result;
+    // get all missing symbols which are internal
+    return strands
+        .stream()
+        .flatMap(strand -> strand.getSymbols().stream())
+        .filter(dotBracketSymbol -> !missingNonInternal.contains(dotBracketSymbol))
+        .filter(DotBracketSymbol::isMissing)
+        .collect(Collectors.toList());
   }
 
   public final int getPseudoknotOrder() {
-    int order = 0;
-    for (final Strand strand : strands) {
-      order = Math.max(order, strand.getPseudoknotOrder());
-    }
-    return order;
+    return strands
+        .stream()
+        .max(Comparator.comparingInt(Strand::getPseudoknotOrder))
+        .map(Strand::getPseudoknotOrder)
+        .orElse(0);
   }
 
   public final boolean contains(final DotBracketSymbol symbol) {

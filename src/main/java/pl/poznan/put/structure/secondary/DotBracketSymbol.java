@@ -44,6 +44,26 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
     return DotBracketSymbol.CLOSING.contains(c);
   }
 
+  public static int getOrder(final char c) {
+    if (DotBracketSymbol.isOpening(c)) {
+      return DotBracketSymbol.OPENING.indexOf(c);
+    }
+    if (DotBracketSymbol.isClosing(c)) {
+      return DotBracketSymbol.CLOSING.indexOf(c);
+    }
+    return 0;
+  }
+
+  public static char getMatchingBracket(final char c) {
+    if (DotBracketSymbol.isOpening(c)) {
+      return DotBracketSymbol.CLOSING.get(DotBracketSymbol.getOrder(c));
+    }
+    if (DotBracketSymbol.isClosing(c)) {
+      return DotBracketSymbol.OPENING.get(DotBracketSymbol.getOrder(c));
+    }
+    return '.';
+  }
+
   public char getSequence() {
     return sequence;
   }
@@ -114,13 +134,11 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
   }
 
   public int getOrder() {
-    if (isOpening()) {
-      return DotBracketSymbol.OPENING.indexOf(structure);
-    }
-    if (isClosing()) {
-      return DotBracketSymbol.CLOSING.indexOf(structure);
-    }
-    return 0;
+    return DotBracketSymbol.getOrder(structure);
+  }
+
+  public char getMatchingBracket() {
+    return DotBracketSymbol.getMatchingBracket(structure);
   }
 
   @Override

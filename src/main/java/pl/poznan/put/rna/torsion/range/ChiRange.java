@@ -1,5 +1,6 @@
 package pl.poznan.put.rna.torsion.range;
 
+import lombok.Getter;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
@@ -11,24 +12,25 @@ import pl.poznan.put.torsion.range.RangeProvider;
  * Torsion angle ranges for CHI as defined in Saenger's "Principles...".
  * http://jenalib.leibniz-fli.de/Piet/help/backbone.html
  */
+@Getter
 public enum ChiRange implements Range {
   HIGH_ANTI("high anti", -90, -15),
   SYN("syn", -15, 110),
   ANTI("anti", 110, 270),
   INVALID("invalid", Double.NaN, Double.NaN);
 
-  private static final MultiKeyMap<ChiRange, RangeDifference> differenceMap = new MultiKeyMap<>();
+  private static final MultiKeyMap<ChiRange, RangeDifference> DIFFERENCE_MAP = new MultiKeyMap<>();
 
   static {
-    ChiRange.differenceMap.put(ChiRange.ANTI, ChiRange.ANTI, RangeDifference.EQUAL);
-    ChiRange.differenceMap.put(ChiRange.ANTI, ChiRange.HIGH_ANTI, RangeDifference.SIMILAR);
-    ChiRange.differenceMap.put(ChiRange.ANTI, ChiRange.SYN, RangeDifference.OPPOSITE);
-    ChiRange.differenceMap.put(ChiRange.HIGH_ANTI, ChiRange.ANTI, RangeDifference.SIMILAR);
-    ChiRange.differenceMap.put(ChiRange.HIGH_ANTI, ChiRange.HIGH_ANTI, RangeDifference.EQUAL);
-    ChiRange.differenceMap.put(ChiRange.HIGH_ANTI, ChiRange.SYN, RangeDifference.DIFFERENT);
-    ChiRange.differenceMap.put(ChiRange.SYN, ChiRange.ANTI, RangeDifference.OPPOSITE);
-    ChiRange.differenceMap.put(ChiRange.SYN, ChiRange.HIGH_ANTI, RangeDifference.DIFFERENT);
-    ChiRange.differenceMap.put(ChiRange.SYN, ChiRange.SYN, RangeDifference.EQUAL);
+    ChiRange.DIFFERENCE_MAP.put(ChiRange.ANTI, ChiRange.ANTI, RangeDifference.EQUAL);
+    ChiRange.DIFFERENCE_MAP.put(ChiRange.ANTI, ChiRange.HIGH_ANTI, RangeDifference.SIMILAR);
+    ChiRange.DIFFERENCE_MAP.put(ChiRange.ANTI, ChiRange.SYN, RangeDifference.OPPOSITE);
+    ChiRange.DIFFERENCE_MAP.put(ChiRange.HIGH_ANTI, ChiRange.ANTI, RangeDifference.SIMILAR);
+    ChiRange.DIFFERENCE_MAP.put(ChiRange.HIGH_ANTI, ChiRange.HIGH_ANTI, RangeDifference.EQUAL);
+    ChiRange.DIFFERENCE_MAP.put(ChiRange.HIGH_ANTI, ChiRange.SYN, RangeDifference.DIFFERENT);
+    ChiRange.DIFFERENCE_MAP.put(ChiRange.SYN, ChiRange.ANTI, RangeDifference.OPPOSITE);
+    ChiRange.DIFFERENCE_MAP.put(ChiRange.SYN, ChiRange.HIGH_ANTI, RangeDifference.DIFFERENT);
+    ChiRange.DIFFERENCE_MAP.put(ChiRange.SYN, ChiRange.SYN, RangeDifference.EQUAL);
   }
 
   private static final RangeProvider PROVIDER =
@@ -58,21 +60,6 @@ public enum ChiRange implements Range {
   }
 
   @Override
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  @Override
-  public Angle getBegin() {
-    return begin;
-  }
-
-  @Override
-  public Angle getEnd() {
-    return end;
-  }
-
-  @Override
   public RangeDifference compare(final Range other) {
     if (!(other instanceof ChiRange)) {
       throw new IllegalArgumentException(
@@ -83,6 +70,6 @@ public enum ChiRange implements Range {
       return RangeDifference.INVALID;
     }
 
-    return ChiRange.differenceMap.get(this, other);
+    return ChiRange.DIFFERENCE_MAP.get(this, other);
   }
 }

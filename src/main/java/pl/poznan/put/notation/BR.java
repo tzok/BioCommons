@@ -1,10 +1,9 @@
 package pl.poznan.put.notation;
 
+import java.util.Objects;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.rna.base.NucleobaseType;
-
-import java.util.Objects;
 
 /**
  * Base-ribose notation. Zirbel, C. L., et al (2009). Classification and energetics of the

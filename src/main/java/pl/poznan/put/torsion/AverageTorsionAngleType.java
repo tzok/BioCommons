@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.circular.Angle;
@@ -16,6 +17,7 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.TorsionRange;
 
+@EqualsAndHashCode(callSuper = true)
 public class AverageTorsionAngleType extends TorsionAngleType implements MasterTorsionAngleType {
   private final String displayName;
   private final String exportName;
@@ -154,7 +156,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
 
   @Override
   @Contract(pure = true)
-  public final @NotNull Collection<? extends TorsionAngleType> getAngleTypes() {
+  public final @NotNull Collection<TorsionAngleType> getAngleTypes() {
     return Collections.singleton(this);
   }
 

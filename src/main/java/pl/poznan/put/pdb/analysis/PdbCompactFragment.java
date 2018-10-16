@@ -1,16 +1,5 @@
 package pl.poznan.put.pdb.analysis;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import pl.poznan.put.pdb.ChainNumberICode;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.torsion.MasterTorsionAngleType;
-import pl.poznan.put.torsion.TorsionAngleType;
-import pl.poznan.put.torsion.TorsionAngleValue;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -19,18 +8,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import lombok.Data;
+import pl.poznan.put.pdb.ChainNumberICode;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.torsion.MasterTorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleValue;
 
 @Data
-@NoArgsConstructor
-@XmlRootElement
 public class PdbCompactFragment implements ResidueCollection {
-  @XmlElement private String name;
-
-  @XmlElement
+  private String name;
   private Map<PdbResidueIdentifier, List<TorsionAngleValue>> mapResidueAngleValue =
       new LinkedHashMap<>();
-
-  @XmlTransient private List<PdbResidue> residues;
+  private List<PdbResidue> residues;
 
   public PdbCompactFragment(final String name, final List<PdbResidue> residues) {
     super();

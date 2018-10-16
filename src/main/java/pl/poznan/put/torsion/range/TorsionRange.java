@@ -1,9 +1,11 @@
 package pl.poznan.put.torsion.range;
 
+import lombok.Getter;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
 
 /** Torsion angle ranges as defined in Saenger's "Principles...". */
+@Getter
 public enum TorsionRange implements Range {
   SYN_CIS("sp", -30, 30),
   ANTI_TRANS("ap", 150, -150),
@@ -39,21 +41,6 @@ public enum TorsionRange implements Range {
     this.end = new Angle(end, ValueType.DEGREES);
   }
 
-  @Override
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  @Override
-  public Angle getBegin() {
-    return begin;
-  }
-
-  @Override
-  public Angle getEnd() {
-    return end;
-  }
-
   /**
    * Calculate difference between two angle ranges. It will be either 0 (equal), 1 (neighbour), 2
    * (next to neighbour) or 3 (opposite). Because each range is exactly 60 degree wide, then
@@ -66,7 +53,7 @@ public enum TorsionRange implements Range {
   public RangeDifference compare(final Range other) {
     if (!(other instanceof TorsionRange)) {
       throw new IllegalArgumentException(
-          "A Range object can be compared only with other Range " + "object");
+          "A Range object can be compared only with other Range object");
     }
 
     if ((this == TorsionRange.INVALID) || (other == TorsionRange.INVALID)) {

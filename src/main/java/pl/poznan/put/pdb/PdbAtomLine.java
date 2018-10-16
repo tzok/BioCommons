@@ -1,5 +1,9 @@
 package pl.poznan.put.pdb;
 
+import java.io.Serializable;
+import java.util.Locale;
+import java.util.Objects;
+import javax.vecmath.Point3d;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.biojava.nbio.structure.Atom;
@@ -11,11 +15,6 @@ import org.biojava.nbio.structure.ResidueNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.atom.AtomName;
-
-import javax.vecmath.Point3d;
-import java.io.Serializable;
-import java.util.Locale;
-import java.util.Objects;
 
 public class PdbAtomLine implements Serializable, ChainNumberICode {
   private static final long serialVersionUID = -6626889209014265608L;

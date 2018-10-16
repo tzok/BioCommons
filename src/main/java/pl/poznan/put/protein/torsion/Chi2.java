@@ -1,15 +1,14 @@
 package pl.poznan.put.protein.torsion;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public final class Chi2 extends AtomBasedTorsionAngleType {
   public static final Quadruplet<AtomName> ARGININE_ATOMS =

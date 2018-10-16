@@ -1,11 +1,10 @@
 package pl.poznan.put.rna.base;
 
+import java.util.Arrays;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.rna.DeoxyRibose;
 import pl.poznan.put.rna.Pyrimidine;
 import pl.poznan.put.rna.Sugar;
-
-import java.util.Arrays;
 
 public final class Thymine extends Pyrimidine {
   private static final Thymine INSTANCE = new Thymine();

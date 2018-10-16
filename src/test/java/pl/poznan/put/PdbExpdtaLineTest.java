@@ -1,14 +1,13 @@
 package pl.poznan.put;
 
+import static org.junit.Assert.assertEquals;
+import static pl.poznan.put.pdb.PdbExpdtaLine.parse;
+
+import java.util.List;
 import org.junit.Test;
 import pl.poznan.put.pdb.ExperimentalTechnique;
 import pl.poznan.put.pdb.PdbExpdtaLine;
 import pl.poznan.put.pdb.PdbParsingException;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static pl.poznan.put.pdb.PdbExpdtaLine.parse;
 
 public class PdbExpdtaLineTest {
   // @formatter:off

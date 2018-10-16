@@ -1,5 +1,9 @@
 package pl.poznan.put.rna;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
@@ -21,11 +25,6 @@ import pl.poznan.put.rna.torsion.ThetaPrim;
 import pl.poznan.put.rna.torsion.Zeta;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public abstract class Base extends NucleicAcidResidueComponent
     implements ResidueInformationProvider {
@@ -91,29 +90,28 @@ public abstract class Base extends NucleicAcidResidueComponent
   }
 
   @Override
-  public List<ResidueComponent> getAllMoleculeComponents() {
-    return Arrays.asList(
-        new ResidueComponent[] {Phosphate.getInstance(), getDefaultSugarInstance(), this});
+  public final List<ResidueComponent> getAllMoleculeComponents() {
+    return Arrays.asList(Phosphate.getInstance(), getDefaultSugarInstance(), this);
   }
 
   @Override
-  public String getDescription() {
+  public final String getDescription() {
     return longName;
   }
 
   @Override
-  public char getOneLetterName() {
+  public final char getOneLetterName() {
     return oneLetterName;
   }
 
   @Override
-  public String getDefaultPdbName() {
+  public final String getDefaultPdbName() {
     assert !pdbNames.isEmpty();
     return pdbNames.get(0);
   }
 
   @Override
-  public List<String> getPdbNames() {
+  public final List<String> getPdbNames() {
     return Collections.unmodifiableList(pdbNames);
   }
 

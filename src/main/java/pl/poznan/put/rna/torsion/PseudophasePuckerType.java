@@ -1,5 +1,6 @@
 package pl.poznan.put.rna.torsion;
 
+import java.util.List;
 import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
@@ -7,8 +8,6 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
-
-import java.util.List;
 
 public final class PseudophasePuckerType extends TorsionAngleType {
   private static final PseudophasePuckerType INSTANCE = new PseudophasePuckerType();

@@ -1,10 +1,10 @@
 package pl.poznan.put.notation;
 
+import java.util.Objects;
+import org.apache.commons.lang3.NotImplementedException;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.rna.base.NucleobaseType;
-
-import java.util.Objects;
 
 /**
  * Base-phosphate notation. Zirbel, C. L., et al (2009). Classification and energetics of the
@@ -57,23 +57,27 @@ public enum BPh {
   }
 
   private static BPh detectForUracil(final PdbResidue base, final PdbResidue phosphate) {
-    // FIXME: implement this
-    return BPh.UNKNOWN;
+    // TODO: implement this
+    throw new NotImplementedException(
+        String.format("Method not implemented yet: base=%s, phosphate=%s", base, phosphate));
   }
 
   private static BPh detectForGuanine(final PdbResidue base, final PdbResidue phosphate) {
-    // FIXME: implement this
-    return BPh.UNKNOWN;
+    // TODO: implement this
+    throw new NotImplementedException(
+        String.format("Method not implemented yet: base=%s, phosphate=%s", base, phosphate));
   }
 
   private static BPh detectForCytosine(final PdbResidue base, final PdbResidue phosphate) {
-    // FIXME: implement this
-    return BPh.UNKNOWN;
+    // TODO: implement this
+    throw new NotImplementedException(
+        String.format("Method not implemented yet: base=%s, phosphate=%s", base, phosphate));
   }
 
   private static BPh detectForAdenine(final PdbResidue base, final PdbResidue phosphate) {
-    // FIXME: implement this
-    return BPh.UNKNOWN;
+    // TODO: implement this
+    throw new NotImplementedException(
+        String.format("Method not implemented yet: base=%s, phosphate=%s", base, phosphate));
   }
 
   public static BPh fromString(final String candidate) {

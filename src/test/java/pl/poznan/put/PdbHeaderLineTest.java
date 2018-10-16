@@ -1,11 +1,11 @@
 package pl.poznan.put;
 
+import static org.junit.Assert.assertEquals;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbParsingException;
-
-import static org.junit.Assert.assertEquals;
 
 public class PdbHeaderLineTest {
   // @formatter:off

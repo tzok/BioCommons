@@ -1,10 +1,9 @@
 package pl.poznan.put.rna;
 
+import java.util.List;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
-
-import java.util.List;
 
 public abstract class NucleicAcidResidueComponent extends ResidueComponent {
   private final RNAResidueComponentType type;

@@ -1,5 +1,10 @@
 package pl.poznan.put;
 
+import static org.junit.Assert.*;
+
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.biojava.nbio.structure.Structure;
@@ -9,7 +14,6 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
@@ -20,12 +24,6 @@ import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.utility.ResourcesHelper;
-
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class PdbModelTest {
   @Test
@@ -428,9 +426,9 @@ public class PdbModelTest {
     final String cif1EHZ = pdbModel.toCifString();
 
     final CifParser cifParser = new CifParser();
-    final List<CifModel> cifModels = cifParser.parse(cif1EHZ);
+    final List<PdbModel> cifModels = cifParser.parse(cif1EHZ);
     assertEquals(1, cifModels.size());
-    final CifModel cifModel = cifModels.get(0);
+    final PdbModel cifModel = cifModels.get(0);
 
     final List<PdbResidue> pdbResidues = pdbModel.getResidues();
     final List<PdbResidue> cifResidues = cifModel.getResidues();

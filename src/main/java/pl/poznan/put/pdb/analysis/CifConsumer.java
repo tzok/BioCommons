@@ -1,5 +1,18 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.io.mmcif.MMcifConsumer;
@@ -61,24 +74,9 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
-import javax.annotation.Nullable;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-
 public class CifConsumer implements MMcifConsumer {
   private static final Logger LOGGER = LoggerFactory.getLogger(CifConsumer.class);
 
-  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
   private static final String PDBX_STRUCT_MOD_RESIDUE = "_pdbx_struct_mod_residue"; // NON-NLS
   private static final String PDBX_UNOBS_OR_ZERO_OCC_RESIDUES =
       "_pdbx_unobs_or_zero_occ_residues"; // NON-NLS
@@ -95,6 +93,7 @@ public class CifConsumer implements MMcifConsumer {
   private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
   private final List<ExperimentalTechnique> experimentalTechniques = new ArrayList<>();
   private final List<QuantifiedBasePair> basePairs = new ArrayList<>();
+  private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
   @Nullable private Date depositionDate;
   @Nullable private String classification;
@@ -216,18 +215,18 @@ public class CifConsumer implements MMcifConsumer {
 
   @Override
   public void setStruct(final Struct struct) {
-	  this.title = StringUtils.upperCase(struct.getTitle());
+    this.title = StringUtils.upperCase(struct.getTitle());
   }
 
   @Override
   public final void newDatabasePDBrev(final DatabasePDBrev databasePDBrev) {
     try {
       if (depositionDate == null) {
-        depositionDate = CifConsumer.DATE_FORMAT.parse(databasePDBrev.getDate_original());
+        depositionDate = dateFormat.parse(databasePDBrev.getDate_original());
       }
     } catch (final ParseException e) {
       CifConsumer.LOGGER.warn(
-          "Failed to parse _database_PDB_rev.date_original as" + " yyyy-MM-dd: {}",
+          "Failed to parse _database_PDB_rev.date_original as yyyy-MM-dd: {}",
           databasePDBrev.getDate_original(),
           e);
     }
@@ -521,7 +520,7 @@ public class CifConsumer implements MMcifConsumer {
     return map.containsKey(key) ? Double.parseDouble(map.get(key)) : Double.NaN;
   }
 
-  public final List<CifModel> getModels() throws PdbParsingException {
+  public final List<PdbModel> getModels() throws PdbParsingException {
     final Date date = (depositionDate == null) ? new Date(0) : depositionDate;
     final PdbHeaderLine headerLine = new PdbHeaderLine(classification, date, idCode);
 
@@ -532,7 +531,7 @@ public class CifConsumer implements MMcifConsumer {
     final PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(techniques);
 
     final PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
-    final List<CifModel> result = new ArrayList<>();
+    final List<PdbModel> result = new ArrayList<>();
 
     for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
       final int modelNumber = entry.getKey();
@@ -546,7 +545,8 @@ public class CifConsumer implements MMcifConsumer {
               atoms,
               modifiedResidues,
               missingResidues,
-              basePairs, title);
+              basePairs,
+              title);
       result.add(pdbModel);
     }
 

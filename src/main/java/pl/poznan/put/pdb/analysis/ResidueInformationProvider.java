@@ -1,11 +1,9 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.util.List;
 import pl.poznan.put.torsion.TorsionAngleType;
 
-import java.io.Serializable;
-import java.util.List;
-
-public interface ResidueInformationProvider extends Serializable {
+public interface ResidueInformationProvider {
   MoleculeType getMoleculeType();
 
   List<ResidueComponent> getAllMoleculeComponents();

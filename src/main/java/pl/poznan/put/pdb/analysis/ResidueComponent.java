@@ -1,13 +1,12 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.apache.commons.collections4.CollectionUtils;
-import pl.poznan.put.atom.AtomName;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.apache.commons.collections4.CollectionUtils;
+import pl.poznan.put.atom.AtomName;
 
 public abstract class ResidueComponent {
   private final String residueComponentName;
