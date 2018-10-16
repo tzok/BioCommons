@@ -7,7 +7,7 @@ import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.utility.AngleFormat;
-import pl.poznan.put.utility.TwoDigitsAfterDotNumberFormat;
+import pl.poznan.put.utility.NumberFormatUtils;
 
 public abstract class Circular implements Comparable<Circular>, Serializable {
   private static final long serialVersionUID = -4674646476160594025L;
@@ -57,7 +57,7 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
     if (isValid()) {
       return String.format(
           "%s rad, %s",
-          TwoDigitsAfterDotNumberFormat.formatDouble(radians),
+          NumberFormatUtils.threeDecimalDigits().format(radians),
           AngleFormat.degreesRoundedToHundredth(radians));
     }
     return "invalid";
