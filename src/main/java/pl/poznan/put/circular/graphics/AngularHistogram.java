@@ -1,13 +1,12 @@
 package pl.poznan.put.circular.graphics;
 
+import java.util.Collection;
 import org.apache.batik.ext.awt.geom.Polygon2D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import pl.poznan.put.circular.Circular;
 import pl.poznan.put.circular.Histogram;
 import pl.poznan.put.circular.enums.AngleTransformation;
-
-import java.util.Collection;
 
 public class AngularHistogram extends RawDataPlot {
   private final double binRadians;
@@ -37,51 +36,51 @@ public class AngularHistogram extends RawDataPlot {
 
   public AngularHistogram(final Collection<? extends Circular> data) {
     super(data);
-    binRadians = Math.PI / 12;
+    binRadians = FastMath.PI / 12;
   }
 
   @Override
   public final void draw() {
     super.draw();
 
-    Histogram histogram = new Histogram(getData(), binRadians);
+    final Histogram histogram = new Histogram(getData(), binRadians);
     double maxFrequency = Double.NEGATIVE_INFINITY;
 
     for (double d = 0; d < MathUtils.TWO_PI; d += binRadians) {
-      double frequency = (double) histogram.getBinSize(d) / getData().size();
-      maxFrequency = Math.max(frequency, maxFrequency);
+      final double frequency = (double) histogram.getBinSize(d) / getData().size();
+      maxFrequency = FastMath.max(frequency, maxFrequency);
     }
 
     // the 0.8 is here because up to 0.85 the majorTick can be drawn and we
     // do not want overlaps
-    scalingFactor = 0.8 / Math.sqrt(maxFrequency);
+    scalingFactor = 0.8 / FastMath.sqrt(maxFrequency);
 
     for (double d = 0; d < MathUtils.TWO_PI; d += binRadians) {
-      double frequency = (double) histogram.getBinSize(d) / getData().size();
+      final double frequency = (double) histogram.getBinSize(d) / getData().size();
       if (frequency > 0) {
         drawHistogramTriangle(d, frequency);
       }
 
       if (isAxes()) {
-        drawHistogramTriangle((d + Math.PI) % MathUtils.TWO_PI, frequency);
+        drawHistogramTriangle((d + FastMath.PI) % MathUtils.TWO_PI, frequency);
       }
     }
   }
 
   private void drawHistogramTriangle(final double circularValue, final double frequency) {
-    double sectorRadius = FastMath.sqrt(frequency) * getRadius() * scalingFactor;
+    final double sectorRadius = FastMath.sqrt(frequency) * getRadius() * scalingFactor;
 
     // angle as in XY coordinate system
-    double t1 = transform(circularValue);
-    double x1 = getCenterX() + (sectorRadius * FastMath.cos(t1));
-    double y1 = getCenterY() + (sectorRadius * FastMath.sin(t1));
+    final double t1 = transform(circularValue);
+    final double x1 = getCenterX() + (sectorRadius * FastMath.cos(t1));
+    final double y1 = getCenterY() + (sectorRadius * FastMath.sin(t1));
 
-    double t2 = transform(circularValue + binRadians);
-    double x2 = getCenterX() + (sectorRadius * FastMath.cos(t2));
-    double y2 = getCenterY() + (sectorRadius * FastMath.sin(t2));
+    final double t2 = transform(circularValue + binRadians);
+    final double x2 = getCenterX() + (sectorRadius * FastMath.cos(t2));
+    final double y2 = getCenterY() + (sectorRadius * FastMath.sin(t2));
 
-    float[] xs = {(float) x1, (float) x2, (float) getCenterX()};
-    float[] ys = {
+    final float[] xs = {(float) x1, (float) x2, (float) getCenterX()};
+    final float[] ys = {
       (float) (getDiameter() - y1),
       (float) (getDiameter() - y2),
       (float) (getDiameter() - getCenterY())

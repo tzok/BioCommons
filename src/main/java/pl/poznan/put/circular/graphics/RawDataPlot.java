@@ -1,16 +1,5 @@
 package pl.poznan.put.circular.graphics;
 
-import org.apache.batik.ext.awt.geom.Polygon2D;
-import org.apache.commons.math3.util.FastMath;
-import org.apache.commons.math3.util.MathUtils;
-import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.Axis;
-import pl.poznan.put.circular.Circular;
-import pl.poznan.put.circular.enums.AngleTransformation;
-import pl.poznan.put.circular.exception.InvalidCircularOperationException;
-import pl.poznan.put.constant.Unicode;
-import pl.poznan.put.utility.svg.SVGHelper;
-
 import java.awt.FontMetrics;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -21,6 +10,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.apache.batik.ext.awt.geom.Polygon2D;
+import org.apache.commons.math3.util.FastMath;
+import org.apache.commons.math3.util.MathUtils;
+import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.Axis;
+import pl.poznan.put.circular.Circular;
+import pl.poznan.put.circular.enums.AngleTransformation;
+import pl.poznan.put.circular.exception.InvalidCircularOperationException;
+import pl.poznan.put.constant.Unicode;
+import pl.poznan.put.utility.svg.SVGHelper;
 
 public class RawDataPlot extends AbstractDrawable {
   private final Collection<? extends Circular> data;
@@ -58,7 +57,7 @@ public class RawDataPlot extends AbstractDrawable {
   }
 
   public RawDataPlot(final Collection<? extends Circular> data, final double diameter) {
-    this(data, diameter, Math.PI / 2, Math.PI / 12, AngleTransformation.CLOCK);
+    this(data, diameter, FastMath.PI / 2, FastMath.PI / 12, AngleTransformation.CLOCK);
   }
 
   public RawDataPlot(final Collection<? extends Circular> data) {
@@ -87,18 +86,18 @@ public class RawDataPlot extends AbstractDrawable {
     svgGraphics.draw(new Ellipse2D.Double(0, 0, diameter, diameter));
 
     // ticks
-    double rminor = 0.95 * radius;
-    double rmajor = 0.85 * radius;
+    final double rminor = 0.95 * radius;
+    final double rmajor = 0.85 * radius;
     drawTicks(minorTickSpread, rminor);
     drawTicks(majorTickSpread, rmajor);
     drawTicksText(majorTickSpread);
 
     // observations for every degree on a circle (map key = 0..360)
-    Map<Integer, List<Circular>> observations = new TreeMap<>();
+    final Map<Integer, List<Circular>> observations = new TreeMap<>();
 
     for (final Circular circular : data) {
-      double degrees = circular.getDegrees360();
-      int index = (int) degrees;
+      final double degrees = circular.getDegrees360();
+      final int index = (int) degrees;
 
       if (!observations.containsKey(index)) {
         observations.put(index, new ArrayList<>());
@@ -108,110 +107,124 @@ public class RawDataPlot extends AbstractDrawable {
 
     for (final Map.Entry<Integer, List<Circular>> entry : observations.entrySet()) {
       // 't' = angle as in XY coordinate system
-      int degree = entry.getKey();
-      double t = transform(Math.toRadians(degree));
+      final int degree = entry.getKey();
+      final double t = transform(Math.toRadians(degree));
       // point on circle
-      double x = centerX + (radius * FastMath.cos(t));
-      double y = centerY + (radius * FastMath.sin(t));
+      final double x = centerX + (radius * FastMath.cos(t));
+      final double y = centerY + (radius * FastMath.sin(t));
       // 'a', 'b' = equation for a line from center to this point
-      double a = (x - centerX) / (y - centerY);
+      final double slope = (x - centerX) / (y - centerY);
 
       int i = 0;
       for (final Circular circular : entry.getValue()) {
         // point on virtual circle
-        double virtualRadius = radius + tickTextWidth + ((i + 1) * observationSize);
-        double xv = centerX + (virtualRadius * FastMath.cos(t));
-        double yv = centerY + (virtualRadius * FastMath.sin(t));
+        final double virtualRadius = radius + tickTextWidth + ((i + 1) * observationSize);
+        final double xv = centerX + (virtualRadius * FastMath.cos(t));
+        final double yv = centerY + (virtualRadius * FastMath.sin(t));
 
         if (circular instanceof Angle) {
-          double x1;
-          double y1;
-          double x2;
-          double y2;
-
-          // special case for 90 and 270 degrees
-          int td = (int) Math.round(Math.toDegrees(t));
-          td += (td < 0) ? 360 : 0;
-          if ((td == 0) || (td == 180)) {
-            // special case for 90 and 270 degrees
-            x1 = xv;
-            y1 = yv + (observationSize / 2);
-            x2 = xv;
-            y2 = yv - (observationSize / 2);
-          } else {
-            // 'ap', 'bp' = equation for perpendicular line to 'a',
-            // 'b'
-            double ap = -a;
-            double bp = yv + (a * xv);
-            // 'sa', 'sb', 'sc' = quadratic equation parameters
-            double sa = 1 + FastMath.pow(ap, 2);
-            double sb = (-2 * xv) + (2 * ap * (bp - yv));
-            double sc =
-                (FastMath.pow(xv, 2) + FastMath.pow(bp - yv, 2))
-                    - FastMath.pow(observationSize / 2, 2);
-            // solve
-            double delta = (sb * sb) - (4 * sa * sc);
-            x1 = (-sb - Math.sqrt(delta)) / (2 * sa);
-            y1 = (ap * x1) + bp;
-            x2 = (-sb + Math.sqrt(delta)) / (2 * sa);
-            y2 = (ap * x2) + bp;
-          }
-
-          // last point is one step further
-          double x3 = centerX + ((virtualRadius + observationSize) * FastMath.cos(t));
-          double y3 = centerY + ((virtualRadius + observationSize) * FastMath.sin(t));
-
-          float[] xs = {(float) x1, (float) x2, (float) x3};
-          float[] ys = {(float) (diameter - y1), (float) (diameter - y2), (float) (diameter - y3)};
-          svgGraphics.draw(new Polygon2D(xs, ys, 3));
+          drawObservationTriangle(t, slope, virtualRadius, xv, yv);
           i += 2;
         } else if (circular instanceof Axis) {
-          xv -= observationSize / 2.0;
-          yv += observationSize / 2.0;
-
-          svgGraphics.draw(
-              new Ellipse2D.Double(xv, diameter - yv, observationSize, observationSize));
-          xv = (centerX + (virtualRadius * FastMath.cos(t + Math.PI))) - (observationSize / 2.0);
-          yv = centerY + (virtualRadius * FastMath.sin(t + Math.PI)) + (observationSize / 2.0);
-          svgGraphics.draw(
-              new Ellipse2D.Double(xv, diameter - yv, observationSize, observationSize));
+          drawObservationCircles(t, virtualRadius, xv, yv);
           i += 1;
         }
       }
     }
   }
 
+  private void drawObservationCircles(
+      final double t, final double virtualRadius, final double xv, final double yv) {
+    final double x = xv - (observationSize / 2.0);
+    final double y = yv + (observationSize / 2.0);
+    svgGraphics.draw(new Ellipse2D.Double(x, diameter - y, observationSize, observationSize));
+    final double xPlusPI =
+        (centerX + (virtualRadius * FastMath.cos(t + FastMath.PI))) - (observationSize / 2.0);
+    final double yPlusPI =
+        centerY + (virtualRadius * FastMath.sin(t + FastMath.PI)) + (observationSize / 2.0);
+    svgGraphics.draw(
+        new Ellipse2D.Double(xPlusPI, diameter - yPlusPI, observationSize, observationSize));
+  }
+
+  private void drawObservationTriangle(
+      final double t,
+      final double a,
+      final double virtualRadius,
+      final double xv,
+      final double yv) {
+    // special case for 90 and 270 degrees
+    int td = (int) FastMath.round(Math.toDegrees(t));
+    td += (td < 0) ? 360 : 0;
+
+    final double x1;
+    final double y1;
+    final double x2;
+    final double y2;
+
+    if ((td == 0) || (td == 180)) {
+      // special case for 90 and 270 degrees
+      x1 = xv;
+      y1 = yv + (observationSize / 2);
+      x2 = xv;
+      y2 = yv - (observationSize / 2);
+    } else {
+      // 'ap', 'bp' = equation for perpendicular line to 'a',
+      // 'b'
+      final double ap = -a;
+      final double bp = yv + (a * xv);
+      // 'sa', 'sb', 'sc' = quadratic equation parameters
+      final double sa = 1 + FastMath.pow(ap, 2);
+      final double sb = (-2 * xv) + (2 * ap * (bp - yv));
+      final double sc =
+          (FastMath.pow(xv, 2) + FastMath.pow(bp - yv, 2)) - FastMath.pow(observationSize / 2, 2);
+      // solve
+      final double delta = (sb * sb) - (4 * sa * sc);
+      x1 = (-sb - FastMath.sqrt(delta)) / (2 * sa);
+      y1 = (ap * x1) + bp;
+      x2 = (-sb + FastMath.sqrt(delta)) / (2 * sa);
+      y2 = (ap * x2) + bp;
+    }
+
+    // last point is one step further
+    final double x3 = centerX + ((virtualRadius + observationSize) * FastMath.cos(t));
+    final double y3 = centerY + ((virtualRadius + observationSize) * FastMath.sin(t));
+
+    final float[] xs = {(float) x1, (float) x2, (float) x3};
+    final float[] ys = {(float) (diameter - y1), (float) (diameter - y2), (float) (diameter - y3)};
+    svgGraphics.draw(new Polygon2D(xs, ys, 3));
+  }
+
   private void drawTicks(final double tickSpread, final double virtualRadius) {
     for (double d = 0; d < MathUtils.TWO_PI; d += tickSpread) {
       // angle as in XY coordinate system
-      double t = transform(d);
+      final double t = transform(d);
       // point on virtual circle
-      double xv = centerX + (virtualRadius * FastMath.cos(t));
-      double yv = centerY - (virtualRadius * FastMath.sin(t));
+      final double xv = centerX + (virtualRadius * FastMath.cos(t));
+      final double yv = centerY - (virtualRadius * FastMath.sin(t));
       // point on circle
-      double x = centerX + (radius * FastMath.cos(t));
-      double y = centerY - (radius * FastMath.sin(t));
+      final double x = centerX + (radius * FastMath.cos(t));
+      final double y = centerY - (radius * FastMath.sin(t));
       svgGraphics.draw(new Line2D.Double(xv, diameter - yv, x, diameter - y));
     }
   }
 
   private void drawTicksText(final double tickSpread) {
-    FontMetrics fontMetrics = SVGHelper.getFontMetrics(svgGraphics);
-    double virtualRadius = radius + observationSize;
+    final FontMetrics fontMetrics = SVGHelper.getFontMetrics(svgGraphics);
+    final double virtualRadius = radius + observationSize;
 
     for (double d = 0; d < MathUtils.TWO_PI; d += tickSpread) {
       // text to be displayed
-      String text = Math.round(Math.toDegrees(d)) + Unicode.DEGREE;
-      Rectangle2D bounds = fontMetrics.getStringBounds(text, svgGraphics);
+      final String text = FastMath.round(Math.toDegrees(d)) + Unicode.DEGREE;
+      final Rectangle2D bounds = fontMetrics.getStringBounds(text, svgGraphics);
 
       // getHeight() sums up all ascents/descents and it distorts the
       // purpose here, so -getY() is better
-      double width = bounds.getWidth();
-      double height = -bounds.getY();
-      tickTextWidth = Math.max(width, tickTextWidth);
+      final double width = bounds.getWidth();
+      final double height = -bounds.getY();
+      tickTextWidth = FastMath.max(width, tickTextWidth);
 
       // angle as in XY coordinate system
-      double t = transform(d);
+      final double t = transform(d);
       // point on virtual circle
       double xv = centerX + (virtualRadius * FastMath.cos(t));
       double yv = centerY - (virtualRadius * FastMath.sin(t));
@@ -226,14 +239,14 @@ public class RawDataPlot extends AbstractDrawable {
       }
 
       // center the text around found point coordinates
-      xv -= (width / 2) * Math.abs(FastMath.sin(t));
-      yv += (height / 2) * Math.abs(FastMath.cos(t));
+      xv -= (width / 2) * FastMath.abs(FastMath.sin(t));
+      yv += (height / 2) * FastMath.abs(FastMath.cos(t));
 
       svgGraphics.drawString(text, (float) xv, (float) yv);
     }
   }
 
-  public final Collection<? extends Circular> getData() {
+  public final Collection<Circular> getData() {
     return Collections.unmodifiableCollection(data);
   }
 

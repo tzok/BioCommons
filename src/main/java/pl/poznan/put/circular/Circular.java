@@ -2,22 +2,17 @@ package pl.poznan.put.circular;
 
 import java.io.Serializable;
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.utility.AngleFormat;
-import pl.poznan.put.utility.TwoDigitsAfterDotNumberFormat;
+import pl.poznan.put.utility.NumberFormatUtils;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
 public abstract class Circular implements Comparable<Circular>, Serializable {
   private static final long serialVersionUID = -4674646476160594025L;
 
-  @XmlElement private final double radians;
+  private final double radians;
 
   protected Circular(final double value, final ValueType valueType) {
     super();
@@ -29,11 +24,11 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
   }
 
   public final double getDegrees() {
-    return Math.toDegrees(radians);
+    return FastMath.toDegrees(radians);
   }
 
   public final double getDegrees360() {
-    return Math.toDegrees(getRadians2PI());
+    return FastMath.toDegrees(getRadians2PI());
   }
 
   public final double getRadians2PI() {
@@ -62,7 +57,7 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
     if (isValid()) {
       return String.format(
           "%s rad, %s",
-          TwoDigitsAfterDotNumberFormat.formatDouble(radians),
+          NumberFormatUtils.threeDecimalDigits().format(radians),
           AngleFormat.degreesRoundedToHundredth(radians));
     }
     return "invalid";

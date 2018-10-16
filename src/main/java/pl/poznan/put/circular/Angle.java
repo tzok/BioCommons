@@ -1,7 +1,7 @@
 package pl.poznan.put.circular;
 
 import java.util.regex.Pattern;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
@@ -16,7 +16,6 @@ import pl.poznan.put.circular.exception.InvalidVectorFormatException;
  *
  * @author tzok
  */
-@XmlRootElement
 public class Angle extends Circular {
   private static final long serialVersionUID = 7888250116422842913L;
 
@@ -34,6 +33,43 @@ public class Angle extends Circular {
   }
 
   /**
+   * Calculate angle ABC.
+   *
+   * @param coordA Coordinate of point A.
+   * @param coordB Coordinate of point B.
+   * @param coordC Coordinate of point C.
+   * @return An angle between points A, B and C.
+   */
+  public static Angle betweenPoints(
+      final Vector3D coordA, final Vector3D coordB, final Vector3D coordC) {
+    final Vector3D vectorAB = coordB.subtract(coordA);
+    final Vector3D vectorCB = coordB.subtract(coordC);
+    return new Angle(Vector3D.angle(vectorAB, vectorCB), ValueType.RADIANS);
+  }
+
+  /**
+   * Calculate torsion angle given four points.
+   *
+   * @param coordA Coordinate of point A.
+   * @param coordB Coordinate of point B.
+   * @param coordC Coordinate of point C.
+   * @param coordD Coordinate of point D.
+   * @return A torsion angle (rotation around vector B-C).
+   */
+  public static Angle torsionAngle(
+      final Vector3D coordA, final Vector3D coordB, final Vector3D coordC, final Vector3D coordD) {
+    final Vector3D v1 = coordB.subtract(coordA);
+    final Vector3D v2 = coordC.subtract(coordB);
+    final Vector3D v3 = coordD.subtract(coordC);
+
+    final Vector3D tmp1 = v1.crossProduct(v2);
+    final Vector3D tmp2 = v2.crossProduct(v3);
+    final Vector3D tmp3 = v1.scalarMultiply(v2.getNorm());
+    return new Angle(
+        FastMath.atan2(tmp3.dotProduct(tmp2), tmp1.dotProduct(tmp2)), ValueType.RADIANS);
+  }
+
+  /**
    * Parse string in format HH.MM as a vector on a circular clock. For 'm' minutes after midnight,
    * the vector has value of '360 * m / (24 * 60)'.
    *
@@ -43,8 +79,7 @@ public class Angle extends Circular {
    * @throws InvalidCircularValueException If the input string is parsed to a value outside the
    *     range [0..360)
    */
-  @NotNull
-  public static Angle fromHourMinuteString(@NotNull final String hourMinute) {
+  public static @NotNull Angle fromHourMinuteString(final @NotNull String hourMinute) {
     final String[] split = Angle.DOT.split(hourMinute);
 
     if (split.length != 2) {
@@ -71,7 +106,7 @@ public class Angle extends Circular {
    * @param end Ending of the range of values.
    * @return true if object is between [begin; end)
    */
-  public final boolean isBetween(@NotNull final Angle begin, @NotNull final Angle end) {
+  public final boolean isBetween(final @NotNull Angle begin, final @NotNull Angle end) {
     final double degrees360 = getDegrees360();
     final double begin360 = begin.getDegrees360();
     final double end360 = end.getDegrees360();
@@ -81,19 +116,17 @@ public class Angle extends Circular {
         : ((degrees360 >= begin360) || (degrees360 < end360));
   }
 
-  @NotNull
-  public final Angle multiply(final double v) {
+  public final @NotNull Angle multiply(final double v) {
     return new Angle((getRadians() * v) % MathUtils.TWO_PI, ValueType.RADIANS);
   }
 
-  @NotNull
-  public final Angle subtract(@NotNull final Angle other) {
+  public final @NotNull Angle subtract(final @NotNull Angle other) {
     return new Angle(Angle.subtractByMinimum(getRadians(), other.getRadians()), ValueType.RADIANS);
   }
 
   public static double subtractByMinimum(final double left, final double right) {
-    final double d = Math.abs(left - right);
-    return Math.min(d, MathUtils.TWO_PI - d);
+    final double d = FastMath.abs(left - right);
+    return FastMath.min(d, MathUtils.TWO_PI - d);
   }
 
   /**
@@ -106,8 +139,8 @@ public class Angle extends Circular {
   public static double subtractAsVectors(final double left, final double right) {
     double v = FastMath.sin(left) * FastMath.sin(right);
     v += FastMath.cos(left) * FastMath.cos(right);
-    v = Math.min(1, v);
-    v = Math.max(-1, v);
+    v = FastMath.min(1, v);
+    v = FastMath.max(-1, v);
     return FastMath.acos(v);
   }
 
@@ -118,14 +151,13 @@ public class Angle extends Circular {
    * @param other The other angle which value should be subtracted from this one.
    * @return An ordered difference from first to second angle in range [-180; 180) degrees.
    */
-  @NotNull
-  public final Angle orderedSubtract(@NotNull final Angle other) {
+  public final @NotNull Angle orderedSubtract(final @NotNull Angle other) {
     double d = getRadians() - other.getRadians();
-    while (Precision.compareTo(d, -Math.PI, 1.0e-3) < 0) {
-      d += 2.0 * Math.PI;
+    while (Precision.compareTo(d, -FastMath.PI, 1.0e-3) < 0) {
+      d += MathUtils.TWO_PI;
     }
-    while (Precision.compareTo(d, Math.PI, 1.0e-3) > 0) {
-      d -= 2.0 * Math.PI;
+    while (Precision.compareTo(d, FastMath.PI, 1.0e-3) > 0) {
+      d -= MathUtils.TWO_PI;
     }
     return new Angle(d, ValueType.RADIANS);
   }
