@@ -53,7 +53,7 @@ public enum TorsionRange implements Range {
   public RangeDifference compare(final Range other) {
     if (!(other instanceof TorsionRange)) {
       throw new IllegalArgumentException(
-          "A Range object can be compared only with other Range " + "object");
+          "A Range object can be compared only with other Range object");
     }
 
     if ((this == TorsionRange.INVALID) || (other == TorsionRange.INVALID)) {

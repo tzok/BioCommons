@@ -51,9 +51,9 @@ public class TorsionAngleDelta {
 
     if (!target.isValid() && !model.isValid()) {
       state = State.BOTH_INVALID;
-    } else if (!target.isValid() && model.isValid()) {
+    } else if (!target.isValid()) {
       state = State.TARGET_INVALID;
-    } else if (target.isValid() && !model.isValid()) {
+    } else if (!model.isValid()) {
       state = State.MODEL_INVALID;
     } else {
       state = State.BOTH_VALID;
@@ -67,11 +67,11 @@ public class TorsionAngleDelta {
     return new TorsionAngleDelta(masterType, state, target, model, delta, rangeDifference);
   }
 
-  public Angle getTarget() {
+  public final Angle getTarget() {
     return target;
   }
 
-  public Angle getModel() {
+  public final Angle getModel() {
     return model;
   }
 
