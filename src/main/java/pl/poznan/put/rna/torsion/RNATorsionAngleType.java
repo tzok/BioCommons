@@ -1,7 +1,6 @@
 package pl.poznan.put.rna.torsion;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import pl.poznan.put.circular.Angle;
@@ -63,7 +62,7 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
   }
 
   @Override
-  public Collection<TorsionAngleType> getAngleTypes() {
+  public List<TorsionAngleType> getAngleTypes() {
     return Collections.unmodifiableList(angleTypes);
   }
 
