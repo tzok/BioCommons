@@ -135,11 +135,24 @@ public class CifConsumer implements MMcifConsumer {
   public final void newAtomSite(final AtomSite atomSite) {
     try {
       final int serialNumber = Integer.parseInt(atomSite.getId());
-      final String atomName = atomSite.getAuth_atom_id();
+      final String atomName =
+          (atomSite.getAuth_atom_id() != null)
+              ? atomSite.getAuth_atom_id()
+              : atomSite.getLabel_atom_id();
       String alternateLocation = atomSite.getLabel_alt_id();
-      final String residueName = atomSite.getAuth_comp_id();
-      final String chainIdentifier = atomSite.getAuth_asym_id();
-      final int residueNumber = Integer.parseInt(atomSite.getAuth_seq_id());
+      final String residueName =
+          (atomSite.getAuth_comp_id() != null)
+              ? atomSite.getAuth_comp_id()
+              : atomSite.getLabel_comp_id();
+      final String chainIdentifier =
+          (atomSite.getAuth_asym_id() != null)
+              ? atomSite.getAuth_asym_id()
+              : atomSite.getLabel_asym_id();
+      final int residueNumber =
+          Integer.parseInt(
+              (atomSite.getAuth_seq_id() != null)
+                  ? atomSite.getAuth_seq_id()
+                  : atomSite.getLabel_seq_id());
       String insertionCode = atomSite.getPdbx_PDB_ins_code();
       final double x = Double.parseDouble(atomSite.getCartn_x());
       final double y = Double.parseDouble(atomSite.getCartn_y());
