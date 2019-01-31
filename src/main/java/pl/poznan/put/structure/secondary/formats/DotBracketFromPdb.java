@@ -35,6 +35,14 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     markRepresentedNonCanonicals(nonCanonical);
   }
 
+  public DotBracketFromPdb(final String sequence, final String structure, final PdbModel model)
+      throws InvalidStructureException {
+    super(sequence, DotBracketFromPdb.updateMissingIndices(structure, model));
+
+    mapSymbolsAndResidues(model);
+    splitStrands(model);
+  }
+
   private void markRepresentedNonCanonicals(final Iterable<ClassifiedBasePair> nonCanonical) {
     final Collection<BasePair> representedSet = new HashSet<>();
 
@@ -59,14 +67,6 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
         }
       }
     }
-  }
-
-  public DotBracketFromPdb(final String sequence, final String structure, final PdbModel model)
-      throws InvalidStructureException {
-    super(sequence, DotBracketFromPdb.updateMissingIndices(structure, model));
-
-    mapSymbolsAndResidues(model);
-    splitStrands(model);
   }
 
   private static String updateMissingIndices(
@@ -122,20 +122,6 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
   @Override
   public final boolean contains(final PdbResidueIdentifier residueIdentifier) {
     return residueToSymbol.containsKey(residueIdentifier);
-  }
-
-  @Override
-  public final int getRealSymbolIndex(final DotBracketSymbol symbol) {
-    return symbolToResidue.get(symbol).getResidueNumber();
-  }
-
-  @Override
-  public final List<? extends CombinedStrand> combineStrands() {
-    final List<CombinedStrand> result = new ArrayList<>();
-    for (final CombinedStrand combinedStrand : super.combineStrands()) {
-      result.add(new CombinedStrandFromPdb(combinedStrand.getStrands(), symbolToResidue));
-    }
-    return result;
   }
 
   @Override
@@ -229,11 +215,33 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     }
   }
 
+  @Override
+  public final List<? extends CombinedStrand> combineStrands() {
+    final List<CombinedStrand> result = new ArrayList<>();
+    for (final CombinedStrand combinedStrand : super.combineStrands()) {
+      result.add(new CombinedStrandFromPdb(combinedStrand.getStrands(), symbolToResidue));
+    }
+    return result;
+  }
+
+  @Override
+  public final int getRealSymbolIndex(final DotBracketSymbol symbol) {
+    return symbolToResidue.get(symbol).getResidueNumber();
+  }
+
   public final Map<DotBracketSymbol, PdbResidueIdentifier> getSymbolToResidue() {
     return Collections.unmodifiableMap(symbolToResidue);
   }
 
   public final Map<PdbResidueIdentifier, DotBracketSymbol> getResidueToSymbol() {
     return Collections.unmodifiableMap(residueToSymbol);
+  }
+
+  public final BasePair basePair(final DotBracketSymbol symbol) {
+    if (symbol.isPairing()) {
+      return new BasePair(symbolToResidue.get(symbol), symbolToResidue.get(symbol.getPair()));
+    }
+    throw new IllegalArgumentException(
+        "Cannot create base pair from unpaired nucleotide: " + symbol);
   }
 }

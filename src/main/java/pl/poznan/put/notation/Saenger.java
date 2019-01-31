@@ -1,6 +1,7 @@
 package pl.poznan.put.notation;
 
 import java.util.Objects;
+import pl.poznan.put.structure.secondary.BasePair;
 
 public enum Saenger {
   I,
@@ -63,5 +64,22 @@ public enum Saenger {
 
   public static boolean isCanonical(final Saenger s) {
     return (s == Saenger.XIX) || (s == Saenger.XX) || (s == Saenger.XXVIII);
+  }
+
+  public static Saenger assumeCanonical(final BasePair basePair) {
+    final char l = Character.toUpperCase(basePair.getLeft().getResidueOneLetterName());
+    final char r = Character.toUpperCase(basePair.getRight().getResidueOneLetterName());
+    final String pair = String.format("%c%c", l, r);
+
+    if ("CG".equals(pair) || "GC".equals(pair)) {
+      return Saenger.XIX;
+    }
+    if ("AU".equals(pair) || "UA".equals(pair)) {
+      return Saenger.XX;
+    }
+    if ("GU".equals(pair) || "UG".equals(pair)) {
+      return Saenger.XXVIII;
+    }
+    return Saenger.UNKNOWN;
   }
 }

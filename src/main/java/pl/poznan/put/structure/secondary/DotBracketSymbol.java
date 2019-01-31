@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializable {
+  private static final long serialVersionUID = 362493908870317368L;
+
   private static final List<Character> OPENING = new ArrayList<>();
   private static final List<Character> CLOSING = new ArrayList<>();
 
@@ -44,7 +46,7 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
     return DotBracketSymbol.CLOSING.contains(c);
   }
 
-  public static int getOrder(final char c) {
+  private static int getOrder(final char c) {
     if (DotBracketSymbol.isOpening(c)) {
       return DotBracketSymbol.OPENING.indexOf(c);
     }
@@ -64,27 +66,27 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
     return '.';
   }
 
-  public char getSequence() {
+  public final char getSequence() {
     return sequence;
   }
 
-  public char getStructure() {
+  public final char getStructure() {
     return structure;
   }
 
-  public int getIndex() {
+  public final int getIndex() {
     return index;
   }
 
-  public DotBracketSymbol getPrevious() {
+  public final DotBracketSymbol getPrevious() {
     return previous;
   }
 
-  public void setPrevious(final DotBracketSymbol previous) {
+  public final void setPrevious(final DotBracketSymbol previous) {
     this.previous = previous;
   }
 
-  public DotBracketSymbol getNext(final int count) {
+  public final DotBracketSymbol getNext(final int count) {
     DotBracketSymbol symbol = this;
     for (int i = 1; (i < count) && (symbol != null); i++) {
       symbol = symbol.next;
@@ -92,57 +94,57 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
     return symbol;
   }
 
-  public DotBracketSymbol getNext() {
+  public final DotBracketSymbol getNext() {
     return next;
   }
 
-  public void setNext(final DotBracketSymbol next) {
+  public final void setNext(final DotBracketSymbol next) {
     this.next = next;
   }
 
-  public DotBracketSymbol getPair() {
+  public final DotBracketSymbol getPair() {
     return pair;
   }
 
-  public void setPair(final DotBracketSymbol pair) {
+  public final void setPair(final DotBracketSymbol pair) {
     this.pair = pair;
   }
 
   // required to be named like this by Spring
-  public boolean getIsNonCanonical() {
+  public final boolean getIsNonCanonical() {
     return isNonCanonical;
   }
 
-  public void setNonCanonical(final boolean isNonCanonical) {
+  public final void setNonCanonical(final boolean isNonCanonical) {
     this.isNonCanonical = isNonCanonical;
   }
 
-  public boolean isMissing() {
+  public final boolean isMissing() {
     return structure == '-';
   }
 
-  public boolean isPairing() {
+  public final boolean isPairing() {
     return isOpening() || isClosing();
   }
 
-  public boolean isOpening() {
+  public final boolean isOpening() {
     return DotBracketSymbol.isOpening(structure);
   }
 
-  public boolean isClosing() {
+  public final boolean isClosing() {
     return DotBracketSymbol.isClosing(structure);
   }
 
-  public int getOrder() {
+  public final int getOrder() {
     return DotBracketSymbol.getOrder(structure);
   }
 
-  public char getMatchingBracket() {
+  public final char getMatchingBracket() {
     return DotBracketSymbol.getMatchingBracket(structure);
   }
 
   @Override
-  public int hashCode() {
+  public final int hashCode() {
     final int prime = 31;
     int result = 1;
     result = (prime * result) + index;
@@ -152,7 +154,7 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
   }
 
   @Override
-  public boolean equals(final Object o) {
+  public final boolean equals(final Object o) {
     if (this == o) {
       return true;
     }
@@ -167,12 +169,12 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
   }
 
   @Override
-  public String toString() {
+  public final String toString() {
     return index + " " + sequence + ' ' + structure;
   }
 
   @Override
-  public int compareTo(final DotBracketSymbol t) {
+  public final int compareTo(final DotBracketSymbol t) {
     if (t == null) {
       throw new NullPointerException();
     }

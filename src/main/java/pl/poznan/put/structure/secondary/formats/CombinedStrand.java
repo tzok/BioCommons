@@ -94,7 +94,7 @@ public class CombinedStrand implements DotBracketInterface {
     // collect all missing from beginning and ends of strands
     final Set<DotBracketSymbol> missingNonInternal =
         strands
-            .parallelStream()
+            .stream()
             .flatMap(
                 strand ->
                     Stream.concat(
