@@ -453,7 +453,11 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     final StringBuilder builder = new StringBuilder();
     builder.append("ATOM ");
     builder.append(serialNumber).append(' ');
-    builder.append(atomName).append(' ');
+    if (atomName.contains("'")) {
+      builder.append('"').append(atomName).append("\" ");
+    } else {
+      builder.append(atomName).append(' ');
+    }
     if (StringUtils.isNotBlank(alternateLocation)) {
       builder.append(alternateLocation).append(' ');
     } else {

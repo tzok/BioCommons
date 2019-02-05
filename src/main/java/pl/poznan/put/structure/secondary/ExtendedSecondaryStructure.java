@@ -165,7 +165,7 @@ public class ExtendedSecondaryStructure {
   }
 
   private final String sequence;
-  private final List<ClassifiedBasePair> basePairs;
+  private final Collection<ClassifiedBasePair> basePairs;
 
   @Override
   public final String toString() {
@@ -173,13 +173,10 @@ public class ExtendedSecondaryStructure {
     builder.append("seq ").append(sequence).append('\n');
 
     final Set<LeontisWesthof> set =
-        basePairs
-            .parallelStream()
-            .map(ClassifiedBasePair::getLeontisWesthof)
-            .collect(Collectors.toSet());
+        basePairs.stream().map(ClassifiedBasePair::getLeontisWesthof).collect(Collectors.toSet());
 
     for (final LeontisWesthof leontisWesthof : LeontisWesthof.values()) {
-      if (set.contains(leontisWesthof)) {
+      if ((leontisWesthof != LeontisWesthof.UNKNOWN) && set.contains(leontisWesthof)) {
         for (final DotBracket dotBracket : dotBracketFromBasePairs(leontisWesthof)) {
           builder
               .append(leontisWesthof.getShortName())
@@ -197,7 +194,8 @@ public class ExtendedSecondaryStructure {
     try {
       final List<ClassifiedBasePair> filteredBasePairs =
           basePairs
-              .parallelStream()
+              .stream()
+              .filter(cbp -> RNAInteractionType.BASE_BASE.equals(cbp.getInteractionType()))
               .filter(cbp -> leontisWesthof == cbp.getLeontisWesthof())
               .sorted(
                   Comparator.comparingInt(cbp -> cbp.getBasePair().getLeft().getResidueNumber()))
@@ -205,7 +203,7 @@ public class ExtendedSecondaryStructure {
 
       final Set<Integer> closingIndicesSet =
           filteredBasePairs
-              .parallelStream()
+              .stream()
               .map(
                   classifiedBasePair ->
                       classifiedBasePair.getBasePair().getRight().getResidueNumber())

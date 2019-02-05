@@ -3,7 +3,7 @@ package pl.poznan.put.structure.secondary;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.util.List;
+import java.util.Collection;
 import org.junit.Test;
 
 public class ExtendedSecondaryStructureTest {
@@ -25,7 +25,7 @@ public class ExtendedSecondaryStructureTest {
     final String sequence = secondaryStructure.getSequence();
     assertThat(sequence, is("ACGUACGUACGU"));
 
-    final List<ClassifiedBasePair> basePairs = secondaryStructure.getBasePairs();
+    final Collection<ClassifiedBasePair> basePairs = secondaryStructure.getBasePairs();
     assertThat(basePairs.size(), is(6));
   }
 
@@ -38,7 +38,7 @@ public class ExtendedSecondaryStructureTest {
     final String sequence = secondaryStructure.getSequence();
     assertThat(sequence, is("uAGGGUUAGGGUuAGGGUUAGGGU"));
 
-    final List<ClassifiedBasePair> basePairs = secondaryStructure.getBasePairs();
+    final Collection<ClassifiedBasePair> basePairs = secondaryStructure.getBasePairs();
     assertThat(basePairs.size(), is(12));
   }
 }

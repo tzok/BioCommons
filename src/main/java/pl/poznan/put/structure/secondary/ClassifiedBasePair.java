@@ -39,6 +39,17 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
     this.helixOrigin = helixOrigin;
   }
 
+  public static ClassifiedBasePair assumeCanonical(final BasePair pair) {
+    return new ClassifiedBasePair(
+        pair,
+        RNAInteractionType.BASE_BASE,
+        Saenger.assumeCanonical(pair),
+        LeontisWesthof.CWW,
+        BPh.UNKNOWN,
+        BR.UNKNOWN,
+        HelixOrigin.UNKNOWN);
+  }
+
   public final BasePair getBasePair() {
     return basePair;
   }
@@ -113,6 +124,11 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
   }
 
   @Override
+  public int hashCode() {
+    return Objects.hash(basePair, interactionType, saenger, leontisWesthof, bph, br);
+  }
+
+  @Override
   public boolean equals(final Object o) {
     if (this == o) {
       return true;
@@ -127,11 +143,6 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
         && (leontisWesthof == other.leontisWesthof)
         && (bph == other.bph)
         && (br == other.br);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(basePair, interactionType, saenger, leontisWesthof, bph, br);
   }
 
   @Override

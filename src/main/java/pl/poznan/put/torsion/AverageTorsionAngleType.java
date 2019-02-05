@@ -156,8 +156,8 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
 
   @Override
   @Contract(pure = true)
-  public final @NotNull Collection<TorsionAngleType> getAngleTypes() {
-    return Collections.singleton(this);
+  public final @NotNull List<TorsionAngleType> getAngleTypes() {
+    return Collections.singletonList(this);
   }
 
   @Override
