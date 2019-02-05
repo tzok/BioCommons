@@ -63,9 +63,8 @@ public class PdbCompactFragment implements ResidueCollection {
   public final Set<TorsionAngleType> commonTorsionAngleTypes() {
     final Set<TorsionAngleType> set = new LinkedHashSet<>();
     mapResidueAngleValue
-        .entrySet()
+        .values()
         .stream()
-        .map(Map.Entry::getValue)
         .flatMap(Collection::stream)
         .map(TorsionAngleValue::getAngleType)
         .forEach(set::add);
