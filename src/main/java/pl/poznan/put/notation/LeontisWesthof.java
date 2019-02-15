@@ -1,7 +1,10 @@
 package pl.poznan.put.notation;
 
+import lombok.Getter;
+
 import java.util.Objects;
 
+@Getter
 public enum LeontisWesthof {
   CWW(Stericity.CIS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.WATSON_CRICK),
   CWH(Stericity.CIS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.HOOGSTEEN),
@@ -32,18 +35,6 @@ public enum LeontisWesthof {
     this.stericity = stericity;
     this.edge5 = edge5;
     this.edge3 = edge3;
-  }
-
-  public Stericity getStericity() {
-    return stericity;
-  }
-
-  public NucleobaseEdge getEdge5() {
-    return edge5;
-  }
-
-  public NucleobaseEdge getEdge3() {
-    return edge3;
   }
 
   public static LeontisWesthof fromString(final String str) {

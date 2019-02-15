@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.poznan.put.atom.AtomName;
@@ -385,6 +386,10 @@ public class PdbModel implements Serializable, ResidueCollection {
     }
 
     return filteredMissing;
+  }
+
+  public final List<PdbResidueIdentifier> residueIdentifiers() {
+    return residues.stream().map(PdbResidue::getResidueIdentifier).collect(Collectors.toList());
   }
 
   @Override

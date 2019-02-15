@@ -1,12 +1,15 @@
 package pl.poznan.put.atom;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Getter
+@Slf4j
 public enum AtomName {
   C(AtomType.C, "C"),
   C1(AtomType.C, "C1"),
@@ -237,16 +240,6 @@ public enum AtomName {
   SG2(AtomType.S, "SG2", "2SG"),
   UNKNOWN(AtomType.OTHER, "");
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AtomName.class);
-
-  private final AtomType type;
-  private final List<String> names;
-
-  AtomName(final AtomType type, final String... names) {
-    this.type = type;
-    this.names = Arrays.asList(names);
-  }
-
   private static final Map<String, AtomName> LOOKUP_TABLE = new HashMap<>();
 
   static {
@@ -257,13 +250,28 @@ public enum AtomName {
     }
   }
 
+  private final AtomType type;
+  private final List<String> names;
+
+  AtomName(final AtomType type, final String... names) {
+    this.type = type;
+    this.names = Arrays.asList(names);
+  }
+
+  /**
+   * Creates an instance from String. For null or unknown atom names, a special constant UNKNOWN is
+   * used.
+   *
+   * @param pdbName String representation of the atom name.
+   * @return An instance of this enum.
+   */
   public static AtomName fromString(final String pdbName) {
     if (pdbName == null) {
       return AtomName.UNKNOWN;
     }
 
     if (!AtomName.LOOKUP_TABLE.containsKey(pdbName)) {
-      AtomName.LOGGER.trace("Unknown atom name: {}", pdbName);
+      AtomName.log.trace("Unknown atom name: {}", pdbName);
       return AtomName.UNKNOWN;
     }
 
@@ -274,15 +282,11 @@ public enum AtomName {
     return names.contains(pdbName.trim());
   }
 
-  public AtomType getType() {
-    return type;
+  public String getName() {
+    return names.get(0);
   }
 
   public boolean isHeavy() {
     return type.isHeavy();
-  }
-
-  public String getName() {
-    return names.get(0);
   }
 }
