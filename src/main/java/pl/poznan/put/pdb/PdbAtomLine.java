@@ -1,25 +1,37 @@
 package pl.poznan.put.pdb;
 
-import java.io.Serializable;
-import java.util.Locale;
-import java.util.Objects;
-import javax.vecmath.Point3d;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.biojava.nbio.structure.Atom;
-import org.biojava.nbio.structure.AtomImpl;
-import org.biojava.nbio.structure.Element;
-import org.biojava.nbio.structure.Group;
-import org.biojava.nbio.structure.HetatomImpl;
-import org.biojava.nbio.structure.ResidueNumber;
+import org.biojava.nbio.structure.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.atom.AtomName;
 
+import javax.vecmath.Point3d;
+import java.io.Serializable;
+import java.util.Locale;
+import java.util.Objects;
+
 public class PdbAtomLine implements Serializable, ChainNumberICode {
+  public static final String CIF_LOOP =
+      "loop_\n"
+          + "_atom_site.group_PDB\n"
+          + "_atom_site.id\n"
+          + "_atom_site.auth_atom_id\n"
+          + "_atom_site.label_alt_id\n"
+          + "_atom_site.auth_comp_id\n"
+          + "_atom_site.auth_asym_id\n"
+          + "_atom_site.auth_seq_id\n"
+          + "_atom_site.pdbx_PDB_ins_code\n"
+          + "_atom_site.Cartn_x\n"
+          + "_atom_site.Cartn_y\n"
+          + "_atom_site.Cartn_z\n"
+          + "_atom_site.occupancy\n"
+          + "_atom_site.B_iso_or_equiv\n"
+          + "_atom_site.type_symbol\n"
+          + "_atom_site.pdbx_formal_charge";
   private static final long serialVersionUID = -6626889209014265608L;
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbAtomLine.class);
-
   // @formatter:off
   /*
      COLUMNS        DATA  TYPE    FIELD        DEFINITION
@@ -44,25 +56,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
       "ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
   private static final String FORMAT =
       "ATOM  %5d  %-3s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
-  public static final String CIF_LOOP =
-      "loop_\n"
-          + "_atom_site.group_PDB\n"
-          + "_atom_site.id\n"
-          + "_atom_site.auth_atom_id\n"
-          + "_atom_site.label_alt_id\n"
-          + "_atom_site.auth_comp_id\n"
-          + "_atom_site.auth_asym_id\n"
-          + "_atom_site.auth_seq_id\n"
-          + "_atom_site.pdbx_PDB_ins_code\n"
-          + "_atom_site.Cartn_x\n"
-          + "_atom_site.Cartn_y\n"
-          + "_atom_site.Cartn_z\n"
-          + "_atom_site.occupancy\n"
-          + "_atom_site.B_iso_or_equiv\n"
-          + "_atom_site.type_symbol\n"
-          + "_atom_site.pdbx_formal_charge";
   // @formatter:on
-
   private static final String RECORD_NAME = "ATOM";
   private final int serialNumber;
   private final String atomName;

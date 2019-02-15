@@ -1,15 +1,9 @@
 package pl.poznan.put.structure.secondary.pseudoknots;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import pl.poznan.put.structure.secondary.pseudoknots.dp.Clique;
+
+import java.util.*;
 
 /**
  * A map of conflicts between regions. A conflict is when one region starts/end in the middle of
@@ -65,7 +59,7 @@ public class ConflictMap {
     }
     if (secondBegin < firstBegin) {
       if (secondEnd < firstEnd) {
-          return firstBegin < secondEnd;
+        return firstBegin < secondEnd;
       }
     }
     return false;

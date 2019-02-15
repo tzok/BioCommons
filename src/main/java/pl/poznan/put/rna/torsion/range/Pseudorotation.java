@@ -42,19 +42,17 @@ public enum Pseudorotation implements Range {
         }
         return Pseudorotation.INVALID;
       };
-
-  public static RangeProvider getProvider() {
-    return Pseudorotation.PROVIDER;
-  }
-
   private final String displayName;
   private final Angle begin;
   private final Angle end;
-
   Pseudorotation(final String displayName, final double degrees) {
     this.displayName = displayName;
     begin = new Angle(degrees - 9.0, ValueType.DEGREES);
     end = new Angle(degrees + 9.0, ValueType.DEGREES);
+  }
+
+  public static RangeProvider getProvider() {
+    return Pseudorotation.PROVIDER;
   }
 
   @Override

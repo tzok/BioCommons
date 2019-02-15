@@ -1,12 +1,9 @@
 package pl.poznan.put.structure.secondary.pseudoknots.elimination;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
+
+import java.util.*;
 
 /**
  * Java implementation of Elimination Conflicts algorithm as presented in: Smit, S. et al., 2008.
@@ -14,6 +11,21 @@ import pl.poznan.put.structure.secondary.pseudoknots.Region;
  * RNA, 14, pp.410–416.
  */
 public class MaxConflicts extends AbstractRegionRemover {
+  public static List<Region> maxConflictRegions(
+      final ConflictMap conflictMap, final Iterable<Region> regions) {
+    final SortedMap<Integer, List<Region>> mapConflicsRegions = new TreeMap<>();
+
+    for (final Region region : regions) {
+      final int conflictCount = conflictMap.conflictsWith(region).size();
+      if (!mapConflicsRegions.containsKey(conflictCount)) {
+        mapConflicsRegions.put(conflictCount, new ArrayList<>());
+      }
+      mapConflicsRegions.get(conflictCount).add(region);
+    }
+
+    return mapConflicsRegions.get(mapConflicsRegions.lastKey());
+  }
+
   @Override
   public final Region selectRegionToRemove(final ConflictMap conflictMap) {
     final Set<Region> regions = conflictMap.getRegionsWithConflicts();
@@ -30,20 +42,5 @@ public class MaxConflicts extends AbstractRegionRemover {
 
     maxConflictsRegions.sort((t, t1) -> Integer.compare(t.getBegin(), t1.getBegin()));
     return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
-  }
-
-  public static List<Region> maxConflictRegions(
-      final ConflictMap conflictMap, final Iterable<Region> regions) {
-    final SortedMap<Integer, List<Region>> mapConflicsRegions = new TreeMap<>();
-
-    for (final Region region : regions) {
-      final int conflictCount = conflictMap.conflictsWith(region).size();
-      if (!mapConflicsRegions.containsKey(conflictCount)) {
-        mapConflicsRegions.put(conflictCount, new ArrayList<>());
-      }
-      mapConflicsRegions.get(conflictCount).add(region);
-    }
-
-    return mapConflicsRegions.get(mapConflicsRegions.lastKey());
   }
 }

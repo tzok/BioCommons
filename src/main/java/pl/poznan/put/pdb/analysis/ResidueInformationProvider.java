@@ -1,7 +1,8 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.util.List;
 import pl.poznan.put.torsion.TorsionAngleType;
+
+import java.util.List;
 
 public interface ResidueInformationProvider {
   MoleculeType getMoleculeType();

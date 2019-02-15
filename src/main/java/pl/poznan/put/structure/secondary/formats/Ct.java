@@ -1,14 +1,5 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +13,9 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
+import java.io.Serializable;
+import java.util.*;
+
 public class Ct implements Serializable {
   private static final Logger LOGGER = LoggerFactory.getLogger(Ct.class);
   private static final boolean FIX_LAST_ENTRY = true;
@@ -32,106 +26,6 @@ public class Ct implements Serializable {
     super();
     this.entries = new TreeSet<>(entries);
     validate();
-  }
-
-  /*
-   * Check if all pairs match.
-   */
-  private void validate() throws InvalidStructureException {
-    if (Ct.LOGGER.isTraceEnabled()) {
-      Ct.LOGGER.trace("CT to be validated:\n{}", this);
-    }
-
-    final Map<Integer, Integer> map = new HashMap<>();
-
-    for (final Entry e : entries) {
-      map.put(e.index, e.pair);
-    }
-
-    int previous = 0;
-
-    for (final Entry e : entries) {
-      if ((e.index - previous) != 1) {
-        throw new InvalidStructureException(
-            "Inconsistent numbering in CT format: previous=" + previous + ", current" + e.index);
-      }
-
-      previous = e.index;
-      final int pair = map.get(e.index);
-
-      if (pair != 0) {
-        if (!map.containsKey(pair)) {
-          throw new InvalidStructureException(
-              "Inconsistency in CT format: (" + e.index + " -> " + pair + ')');
-        }
-
-        if (map.get(pair) != e.index) {
-          throw new InvalidStructureException(
-              String.format(
-                  "Inconsistency in CT format: (%d -> %d) and (%d -> %d)",
-                  e.index, pair, pair, map.get(pair)));
-        }
-      }
-    }
-
-    // previous == maximum index
-
-    for (final Entry e : entries) {
-      if ((e.before < 0) || (e.before >= previous)) {
-        throw new InvalidStructureException(
-            "Inconsistency in CT format. Third column has invalid" + " value in entry: " + e);
-      }
-
-      if ((e.after == 1) || (e.after < 0) || (e.after > (previous + 1))) {
-        throw new InvalidStructureException(
-            "Inconsistency in CT format. Fourth column has " + "invalid value in entry: " + e);
-      }
-    }
-
-    /*
-     * Check if strands' ends are correct
-     */
-    boolean expectNewStrand = true;
-    Entry prevEntry = null;
-
-    for (final Entry e : entries) {
-      if (e.getBefore() != 0 ? expectNewStrand : !expectNewStrand) {
-        throw new InvalidStructureException(
-            "Inconsistency in CT format. The field 'before' is "
-                + "non-zero for the first entry in a strand: "
-                + e);
-      }
-
-      if ((prevEntry != null)
-          && (prevEntry.getAfter() != 0 ? expectNewStrand : !expectNewStrand)) {
-        throw new InvalidStructureException(
-            "Inconsistency in CT format. The field 'after' is "
-                + "non-zero for the last entry in a strand: "
-                + prevEntry);
-      }
-
-      expectNewStrand = e.getAfter() == 0;
-      prevEntry = e;
-    }
-
-    final Entry lastEntry = entries.last();
-
-    if (lastEntry.after != 0) {
-      if (Ct.FIX_LAST_ENTRY) {
-        entries.remove(lastEntry);
-        entries.add(
-            new Entry(
-                lastEntry.index,
-                lastEntry.pair,
-                lastEntry.before,
-                0,
-                lastEntry.original,
-                lastEntry.seq));
-      } else {
-        throw new InvalidStructureException(
-            "The field 'after' in the last entry is non-zero: " + lastEntry);
-      }
-    }
   }
 
   public static Ct fromString(final String data) throws InvalidStructureException {
@@ -276,6 +170,105 @@ public class Ct implements Serializable {
     Ct.printComments = printComments;
   }
 
+  /*
+   * Check if all pairs match.
+   */
+  private void validate() throws InvalidStructureException {
+    if (Ct.LOGGER.isTraceEnabled()) {
+      Ct.LOGGER.trace("CT to be validated:\n{}", this);
+    }
+
+    final Map<Integer, Integer> map = new HashMap<>();
+
+    for (final Entry e : entries) {
+      map.put(e.index, e.pair);
+    }
+
+    int previous = 0;
+
+    for (final Entry e : entries) {
+      if ((e.index - previous) != 1) {
+        throw new InvalidStructureException(
+            "Inconsistent numbering in CT format: previous=" + previous + ", current" + e.index);
+      }
+
+      previous = e.index;
+      final int pair = map.get(e.index);
+
+      if (pair != 0) {
+        if (!map.containsKey(pair)) {
+          throw new InvalidStructureException(
+              "Inconsistency in CT format: (" + e.index + " -> " + pair + ')');
+        }
+
+        if (map.get(pair) != e.index) {
+          throw new InvalidStructureException(
+              String.format(
+                  "Inconsistency in CT format: (%d -> %d) and (%d -> %d)",
+                  e.index, pair, pair, map.get(pair)));
+        }
+      }
+    }
+
+    // previous == maximum index
+
+    for (final Entry e : entries) {
+      if ((e.before < 0) || (e.before >= previous)) {
+        throw new InvalidStructureException(
+            "Inconsistency in CT format. Third column has invalid" + " value in entry: " + e);
+      }
+
+      if ((e.after == 1) || (e.after < 0) || (e.after > (previous + 1))) {
+        throw new InvalidStructureException(
+            "Inconsistency in CT format. Fourth column has " + "invalid value in entry: " + e);
+      }
+    }
+
+    /*
+     * Check if strands' ends are correct
+     */
+    boolean expectNewStrand = true;
+    Entry prevEntry = null;
+
+    for (final Entry e : entries) {
+      if ((e.getBefore() != 0) == expectNewStrand) {
+        throw new InvalidStructureException(
+            "Inconsistency in CT format. The field 'before' is "
+                + "non-zero for the first entry in a strand: "
+                + e);
+      }
+
+      if ((prevEntry != null) && ((prevEntry.getAfter() != 0) == expectNewStrand)) {
+        throw new InvalidStructureException(
+            "Inconsistency in CT format. The field 'after' is "
+                + "non-zero for the last entry in a strand: "
+                + prevEntry);
+      }
+
+      expectNewStrand = e.getAfter() == 0;
+      prevEntry = e;
+    }
+
+    final Entry lastEntry = entries.last();
+
+    if (lastEntry.after != 0) {
+      if (Ct.FIX_LAST_ENTRY) {
+        entries.remove(lastEntry);
+        entries.add(
+            new Entry(
+                lastEntry.index,
+                lastEntry.pair,
+                lastEntry.before,
+                0,
+                lastEntry.original,
+                lastEntry.seq));
+      } else {
+        throw new InvalidStructureException(
+            "The field 'after' in the last entry is non-zero: " + lastEntry);
+      }
+    }
+  }
+
   public final int getStrandCount() {
     int count = 0;
     for (final Entry entry : entries) {
@@ -316,6 +309,20 @@ public class Ct implements Serializable {
       entries.remove(o);
       entries.add(new Entry(o.index, 0, o.before, o.after, o.original, o.seq, o.comment));
     }
+  }
+
+  @Override
+  public final String toString() {
+    final StringBuilder builder = new StringBuilder();
+    builder.append(entries.size());
+    builder.append('\n');
+
+    for (final Entry e : entries) {
+      builder.append(e);
+      builder.append('\n');
+    }
+
+    return builder.toString();
   }
 
   @Data
@@ -381,19 +388,5 @@ public class Ct implements Serializable {
       }
       return builder.toString();
     }
-  }
-
-  @Override
-  public final String toString() {
-    final StringBuilder builder = new StringBuilder();
-    builder.append(entries.size());
-    builder.append('\n');
-
-    for (final Entry e : entries) {
-      builder.append(e);
-      builder.append('\n');
-    }
-
-    return builder.toString();
   }
 }

@@ -1,10 +1,11 @@
 package pl.poznan.put.structure.secondary.pseudoknots.dp;
 
+import pl.poznan.put.structure.secondary.pseudoknots.Region;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
 /**
  * A component of a single entry in the dynamic programming matrix representing one possible

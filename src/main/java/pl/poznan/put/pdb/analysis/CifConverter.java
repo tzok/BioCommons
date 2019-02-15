@@ -1,31 +1,19 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bidimap.TreeBidiMap;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbExpdtaLine;
-import pl.poznan.put.pdb.PdbModresLine;
-import pl.poznan.put.pdb.PdbParsingException;
-import pl.poznan.put.pdb.PdbRemark2Line;
-import pl.poznan.put.pdb.PdbRemark465Line;
+import pl.poznan.put.pdb.*;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.*;
 
 public final class CifConverter {
   private static final Logger LOGGER = LoggerFactory.getLogger(CifConverter.class);
@@ -46,6 +34,10 @@ public final class CifConverter {
     for (char c = '0'; c <= '9'; c++) {
       CifConverter.PRINTABLE_CHARS.add(Character.toString(c));
     }
+  }
+
+  private CifConverter() {
+    super();
   }
 
   public static ModelContainer convert(final File cifFile) throws IOException, PdbParsingException {
@@ -367,9 +359,5 @@ public final class CifConverter {
       chainMap.put(chainIdentifier, CifConverter.PRINTABLE_CHARS.get(chainMap.size()));
     }
     return chainMap.get(chainIdentifier);
-  }
-
-  private CifConverter() {
-    super();
   }
 }

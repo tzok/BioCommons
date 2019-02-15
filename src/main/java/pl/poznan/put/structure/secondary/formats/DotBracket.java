@@ -1,16 +1,5 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.TreeBidiMap;
 import org.apache.commons.lang3.tuple.Pair;
@@ -18,9 +7,47 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
+import java.io.Serializable;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class DotBracket implements DotBracketInterface, Serializable {
   private static final Logger LOGGER = LoggerFactory.getLogger(DotBracket.class);
   private static final long serialVersionUID = -517503434874402102L;
+  /*
+   * Regex:
+   * (>.+\r?\n)?([ACGUTRYNacgutryn]+)\r?\n([-.()\[\]{}<>A-Za-z]+)
+   *
+   * Groups:
+   *  1: strand name with leading '>' or null
+   *  2: sequence
+   *  3: structure
+   */
+  private static final Pattern DOTBRACKET_PATTERN =
+      Pattern.compile("(>.+\\r?\\n)?([ACGUTRYNacgutryn]+)\\r?\\n([-.()" + "\\[\\]{}<>A-Za-z]+)");
+  private static final Pattern SEQUENCE_PATTERN = Pattern.compile("[ACGUTRYNacgutryn]+");
+  private static final Pattern STRUCTURE_PATTERN = Pattern.compile("[-.()\\[\\]{}<>A-Za-z]+");
+  protected final List<Strand> strands = new ArrayList<>();
+  protected final List<DotBracketSymbol> symbols = new ArrayList<>();
+  protected final String sequence;
+  protected final String structure;
+  public DotBracket(final String sequence, final String structure)
+      throws InvalidStructureException {
+    super();
+    this.sequence = sequence;
+    this.structure = structure;
+
+    if (!DotBracket.SEQUENCE_PATTERN.matcher(sequence).matches()
+        || !DotBracket.STRUCTURE_PATTERN.matcher(structure).matches()) {
+      throw new InvalidStructureException("Invalid dot-bracket:\n" + sequence + '\n' + structure);
+    }
+
+    buildSymbolList();
+    analyzePairing();
+
+    strands.add(new StrandView("", this, 0, structure.length()));
+  }
 
   public static List<List<Strand>> candidatesToCombine(final List<Strand> strands) {
     final List<List<Strand>> result = new ArrayList<>();
@@ -44,40 +71,51 @@ public class DotBracket implements DotBracketInterface, Serializable {
     return result;
   }
 
-  /*
-   * Regex:
-   * (>.+\r?\n)?([ACGUTRYNacgutryn]+)\r?\n([-.()\[\]{}<>A-Za-z]+)
-   *
-   * Groups:
-   *  1: strand name with leading '>' or null
-   *  2: sequence
-   *  3: structure
-   */
-  private static final Pattern DOTBRACKET_PATTERN =
-      Pattern.compile("(>.+\\r?\\n)?([ACGUTRYNacgutryn]+)\\r?\\n([-.()" + "\\[\\]{}<>A-Za-z]+)");
-  private static final Pattern SEQUENCE_PATTERN = Pattern.compile("[ACGUTRYNacgutryn]+");
-  private static final Pattern STRUCTURE_PATTERN = Pattern.compile("[-.()\\[\\]{}<>A-Za-z]+");
+  public static DotBracket fromString(final String data) throws InvalidStructureException {
+    final Matcher matcher = DotBracket.DOTBRACKET_PATTERN.matcher(data);
 
-  protected final List<Strand> strands = new ArrayList<>();
-  protected final List<DotBracketSymbol> symbols = new ArrayList<>();
-  protected final String sequence;
-  protected final String structure;
+    final Collection<Pair<Integer, Integer>> pairBeginEnd = new ArrayList<>();
+    final List<String> strandNames = new ArrayList<>();
+    final StringBuilder sequenceBuilder = new StringBuilder(data.length());
+    final StringBuilder structureBuilder = new StringBuilder(data.length());
+    int begin = 0;
+    int end = 0;
 
-  public DotBracket(final String sequence, final String structure)
-      throws InvalidStructureException {
-    super();
-    this.sequence = sequence;
-    this.structure = structure;
+    while (matcher.find()) {
+      final String strandName =
+          (matcher.group(1) != null) ? matcher.group(1).substring(1).trim() : "";
+      final String sequence = matcher.group(2);
+      final String structure = matcher.group(3);
 
-    if (!DotBracket.SEQUENCE_PATTERN.matcher(sequence).matches()
-        || !DotBracket.STRUCTURE_PATTERN.matcher(structure).matches()) {
-      throw new InvalidStructureException("Invalid dot-bracket:\n" + sequence + '\n' + structure);
+      if (sequence.length() != structure.length()) {
+        throw new InvalidStructureException("Invalid dot-bracket string:\n" + data);
+      }
+
+      strandNames.add(strandName.replaceFirst("strand_", ""));
+      sequenceBuilder.append(sequence);
+      structureBuilder.append(structure);
+
+      end += sequence.length();
+      pairBeginEnd.add(Pair.of(begin, end));
+      begin = end;
     }
 
-    buildSymbolList();
-    analyzePairing();
+    if ((sequenceBuilder.length() == 0) || (structureBuilder.length() == 0)) {
+      throw new InvalidStructureException("Cannot parse dot-bracket:\n" + data);
+    }
 
-    strands.add(new StrandView("", this, 0, structure.length()));
+    final DotBracket dotBracket =
+        new DotBracket(sequenceBuilder.toString(), structureBuilder.toString());
+    dotBracket.strands.clear();
+
+    int index = 0;
+    for (final Pair<Integer, Integer> pair : pairBeginEnd) {
+      dotBracket.strands.add(
+          new StrandView(strandNames.get(index), dotBracket, pair.getLeft(), pair.getRight()));
+      index += 1;
+    }
+
+    return dotBracket;
   }
 
   private void buildSymbolList() {
@@ -149,53 +187,6 @@ public class DotBracket implements DotBracketInterface, Serializable {
 
       DotBracket.LOGGER.error("Unknown symbol in dot-bracket string: {}", str);
     }
-  }
-
-  public static DotBracket fromString(final String data) throws InvalidStructureException {
-    final Matcher matcher = DotBracket.DOTBRACKET_PATTERN.matcher(data);
-
-    final Collection<Pair<Integer, Integer>> pairBeginEnd = new ArrayList<>();
-    final List<String> strandNames = new ArrayList<>();
-    final StringBuilder sequenceBuilder = new StringBuilder(data.length());
-    final StringBuilder structureBuilder = new StringBuilder(data.length());
-    int begin = 0;
-    int end = 0;
-
-    while (matcher.find()) {
-      final String strandName =
-          (matcher.group(1) != null) ? matcher.group(1).substring(1).trim() : "";
-      final String sequence = matcher.group(2);
-      final String structure = matcher.group(3);
-
-      if (sequence.length() != structure.length()) {
-        throw new InvalidStructureException("Invalid dot-bracket string:\n" + data);
-      }
-
-      strandNames.add(strandName.replaceFirst("strand_", ""));
-      sequenceBuilder.append(sequence);
-      structureBuilder.append(structure);
-
-      end += sequence.length();
-      pairBeginEnd.add(Pair.of(begin, end));
-      begin = end;
-    }
-
-    if ((sequenceBuilder.length() == 0) || (structureBuilder.length() == 0)) {
-      throw new InvalidStructureException("Cannot parse dot-bracket:\n" + data);
-    }
-
-    final DotBracket dotBracket =
-        new DotBracket(sequenceBuilder.toString(), structureBuilder.toString());
-    dotBracket.strands.clear();
-
-    int index = 0;
-    for (final Pair<Integer, Integer> pair : pairBeginEnd) {
-      dotBracket.strands.add(
-          new StrandView(strandNames.get(index), dotBracket, pair.getLeft(), pair.getRight()));
-      index += 1;
-    }
-
-    return dotBracket;
   }
 
   @Override

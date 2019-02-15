@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class RNAInteractionType implements Serializable, Comparable<RNAInteractionType> {
-  private static final long serialVersionUID = -3447319886413641277L;
-
   public static final RNAInteractionType BASE_BASE =
       new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, true);
   public static final RNAInteractionType BASE_BASE_1H =
@@ -24,7 +22,7 @@ public class RNAInteractionType implements Serializable, Comparable<RNAInteracti
   public static final RNAInteractionType OTHER =
       new RNAInteractionType(
           RNAResidueComponentType.UNKNOWN, RNAResidueComponentType.UNKNOWN, "other");
-
+  private static final long serialVersionUID = -3447319886413641277L;
   private final RNAResidueComponentType left;
   private final RNAResidueComponentType right;
   private final boolean isPairing;
@@ -50,6 +48,20 @@ public class RNAInteractionType implements Serializable, Comparable<RNAInteracti
     this.right = right;
     isPairing = false;
     this.description = description;
+  }
+
+  private static int getNucleotideFragmentInternalValue(final RNAResidueComponentType type) {
+    switch (type) {
+      case BASE:
+        return 1;
+      case RIBOSE:
+        return 10;
+      case PHOSPHATE:
+        return 100;
+      case UNKNOWN:
+      default:
+        return 1000;
+    }
   }
 
   public RNAResidueComponentType getLeft() {
@@ -135,20 +147,6 @@ public class RNAInteractionType implements Serializable, Comparable<RNAInteracti
       value = -value;
     }
     return value;
-  }
-
-  private static int getNucleotideFragmentInternalValue(final RNAResidueComponentType type) {
-    switch (type) {
-      case BASE:
-        return 1;
-      case RIBOSE:
-        return 10;
-      case PHOSPHATE:
-        return 100;
-      case UNKNOWN:
-      default:
-        return 1000;
-    }
   }
 
   public RNAInteractionType invert() {

@@ -1,8 +1,9 @@
 package pl.poznan.put.structure.secondary.pseudoknots;
 
-import java.util.List;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
+
+import java.util.List;
 
 /** Interface for classes which find pseudoknots from secondary structures. */
 public interface PseudoknotFinder {

@@ -5,11 +5,9 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class PdbRemark2Line implements Serializable {
-  private static final long serialVersionUID = -4818750947185900609L;
-
   public static final String PROLOGUE =
       "REMARK   2                                                      " + "                ";
-
+  private static final long serialVersionUID = -4818750947185900609L;
   // @formatter:off
   // COLUMNS        DATA TYPE     FIELD          DEFINITION
   // --------------------------------------------------------------------------------

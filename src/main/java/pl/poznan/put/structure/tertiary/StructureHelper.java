@@ -1,10 +1,5 @@
 package pl.poznan.put.structure.tertiary;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
 import org.biojava.nbio.structure.Atom;
 import org.biojava.nbio.structure.Chain;
 import org.biojava.nbio.structure.Group;
@@ -12,7 +7,13 @@ import org.biojava.nbio.structure.Structure;
 import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.atom.AtomName;
 
+import java.util.*;
+
 public final class StructureHelper {
+  private StructureHelper() {
+    super();
+  }
+
   public static @NotNull Atom[] findAtoms(final Group residue, final AtomName... atomNames) {
     return Arrays.stream(atomNames)
         .map(atomName -> StructureHelper.findAtom(residue, atomName))
@@ -20,9 +21,7 @@ public final class StructureHelper {
   }
 
   public static Atom findAtom(final Group residue, final AtomName atomName) {
-    return residue
-        .getAtoms()
-        .stream()
+    return residue.getAtoms().stream()
         .filter(atom -> atomName.matchesName(atom.getName()))
         .findFirst()
         .orElseThrow(
@@ -33,9 +32,7 @@ public final class StructureHelper {
 
   public static @NotNull Atom[] findAllAtoms(final Structure structure, final AtomName atomName) {
     final List<Atom> result = new ArrayList<>();
-    structure
-        .getChains()
-        .stream()
+    structure.getChains().stream()
         .map(chain -> StructureHelper.findAllAtoms(chain, atomName))
         .map(Arrays::asList)
         .forEach(result::addAll);
@@ -43,9 +40,7 @@ public final class StructureHelper {
   }
 
   public static @NotNull Atom[] findAllAtoms(final Chain chain, final AtomName atomName) {
-    return chain
-        .getAtomGroups()
-        .stream()
+    return chain.getAtomGroups().stream()
         .map(group -> StructureHelper.findAtom(group, atomName))
         .filter(Objects::nonNull)
         .toArray(Atom[]::new);
@@ -56,7 +51,7 @@ public final class StructureHelper {
 
     for (final Group altloc : group.getAltLocs()) {
       for (final Atom atom : altloc.getAtoms()) {
-          atoms.add(atom);
+        atoms.add(atom);
       }
     }
 
@@ -70,9 +65,5 @@ public final class StructureHelper {
       }
     }
     return false;
-  }
-
-  private StructureHelper() {
-    super();
   }
 }

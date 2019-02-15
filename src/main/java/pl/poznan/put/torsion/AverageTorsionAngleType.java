@@ -1,12 +1,5 @@
 package pl.poznan.put.torsion;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +9,8 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.TorsionRange;
+
+import java.util.*;
 
 @EqualsAndHashCode(callSuper = true)
 public class AverageTorsionAngleType extends TorsionAngleType implements MasterTorsionAngleType {
@@ -29,6 +24,25 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     consideredAngles = Arrays.asList(masterTypes);
     displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
     exportName = AverageTorsionAngleType.toExportName(consideredAngles);
+  }
+
+  public AverageTorsionAngleType(
+      final MoleculeType moleculeType, final List<MasterTorsionAngleType> consideredAngles) {
+    super(moleculeType);
+    this.consideredAngles = new ArrayList<>(consideredAngles);
+    displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
+    exportName = AverageTorsionAngleType.toExportName(consideredAngles);
+  }
+
+  private AverageTorsionAngleType(
+      final MoleculeType moleculeType,
+      final List<MasterTorsionAngleType> consideredAngles,
+      final String displayName,
+      final String exportName) {
+    super(moleculeType);
+    this.consideredAngles = consideredAngles;
+    this.displayName = displayName;
+    this.exportName = exportName;
   }
 
   private static @NotNull String toDisplayName(
@@ -68,25 +82,6 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     }
 
     return builder.toString();
-  }
-
-  public AverageTorsionAngleType(
-      final MoleculeType moleculeType, final List<MasterTorsionAngleType> consideredAngles) {
-    super(moleculeType);
-    this.consideredAngles = new ArrayList<>(consideredAngles);
-    displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
-    exportName = AverageTorsionAngleType.toExportName(consideredAngles);
-  }
-
-  private AverageTorsionAngleType(
-      final MoleculeType moleculeType,
-      final List<MasterTorsionAngleType> consideredAngles,
-      final String displayName,
-      final String exportName) {
-    super(moleculeType);
-    this.consideredAngles = consideredAngles;
-    this.displayName = displayName;
-    this.exportName = exportName;
   }
 
   @Contract(pure = true)

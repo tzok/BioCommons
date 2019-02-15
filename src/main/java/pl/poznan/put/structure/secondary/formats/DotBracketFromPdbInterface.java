@@ -1,9 +1,10 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.util.List;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
+import java.util.List;
 
 public interface DotBracketFromPdbInterface extends DotBracketInterface {
   PdbResidueIdentifier getResidueIdentifier(final DotBracketSymbol symbol);

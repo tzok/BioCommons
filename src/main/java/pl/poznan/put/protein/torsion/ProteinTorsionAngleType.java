@@ -1,8 +1,5 @@
 package pl.poznan.put.protein.torsion;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AverageTorsionAngleType;
@@ -10,6 +7,10 @@ import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.TorsionRange;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
   PHI(Phi.getInstance()),

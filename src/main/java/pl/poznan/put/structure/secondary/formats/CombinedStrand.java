@@ -1,17 +1,11 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.EqualsAndHashCode;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @EqualsAndHashCode
 public class CombinedStrand implements DotBracketInterface {
@@ -93,8 +87,7 @@ public class CombinedStrand implements DotBracketInterface {
   public final List<DotBracketSymbol> getInternalMissing() {
     // collect all missing from beginning and ends of strands
     final Set<DotBracketSymbol> missingNonInternal =
-        strands
-            .stream()
+        strands.stream()
             .flatMap(
                 strand ->
                     Stream.concat(
@@ -103,8 +96,7 @@ public class CombinedStrand implements DotBracketInterface {
             .collect(Collectors.toSet());
 
     // get all missing symbols which are internal
-    return strands
-        .stream()
+    return strands.stream()
         .flatMap(strand -> strand.getSymbols().stream())
         .filter(dotBracketSymbol -> !missingNonInternal.contains(dotBracketSymbol))
         .filter(DotBracketSymbol::isMissing)
@@ -112,8 +104,7 @@ public class CombinedStrand implements DotBracketInterface {
   }
 
   public final int getPseudoknotOrder() {
-    return strands
-        .stream()
+    return strands.stream()
         .max(Comparator.comparingInt(Strand::getPseudoknotOrder))
         .map(Strand::getPseudoknotOrder)
         .orElse(0);

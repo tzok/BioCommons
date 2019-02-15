@@ -1,9 +1,10 @@
 package pl.poznan.put.pdb;
 
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import org.apache.commons.lang3.StringUtils;
 
 public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier>, Serializable {
   private static final long serialVersionUID = -573135765487167710L;
