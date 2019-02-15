@@ -65,9 +65,7 @@ public class ConflictMap {
     }
     if (secondBegin < firstBegin) {
       if (secondEnd < firstEnd) {
-        if (firstBegin < secondEnd) {
-          return true;
-        }
+          return firstBegin < secondEnd;
       }
     }
     return false;

@@ -39,7 +39,7 @@ public class Ct implements Serializable {
    */
   private void validate() throws InvalidStructureException {
     if (Ct.LOGGER.isTraceEnabled()) {
-      Ct.LOGGER.trace("CT to be validated:\n{}", toString());
+      Ct.LOGGER.trace("CT to be validated:\n{}", this);
     }
 
     final Map<Integer, Integer> map = new HashMap<>();
@@ -95,7 +95,7 @@ public class Ct implements Serializable {
     Entry prevEntry = null;
 
     for (final Entry e : entries) {
-      if (((e.getBefore() != 0) && expectNewStrand) || ((e.getBefore() == 0) && !expectNewStrand)) {
+      if (e.getBefore() != 0 ? expectNewStrand : !expectNewStrand) {
         throw new InvalidStructureException(
             "Inconsistency in CT format. The field 'before' is "
                 + "non-zero for the first entry in a strand: "
@@ -103,8 +103,7 @@ public class Ct implements Serializable {
       }
 
       if ((prevEntry != null)
-          && (((prevEntry.getAfter() != 0) && expectNewStrand)
-              || ((prevEntry.getAfter() == 0) && !expectNewStrand))) {
+          && (prevEntry.getAfter() != 0 ? expectNewStrand : !expectNewStrand)) {
         throw new InvalidStructureException(
             "Inconsistency in CT format. The field 'after' is "
                 + "non-zero for the last entry in a strand: "

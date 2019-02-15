@@ -143,13 +143,8 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     }
     final BasePair other = (BasePair) o;
     if (pair == null) {
-      if (other.pair != null) {
-        return false;
-      }
-    } else if (!Objects.equals(pair, other.pair)) {
-      return false;
-    }
-    return true;
+        return other.pair == null;
+    } else return Objects.equals(pair, other.pair);
   }
 
   @Override

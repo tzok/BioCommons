@@ -56,9 +56,7 @@ public final class StructureHelper {
 
     for (final Group altloc : group.getAltLocs()) {
       for (final Atom atom : altloc.getAtoms()) {
-        if (!atoms.contains(atom)) {
           atoms.add(atom);
-        }
       }
     }
 

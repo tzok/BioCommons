@@ -228,7 +228,7 @@ public class CifConsumer implements MMcifConsumer {
 
   @Override
   public void setStruct(final Struct struct) {
-    this.title = StringUtils.upperCase(struct.getTitle());
+      title = StringUtils.upperCase(struct.getTitle());
   }
 
   @Override
