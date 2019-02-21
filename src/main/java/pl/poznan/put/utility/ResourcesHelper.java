@@ -19,7 +19,7 @@ public final class ResourcesHelper {
    */
   public static String loadResource(final String resource) throws IOException {
     final ClassLoader loader = ResourcesHelper.class.getClassLoader();
-    try (InputStream stream = loader.getResourceAsStream(resource)) {
+    try (final InputStream stream = loader.getResourceAsStream(resource)) {
       if (stream == null) {
         throw new IllegalArgumentException(String.format("Missing resource: %s", resource));
       }

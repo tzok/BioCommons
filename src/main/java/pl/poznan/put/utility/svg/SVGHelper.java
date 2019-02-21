@@ -11,11 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import lombok.extern.slf4j.Slf4j;
@@ -138,6 +134,10 @@ public final class SVGHelper {
     } catch (final TranscoderException e) {
       throw new IOException("Failed to save SVG as image", e);
     }
+  }
+
+  public static SVGDocument merge(final SVGDocument... svgs) {
+    return SVGHelper.merge(Arrays.asList(svgs));
   }
 
   public static SVGDocument merge(final List<SVGDocument> svgs) {
