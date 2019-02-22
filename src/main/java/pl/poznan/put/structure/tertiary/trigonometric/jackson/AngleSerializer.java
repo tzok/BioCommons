@@ -3,8 +3,9 @@ package pl.poznan.put.structure.tertiary.trigonometric.jackson;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import java.io.IOException;
 import pl.poznan.put.circular.Angle;
+
+import java.io.IOException;
 
 public class AngleSerializer extends StdSerializer<Angle> {
   public AngleSerializer(final Class<Angle> t) {

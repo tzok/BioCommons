@@ -8,12 +8,12 @@ import java.util.List;
 public final class EmptyModelContainer implements ModelContainer {
   private static final ModelContainer INSTANCE = new EmptyModelContainer();
 
-  public static ModelContainer getInstance() {
-    return EmptyModelContainer.INSTANCE;
-  }
-
   private EmptyModelContainer() {
     super();
+  }
+
+  public static ModelContainer getInstance() {
+    return EmptyModelContainer.INSTANCE;
   }
 
   @Override

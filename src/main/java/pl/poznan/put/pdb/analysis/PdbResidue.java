@@ -1,13 +1,5 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import javax.annotation.Nonnull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
@@ -22,6 +14,10 @@ import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.torsion.TorsionAngleType;
+
+import javax.annotation.Nonnull;
+import java.io.Serializable;
+import java.util.*;
 
 public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNumberICode {
   private static final long serialVersionUID = 8274994774089305365L;
@@ -72,6 +68,26 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     final char oneLetterName = residueInformationProvider.getOneLetterName();
     this.identifier.setResidueOneLetterName(
         this.isModified ? Character.toLowerCase(oneLetterName) : oneLetterName);
+  }
+
+  public static PdbResidue fromBioJavaGroup(final Group group) {
+    final ResidueNumber residueNumberObject = group.getResidueNumber();
+    final String chainIdentifier = residueNumberObject.getChainName();
+    final int residueNumber = residueNumberObject.getSeqNum();
+    final String insertionCode =
+        (residueNumberObject.getInsCode() == null)
+            ? " "
+            : Character.toString(residueNumberObject.getInsCode());
+    final PdbResidueIdentifier residueIdentifier =
+        new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
+    final List<PdbAtomLine> atoms = new ArrayList<>();
+
+    for (final Atom atom : group.getAtoms()) {
+      atoms.add(PdbAtomLine.fromBioJavaAtom(atom));
+    }
+
+    final String residueName = group.getPDBName();
+    return new PdbResidue(residueIdentifier, residueName, atoms, false);
   }
 
   private List<AtomName> detectAtomNames() {
@@ -129,26 +145,6 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
 
   public final String getDetectedResidueName() {
     return residueInformationProvider.getDefaultPdbName();
-  }
-
-  public static PdbResidue fromBioJavaGroup(final Group group) {
-    final ResidueNumber residueNumberObject = group.getResidueNumber();
-    final String chainIdentifier = residueNumberObject.getChainName();
-    final int residueNumber = residueNumberObject.getSeqNum();
-    final String insertionCode =
-        (residueNumberObject.getInsCode() == null)
-            ? " "
-            : Character.toString(residueNumberObject.getInsCode());
-    final PdbResidueIdentifier residueIdentifier =
-        new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
-    final List<PdbAtomLine> atoms = new ArrayList<>();
-
-    for (final Atom atom : group.getAtoms()) {
-      atoms.add(PdbAtomLine.fromBioJavaAtom(atom));
-    }
-
-    final String residueName = group.getPDBName();
-    return new PdbResidue(residueIdentifier, residueName, atoms, false);
   }
 
   public final List<PdbAtomLine> getAtoms() {

@@ -1,8 +1,9 @@
 package pl.poznan.put.pdb.analysis;
 
+import pl.poznan.put.torsion.TorsionAngleType;
+
 import java.util.Collections;
 import java.util.List;
-import pl.poznan.put.torsion.TorsionAngleType;
 
 public class InvalidResidueInformationProvider implements ResidueInformationProvider {
   private final MoleculeType moleculeType;

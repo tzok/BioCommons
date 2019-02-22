@@ -1,16 +1,14 @@
 package pl.poznan.put.pdb;
 
-import java.io.Serializable;
-import java.util.Locale;
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PdbRemark465Line implements ChainNumberICode, Serializable {
-  private static final long serialVersionUID = -6551046160002695423L;
-  private static final Logger LOGGER = LoggerFactory.getLogger(PdbRemark465Line.class);
+import java.io.Serializable;
+import java.util.Locale;
+import java.util.Objects;
 
+public class PdbRemark465Line implements ChainNumberICode, Serializable {
   // @formatter:off
   public static final String PROLOGUE =
       "REMARK 465                                                                      \n"
@@ -20,8 +18,9 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
           + "REMARK 465 IDENTIFIER; SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)                \n"
           + "REMARK 465                                                                      \n"
           + "REMARK 465   M RES C SSSEQI                                                     ";
+  private static final long serialVersionUID = -6551046160002695423L;
+  private static final Logger LOGGER = LoggerFactory.getLogger(PdbRemark465Line.class);
   // @formatter:on
-
   // @formatter:off
   /*
      REMARK 465

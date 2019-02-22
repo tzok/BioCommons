@@ -1,12 +1,13 @@
 package pl.poznan.put.structure.secondary;
 
-import java.io.Serializable;
-import java.util.Objects;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 public class BasePair implements Serializable, Comparable<BasePair> {
   private static final long serialVersionUID = -8951633864787036880L;
@@ -143,13 +144,8 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     }
     final BasePair other = (BasePair) o;
     if (pair == null) {
-      if (other.pair != null) {
-        return false;
-      }
-    } else if (!Objects.equals(pair, other.pair)) {
-      return false;
-    }
-    return true;
+      return other.pair == null;
+    } else return Objects.equals(pair, other.pair);
   }
 
   @Override

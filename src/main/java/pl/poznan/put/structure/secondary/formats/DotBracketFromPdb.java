@@ -1,16 +1,5 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
@@ -19,6 +8,8 @@ import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
+import java.util.*;
 
 public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbInterface {
   private static final long serialVersionUID = -4415694977869681897L;
@@ -41,6 +32,21 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
     mapSymbolsAndResidues(model);
     splitStrands(model);
+  }
+
+  private static String updateMissingIndices(
+      final String structure, final ResidueCollection model) {
+    final List<PdbResidue> residues = model.getResidues();
+    final char[] dotBracket = structure.toCharArray();
+    assert dotBracket.length == residues.size();
+
+    for (int i = 0; i < dotBracket.length; i++) {
+      if (residues.get(i).isMissing()) {
+        dotBracket[i] = '-';
+      }
+    }
+
+    return String.valueOf(dotBracket);
   }
 
   private void markRepresentedNonCanonicals(final Iterable<ClassifiedBasePair> nonCanonical) {
@@ -67,21 +73,6 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
         }
       }
     }
-  }
-
-  private static String updateMissingIndices(
-      final String structure, final ResidueCollection model) {
-    final List<PdbResidue> residues = model.getResidues();
-    final char[] dotBracket = structure.toCharArray();
-    assert dotBracket.length == residues.size();
-
-    for (int i = 0; i < dotBracket.length; i++) {
-      if (residues.get(i).isMissing()) {
-        dotBracket[i] = '-';
-      }
-    }
-
-    return String.valueOf(dotBracket);
   }
 
   private void mapSymbolsAndResidues(final ResidueCollection model) {

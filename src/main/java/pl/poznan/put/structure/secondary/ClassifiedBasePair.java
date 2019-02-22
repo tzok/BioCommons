@@ -1,13 +1,14 @@
 package pl.poznan.put.structure.secondary;
 
-import java.io.Serializable;
-import java.util.Objects;
-import javax.annotation.Nonnull;
 import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.RNAInteractionType;
+
+import javax.annotation.Nonnull;
+import java.io.Serializable;
+import java.util.Objects;
 
 public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBasePair> {
   private static final long serialVersionUID = -7311037449944786616L;

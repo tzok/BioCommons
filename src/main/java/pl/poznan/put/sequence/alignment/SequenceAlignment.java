@@ -1,17 +1,13 @@
 package pl.poznan.put.sequence.alignment;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.Date;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import pl.poznan.put.interfaces.Exportable;
+
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.Date;
 
 @Data
 @Slf4j

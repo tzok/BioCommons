@@ -1,8 +1,9 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.util.List;
 import lombok.Data;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
+import java.util.List;
 
 @Data
 public class TerminalMissing {

@@ -1,7 +1,8 @@
 package pl.poznan.put.rna;
 
-import java.util.Arrays;
 import pl.poznan.put.atom.AtomName;
+
+import java.util.Arrays;
 
 public final class Phosphate extends NucleicAcidResidueComponent {
   private static final Phosphate INSTANCE = new Phosphate();

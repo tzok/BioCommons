@@ -1,13 +1,14 @@
 package pl.poznan.put.pdb.analysis;
 
+import org.biojava.nbio.structure.Chain;
+import org.biojava.nbio.structure.Group;
+
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import org.biojava.nbio.structure.Chain;
-import org.biojava.nbio.structure.Group;
 
 public class PdbChain implements Comparable<PdbChain>, Serializable {
   private static final long serialVersionUID = -954932883855490919L;

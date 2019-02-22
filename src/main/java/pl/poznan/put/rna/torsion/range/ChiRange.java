@@ -20,6 +20,17 @@ public enum ChiRange implements Range {
   INVALID("invalid", Double.NaN, Double.NaN);
 
   private static final MultiKeyMap<ChiRange, RangeDifference> DIFFERENCE_MAP = new MultiKeyMap<>();
+  private static final RangeProvider PROVIDER =
+      angle -> {
+        if (angle.isValid()) {
+          for (final ChiRange range : ChiRange.values()) {
+            if (angle.isBetween(range.begin, range.end)) {
+              return range;
+            }
+          }
+        }
+        return ChiRange.INVALID;
+      };
 
   static {
     ChiRange.DIFFERENCE_MAP.put(ChiRange.ANTI, ChiRange.ANTI, RangeDifference.EQUAL);
@@ -33,30 +44,17 @@ public enum ChiRange implements Range {
     ChiRange.DIFFERENCE_MAP.put(ChiRange.SYN, ChiRange.SYN, RangeDifference.EQUAL);
   }
 
-  private static final RangeProvider PROVIDER =
-      angle -> {
-        if (angle.isValid()) {
-          for (final ChiRange range : ChiRange.values()) {
-            if (angle.isBetween(range.begin, range.end)) {
-              return range;
-            }
-          }
-        }
-        return ChiRange.INVALID;
-      };
-
-  public static RangeProvider getProvider() {
-    return ChiRange.PROVIDER;
-  }
-
   private final String displayName;
   private final Angle begin;
   private final Angle end;
-
   ChiRange(final String displayName, final double begin, final double end) {
     this.displayName = displayName;
     this.begin = new Angle(begin, ValueType.DEGREES);
     this.end = new Angle(end, ValueType.DEGREES);
+  }
+
+  public static RangeProvider getProvider() {
+    return ChiRange.PROVIDER;
   }
 
   @Override

@@ -1,9 +1,5 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
@@ -12,6 +8,11 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.AtomType;
 import pl.poznan.put.protein.aminoacid.AminoAcidType;
 import pl.poznan.put.rna.base.NucleobaseType;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.LinkedHashSet;
 
 public final class ResidueTypeDetector {
   private static final Collection<ResidueInformationProvider> PROVIDERS = new LinkedHashSet<>();

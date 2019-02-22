@@ -14,10 +14,6 @@ public enum RangeDifference {
     this.value = value;
   }
 
-  public int getValue() {
-    return value;
-  }
-
   public static RangeDifference fromValue(final int value) {
     switch (value) {
       case 0:
@@ -31,5 +27,9 @@ public enum RangeDifference {
       default:
         return RangeDifference.INVALID;
     }
+  }
+
+  public int getValue() {
+    return value;
   }
 }

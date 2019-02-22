@@ -1,24 +1,13 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbExpdtaLine;
-import pl.poznan.put.pdb.PdbHeaderLine;
-import pl.poznan.put.pdb.PdbModresLine;
-import pl.poznan.put.pdb.PdbParsingException;
-import pl.poznan.put.pdb.PdbRemark2Line;
-import pl.poznan.put.pdb.PdbRemark465Line;
-import pl.poznan.put.pdb.PdbTitleLine;
+import pl.poznan.put.pdb.*;
+
+import java.util.*;
 
 public class PdbParser implements StructureParser {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbParser.class);
