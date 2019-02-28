@@ -1,30 +1,16 @@
 package pl.poznan.put.rna;
 
+import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.pdb.analysis.ResidueComponent;
+import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
+import pl.poznan.put.rna.torsion.*;
+import pl.poznan.put.torsion.TorsionAngleType;
+import pl.poznan.put.types.Quadruplet;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.pdb.analysis.ResidueComponent;
-import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
-import pl.poznan.put.rna.torsion.Alpha;
-import pl.poznan.put.rna.torsion.Beta;
-import pl.poznan.put.rna.torsion.Delta;
-import pl.poznan.put.rna.torsion.Epsilon;
-import pl.poznan.put.rna.torsion.Eta;
-import pl.poznan.put.rna.torsion.EtaPrim;
-import pl.poznan.put.rna.torsion.Gamma;
-import pl.poznan.put.rna.torsion.Nu0;
-import pl.poznan.put.rna.torsion.Nu1;
-import pl.poznan.put.rna.torsion.Nu2;
-import pl.poznan.put.rna.torsion.Nu3;
-import pl.poznan.put.rna.torsion.Nu4;
-import pl.poznan.put.rna.torsion.PseudophasePuckerType;
-import pl.poznan.put.rna.torsion.Theta;
-import pl.poznan.put.rna.torsion.ThetaPrim;
-import pl.poznan.put.rna.torsion.Zeta;
-import pl.poznan.put.torsion.TorsionAngleType;
-import pl.poznan.put.types.Quadruplet;
 
 public abstract class Base extends NucleicAcidResidueComponent
     implements ResidueInformationProvider {
@@ -50,6 +36,7 @@ public abstract class Base extends NucleicAcidResidueComponent
           return chiAtoms;
         }
       };
+
   protected final List<TorsionAngleType> torsionAngleTypes = new ArrayList<>();
   private final String longName;
   private final char oneLetterName;
