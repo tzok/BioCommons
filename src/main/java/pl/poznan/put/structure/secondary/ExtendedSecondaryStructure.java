@@ -17,6 +17,7 @@ import pl.poznan.put.structure.secondary.pseudoknots.elimination.MinGain;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Data
 @Slf4j
@@ -188,31 +189,29 @@ public class ExtendedSecondaryStructure {
                   Comparator.comparingInt(cbp -> cbp.getBasePair().getLeft().getResidueNumber()))
               .collect(Collectors.toList());
 
-      final Set<Integer> closingIndicesSet =
-          filteredBasePairs.stream()
-              .map(
-                  classifiedBasePair ->
-                      classifiedBasePair.getBasePair().getRight().getResidueNumber())
-              .collect(Collectors.toSet());
+      final List<DotBracket> result = new ArrayList<>();
 
-      final Collection<ClassifiedBasePair> secondLayerBasePairs = new ArrayList<>();
+      do {
+        final Set<ClassifiedBasePair> layer = new LinkedHashSet<>();
+        final Set<Integer> usedIndices = new HashSet<>();
 
-      for (final ClassifiedBasePair basePair : filteredBasePairs) {
-        final int openingIndex = basePair.getBasePair().getLeft().getResidueNumber();
+        for (final ClassifiedBasePair classifiedBasePair : filteredBasePairs) {
+          final BasePair basePair = classifiedBasePair.getBasePair();
+          final int left = basePair.getLeft().getResidueNumber();
+          final int right = basePair.getRight().getResidueNumber();
 
-        if (closingIndicesSet.contains(openingIndex)) {
-          secondLayerBasePairs.add(basePair);
-          closingIndicesSet.remove(basePair.getBasePair().getRight().getResidueNumber());
+          if (!usedIndices.contains(left) && !usedIndices.contains(right)) {
+            layer.add(classifiedBasePair);
+            usedIndices.add(left);
+            usedIndices.add(right);
+          }
         }
-      }
 
-      if (secondLayerBasePairs.isEmpty()) {
-        return Collections.singletonList(basePairsToDotBracket(filteredBasePairs));
-      }
+        result.add(basePairsToDotBracket(layer));
+        filteredBasePairs.removeAll(layer);
+      } while (!filteredBasePairs.isEmpty());
 
-      filteredBasePairs.removeAll(secondLayerBasePairs);
-      return Arrays.asList(
-          basePairsToDotBracket(filteredBasePairs), basePairsToDotBracket(secondLayerBasePairs));
+      return result;
     } catch (final InvalidStructureException e) {
       ExtendedSecondaryStructure.log.error(
           "Failed to generate dot-bracket from list of base pairs", e);
