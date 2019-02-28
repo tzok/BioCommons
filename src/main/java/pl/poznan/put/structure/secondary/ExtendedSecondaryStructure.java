@@ -1,16 +1,5 @@
 package pl.poznan.put.structure.secondary;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -23,16 +12,18 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.pdb.analysis.SimpleResidueCollection;
 import pl.poznan.put.rna.RNAInteractionType;
-import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.Converter;
-import pl.poznan.put.structure.secondary.formats.DotBracket;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
-import pl.poznan.put.structure.secondary.formats.LevelByLevelConverter;
+import pl.poznan.put.structure.secondary.formats.*;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.MinGain;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @Slf4j
 public class ExtendedSecondaryStructure {
+  private final String sequence;
+  private final Collection<ClassifiedBasePair> basePairs;
+
   /**
    * Creates instance of {@link ExtendedSecondaryStructure} by reading a set of lines in dot-bracket
    * notation. Each line begins with a Leontis-Westhof notation shortand (e.g. cWW, tSH, etc.), a
@@ -164,9 +155,6 @@ public class ExtendedSecondaryStructure {
     System.out.println(secondaryStructure);
   }
 
-  private final String sequence;
-  private final Collection<ClassifiedBasePair> basePairs;
-
   @Override
   public final String toString() {
     final StringBuilder builder = new StringBuilder();
@@ -193,8 +181,7 @@ public class ExtendedSecondaryStructure {
   private List<DotBracket> dotBracketFromBasePairs(final LeontisWesthof leontisWesthof) {
     try {
       final List<ClassifiedBasePair> filteredBasePairs =
-          basePairs
-              .stream()
+          basePairs.stream()
               .filter(cbp -> RNAInteractionType.BASE_BASE.equals(cbp.getInteractionType()))
               .filter(cbp -> leontisWesthof == cbp.getLeontisWesthof())
               .sorted(
@@ -202,8 +189,7 @@ public class ExtendedSecondaryStructure {
               .collect(Collectors.toList());
 
       final Set<Integer> closingIndicesSet =
-          filteredBasePairs
-              .stream()
+          filteredBasePairs.stream()
               .map(
                   classifiedBasePair ->
                       classifiedBasePair.getBasePair().getRight().getResidueNumber())

@@ -1,19 +1,13 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import lombok.Data;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
+
+import java.util.*;
 
 @Data
 public class PdbCompactFragment implements ResidueCollection {
@@ -62,10 +56,7 @@ public class PdbCompactFragment implements ResidueCollection {
 
   public final Set<TorsionAngleType> commonTorsionAngleTypes() {
     final Set<TorsionAngleType> set = new LinkedHashSet<>();
-    mapResidueAngleValue
-        .entrySet()
-        .stream()
-        .map(Map.Entry::getValue)
+    mapResidueAngleValue.values().stream()
         .flatMap(Collection::stream)
         .map(TorsionAngleValue::getAngleType)
         .forEach(set::add);

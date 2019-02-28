@@ -1,7 +1,8 @@
 package pl.poznan.put.rna;
 
-import java.util.Arrays;
 import pl.poznan.put.atom.AtomName;
+
+import java.util.Arrays;
 
 public final class DeoxyRibose extends Sugar {
   private static final DeoxyRibose INSTANCE = new DeoxyRibose();

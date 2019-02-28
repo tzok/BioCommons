@@ -1,9 +1,10 @@
 package pl.poznan.put.structure.secondary.pseudoknots;
 
+import pl.poznan.put.structure.secondary.formats.BpSeq;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import pl.poznan.put.structure.secondary.formats.BpSeq;
 
 /** A region is a collection of pairs (BPSEQ entries) which are consecutive in sequence. */
 public final class Region {

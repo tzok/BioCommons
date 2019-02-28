@@ -1,9 +1,10 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.util.Collections;
-import java.util.List;
 import lombok.Data;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
+
+import java.util.Collections;
+import java.util.List;
 
 @Data
 public class SimpleResidueCollection implements ResidueCollection {

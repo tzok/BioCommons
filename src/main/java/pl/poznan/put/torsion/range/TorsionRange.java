@@ -26,19 +26,17 @@ public enum TorsionRange implements Range {
         }
         return TorsionRange.INVALID;
       };
-
-  public static RangeProvider getProvider() {
-    return TorsionRange.PROVIDER;
-  }
-
   private final String displayName;
   private final Angle begin;
   private final Angle end;
-
   TorsionRange(final String displayName, final double begin, final double end) {
     this.displayName = displayName;
     this.begin = new Angle(begin, ValueType.DEGREES);
     this.end = new Angle(end, ValueType.DEGREES);
+  }
+
+  public static RangeProvider getProvider() {
+    return TorsionRange.PROVIDER;
   }
 
   /**

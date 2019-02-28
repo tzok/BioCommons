@@ -1,9 +1,10 @@
 package pl.poznan.put.protein;
 
-import java.util.Arrays;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
+
+import java.util.Arrays;
 
 public final class ProteinBackbone extends ResidueComponent {
   private static final ProteinBackbone INSTANCE = new ProteinBackbone();

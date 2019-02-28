@@ -1,17 +1,5 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +13,10 @@ import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
+import java.io.Serializable;
+import java.util.*;
+import java.util.regex.Pattern;
+
 public class BpSeq implements Serializable {
   private static final long serialVersionUID = 7463893480150381692L;
   private static final Pattern WHITESPACE = Pattern.compile("\\s+");
@@ -36,50 +28,6 @@ public class BpSeq implements Serializable {
     super();
     this.entries = new TreeSet<>(entries);
     validate();
-  }
-
-  /*
-   * Check if all pairs match.
-   */
-  private void validate() throws InvalidStructureException {
-    final Map<Integer, Integer> map = new HashMap<>();
-
-    for (final Entry e : entries) {
-      if (e.getIndex() == e.getPair()) {
-        throw new InvalidStructureException(
-            String.format(
-                "Invalid line in BPSEQ data, a residue cannot be " + "paired with itself! Line: %s",
-                e));
-      }
-
-      map.put(e.getIndex(), e.getPair());
-    }
-
-    int previous = 0;
-
-    for (final Entry e : entries) {
-      if ((e.getIndex() - previous) != 1) {
-        throw new InvalidStructureException(
-            String.format(
-                "Inconsistent numbering in BPSEQ format: previous=%d," + " current=%d",
-                previous, e.getIndex()));
-      }
-      previous = e.getIndex();
-
-      final int pair = map.get(e.getIndex());
-      if (pair != 0) {
-        if (!map.containsKey(pair)) {
-          throw new InvalidStructureException(
-              String.format("Inconsistency in BPSEQ format: (%d -> %d)", e.getIndex(), pair));
-        }
-        if (map.get(pair) != e.getIndex()) {
-          throw new InvalidStructureException(
-              String.format(
-                  "Inconsistency in BPSEQ format: (%d -> %d) and " + "(%d -> %d)",
-                  e.getIndex(), pair, pair, map.get(pair)));
-        }
-      }
-    }
   }
 
   public static BpSeq fromString(final String data) throws InvalidStructureException {
@@ -220,6 +168,50 @@ public class BpSeq implements Serializable {
     return entries;
   }
 
+  /*
+   * Check if all pairs match.
+   */
+  private void validate() throws InvalidStructureException {
+    final Map<Integer, Integer> map = new HashMap<>();
+
+    for (final Entry e : entries) {
+      if (e.getIndex() == e.getPair()) {
+        throw new InvalidStructureException(
+            String.format(
+                "Invalid line in BPSEQ data, a residue cannot be " + "paired with itself! Line: %s",
+                e));
+      }
+
+      map.put(e.getIndex(), e.getPair());
+    }
+
+    int previous = 0;
+
+    for (final Entry e : entries) {
+      if ((e.getIndex() - previous) != 1) {
+        throw new InvalidStructureException(
+            String.format(
+                "Inconsistent numbering in BPSEQ format: previous=%d," + " current=%d",
+                previous, e.getIndex()));
+      }
+      previous = e.getIndex();
+
+      final int pair = map.get(e.getIndex());
+      if (pair != 0) {
+        if (!map.containsKey(pair)) {
+          throw new InvalidStructureException(
+              String.format("Inconsistency in BPSEQ format: (%d -> %d)", e.getIndex(), pair));
+        }
+        if (map.get(pair) != e.getIndex()) {
+          throw new InvalidStructureException(
+              String.format(
+                  "Inconsistency in BPSEQ format: (%d -> %d) and " + "(%d -> %d)",
+                  e.getIndex(), pair, pair, map.get(pair)));
+        }
+      }
+    }
+  }
+
   public final SortedSet<Entry> getEntries() {
     return Collections.unmodifiableSortedSet(entries);
   }
@@ -284,6 +276,35 @@ public class BpSeq implements Serializable {
     return flag[0];
   }
 
+  @Override
+  public final boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if ((o == null) || (getClass() != o.getClass())) {
+      return false;
+    }
+    final BpSeq bpSeq = (BpSeq) o;
+    return CollectionUtils.isEqualCollection(entries, bpSeq.entries);
+  }
+
+  @Override
+  public final int hashCode() {
+    return Objects.hash(entries);
+  }
+
+  @Override
+  public final String toString() {
+    final StringBuilder builder = new StringBuilder(10 * entries.size());
+
+    for (final Entry e : entries) {
+      builder.append(e);
+      builder.append(System.lineSeparator());
+    }
+
+    return builder.toString();
+  }
+
   @Data
   public static class Entry implements Comparable<Entry>, Serializable {
     private static final long serialVersionUID = 9199473682103805007L;
@@ -340,34 +361,5 @@ public class BpSeq implements Serializable {
       builder.append(pair);
       return builder.toString();
     }
-  }
-
-  @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-    final BpSeq bpSeq = (BpSeq) o;
-    return CollectionUtils.isEqualCollection(entries, bpSeq.entries);
-  }
-
-  @Override
-  public final int hashCode() {
-    return Objects.hash(entries);
-  }
-
-  @Override
-  public final String toString() {
-    final StringBuilder builder = new StringBuilder(10 * entries.size());
-
-    for (final Entry e : entries) {
-      builder.append(e);
-      builder.append(System.lineSeparator());
-    }
-
-    return builder.toString();
   }
 }

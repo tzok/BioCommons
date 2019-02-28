@@ -1,13 +1,14 @@
 package pl.poznan.put.pdb.analysis;
 
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.io.FileUtils;
 
 /**
  * An implementation of {@link ModelContainer} which is created from mmCIF file and its possible

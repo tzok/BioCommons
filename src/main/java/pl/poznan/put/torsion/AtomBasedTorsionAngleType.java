@@ -1,6 +1,5 @@
 package pl.poznan.put.torsion;
 
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import pl.poznan.put.atom.AtomName;
@@ -8,6 +7,8 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.types.Quadruplet;
+
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

@@ -1,8 +1,9 @@
 package pl.poznan.put.structure.secondary.formats;
 
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
 import java.util.Comparator;
 import java.util.List;
-import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 public interface Strand {
   String getName();
@@ -46,8 +47,7 @@ public interface Strand {
   }
 
   default int getPseudoknotOrder() {
-    return getSymbols()
-        .stream()
+    return getSymbols().stream()
         .map(DotBracketSymbol::getOrder)
         .max(Comparator.naturalOrder())
         .orElse(0);

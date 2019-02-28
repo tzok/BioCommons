@@ -1,11 +1,7 @@
 package pl.poznan.put.pdb;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 
 public class PdbExpdtaLine implements Serializable {
   private static final long serialVersionUID = 6276886553884351623L;
