@@ -18,7 +18,7 @@ public class CifContainer implements ModelContainer {
   private final File cifFile;
   private final Map<File, BidiMap<String, String>> fileChainMap;
 
-  public CifContainer(final File cifFile, final Map<File, BidiMap<String, String>> fileChainMap) {
+  CifContainer(final File cifFile, final Map<File, BidiMap<String, String>> fileChainMap) {
     super();
     this.cifFile = cifFile;
     this.fileChainMap = new HashMap<>(fileChainMap);
@@ -42,7 +42,8 @@ public class CifContainer implements ModelContainer {
   @Override
   public final String getCifChain(final File pdbFile, final String pdbChain) {
     if (!fileChainMap.containsKey(pdbFile)) {
-      // TODO
+      throw new IllegalArgumentException(
+          "Failed to find PDBx/mmCIF chain name, missing data for file: " + pdbFile);
     }
     return fileChainMap.get(pdbFile).getKey(pdbChain);
   }
@@ -50,11 +51,18 @@ public class CifContainer implements ModelContainer {
   @Override
   public final String getPdbChain(final File pdbFile, final String cifChain) {
     if (!fileChainMap.containsKey(pdbFile)) {
-      // TODO
+      throw new IllegalArgumentException(
+          "Failed to find PDB chain name, missing data for file: " + pdbFile);
     }
     return fileChainMap.get(pdbFile).get(cifChain);
   }
 
+  /**
+   * This class is {@link AutoCloseable} and upon closing, all files (PDB and PDBx/mmCIF) will be
+   * deleted.
+   *
+   * @throws IOException When file removal could not be done.
+   */
   @Override
   public void close() throws IOException {
     FileUtils.forceDelete(cifFile);
