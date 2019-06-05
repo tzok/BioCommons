@@ -37,16 +37,6 @@ public class SVGHelperTest {
   }
 
   @Test
-  public void export() throws Exception {
-    final URI uri = ResourcesHelper.loadResourceUri("java.svg");
-    final SVGDocument svgDocument = SVGHelper.fromUri(uri);
-
-    for (final Format format : Format.values()) {
-      SVGHelper.export(svgDocument, format);
-    }
-  }
-
-  @Test
   public void merge() throws Exception {
     final SVGDocument document = SVGHelper.fromFile(ResourcesHelper.loadResourceFile("java.svg"));
     final SVGDocument merged = SVGHelper.merge(Arrays.asList(document, document));
