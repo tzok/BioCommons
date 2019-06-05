@@ -1,8 +1,9 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public abstract class AbstractStrand implements Strand {

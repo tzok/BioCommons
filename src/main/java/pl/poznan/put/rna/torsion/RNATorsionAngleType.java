@@ -1,9 +1,5 @@
 package pl.poznan.put.rna.torsion;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.rna.torsion.range.ChiRange;
@@ -14,6 +10,10 @@ import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.RangeProvider;
 import pl.poznan.put.torsion.range.TorsionRange;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public enum RNATorsionAngleType implements MasterTorsionAngleType {
   ALPHA(Alpha.getInstance()),
@@ -63,7 +63,7 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
   }
 
   @Override
-  public Collection<TorsionAngleType> getAngleTypes() {
+  public List<TorsionAngleType> getAngleTypes() {
     return Collections.unmodifiableList(angleTypes);
   }
 

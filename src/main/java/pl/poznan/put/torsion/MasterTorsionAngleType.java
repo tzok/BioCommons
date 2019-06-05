@@ -1,11 +1,12 @@
 package pl.poznan.put.torsion;
 
-import java.util.Collection;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.interfaces.DisplayableExportable;
 import pl.poznan.put.rna.torsion.Chi;
 import pl.poznan.put.rna.torsion.RNATorsionAngleType;
 import pl.poznan.put.torsion.range.Range;
+
+import java.util.List;
 
 /**
  * This is to gather under one interface every "master" torsion angle type. A {@link
@@ -15,7 +16,7 @@ import pl.poznan.put.torsion.range.Range;
  * @author tzok
  */
 public interface MasterTorsionAngleType extends DisplayableExportable {
-  Collection<TorsionAngleType> getAngleTypes();
+  List<TorsionAngleType> getAngleTypes();
 
   Range getRange(Angle angle);
 }

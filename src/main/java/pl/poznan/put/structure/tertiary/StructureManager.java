@@ -1,5 +1,15 @@
 package pl.poznan.put.structure.tertiary;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NonNls;
+import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.analysis.CifParser;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbParser;
+import pl.poznan.put.pdb.analysis.StructureParser;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -13,15 +23,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NonNls;
-import pl.poznan.put.pdb.PdbParsingException;
-import pl.poznan.put.pdb.analysis.CifParser;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.pdb.analysis.PdbParser;
-import pl.poznan.put.pdb.analysis.StructureParser;
 
 /**
  * A common manager of loaded PDB files shared between all classes.

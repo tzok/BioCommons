@@ -12,6 +12,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.PredicateUtils;
+import org.apache.commons.math3.geometry.euclidean.threed.Plane;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.biojava.nbio.structure.Atom;
 import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.ResidueNumber;
@@ -21,7 +23,14 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.rna.*;
+import pl.poznan.put.rna.base.NucleobaseType;
 import pl.poznan.put.torsion.TorsionAngleType;
+
+import javax.annotation.Nonnull;
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNumberICode {
   private static final long serialVersionUID = 8274994774089305365L;
@@ -72,6 +81,26 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     final char oneLetterName = residueInformationProvider.getOneLetterName();
     this.identifier.setResidueOneLetterName(
         this.isModified ? Character.toLowerCase(oneLetterName) : oneLetterName);
+  }
+
+  public static PdbResidue fromBioJavaGroup(final Group group) {
+    final ResidueNumber residueNumberObject = group.getResidueNumber();
+    final String chainIdentifier = residueNumberObject.getChainName();
+    final int residueNumber = residueNumberObject.getSeqNum();
+    final String insertionCode =
+        (residueNumberObject.getInsCode() == null)
+            ? " "
+            : Character.toString(residueNumberObject.getInsCode());
+    final PdbResidueIdentifier residueIdentifier =
+        new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
+    final List<PdbAtomLine> atoms = new ArrayList<>();
+
+    for (final Atom atom : group.getAtoms()) {
+      atoms.add(PdbAtomLine.fromBioJavaAtom(atom));
+    }
+
+    final String residueName = group.getPDBName();
+    return new PdbResidue(residueIdentifier, residueName, atoms, false);
   }
 
   private List<AtomName> detectAtomNames() {
@@ -129,26 +158,6 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
 
   public final String getDetectedResidueName() {
     return residueInformationProvider.getDefaultPdbName();
-  }
-
-  public static PdbResidue fromBioJavaGroup(final Group group) {
-    final ResidueNumber residueNumberObject = group.getResidueNumber();
-    final String chainIdentifier = residueNumberObject.getChainName();
-    final int residueNumber = residueNumberObject.getSeqNum();
-    final String insertionCode =
-        (residueNumberObject.getInsCode() == null)
-            ? " "
-            : Character.toString(residueNumberObject.getInsCode());
-    final PdbResidueIdentifier residueIdentifier =
-        new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
-    final List<PdbAtomLine> atoms = new ArrayList<>();
-
-    for (final Atom atom : group.getAtoms()) {
-      atoms.add(PdbAtomLine.fromBioJavaAtom(atom));
-    }
-
-    final String residueName = group.getPDBName();
-    return new PdbResidue(residueIdentifier, residueName, atoms, false);
   }
 
   public final List<PdbAtomLine> getAtoms() {
@@ -291,5 +300,42 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
 
   public final ResidueInformationProvider getResidueInformationProvider() {
     return residueInformationProvider;
+  }
+
+  public final List<PdbAtomLine> getComponentAtoms(final RNAResidueComponentType type) {
+    return residueInformationProvider.getAllMoleculeComponents().stream()
+        .filter(
+            component ->
+                (component instanceof NucleicAcidResidueComponent)
+                    && (((NucleicAcidResidueComponent) component).getType() == type))
+        .findFirst()
+        .map(
+            component ->
+                component.getAtoms().stream()
+                    .filter(this::hasAtom)
+                    .map(this::findAtom)
+                    .collect(Collectors.toList()))
+        .orElse(Collections.emptyList());
+  }
+
+  public Plane getNucleobasePlane() {
+    if (residueInformationProvider instanceof NucleobaseType) {
+      final Base base = ((NucleobaseType) residueInformationProvider).getBaseInstance();
+
+      if (base instanceof Purine) {
+        final Vector3D p1 = findAtom(AtomName.N9).toVector3D();
+        final Vector3D p2 = findAtom(AtomName.C2).toVector3D();
+        final Vector3D p3 = findAtom(AtomName.C6).toVector3D();
+        return new Plane(p1, p2, p3, 1.0e-3);
+      } else if (base instanceof Pyrimidine) {
+        final Vector3D p1 = findAtom(AtomName.N1).toVector3D();
+        final Vector3D p2 = findAtom(AtomName.N3).toVector3D();
+        final Vector3D p3 = findAtom(AtomName.C5).toVector3D();
+        return new Plane(p1, p2, p3, 1.0e-3);
+      }
+    }
+
+    throw new IllegalArgumentException(
+        "Cannot compute base plane for not a nucleotide: " + identifier);
   }
 }

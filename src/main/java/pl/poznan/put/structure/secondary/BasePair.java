@@ -1,12 +1,13 @@
 package pl.poznan.put.structure.secondary;
 
-import java.io.Serializable;
-import java.util.Objects;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 public class BasePair implements Serializable, Comparable<BasePair> {
   private static final long serialVersionUID = -8951633864787036880L;
@@ -110,20 +111,20 @@ public class BasePair implements Serializable, Comparable<BasePair> {
         && (n4o6 <= BasePair.CG_DISTANCE_N4_O6);
   }
 
-  public PdbResidueIdentifier getLeft() {
+  public final PdbResidueIdentifier getLeft() {
     return pair.getLeft();
   }
 
-  public PdbResidueIdentifier getRight() {
+  public final PdbResidueIdentifier getRight() {
     return pair.getRight();
   }
 
-  public BasePair invert() {
+  public final BasePair invert() {
     return new BasePair(pair.getRight(), pair.getLeft());
   }
 
   @Override
-  public int hashCode() {
+  public final int hashCode() {
     final int prime = 31;
     int result = 1;
     result = (prime * result) + ((pair == null) ? 0 : pair.hashCode());
@@ -131,7 +132,7 @@ public class BasePair implements Serializable, Comparable<BasePair> {
   }
 
   @Override
-  public boolean equals(final Object o) {
+  public final boolean equals(final Object o) {
     if (this == o) {
       return true;
     }
@@ -143,22 +144,17 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     }
     final BasePair other = (BasePair) o;
     if (pair == null) {
-      if (other.pair != null) {
-        return false;
-      }
-    } else if (!Objects.equals(pair, other.pair)) {
-      return false;
-    }
-    return true;
+      return other.pair == null;
+    } else return Objects.equals(pair, other.pair);
   }
 
   @Override
-  public String toString() {
+  public final String toString() {
     return pair.getLeft() + " - " + pair.getRight();
   }
 
   @Override
-  public int compareTo(final BasePair t) {
+  public final int compareTo(final BasePair t) {
     if (t == null) {
       throw new NullPointerException();
     }

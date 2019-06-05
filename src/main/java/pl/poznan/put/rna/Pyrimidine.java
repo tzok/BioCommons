@@ -1,9 +1,10 @@
 package pl.poznan.put.rna;
 
-import java.util.List;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.rna.torsion.Chi;
 import pl.poznan.put.types.Quadruplet;
+
+import java.util.List;
 
 public abstract class Pyrimidine extends Base {
   protected Pyrimidine(

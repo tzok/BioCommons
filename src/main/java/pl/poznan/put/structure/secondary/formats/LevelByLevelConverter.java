@@ -1,12 +1,8 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 import pl.poznan.put.structure.secondary.pseudoknots.PseudoknotFinder;
+
+import java.util.*;
 
 public class LevelByLevelConverter implements Converter {
   private static final char[] BRACKETS_OPENING = "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
@@ -28,20 +24,6 @@ public class LevelByLevelConverter implements Converter {
     this.maxSolutions = maxSolutions;
   }
 
-  @Override
-  public final DotBracket convert(final BpSeq bpSeq) throws InvalidStructureException {
-    List<State> states = new ArrayList<>();
-    states.add(new State(null, bpSeq, 0));
-
-    while (LevelByLevelConverter.isProcessingNeeded(states)) {
-      states = processStates(states);
-    }
-
-    Collections.sort(states);
-    final String structure = LevelByLevelConverter.traceback(states.get(0));
-    return new DotBracket(bpSeq.getSequence(), structure);
-  }
-
   private static boolean isProcessingNeeded(final Iterable<State> states) {
     for (final State state : states) {
       if (!state.isFinal()) {
@@ -49,22 +31,6 @@ public class LevelByLevelConverter implements Converter {
       }
     }
     return false;
-  }
-
-  private List<State> processStates(final Collection<State> states)
-      throws InvalidStructureException {
-    final List<State> nextStates = new ArrayList<>(states.size());
-    for (final State state : states) {
-      for (final BpSeq bpSeq : pkRemover.findPseudoknots(state.bpSeq)) {
-        final State nextState = new State(state, bpSeq, state.level + 1);
-        nextStates.add(nextState);
-
-        if (nextStates.size() > maxSolutions) {
-          return nextStates;
-        }
-      }
-    }
-    return nextStates;
   }
 
   private static String traceback(final State state) {
@@ -87,6 +53,36 @@ public class LevelByLevelConverter implements Converter {
     }
 
     return new String(structure);
+  }
+
+  @Override
+  public final DotBracket convert(final BpSeq bpSeq) throws InvalidStructureException {
+    List<State> states = new ArrayList<>();
+    states.add(new State(null, bpSeq, 0));
+
+    while (LevelByLevelConverter.isProcessingNeeded(states)) {
+      states = processStates(states);
+    }
+
+    Collections.sort(states);
+    final String structure = LevelByLevelConverter.traceback(states.get(0));
+    return new DotBracket(bpSeq.getSequence(), structure);
+  }
+
+  private List<State> processStates(final Collection<State> states)
+      throws InvalidStructureException {
+    final List<State> nextStates = new ArrayList<>(states.size());
+    for (final State state : states) {
+      for (final BpSeq bpSeq : pkRemover.findPseudoknots(state.bpSeq)) {
+        final State nextState = new State(state, bpSeq, state.level + 1);
+        nextStates.add(nextState);
+
+        if (nextStates.size() > maxSolutions) {
+          return nextStates;
+        }
+      }
+    }
+    return nextStates;
   }
 
   private static final class State implements Comparable<State> {

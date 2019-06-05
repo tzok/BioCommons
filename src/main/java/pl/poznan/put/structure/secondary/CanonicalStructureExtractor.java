@@ -1,9 +1,6 @@
 package pl.poznan.put.structure.secondary;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
@@ -15,18 +12,29 @@ import pl.poznan.put.rna.RNAInteractionType;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
 public final class CanonicalStructureExtractor {
   private CanonicalStructureExtractor() {
     super();
     // empty constructor
   }
 
+  public static BpSeq bpSeq(final ResidueCollection residueCollection)
+      throws InvalidStructureException {
+    final Collection<ClassifiedBasePair> basePairs = basePairs(residueCollection);
+    return BpSeq.fromResidueCollection(residueCollection, basePairs);
+  }
+
   /*
    * This is just a simple implementation. For a robust solution, see RNApdbee
    * http://rnapdbee.cs.put.poznan.pl
    */
-  public static BpSeq getCanonicalSecondaryStructure(final ResidueCollection residueCollection)
-      throws InvalidStructureException {
+  public static @NotNull Collection<ClassifiedBasePair> basePairs(
+      final ResidueCollection residueCollection) {
     final List<PdbResidue> residues = residueCollection.getResidues();
     final Collection<ClassifiedBasePair> basePairs = new ArrayList<>();
     final Collection<PdbResidueIdentifier> paired = new HashSet<>();
@@ -59,7 +67,6 @@ public final class CanonicalStructureExtractor {
         }
       }
     }
-
-    return BpSeq.fromResidueCollection(residueCollection, basePairs);
+    return basePairs;
   }
 }

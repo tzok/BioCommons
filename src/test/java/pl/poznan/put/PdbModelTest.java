@@ -1,10 +1,5 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.*;
-
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.biojava.nbio.structure.Structure;
@@ -14,18 +9,32 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.pdb.analysis.CifParser;
-import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.pdb.analysis.PdbChain;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.pdb.analysis.PdbParser;
-import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.pdb.analysis.*;
 import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.utility.ResourcesHelper;
 
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
+
 public class PdbModelTest {
+  private static void assertBpSeqEquals(final String pdbString, final String bpSeqString)
+      throws PdbParsingException, InvalidStructureException {
+    final PdbParser parser = new PdbParser(false);
+    final List<PdbModel> models = parser.parse(pdbString);
+    final PdbModel model = models.get(0);
+
+    final BpSeq bpSeqFromModel = CanonicalStructureExtractor.bpSeq(model);
+    assertEquals(bpSeqString, bpSeqFromModel.toString());
+
+    final BpSeq bpSeqFromString = BpSeq.fromString(bpSeqString);
+    assertEquals(bpSeqFromString, bpSeqFromModel);
+  }
+
   @Test
   public final void testParsing() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
@@ -346,19 +355,6 @@ public class PdbModelTest {
     PdbModelTest.assertBpSeqEquals(pdb1EHZ, bpseq1EHZ);
     PdbModelTest.assertBpSeqEquals(pdb2Z74, bpseq2Z74);
     PdbModelTest.assertBpSeqEquals(pdb2MIY, bpseq2MIY);
-  }
-
-  private static void assertBpSeqEquals(final String pdbString, final String bpSeqString)
-      throws PdbParsingException, InvalidStructureException {
-    final PdbParser parser = new PdbParser(false);
-    final List<PdbModel> models = parser.parse(pdbString);
-    final PdbModel model = models.get(0);
-
-    final BpSeq bpSeqFromModel = CanonicalStructureExtractor.getCanonicalSecondaryStructure(model);
-    assertEquals(bpSeqString, bpSeqFromModel.toString());
-
-    final BpSeq bpSeqFromString = BpSeq.fromString(bpSeqString);
-    assertEquals(bpSeqFromString, bpSeqFromModel);
   }
 
   @Test

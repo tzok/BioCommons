@@ -1,11 +1,5 @@
 package pl.poznan.put.sequence.alignment;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.biojava.nbio.alignment.Alignments;
 import org.biojava.nbio.core.alignment.matrices.SimpleSubstitutionMatrix;
@@ -24,6 +18,9 @@ import org.biojava.nbio.core.sequence.template.AbstractSequence;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbCompactFragment;
 import pl.poznan.put.utility.ResourcesHelper;
+
+import java.io.IOException;
+import java.util.*;
 
 @Slf4j
 public final class SequenceAligner {

@@ -1,12 +1,9 @@
 package pl.poznan.put.structure.secondary.pseudoknots.elimination;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
+
+import java.util.*;
 
 /**
  * Java implementation of Elimination Gain algorithm as presented in: Smit, S. et al., 2008. From
@@ -14,25 +11,6 @@ import pl.poznan.put.structure.secondary.pseudoknots.Region;
  * 14, pp.410–416.
  */
 public class MinGain extends AbstractRegionRemover {
-  @Override
-  public final Region selectRegionToRemove(final ConflictMap conflictMap) {
-    final Set<Region> regions = conflictMap.getRegionsWithConflicts();
-
-    final List<Region> minGainRegions = MinGain.minGainRegions(conflictMap, regions);
-    if (minGainRegions.size() == 1) {
-      return minGainRegions.get(0);
-    }
-
-    final List<Region> maxConflictsRegions =
-        MaxConflicts.maxConflictRegions(conflictMap, minGainRegions);
-    if (maxConflictsRegions.size() == 1) {
-      return maxConflictsRegions.get(0);
-    }
-
-    maxConflictsRegions.sort((t, t1) -> Integer.compare(t.getBegin(), t1.getBegin()));
-    return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
-  }
-
   public static List<Region> minGainRegions(
       final ConflictMap conflictMap, final Iterable<Region> regions) {
     final SortedMap<Integer, List<Region>> mapGainRegions = new TreeMap<>();
@@ -52,5 +30,24 @@ public class MinGain extends AbstractRegionRemover {
     }
 
     return mapGainRegions.get(mapGainRegions.firstKey());
+  }
+
+  @Override
+  public final Region selectRegionToRemove(final ConflictMap conflictMap) {
+    final Set<Region> regions = conflictMap.getRegionsWithConflicts();
+
+    final List<Region> minGainRegions = MinGain.minGainRegions(conflictMap, regions);
+    if (minGainRegions.size() == 1) {
+      return minGainRegions.get(0);
+    }
+
+    final List<Region> maxConflictsRegions =
+        MaxConflicts.maxConflictRegions(conflictMap, minGainRegions);
+    if (maxConflictsRegions.size() == 1) {
+      return maxConflictsRegions.get(0);
+    }
+
+    maxConflictsRegions.sort((t, t1) -> Integer.compare(t.getBegin(), t1.getBegin()));
+    return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
   }
 }

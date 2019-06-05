@@ -1,9 +1,10 @@
 package pl.poznan.put.pdb;
 
+import lombok.Getter;
+
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
-import lombok.Getter;
 
 public final class PdbTitleLine implements Serializable {
   private static final long serialVersionUID = 6843804077423547537L;

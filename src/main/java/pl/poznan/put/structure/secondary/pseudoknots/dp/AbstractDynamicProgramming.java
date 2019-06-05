@@ -1,19 +1,13 @@
 package pl.poznan.put.structure.secondary.pseudoknots.dp;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import org.apache.commons.collections4.CollectionUtils;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.RegionRemover;
+
+import java.util.*;
 
 /**
  * Java implementation of OPT ALL algorithm as presented in: Smit, S. et al., 2008. From knotted to
@@ -137,6 +131,53 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     return map.get(map.lastKey());
   }
 
+  private static ConflictMap simplify(final List<Region> regions, final ConflictMap conflictMap) {
+    ConflictMap result = conflictMap;
+    final Collection<Region> toRemove = new ArrayList<>();
+    final Collection<Region> toAdd = new ArrayList<>();
+
+    do {
+      final List<Region> conflicted = new ArrayList<>(result.getRegionsWithConflicts());
+      toRemove.clear();
+      toAdd.clear();
+
+      for (int i = 0; i < conflicted.size(); i++) {
+        final Region ri = conflicted.get(i);
+        final int riBegin = ri.getBegin();
+        final int riEnd = ri.getEnd();
+
+        for (int j = i + 1; j < conflicted.size(); j++) {
+          final Region rj = conflicted.get(j);
+          final int rjBegin = rj.getBegin();
+          final int rjEnd = rj.getEnd();
+
+          final boolean b1 = (riBegin <= rjBegin) && (riEnd >= rjEnd);
+          final boolean b2 = (rjBegin <= riBegin) && (rjEnd >= riEnd);
+          if ((b1 || b2)
+              && CollectionUtils.isEqualCollection(
+                  result.conflictsWith(ri), result.conflictsWith(rj))) {
+            toRemove.add(ri);
+            toRemove.add(rj);
+            toAdd.add(Region.merge(ri, rj));
+            break;
+          }
+        }
+
+        if (!toRemove.isEmpty()) {
+          break;
+        }
+      }
+
+      if (!toRemove.isEmpty()) {
+        regions.removeAll(toRemove);
+        regions.addAll(toAdd);
+        result = new ConflictMap(regions);
+      }
+    } while (!toRemove.isEmpty());
+
+    return result;
+  }
+
   @Override
   public final List<BpSeq> findPseudoknots(final BpSeq bpSeq) throws InvalidStructureException {
     final List<Region> regions = Region.createRegions(bpSeq);
@@ -195,52 +236,5 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     }
 
     return bpSeqs;
-  }
-
-  private static ConflictMap simplify(final List<Region> regions, final ConflictMap conflictMap) {
-    ConflictMap result = conflictMap;
-    final Collection<Region> toRemove = new ArrayList<>();
-    final Collection<Region> toAdd = new ArrayList<>();
-
-    do {
-      final List<Region> conflicted = new ArrayList<>(result.getRegionsWithConflicts());
-      toRemove.clear();
-      toAdd.clear();
-
-      for (int i = 0; i < conflicted.size(); i++) {
-        final Region ri = conflicted.get(i);
-        final int riBegin = ri.getBegin();
-        final int riEnd = ri.getEnd();
-
-        for (int j = i + 1; j < conflicted.size(); j++) {
-          final Region rj = conflicted.get(j);
-          final int rjBegin = rj.getBegin();
-          final int rjEnd = rj.getEnd();
-
-          final boolean b1 = (riBegin <= rjBegin) && (riEnd >= rjEnd);
-          final boolean b2 = (rjBegin <= riBegin) && (rjEnd >= riEnd);
-          if ((b1 || b2)
-              && CollectionUtils.isEqualCollection(
-                  result.conflictsWith(ri), result.conflictsWith(rj))) {
-            toRemove.add(ri);
-            toRemove.add(rj);
-            toAdd.add(Region.merge(ri, rj));
-            break;
-          }
-        }
-
-        if (!toRemove.isEmpty()) {
-          break;
-        }
-      }
-
-      if (!toRemove.isEmpty()) {
-        regions.removeAll(toRemove);
-        regions.addAll(toAdd);
-        result = new ConflictMap(regions);
-      }
-    } while (!toRemove.isEmpty());
-
-    return result;
   }
 }

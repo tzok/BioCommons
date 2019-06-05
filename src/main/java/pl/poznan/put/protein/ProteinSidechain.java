@@ -1,22 +1,14 @@
 package pl.poznan.put.protein;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
-import pl.poznan.put.protein.torsion.Calpha;
-import pl.poznan.put.protein.torsion.Omega;
-import pl.poznan.put.protein.torsion.Phi;
-import pl.poznan.put.protein.torsion.ProteinChiType;
-import pl.poznan.put.protein.torsion.Psi;
+import pl.poznan.put.protein.torsion.*;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
+
+import java.util.*;
 
 public abstract class ProteinSidechain extends ResidueComponent
     implements ResidueInformationProvider {

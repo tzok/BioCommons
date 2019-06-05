@@ -1,13 +1,14 @@
 package pl.poznan.put.structure.secondary;
 
-import java.io.Serializable;
-import java.util.Objects;
-import javax.annotation.Nonnull;
 import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.RNAInteractionType;
+
+import javax.annotation.Nonnull;
+import java.io.Serializable;
+import java.util.Objects;
 
 public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBasePair> {
   private static final long serialVersionUID = -7311037449944786616L;
@@ -37,6 +38,17 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
     this.bph = bph;
     this.br = br;
     this.helixOrigin = helixOrigin;
+  }
+
+  public static ClassifiedBasePair assumeCanonical(final BasePair pair) {
+    return new ClassifiedBasePair(
+        pair,
+        RNAInteractionType.BASE_BASE,
+        Saenger.assumeCanonical(pair),
+        LeontisWesthof.CWW,
+        BPh.UNKNOWN,
+        BR.UNKNOWN,
+        HelixOrigin.UNKNOWN);
   }
 
   public final BasePair getBasePair() {
@@ -113,6 +125,11 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
   }
 
   @Override
+  public int hashCode() {
+    return Objects.hash(basePair, interactionType, saenger, leontisWesthof, bph, br);
+  }
+
+  @Override
   public boolean equals(final Object o) {
     if (this == o) {
       return true;
@@ -127,11 +144,6 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
         && (leontisWesthof == other.leontisWesthof)
         && (bph == other.bph)
         && (br == other.br);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(basePair, interactionType, saenger, leontisWesthof, bph, br);
   }
 
   @Override

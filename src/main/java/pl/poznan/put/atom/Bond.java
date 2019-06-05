@@ -1,5 +1,6 @@
 package pl.poznan.put.atom;
 
+import lombok.Data;
 import org.apache.commons.collections4.map.MultiKeyMap;
 
 /*
@@ -35,6 +36,13 @@ public final class Bond {
     super();
   }
 
+  /**
+   * Return bond length between two atoms.
+   *
+   * @param left Type of first atom.
+   * @param right Type of second atom.
+   * @return An instance of {@link Length}.
+   */
   public static Length length(final AtomType left, final AtomType right) {
     Length length = Bond.MAP.get(left, right);
 
@@ -49,28 +57,10 @@ public final class Bond {
     return length;
   }
 
+  @Data
   public static class Length {
     private final double min;
     private final double max;
     private final double avg;
-
-    Length(final double min, final double max, final double avg) {
-      super();
-      this.min = min;
-      this.max = max;
-      this.avg = avg;
-    }
-
-    public double getMin() {
-      return min;
-    }
-
-    public double getMax() {
-      return max;
-    }
-
-    public double getAvg() {
-      return avg;
-    }
   }
 }

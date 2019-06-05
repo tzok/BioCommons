@@ -1,7 +1,9 @@
 package pl.poznan.put.notation;
 
-import java.util.Objects;
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
+@Getter
 public enum LeontisWesthof {
   CWW(Stericity.CIS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.WATSON_CRICK),
   CWH(Stericity.CIS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.HOOGSTEEN),
@@ -34,78 +36,22 @@ public enum LeontisWesthof {
     this.edge3 = edge3;
   }
 
-  public Stericity getStericity() {
-    return stericity;
-  }
-
-  public NucleobaseEdge getEdge5() {
-    return edge5;
-  }
-
-  public NucleobaseEdge getEdge3() {
-    return edge3;
-  }
-
-  public static LeontisWesthof fromString(final String str) {
-    final String lc = str.toLowerCase();
-
-    if (Objects.equals("cww", lc)) {
-      return LeontisWesthof.CWW;
-    }
-    if (Objects.equals("cwh", lc)) {
-      return LeontisWesthof.CWH;
-    }
-    if (Objects.equals("cws", lc)) {
-      return LeontisWesthof.CWS;
-    }
-    if (Objects.equals("chw", lc)) {
-      return LeontisWesthof.CHW;
-    }
-    if (Objects.equals("chh", lc)) {
-      return LeontisWesthof.CHH;
-    }
-    if (Objects.equals("chs", lc)) {
-      return LeontisWesthof.CHS;
-    }
-    if (Objects.equals("csw", lc)) {
-      return LeontisWesthof.CSW;
-    }
-    if (Objects.equals("csh", lc)) {
-      return LeontisWesthof.CSH;
-    }
-    if (Objects.equals("css", lc)) {
-      return LeontisWesthof.CSS;
-    }
-    if (Objects.equals("tww", lc)) {
-      return LeontisWesthof.TWW;
-    }
-    if (Objects.equals("twh", lc)) {
-      return LeontisWesthof.TWH;
-    }
-    if (Objects.equals("tws", lc)) {
-      return LeontisWesthof.TWS;
-    }
-    if (Objects.equals("thw", lc)) {
-      return LeontisWesthof.THW;
-    }
-    if (Objects.equals("thh", lc)) {
-      return LeontisWesthof.THH;
-    }
-    if (Objects.equals("ths", lc)) {
-      return LeontisWesthof.THS;
-    }
-    if (Objects.equals("tsw", lc)) {
-      return LeontisWesthof.TSW;
-    }
-    if (Objects.equals("tsh", lc)) {
-      return LeontisWesthof.TSH;
-    }
-    if (Objects.equals("tss", lc)) {
-      return LeontisWesthof.TSS;
+  public static LeontisWesthof fromString(final CharSequence input) {
+    for (final LeontisWesthof leontisWesthof : LeontisWesthof.values()) {
+      if (StringUtils.equalsIgnoreCase(leontisWesthof.name(), input)) {
+        return leontisWesthof;
+      }
     }
     return LeontisWesthof.UNKNOWN;
   }
 
+  /**
+   * This is not a "real" enum's ordinal, but a numeric index of Leontis-Westhof pair as used by
+   * other tools.
+   *
+   * @param ordinal Value between 1-12.
+   * @return Enum value represented by the ordinal value.
+   */
   public static LeontisWesthof fromOrdinal(final int ordinal) {
     switch (ordinal) {
       case 1:
@@ -139,15 +85,15 @@ public enum LeontisWesthof {
 
   @Override
   public String toString() {
-    if (this == LeontisWesthof.UNKNOWN) {
-      return "n/a";
-    }
-
-    final char[] cs = name().toCharArray();
-
-    return String.valueOf(cs[1]) + '/' + cs[2] + ' ' + (cs[0] == 'C' ? "cis" : "trans");
+    return getShortName();
   }
 
+  /**
+   * Generates a three letter representation. "c" for cis, "t" for trans. Next, "W" for
+   * Watson-Crick, "H" for Hoogsteen and "S" for sugar.
+   *
+   * @return A three letter representation.
+   */
   public String getShortName() {
     if (this == LeontisWesthof.UNKNOWN) {
       return "n/a";
@@ -165,53 +111,27 @@ public enum LeontisWesthof {
 
     final char[] cs = name().toCharArray();
 
-    return (cs[0] == 'C' ? "cis " : "trans ")
-        + (cs[1] == 'W' ? "Watson-Crick" : cs[1] == 'H' ? "Hoogsteen" : "Sugar Edge")
-        + '/'
-        + (cs[2] == 'W' ? "Watson-Crick" : cs[2] == 'H' ? "Hoogsteen" : "Sugar Edge");
+    return String.format(
+        "%s%s/%s",
+        cs[0] == 'C' ? "cis " : "trans ",
+        cs[1] == 'W' ? "Watson-Crick" : cs[1] == 'H' ? "Hoogsteen" : "Sugar Edge",
+        cs[2] == 'W' ? "Watson-Crick" : cs[2] == 'H' ? "Hoogsteen" : "Sugar Edge");
   }
 
+  /**
+   * Inverts the base edges e.g. cHS becomes cSH. Stericity (i.e. cis or trans) stays as it was.
+   *
+   * @return An enum value.
+   */
   public LeontisWesthof invert() {
-    switch (this) {
-      case CWW:
-        return LeontisWesthof.CWW;
-      case CWH:
-        return LeontisWesthof.CHW;
-      case CWS:
-        return LeontisWesthof.CSW;
-      case CHW:
-        return LeontisWesthof.CWH;
-      case CHH:
-        return LeontisWesthof.CHH;
-      case CHS:
-        return LeontisWesthof.CSH;
-      case CSW:
-        return LeontisWesthof.CWS;
-      case CSH:
-        return LeontisWesthof.CHS;
-      case CSS:
-        return LeontisWesthof.CSS;
-      case TWW:
-        return LeontisWesthof.TWW;
-      case TWH:
-        return LeontisWesthof.THW;
-      case TWS:
-        return LeontisWesthof.TSW;
-      case THW:
-        return LeontisWesthof.TWH;
-      case THH:
-        return LeontisWesthof.THH;
-      case THS:
-        return LeontisWesthof.TSH;
-      case TSW:
-        return LeontisWesthof.TWS;
-      case TSH:
-        return LeontisWesthof.THS;
-      case TSS:
-        return LeontisWesthof.TSS;
-      case UNKNOWN:
-      default:
-        return LeontisWesthof.UNKNOWN;
+    if (this == LeontisWesthof.UNKNOWN) {
+      return LeontisWesthof.UNKNOWN;
     }
+
+    final char[] chars = name().toCharArray();
+    final char tmp = chars[1];
+    chars[1] = chars[2];
+    chars[2] = tmp;
+    return LeontisWesthof.fromString(new String(chars));
   }
 }

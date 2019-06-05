@@ -7,17 +7,16 @@ import pl.poznan.put.utility.AngleFormat;
 
 @Data
 public class TorsionAngleValue implements DisplayableExportable {
-  public static TorsionAngleValue invalidInstance(final TorsionAngleType type) {
-    return new TorsionAngleValue(type, Angle.invalidInstance());
-  }
-
   private TorsionAngleType angleType;
   private Angle value;
-
   public TorsionAngleValue(final TorsionAngleType angleType, final Angle value) {
     super();
     this.angleType = angleType;
     this.value = value;
+  }
+
+  public static TorsionAngleValue invalidInstance(final TorsionAngleType type) {
+    return new TorsionAngleValue(type, Angle.invalidInstance());
   }
 
   @Override

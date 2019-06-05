@@ -1,5 +1,7 @@
 package pl.poznan.put.notation;
 
+import pl.poznan.put.structure.secondary.BasePair;
+
 import java.util.Objects;
 
 public enum Saenger {
@@ -42,6 +44,34 @@ public enum Saenger {
     return Saenger.UNKNOWN;
   }
 
+  public static Saenger fromOrdinal(final int ordinal) {
+    if ((ordinal >= 1) && (ordinal <= 28)) {
+      return Saenger.values()[ordinal - 1];
+    }
+    return Saenger.UNKNOWN;
+  }
+
+  public static boolean isCanonical(final Saenger s) {
+    return (s == Saenger.XIX) || (s == Saenger.XX) || (s == Saenger.XXVIII);
+  }
+
+  public static Saenger assumeCanonical(final BasePair basePair) {
+    final char l = Character.toUpperCase(basePair.getLeft().getResidueOneLetterName());
+    final char r = Character.toUpperCase(basePair.getRight().getResidueOneLetterName());
+    final String pair = String.format("%c%c", l, r);
+
+    if ("CG".equals(pair) || "GC".equals(pair)) {
+      return Saenger.XIX;
+    }
+    if ("AU".equals(pair) || "UA".equals(pair)) {
+      return Saenger.XX;
+    }
+    if ("GU".equals(pair) || "UG".equals(pair)) {
+      return Saenger.XXVIII;
+    }
+    return Saenger.UNKNOWN;
+  }
+
   @Override
   public String toString() {
     if (this == Saenger.UNKNOWN) {
@@ -50,18 +80,7 @@ public enum Saenger {
     return name();
   }
 
-  public static Saenger fromOrdinal(final int ordinal) {
-    if ((ordinal >= 1) && (ordinal <= 28)) {
-      return Saenger.values()[ordinal];
-    }
-    return Saenger.UNKNOWN;
-  }
-
   public boolean isCanonical() {
     return Saenger.isCanonical(this);
-  }
-
-  public static boolean isCanonical(final Saenger s) {
-    return (s == Saenger.XIX) || (s == Saenger.XX) || (s == Saenger.XXVIII);
   }
 }
