@@ -6,8 +6,10 @@ import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
+import pl.poznan.put.pdb.analysis.SimpleResidueCollection;
 import pl.poznan.put.rna.RNAInteractionType;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class CanonicalStructureExtractor {
   private CanonicalStructureExtractor() {
@@ -25,8 +28,14 @@ public final class CanonicalStructureExtractor {
 
   public static BpSeq bpSeq(final ResidueCollection residueCollection)
       throws InvalidStructureException {
-    final Collection<ClassifiedBasePair> basePairs = basePairs(residueCollection);
-    return BpSeq.fromResidueCollection(residueCollection, basePairs);
+    final List<PdbResidue> residues =
+        residueCollection.getResidues().stream()
+            .filter(pdbResidue -> pdbResidue.getMoleculeType() == MoleculeType.RNA)
+            .collect(Collectors.toList());
+    final ResidueCollection collection = new SimpleResidueCollection(residues);
+    final Collection<ClassifiedBasePair> basePairs =
+        CanonicalStructureExtractor.basePairs(collection);
+    return BpSeq.fromResidueCollection(collection, basePairs);
   }
 
   /*
