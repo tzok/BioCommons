@@ -9,7 +9,17 @@ import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbInterface {
   private static final long serialVersionUID = -4415694977869681897L;
@@ -47,6 +57,21 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     }
 
     return String.valueOf(dotBracket);
+  }
+
+  private static void depthFirstSearch(
+      final Strand u,
+      final Map<Strand, Set<Strand>> graph,
+      final Set<Strand> visited,
+      final Set<Strand> component) {
+    visited.add(u);
+    component.add(u);
+
+    for (final Strand v : graph.getOrDefault(u, Collections.emptySet())) {
+      if (!visited.contains(v)) {
+        DotBracketFromPdb.depthFirstSearch(v, graph, visited, component);
+      }
+    }
   }
 
   private void markRepresentedNonCanonicals(final Iterable<ClassifiedBasePair> nonCanonical) {
@@ -146,43 +171,26 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
       }
     }
 
-    // now link in depth all the strands linked together even indirectly
-    final Map<Strand, Set<Strand>> solutionMap = new LinkedHashMap<>();
-    final Collection<Set<Strand>> strandClusters = new ArrayList<>();
+    // find all connected components
+    final Set<Strand> visited = new HashSet<>(strands.size());
+    final Collection<Set<Strand>> components = new ArrayList<>();
 
-    for (final Map.Entry<Strand, Set<Strand>> entry : strandMap.entrySet()) {
-      final Strand strand = entry.getKey();
-      final Set<Strand> linkedStrands = entry.getValue();
-
-      if (!solutionMap.containsKey(strand)) {
-        final Set<Strand> strandCluster = new LinkedHashSet<>();
-        solutionMap.put(strand, strandCluster);
-        strandClusters.add(strandCluster);
-      }
-
-      final Set<Strand> strandCluster = solutionMap.get(strand);
-      strandCluster.add(strand);
-
-      for (final Strand linkedStrand : linkedStrands) {
-        solutionMap.put(linkedStrand, strandCluster);
-        strandCluster.add(linkedStrand);
+    for (final Strand strand : strands) {
+      if (!visited.contains(strand)) {
+        final Set<Strand> component = new HashSet<>();
+        DotBracketFromPdb.depthFirstSearch(strand, strandMap, visited, component);
+        components.add(component);
       }
     }
 
     // prepare the final result
-    final List<CombinedStrandFromPdb> result = new ArrayList<>(strandClusters.size());
-    for (final Set<Strand> strandCluster : strandClusters) {
+    final List<CombinedStrandFromPdb> result = new ArrayList<>(components.size());
+    for (final Set<Strand> strandCluster : components) {
       final ArrayList<Strand> combinedStrands = new ArrayList<>(strandCluster);
       combinedStrands.sort(Comparator.comparingInt(strands::indexOf));
       result.add(new CombinedStrandFromPdb(combinedStrands, symbolToResidue));
     }
 
-    // add strands without inter-strand connections
-    for (final Strand strand : strands) {
-      if (!solutionMap.containsKey(strand)) {
-        result.add(new CombinedStrandFromPdb(Collections.singletonList(strand), symbolToResidue));
-      }
-    }
     return result;
   }
 
