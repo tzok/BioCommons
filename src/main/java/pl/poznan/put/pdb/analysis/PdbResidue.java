@@ -192,7 +192,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     return modifiedResidueName;
   }
 
-  public final Iterable<TorsionAngleType> getTorsionAngleTypes() {
+  public final List<TorsionAngleType> getTorsionAngleTypes() {
     return residueInformationProvider.getTorsionAngleTypes();
   }
 
