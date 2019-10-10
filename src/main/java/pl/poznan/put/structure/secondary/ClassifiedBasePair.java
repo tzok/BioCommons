@@ -124,6 +124,10 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
         || Objects.equals(interactionType.invert(), RNAInteractionType.BASE_RIBOSE);
   }
 
+  public final boolean is5to3() {
+    return basePair.is5to3();
+  }
+
   @Override
   public int hashCode() {
     return Objects.hash(basePair, interactionType, saenger, leontisWesthof, bph, br);

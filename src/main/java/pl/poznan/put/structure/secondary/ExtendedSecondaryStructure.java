@@ -24,6 +24,13 @@ public class ExtendedSecondaryStructure {
   private final String sequence;
   private final Collection<ClassifiedBasePair> basePairs;
 
+  public ExtendedSecondaryStructure(
+      final String sequence, final Collection<ClassifiedBasePair> basePairs) {
+    this.sequence = sequence;
+    this.basePairs =
+        basePairs.stream().filter(ClassifiedBasePair::is5to3).collect(Collectors.toSet());
+  }
+
   /**
    * Creates instance of {@link ExtendedSecondaryStructure} by reading a set of lines in dot-bracket
    * notation. Each line begins with a Leontis-Westhof notation shortand (e.g. cWW, tSH, etc.), a

@@ -123,6 +123,10 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     return new BasePair(pair.getRight(), pair.getLeft());
   }
 
+  public final boolean is5to3() {
+    return pair.getLeft().getResidueNumber() < pair.getRight().getResidueNumber();
+  }
+
   @Override
   public final int hashCode() {
     final int prime = 31;
