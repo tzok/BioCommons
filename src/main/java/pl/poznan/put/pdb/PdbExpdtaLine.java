@@ -65,10 +65,10 @@ public class PdbExpdtaLine implements Serializable {
     if (experimentalTechniques.isEmpty()) {
       builder.append(ExperimentalTechnique.UNKNOWN);
     } else {
-      builder.append(experimentalTechniques.get(0).getFullName());
+      builder.append(experimentalTechniques.get(0).getPdbName());
       for (int i = 1; i < experimentalTechniques.size(); i++) {
         builder.append("; ");
-        builder.append(experimentalTechniques.get(i).getFullName());
+        builder.append(experimentalTechniques.get(i).getPdbName());
       }
     }
     return String.format(Locale.US, PdbExpdtaLine.FORMAT, builder.toString());
