@@ -1,15 +1,24 @@
 package pl.poznan.put.pdb.analysis;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 @Data
+@Slf4j
 public class PdbCompactFragment implements ResidueCollection {
   private String name;
   private Map<PdbResidueIdentifier, List<TorsionAngleValue>> mapResidueAngleValue =

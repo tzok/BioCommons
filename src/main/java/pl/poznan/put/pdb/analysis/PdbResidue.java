@@ -1,13 +1,5 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import javax.annotation.Nonnull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
@@ -23,13 +15,22 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.rna.*;
+import pl.poznan.put.rna.Base;
+import pl.poznan.put.rna.NucleicAcidResidueComponent;
+import pl.poznan.put.rna.Purine;
+import pl.poznan.put.rna.Pyrimidine;
+import pl.poznan.put.rna.RNAResidueComponentType;
 import pl.poznan.put.rna.base.NucleobaseType;
 import pl.poznan.put.torsion.TorsionAngleType;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNumberICode {
@@ -192,7 +193,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     return modifiedResidueName;
   }
 
-  public final Iterable<TorsionAngleType> getTorsionAngleTypes() {
+  public final List<TorsionAngleType> getTorsionAngleTypes() {
     return residueInformationProvider.getTorsionAngleTypes();
   }
 
@@ -294,6 +295,15 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     for (final PdbAtomLine atom : atoms) {
       builder.append(atom);
       builder.append('\n');
+    }
+    return builder.toString();
+  }
+
+  public final String toCif() {
+    final StringBuilder builder = new StringBuilder();
+    builder.append(PdbAtomLine.CIF_LOOP).append('\n');
+    for (final PdbAtomLine atom : atoms) {
+      builder.append(atom.toCif()).append('\n');
     }
     return builder.toString();
   }

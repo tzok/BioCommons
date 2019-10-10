@@ -1,7 +1,5 @@
 package pl.poznan.put.pdb;
 
-import java.util.Objects;
-
 /**
  * Lists all experimental techniques a structure can be solved with (according to the PDB sources).
  */
@@ -21,22 +19,22 @@ public enum ExperimentalTechnique {
   X_RAY_DIFFRACTION("X-RAY DIFFRACTION"),
   UNKNOWN("UNKNOWN");
 
-  private final String fullName;
+  private final String pdbName;
 
-  ExperimentalTechnique(final String fullName) {
-    this.fullName = fullName;
+  ExperimentalTechnique(final String pdbName) {
+    this.pdbName = pdbName;
   }
 
   public static ExperimentalTechnique fromFullName(final String fullName) {
     for (final ExperimentalTechnique technique : ExperimentalTechnique.values()) {
-      if (Objects.equals(technique.fullName, fullName)) {
+      if (technique.pdbName.equalsIgnoreCase(fullName)) {
         return technique;
       }
     }
     return ExperimentalTechnique.UNKNOWN;
   }
 
-  public String getFullName() {
-    return fullName;
+  public String getPdbName() {
+    return pdbName;
   }
 }
