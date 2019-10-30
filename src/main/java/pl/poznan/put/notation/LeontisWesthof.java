@@ -2,6 +2,9 @@ package pl.poznan.put.notation;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NonNls;
+
+import java.util.Arrays;
 
 @Getter
 public enum LeontisWesthof {
@@ -37,12 +40,7 @@ public enum LeontisWesthof {
   }
 
   public static LeontisWesthof fromString(final CharSequence input) {
-    for (final LeontisWesthof leontisWesthof : LeontisWesthof.values()) {
-      if (StringUtils.equalsIgnoreCase(leontisWesthof.name(), input)) {
-        return leontisWesthof;
-      }
-    }
-    return LeontisWesthof.UNKNOWN;
+      return Arrays.stream(LeontisWesthof.values()).filter(leontisWesthof -> StringUtils.equalsIgnoreCase(leontisWesthof.name(), input)).findFirst().orElse(LeontisWesthof.UNKNOWN);
   }
 
   /**
@@ -83,6 +81,25 @@ public enum LeontisWesthof {
     }
   }
 
+  @NonNls
+  private static String edgeName(final char c) {
+    switch (Character.toLowerCase(c)) {
+      case 'c':
+        return "cis";
+      case 't':
+        return "trans";
+      case 'w':
+        return "Watson-Crick";
+      case 'h':
+        return "Hoogsteen";
+      case 's':
+        return "Sugar";
+      default:
+        throw new IllegalArgumentException(
+            String.format("Letter %s is not recognized in Leontis-Westhof notation", c));
+    }
+  }
+
   @Override
   public String toString() {
     return getShortName();
@@ -110,12 +127,11 @@ public enum LeontisWesthof {
     }
 
     final char[] cs = name().toCharArray();
-
     return String.format(
         "%s%s/%s",
-        cs[0] == 'C' ? "cis " : "trans ",
-        cs[1] == 'W' ? "Watson-Crick" : cs[1] == 'H' ? "Hoogsteen" : "Sugar Edge",
-        cs[2] == 'W' ? "Watson-Crick" : cs[2] == 'H' ? "Hoogsteen" : "Sugar Edge");
+        LeontisWesthof.edgeName(cs[0]),
+        LeontisWesthof.edgeName(cs[1]),
+        LeontisWesthof.edgeName(cs[2]));
   }
 
   /**

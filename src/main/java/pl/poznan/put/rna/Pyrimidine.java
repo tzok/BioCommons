@@ -17,7 +17,7 @@ public abstract class Pyrimidine extends Base {
   }
 
   @Override
-  public Quadruplet<AtomName> getChiAtoms() {
+  public final Quadruplet<AtomName> getChiAtoms() {
     return Chi.PYRIMIDINE_ATOMS;
   }
 }

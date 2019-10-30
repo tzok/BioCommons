@@ -2,7 +2,11 @@ package pl.poznan.put.protein.aminoacid;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.protein.ProteinSidechain;
-import pl.poznan.put.protein.torsion.*;
+import pl.poznan.put.protein.torsion.Chi1;
+import pl.poznan.put.protein.torsion.Chi2;
+import pl.poznan.put.protein.torsion.Chi3;
+import pl.poznan.put.protein.torsion.Chi4;
+import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
@@ -31,6 +35,10 @@ public final class Lysine extends ProteinSidechain {
         "Lysine",
         'K',
         "LYS");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.LYSINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.LYSINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI3, Chi3.LYSINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI4, Chi4.LYSINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
     torsionAngleTypes.add(Chi3.getInstance(getChiAtoms(ProteinChiType.CHI3)));
@@ -39,13 +47,5 @@ public final class Lysine extends ProteinSidechain {
 
   public static Lysine getInstance() {
     return Lysine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.LYSINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.LYSINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI3, Chi3.LYSINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI4, Chi4.LYSINE_ATOMS);
   }
 }

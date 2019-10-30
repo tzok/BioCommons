@@ -3,14 +3,60 @@ package pl.poznan.put.pdb.analysis;
 import org.apache.commons.lang3.StringUtils;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.io.mmcif.MMcifConsumer;
-import org.biojava.nbio.structure.io.mmcif.model.*;
+import org.biojava.nbio.structure.io.mmcif.model.AtomSite;
+import org.biojava.nbio.structure.io.mmcif.model.AtomSites;
+import org.biojava.nbio.structure.io.mmcif.model.AuditAuthor;
+import org.biojava.nbio.structure.io.mmcif.model.Cell;
+import org.biojava.nbio.structure.io.mmcif.model.ChemComp;
+import org.biojava.nbio.structure.io.mmcif.model.ChemCompAtom;
+import org.biojava.nbio.structure.io.mmcif.model.ChemCompBond;
+import org.biojava.nbio.structure.io.mmcif.model.ChemCompDescriptor;
+import org.biojava.nbio.structure.io.mmcif.model.DatabasePDBremark;
+import org.biojava.nbio.structure.io.mmcif.model.DatabasePDBrev;
+import org.biojava.nbio.structure.io.mmcif.model.DatabasePdbrevRecord;
+import org.biojava.nbio.structure.io.mmcif.model.Entity;
+import org.biojava.nbio.structure.io.mmcif.model.EntityPoly;
+import org.biojava.nbio.structure.io.mmcif.model.EntityPolySeq;
+import org.biojava.nbio.structure.io.mmcif.model.EntitySrcGen;
+import org.biojava.nbio.structure.io.mmcif.model.EntitySrcNat;
+import org.biojava.nbio.structure.io.mmcif.model.EntitySrcSyn;
+import org.biojava.nbio.structure.io.mmcif.model.Exptl;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxAuditRevisionHistory;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxChemCompDescriptor;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxChemCompIdentifier;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxDatabaseStatus;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxEntityNonPoly;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxNonPolyScheme;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxPolySeqScheme;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxStructAssembly;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxStructAssemblyGen;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxStructOperList;
+import org.biojava.nbio.structure.io.mmcif.model.Refine;
+import org.biojava.nbio.structure.io.mmcif.model.Struct;
+import org.biojava.nbio.structure.io.mmcif.model.StructAsym;
+import org.biojava.nbio.structure.io.mmcif.model.StructConn;
+import org.biojava.nbio.structure.io.mmcif.model.StructKeywords;
+import org.biojava.nbio.structure.io.mmcif.model.StructNcsOper;
+import org.biojava.nbio.structure.io.mmcif.model.StructRef;
+import org.biojava.nbio.structure.io.mmcif.model.StructRefSeq;
+import org.biojava.nbio.structure.io.mmcif.model.StructRefSeqDif;
+import org.biojava.nbio.structure.io.mmcif.model.StructSite;
+import org.biojava.nbio.structure.io.mmcif.model.StructSiteGen;
+import org.biojava.nbio.structure.io.mmcif.model.Symmetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
-import pl.poznan.put.pdb.*;
+import pl.poznan.put.pdb.ExperimentalTechnique;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbExpdtaLine;
+import pl.poznan.put.pdb.PdbHeaderLine;
+import pl.poznan.put.pdb.PdbModresLine;
+import pl.poznan.put.pdb.PdbRemark2Line;
+import pl.poznan.put.pdb.PdbRemark465Line;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
@@ -18,9 +64,18 @@ import javax.annotation.Nullable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public class CifConsumer implements MMcifConsumer {
+class CifConsumer implements MMcifConsumer {
   private static final Logger LOGGER = LoggerFactory.getLogger(CifConsumer.class);
 
   private static final String PDBX_STRUCT_MOD_RESIDUE = "_pdbx_struct_mod_residue"; // NON-NLS
@@ -45,26 +100,22 @@ public class CifConsumer implements MMcifConsumer {
   @Nullable private String classification;
   @Nullable private String idCode;
   @Nullable private String title;
-  private double resolution;
+  private double resolution = Double.NaN;
 
-  private FileParsingParameters parameters;
+  private FileParsingParameters parameters = new FileParsingParameters();
 
-  public CifConsumer(final FileParsingParameters parameters) {
+  private CifConsumer(final FileParsingParameters parameters) {
     super();
     this.parameters = parameters;
   }
 
-  public CifConsumer() {
+  CifConsumer() {
     super();
   }
 
   private static Map<String, String> convertToMap(
       final List<String> loopFields, final List<String> lineData) {
-    final Map<String, String> map = new HashMap<>();
-    for (int i = 0; i < loopFields.size(); i++) {
-      map.put(loopFields.get(i), lineData.get(i));
-    }
-    return map;
+    return IntStream.range(0, loopFields.size()).boxed().collect(Collectors.toMap(loopFields::get, lineData::get, (a, b) -> b));
   }
 
   private static double getDoubleWithDefaultNaN(final Map<String, String> map, final String key) {
@@ -186,7 +237,7 @@ public class CifConsumer implements MMcifConsumer {
   }
 
   @Override
-  public void setStruct(final Struct struct) {
+  public final void setStruct(final Struct struct) {
     title = StringUtils.upperCase(struct.getTitle());
   }
 
@@ -479,8 +530,8 @@ public class CifConsumer implements MMcifConsumer {
     }
   }
 
-  public final List<PdbModel> getModels() throws PdbParsingException {
-    final Date date = (depositionDate == null) ? new Date(0) : depositionDate;
+  public final List<PdbModel> getModels() {
+    final Date date = (depositionDate == null) ? new Date(0L) : depositionDate;
     final PdbHeaderLine headerLine = new PdbHeaderLine(classification, date, idCode);
 
     final List<ExperimentalTechnique> techniques =

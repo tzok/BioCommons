@@ -4,7 +4,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NonNls;
-import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
@@ -22,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -31,7 +31,7 @@ import java.util.zip.GZIPInputStream;
  */
 public final class StructureManager {
   private static final String ENCODING_UTF_8 = "UTF-8";
-  private static final List<StructureInfo> STRUCTURES = new ArrayList<>();
+  private static final Collection<StructureInfo> STRUCTURES = new ArrayList<>();
   private static final PdbParser PDB_PARSER = new PdbParser(false);
   private static final StructureParser CIF_PARSER = new CifParser();
 
@@ -40,22 +40,18 @@ public final class StructureManager {
   }
 
   public static List<PdbModel> getAllStructures() {
-    final List<PdbModel> result = new ArrayList<>();
-    for (final StructureInfo si : StructureManager.STRUCTURES) {
-      result.add(si.getStructure());
-    }
-    return result;
+    return StructureManager.STRUCTURES.stream()
+        .map(StructureInfo::getStructure)
+        .collect(Collectors.toList());
   }
 
   public static List<String> getAllNames() {
-    final List<String> result = new ArrayList<>();
-    for (final StructureInfo si : StructureManager.STRUCTURES) {
-      result.add(si.getName());
-    }
-    return result;
+    return StructureManager.STRUCTURES.stream()
+        .map(StructureInfo::getName)
+        .collect(Collectors.toList());
   }
 
-  public static List<String> getNames(final Iterable<PdbModel> structures) {
+  public static List<String> getNames(final Iterable<? extends PdbModel> structures) {
     final List<String> result = new ArrayList<>();
     for (final PdbModel model : structures) {
       result.add(StructureManager.getName(model));
@@ -96,8 +92,7 @@ public final class StructureManager {
    * @param file Path to the PDB file.
    * @return Structure object..
    */
-  public static List<PdbModel> loadStructure(final File file)
-      throws IOException, PdbParsingException {
+  public static List<PdbModel> loadStructure(final File file) throws IOException {
     final List<PdbModel> models = StructureManager.getModels(file);
     if (!models.isEmpty()) {
       return models;
@@ -125,13 +120,10 @@ public final class StructureManager {
   }
 
   public static List<PdbModel> getModels(final File file) {
-    final List<PdbModel> result = new ArrayList<>();
-    for (final StructureInfo si : StructureManager.STRUCTURES) {
-      if (Objects.equals(si.getPath(), file)) {
-        result.add(si.getStructure());
-      }
-    }
-    return result;
+    return StructureManager.STRUCTURES.stream()
+        .filter(si -> Objects.equals(si.getPath(), file))
+        .map(StructureInfo::getStructure)
+        .collect(Collectors.toList());
   }
 
   private static String readFile(final File file) throws IOException {
@@ -166,7 +158,7 @@ public final class StructureManager {
         leading++;
         order *= 10;
       }
-      format = "%s.%0" + leading + 'd';
+      format = String.format("%%s.%%0%dd", leading);
     }
 
     for (int i = 0; i < structures.size(); i++) {
@@ -204,20 +196,12 @@ public final class StructureManager {
     }
   }
 
-  public static List<PdbModel> loadStructure(final String pdbId)
-      throws IOException, PdbParsingException {
+  public static List<PdbModel> loadStructure(final String pdbId) throws IOException {
     if (pdbId.length() != 4) {
       throw new IllegalArgumentException("Invalid PDB id: " + pdbId);
     }
 
-    final String lowercase = pdbId.toLowerCase();
-    final String middle = lowercase.substring(1, 3);
-    final URL url =
-        new URL(
-            String.format(
-                "http://ftp.ebi.ac.uk/pub/databases/rcsb/pdb-remediated/data/structures/divided/pdb/%s/pdb%s.ent.gz",
-                middle, lowercase));
-
+    final URL url = new URL(String.format("http://files.rcsb.org/download/%s.pdb.gz", pdbId));
     final String pdbContent = StructureManager.unzipContent(IOUtils.toByteArray(url));
 
     final File pdbFile = File.createTempFile("bio-commons", ".pdb");
@@ -229,14 +213,10 @@ public final class StructureManager {
   }
 
   public static void remove(final File path) {
-    final Collection<StructureInfo> toRemove = new ArrayList<>();
-
-    for (int i = 0; i < StructureManager.STRUCTURES.size(); i++) {
-      final StructureInfo si = StructureManager.STRUCTURES.get(i);
-      if (Objects.equals(si.getPath(), path)) {
-        toRemove.add(si);
-      }
-    }
+    final Collection<StructureInfo> toRemove =
+        StructureManager.STRUCTURES.stream()
+            .filter(si -> Objects.equals(si.getPath(), path))
+            .collect(Collectors.toList());
 
     for (final StructureInfo si : toRemove) {
       StructureManager.STRUCTURES.remove(si);

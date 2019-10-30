@@ -31,17 +31,13 @@ public final class Phenylalanine extends ProteinSidechain {
         "Phenylalanine",
         'F',
         "PHE");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.PHENYLALANINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.PHENYLALANINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
   }
 
   public static Phenylalanine getInstance() {
     return Phenylalanine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.PHENYLALANINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.PHENYLALANINE_ATOMS);
   }
 }

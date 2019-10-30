@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbInterface {
   private static final long serialVersionUID = -4415694977869681897L;
@@ -30,14 +31,12 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
   public DotBracketFromPdb(
       final DotBracketInterface dotBracket,
       final PdbModel model,
-      final Iterable<ClassifiedBasePair> nonCanonical)
-      throws InvalidStructureException {
+      final Iterable<? extends ClassifiedBasePair> nonCanonical) {
     this(dotBracket.getSequence(), dotBracket.getStructure(), model);
     markRepresentedNonCanonicals(nonCanonical);
   }
 
-  public DotBracketFromPdb(final String sequence, final String structure, final PdbModel model)
-      throws InvalidStructureException {
+  private DotBracketFromPdb(final String sequence, final String structure, final PdbModel model) {
     super(sequence, DotBracketFromPdb.updateMissingIndices(structure, model));
 
     mapSymbolsAndResidues(model);
@@ -74,7 +73,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     }
   }
 
-  private void markRepresentedNonCanonicals(final Iterable<ClassifiedBasePair> nonCanonical) {
+  private void markRepresentedNonCanonicals(final Iterable<? extends ClassifiedBasePair> nonCanonical) {
     final Collection<BasePair> representedSet = new HashSet<>();
 
     for (final DotBracketSymbol symbol : symbols) {
@@ -142,7 +141,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
   @Override
   public final List<CombinedStrandFromPdb> combineStrands(
-      final List<ClassifiedBasePair> nonCanonicalPairs) {
+      final List<? extends ClassifiedBasePair> availableNonCanonical) {
     // map containing links between strands
     final Map<Strand, Set<Strand>> strandMap = new LinkedHashMap<>();
 
@@ -157,7 +156,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     }
 
     // link strands connected by non-canonical base pairs
-    for (final ClassifiedBasePair nonCanonicalPair : nonCanonicalPairs) {
+    for (final ClassifiedBasePair nonCanonicalPair : availableNonCanonical) {
       final DotBracketSymbol leftSymbol =
           residueToSymbol.get(nonCanonicalPair.getBasePair().getLeft());
       final DotBracketSymbol rightSymbol =
@@ -197,7 +196,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
   private void linkStrands(
       final Strand firstStrand,
       final DotBracketSymbol symbolInSecondStrand,
-      final Map<Strand, Set<Strand>> strandMap) {
+      final Map<? super Strand, Set<Strand>> strandMap) {
     for (final Strand secondStrand : strands) {
       if (!secondStrand.equals(firstStrand)
           && secondStrand.getSymbols().contains(symbolInSecondStrand)) {
@@ -216,11 +215,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
   @Override
   public final List<? extends CombinedStrand> combineStrands() {
-    final List<CombinedStrand> result = new ArrayList<>();
-    for (final CombinedStrand combinedStrand : super.combineStrands()) {
-      result.add(new CombinedStrandFromPdb(combinedStrand.getStrands(), symbolToResidue));
-    }
-    return result;
+    return super.combineStrands().stream().map(combinedStrand -> new CombinedStrandFromPdb(combinedStrand.getStrands(), symbolToResidue)).collect(Collectors.toList());
   }
 
   @Override

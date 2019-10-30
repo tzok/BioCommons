@@ -15,9 +15,4 @@ public final class Glycine extends ProteinSidechain {
   public static Glycine getInstance() {
     return Glycine.INSTANCE;
   }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    // empty method, Glycine does not have CHI angles
-  }
 }

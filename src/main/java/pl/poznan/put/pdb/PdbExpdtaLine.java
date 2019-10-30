@@ -30,7 +30,7 @@ public class PdbExpdtaLine implements Serializable {
     return PdbExpdtaLine.EMPTY_INSTANCE;
   }
 
-  public static PdbExpdtaLine parse(final String line) throws PdbParsingException {
+  public static PdbExpdtaLine parse(final String line) {
     final String recordName = line.substring(0, 6).trim();
 
     if (!Objects.equals(PdbExpdtaLine.RECORD_NAME, recordName)) {

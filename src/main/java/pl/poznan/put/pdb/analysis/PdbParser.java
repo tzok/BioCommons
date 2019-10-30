@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PdbParser implements StructureParser {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbParser.class);
@@ -38,56 +39,52 @@ public class PdbParser implements StructureParser {
   }
 
   @Override
-  public synchronized List<PdbModel> parse(final String structureContent)
-      throws PdbParsingException {
-    resetState();
+  public final synchronized List<PdbModel> parse(final String structureContent) {
+      resetState();
 
-    for (final String line : structureContent.split("\n")) {
-      if (line.startsWith("MODEL")) {
-        handleModelLine(line);
-      } else if (line.startsWith("ATOM") || line.startsWith("HETATM")) {
-        handleAtomLine(line);
-      } else if (line.startsWith("TER   ")) {
-        handleTerLine(line);
-      } else if (line.startsWith("REMARK 465")) {
-        handleMissingResidueLine(line);
-      } else if (line.startsWith("MODRES")) {
-        handleModifiedResidueLine(line);
-      } else if (line.startsWith("HEADER")) {
-        handleHeaderLine(line);
-      } else if (line.startsWith("EXPDTA")) {
-        handleExperimentalDataLine(line);
-      } else if (line.startsWith("REMARK   2 RESOLUTION.")) {
-        handleResolutionLine(line);
-      } else if (line.startsWith("TITLE ")) {
-        handleTitleLine(line);
+      for (final String line : structureContent.split("\n")) {
+        if (line.startsWith("MODEL")) {
+          handleModelLine(line);
+        } else if (line.startsWith("ATOM") || line.startsWith("HETATM")) {
+          handleAtomLine(line);
+        } else if (line.startsWith("TER   ")) {
+          handleTerLine(line);
+        } else if (line.startsWith("REMARK 465")) {
+          handleMissingResidueLine(line);
+        } else if (line.startsWith("MODRES")) {
+          handleModifiedResidueLine(line);
+        } else if (line.startsWith("HEADER")) {
+          handleHeaderLine(line);
+        } else if (line.startsWith("EXPDTA")) {
+          handleExperimentalDataLine(line);
+        } else if (line.startsWith("REMARK   2 RESOLUTION.")) {
+          handleResolutionLine(line);
+        } else if (line.startsWith("TITLE ")) {
+          handleTitleLine(line);
+        }
       }
-    }
 
-    final StringBuilder titleBuilder = new StringBuilder();
-    for (final PdbTitleLine titleLine : titleLines) {
-      titleBuilder.append(titleLine.getTitle());
-    }
+      final String titleBuilder = titleLines.stream().map(PdbTitleLine::getTitle).collect(Collectors.joining());
 
-    final List<PdbModel> result = new ArrayList<>();
+      final List<PdbModel> result = new ArrayList<>();
 
-    for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
-      final int modelNumber = entry.getKey();
-      final List<PdbAtomLine> atoms = entry.getValue();
-      final PdbModel pdbModel =
-          new PdbModel(
-              headerLine,
-              experimentalDataLine,
-              resolutionLine,
-              modelNumber,
-              atoms,
-              modifiedResidues,
-              missingResidues,
-              titleBuilder.toString());
-      result.add(pdbModel);
-    }
+      for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
+        final int modelNumber = entry.getKey();
+        final List<PdbAtomLine> atoms = entry.getValue();
+        final PdbModel pdbModel =
+                new PdbModel(
+                        headerLine,
+                        experimentalDataLine,
+                        resolutionLine,
+                        modelNumber,
+                        atoms,
+                        modifiedResidues,
+                        missingResidues,
+                        titleBuilder);
+        result.add(pdbModel);
+      }
 
-    return result;
+      return result;
   }
 
   private void resetState() {

@@ -11,9 +11,8 @@ import java.util.*;
  */
 public class ConflictMap {
   private final Map<Region, Set<Region>> conflicts;
-  private final int conflictsCount;
 
-  // Create a basic 2DMap from which tells about conflicts. It can return
+    // Create a basic 2DMap from which tells about conflicts. It can return
   // if given Region have conflicts and give these conflicts
   public ConflictMap(final List<Region> regions) {
     super();
@@ -40,7 +39,7 @@ public class ConflictMap {
       }
     }
 
-    conflictsCount = count;
+      final int conflictsCount = count;
   }
 
   // Check if given Regions are conflicting

@@ -19,9 +19,4 @@ public final class Alanine extends ProteinSidechain {
   public static Alanine getInstance() {
     return Alanine.INSTANCE;
   }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    // empty method, Alanine does not have CHI angles
-  }
 }

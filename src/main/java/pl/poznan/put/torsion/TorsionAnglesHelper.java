@@ -1,5 +1,7 @@
 package pl.poznan.put.torsion;
 
+import org.apache.commons.math3.geometry.Vector;
+import org.apache.commons.math3.geometry.euclidean.threed.Euclidean3D;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
@@ -23,7 +25,7 @@ public final class TorsionAnglesHelper {
    * @param atoms A 4-tuple of atoms.
    * @return Value of the tosion angle.
    */
-  public static Angle calculateTorsionAngle(final Quadruplet<PdbAtomLine> atoms) {
+  public static Angle calculateTorsionAngle(final Quadruplet<? extends PdbAtomLine> atoms) {
     return TorsionAnglesHelper.calculateTorsionAngle(atoms.a, atoms.b, atoms.c, atoms.d);
   }
 
@@ -50,13 +52,13 @@ public final class TorsionAnglesHelper {
    * @param a4 Atom 4.
    * @return Dihedral angle between atoms 1-4.
    */
-  public static Angle calculateTorsionAtan(
-      final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3, final PdbAtomLine a4) {
+  private static Angle calculateTorsionAtan(
+          final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3, final PdbAtomLine a4) {
     if ((a1 == null) || (a2 == null) || (a3 == null) || (a4 == null)) {
       return Angle.invalidInstance();
     }
 
-    final Vector3D v1 = new Vector3D(a1.getX(), a1.getY(), a1.getZ());
+    final Vector<Euclidean3D> v1 = new Vector3D(a1.getX(), a1.getY(), a1.getZ());
     final Vector3D v2 = new Vector3D(a2.getX(), a2.getY(), a2.getZ());
     final Vector3D v3 = new Vector3D(a3.getX(), a3.getY(), a3.getZ());
     final Vector3D v4 = new Vector3D(a4.getX(), a4.getY(), a4.getZ());
@@ -64,7 +66,7 @@ public final class TorsionAnglesHelper {
   }
 
   public static Vector3D atomDistance(final PdbAtomLine a, final PdbAtomLine b) {
-    final Vector3D va = new Vector3D(a.getX(), a.getY(), a.getZ());
+    final Vector<Euclidean3D> va = new Vector3D(a.getX(), a.getY(), a.getZ());
     final Vector3D vb = new Vector3D(b.getX(), b.getY(), b.getZ());
     return vb.subtract(va);
   }
@@ -93,8 +95,7 @@ public final class TorsionAnglesHelper {
     final Vector3D u2 = d2.crossProduct(d3);
 
     double ctor = u1.dotProduct(u2) / FastMath.sqrt(u1.dotProduct(u1) * u2.dotProduct(u2));
-    if (ctor < -1) ctor = -1;
-    else ctor = (ctor > 1) ? 1 : ctor;
+      ctor = ctor < -1.0 ? -1.0 : Math.min(ctor, 1.0);
     double torp = FastMath.acos(ctor);
     if (u1.dotProduct(u2.crossProduct(d2)) < 0) {
       torp = -torp;
@@ -107,7 +108,7 @@ public final class TorsionAnglesHelper {
       return Double.NaN;
     }
 
-    final double full = 2 * Math.PI;
+    final double full = 2.0 * Math.PI;
     final double a1Mod = (a1 + full) % full;
     final double a2Mod = (a2 + full) % full;
     double diff = Math.abs(a1Mod - a2Mod);

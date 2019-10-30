@@ -4,6 +4,8 @@ import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public interface Strand {
   String getName();
@@ -26,20 +28,16 @@ public interface Strand {
 
   default String getSequence() {
     final List<DotBracketSymbol> symbols = getSymbols();
-    final StringBuilder builder = new StringBuilder(symbols.size());
-    for (final DotBracketSymbol symbol : symbols) {
-      builder.append(symbol.getSequence());
-    }
-    return builder.toString();
+    return symbols.stream()
+        .map(symbol -> String.valueOf(symbol.getSequence()))
+        .collect(Collectors.joining());
   }
 
   default String getStructure() {
     final List<DotBracketSymbol> symbols = getSymbols();
-    final StringBuilder builder = new StringBuilder(symbols.size());
-    for (final DotBracketSymbol symbol : symbols) {
-      builder.append(symbol.getStructure());
-    }
-    return builder.toString();
+    return symbols.stream()
+        .map(symbol -> String.valueOf(symbol.getStructure()))
+        .collect(Collectors.joining());
   }
 
   default int getLength() {
@@ -62,13 +60,9 @@ public interface Strand {
    */
   default boolean isSingleStrand() {
     final List<DotBracketSymbol> symbols = getSymbols();
-    for (int i = 1; i < (symbols.size() - 1); i++) {
-      final DotBracketSymbol symbol = symbols.get(i);
-      if (symbol.isPairing() && symbols.contains(symbol.getPair())) {
-        return false;
-      }
-    }
-    return true;
+    return IntStream.range(1, (symbols.size() - 1))
+        .mapToObj(symbols::get)
+        .noneMatch(symbol -> symbol.isPairing() && symbols.contains(symbol.getPair()));
   }
 
   /**

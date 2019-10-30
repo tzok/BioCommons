@@ -12,7 +12,6 @@ import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.pdb.analysis.SimpleResidueCollection;
 import pl.poznan.put.rna.RNAInteractionType;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,8 +25,7 @@ public final class CanonicalStructureExtractor {
     // empty constructor
   }
 
-  public static BpSeq bpSeq(final ResidueCollection residueCollection)
-      throws InvalidStructureException {
+  public static BpSeq bpSeq(final ResidueCollection residueCollection) {
     final List<PdbResidue> residues =
         residueCollection.getResidues().stream()
             .filter(pdbResidue -> pdbResidue.getMoleculeType() == MoleculeType.RNA)
@@ -42,8 +40,8 @@ public final class CanonicalStructureExtractor {
    * This is just a simple implementation. For a robust solution, see RNApdbee
    * http://rnapdbee.cs.put.poznan.pl
    */
-  public static @NotNull Collection<ClassifiedBasePair> basePairs(
-      final ResidueCollection residueCollection) {
+  private static @NotNull Collection<ClassifiedBasePair> basePairs(
+          final ResidueCollection residueCollection) {
     final List<PdbResidue> residues = residueCollection.getResidues();
     final Collection<ClassifiedBasePair> basePairs = new ArrayList<>();
     final Collection<PdbResidueIdentifier> paired = new HashSet<>();

@@ -36,7 +36,7 @@ public final class Chi3 extends AtomBasedTorsionAngleType {
     instances.add(Chi3.getInstance(Chi3.GLUTAMINE_ATOMS));
     instances.add(Chi3.getInstance(Chi3.LYSINE_ATOMS));
     instances.add(Chi3.getInstance(Chi3.METHIONINE_ATOMS));
-    return instances.toArray(new Chi3[instances.size()]);
+    return instances.toArray(new Chi3[0]);
   }
 
   public static Chi3 getInstance(final Quadruplet<AtomName> atoms) {

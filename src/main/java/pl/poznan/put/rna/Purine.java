@@ -17,7 +17,7 @@ public abstract class Purine extends Base {
   }
 
   @Override
-  public Quadruplet<AtomName> getChiAtoms() {
+  public final Quadruplet<AtomName> getChiAtoms() {
     return Chi.PURINE_ATOMS;
   }
 }

@@ -1,7 +1,6 @@
 package pl.poznan.put.structure.secondary.pseudoknots.elimination;
 
 import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
@@ -38,7 +37,7 @@ public abstract class AbstractRegionRemover implements RegionRemover {
   }
 
   @Override
-  public final List<BpSeq> findPseudoknots(final BpSeq bpSeq) throws InvalidStructureException {
+  public final List<BpSeq> findPseudoknots(final BpSeq bpSeq) {
     final List<Region> regions = Region.createRegions(bpSeq);
     final ConflictMap conflictMap = new ConflictMap(regions);
 

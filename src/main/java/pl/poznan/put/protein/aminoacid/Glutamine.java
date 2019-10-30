@@ -29,6 +29,9 @@ public final class Glutamine extends ProteinSidechain {
         "Glutamine",
         'Q',
         "GLN");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.GLUTAMINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.GLUTAMINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI3, Chi3.GLUTAMINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
     torsionAngleTypes.add(Chi3.getInstance(getChiAtoms(ProteinChiType.CHI3)));
@@ -36,12 +39,5 @@ public final class Glutamine extends ProteinSidechain {
 
   public static Glutamine getInstance() {
     return Glutamine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.GLUTAMINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.GLUTAMINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI3, Chi3.GLUTAMINE_ATOMS);
   }
 }

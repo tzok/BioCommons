@@ -1,7 +1,8 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.Matchers.*;
 
+import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
@@ -20,8 +21,7 @@ public class AtomNameTest {
       for (final PdbModel model : parser.parse(pdbContent)) {
         for (final PdbAtomLine atom : model.getAtoms()) {
           final AtomName atomName = atom.detectAtomName();
-          assertNotEquals(
-              String.format("Unknown atom: %s", atom.getAtomName()), AtomName.UNKNOWN, atomName);
+          Assert.assertThat(String.format("Unknown atom: %s", atom.getAtomName()), atomName, not(is(AtomName.UNKNOWN)));
         }
       }
     }

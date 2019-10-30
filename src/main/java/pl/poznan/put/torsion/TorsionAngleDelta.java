@@ -111,7 +111,7 @@ public class TorsionAngleDelta {
   public final String toString(final boolean isDisplayable) {
     switch (state) {
       case BOTH_INVALID:
-        return isDisplayable ? "" : null;
+        return "Missing atoms both in target and model";
       case BOTH_VALID:
         return isDisplayable
             ? AngleFormat.degreesRoundedToHundredth(delta.getRadians())

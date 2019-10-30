@@ -29,6 +29,9 @@ public final class Methionine extends ProteinSidechain {
         "Methionine",
         'M',
         "MET");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.METHIONINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.METHIONINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI3, Chi3.METHIONINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
     torsionAngleTypes.add(Chi3.getInstance(getChiAtoms(ProteinChiType.CHI3)));
@@ -36,12 +39,5 @@ public final class Methionine extends ProteinSidechain {
 
   public static Methionine getInstance() {
     return Methionine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.METHIONINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.METHIONINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI3, Chi3.METHIONINE_ATOMS);
   }
 }

@@ -1,13 +1,13 @@
 package pl.poznan.put.structure.secondary;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import lombok.EqualsAndHashCode;
 import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.RNAInteractionType;
 
+@EqualsAndHashCode(callSuper = true)
 public class QuantifiedBasePair extends ClassifiedBasePair {
   private final double shear;
   private final double stretch;
@@ -44,67 +44,32 @@ public class QuantifiedBasePair extends ClassifiedBasePair {
     this.opening = opening;
   }
 
-  public double getShear() {
+  public final double getShear() {
     return shear;
   }
 
-  public double getStretch() {
+  public final double getStretch() {
     return stretch;
   }
 
-  public double getStagger() {
+  public final double getStagger() {
     return stagger;
   }
 
-  public double getBuckle() {
+  public final double getBuckle() {
     return buckle;
   }
 
-  public double getPropeller() {
+  public final double getPropeller() {
     return propeller;
   }
 
-  public double getOpening() {
+  public final double getOpening() {
     return opening;
   }
 
   @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-
-    final QuantifiedBasePair other = (QuantifiedBasePair) o;
-    return new EqualsBuilder()
-        .appendSuper(super.equals(o))
-        .append(shear, other.shear)
-        .append(stretch, other.stretch)
-        .append(stagger, other.stagger)
-        .append(buckle, other.buckle)
-        .append(propeller, other.propeller)
-        .append(opening, other.opening)
-        .isEquals();
-  }
-
-  @Override
-  public int hashCode() {
-    return new HashCodeBuilder()
-        .appendSuper(super.hashCode())
-        .append(shear)
-        .append(stretch)
-        .append(stagger)
-        .append(buckle)
-        .append(propeller)
-        .append(opening)
-        .toHashCode();
-  }
-
-  @Override
-  public String toString() {
+  public final String toString() {
     return "QuantifiedBasePair{"
         + "basePair="
         + getBasePair()

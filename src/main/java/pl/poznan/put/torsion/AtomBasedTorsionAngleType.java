@@ -49,12 +49,12 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
 
   @Override
   public final String getExportName() {
-    return getClass().getSimpleName().toLowerCase();
+    return getClass().getSimpleName().toLowerCase(Locale.ENGLISH);
   }
 
   @Override
   public final TorsionAngleValue calculate(
-      final List<PdbResidue> residues, final int currentIndex) {
+      final List<? extends PdbResidue> residues, final int currentIndex) {
     final List<AtomPair> atomPairs = findAtomPairs(residues, currentIndex);
 
     if (atomPairs.isEmpty()) {
@@ -65,13 +65,14 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     return new TorsionAngleValue(
         this,
         TorsionAnglesHelper.calculateTorsionAngle(
-            atomPairs.get(0).leftAtom,
-            atomPairs.get(1).leftAtom,
-            atomPairs.get(2).leftAtom,
-            atomPairs.get(2).rightAtom));
+            atomPairs.get(0).getLeftAtom(),
+            atomPairs.get(1).getLeftAtom(),
+            atomPairs.get(2).getLeftAtom(),
+            atomPairs.get(2).getRightAtom()));
   }
 
-  public final List<AtomPair> findAtomPairs(List<PdbResidue> residues, int currentIndex) {
+  public final List<AtomPair> findAtomPairs(
+      final List<? extends PdbResidue> residues, final int currentIndex) {
     final List<PdbResidue> foundResidues = new ArrayList<>(4);
     final List<PdbAtomLine> foundAtoms = new ArrayList<>(4);
 
@@ -82,12 +83,12 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
       }
 
       final PdbResidue residue = residues.get(index);
-      if (!residue.hasAtom(this.atoms.get(i))) {
+      if (!residue.hasAtom(atoms.get(i))) {
         return Collections.emptyList();
       }
 
       foundResidues.add(residue);
-      foundAtoms.add(residue.findAtom(this.atoms.get(i)));
+      foundAtoms.add(residue.findAtom(atoms.get(i)));
     }
 
     return IntStream.range(1, 4)
@@ -107,7 +108,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
   }
 
   @Data
-  public static class AtomPair implements Comparable<AtomPair> {
+  public static final class AtomPair implements Comparable<AtomPair> {
     private final PdbResidue leftResidue;
     private final PdbResidue rightResidue;
     private final PdbAtomLine leftAtom;
@@ -116,11 +117,12 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     private final double distance;
     private final Bond.Length bondLength;
 
-    public AtomPair(
-        PdbResidue leftResidue,
-        PdbResidue rightResidue,
-        PdbAtomLine leftAtom,
-        PdbAtomLine rightAtom) {
+    private AtomPair(
+            final PdbResidue leftResidue,
+            final PdbResidue rightResidue,
+            final PdbAtomLine leftAtom,
+            final PdbAtomLine rightAtom) {
+      super();
       this.leftResidue = leftResidue;
       this.rightResidue = rightResidue;
       this.leftAtom = leftAtom;
@@ -134,10 +136,10 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
-      AtomPair atomPair = (AtomPair) o;
+      final AtomPair atomPair = (AtomPair) o;
       return (leftResidue.equals(atomPair.leftResidue)
               && rightResidue.equals(atomPair.rightResidue)
               && leftAtom.equals(atomPair.leftAtom)
@@ -156,7 +158,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
           + rightAtom.hashCode();
     }
 
-    public boolean isValid() {
+    private boolean isValid() {
       // skip check if any of the residues has icode
       if (StringUtils.isNotBlank(leftResidue.getInsertionCode())
           || StringUtils.isNotBlank(rightResidue.getInsertionCode())) {
@@ -206,8 +208,8 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     }
 
     @Override
-    public int compareTo(@NotNull AtomBasedTorsionAngleType.AtomPair atomPair) {
-      return Integer.compare(leftAtom.getSerialNumber(), atomPair.leftAtom.getSerialNumber());
+    public int compareTo(final @NotNull AtomBasedTorsionAngleType.AtomPair t) {
+      return Integer.compare(leftAtom.getSerialNumber(), t.leftAtom.getSerialNumber());
     }
   }
 }

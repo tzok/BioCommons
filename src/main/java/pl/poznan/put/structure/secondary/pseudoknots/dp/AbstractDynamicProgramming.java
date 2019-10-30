@@ -2,7 +2,6 @@ package pl.poznan.put.structure.secondary.pseudoknots.dp;
 
 import org.apache.commons.collections4.CollectionUtils;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.RegionRemover;
@@ -28,14 +27,14 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
    *     slows down very much when the cliques are getting bigger, so it is advisable to use
    *     heuristic to remove single regions prior to a dynamic programming attempt.
    */
-  protected AbstractDynamicProgramming(final RegionRemover regionRemover, final int maxCliqueSize) {
+  AbstractDynamicProgramming(final RegionRemover regionRemover, final int maxCliqueSize) {
     super();
     this.regionRemover = regionRemover;
     this.maxCliqueSize = maxCliqueSize;
   }
 
-  protected static SubSolution[] solveSingleCase(
-      final SubSolution[][][] matrix, final Clique clique, final int i, final int j) {
+  static SubSolution[] solveSingleCase(
+          final SubSolution[][][] matrix, final Clique clique, final int i, final int j) {
     final int size = clique.endpointCount();
     final Collection<SubSolution> candidates = new HashSet<>(size);
 
@@ -70,11 +69,11 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     // select all candidates with highest score
     final List<SubSolution> bestCandidates =
         AbstractDynamicProgramming.selectBestCandidates(candidates);
-    return bestCandidates.toArray(new SubSolution[bestCandidates.size()]);
+    return bestCandidates.toArray(new SubSolution[0]);
   }
 
-  protected static Collection<SubSolution> merge(
-      final SubSolution[][][] matrix, final Clique clique, final int i, final int j) {
+  private static Collection<SubSolution> merge(
+          final SubSolution[][][] matrix, final Clique clique, final int i, final int j) {
     final SubSolution[] left = matrix[i][j - 1];
     final SubSolution[] below = matrix[i + 1][j];
 
@@ -111,7 +110,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     return result;
   }
 
-  private static List<SubSolution> selectBestCandidates(final Collection<SubSolution> candidates) {
+  private static List<SubSolution> selectBestCandidates(final Collection<? extends SubSolution> candidates) {
     if (candidates.isEmpty()) {
       return Collections.emptyList();
     }
@@ -179,7 +178,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
   }
 
   @Override
-  public final List<BpSeq> findPseudoknots(final BpSeq bpSeq) throws InvalidStructureException {
+  public final List<BpSeq> findPseudoknots(final BpSeq bpSeq) {
     final List<Region> regions = Region.createRegions(bpSeq);
     ConflictMap conflictMap = new ConflictMap(regions);
     conflictMap = AbstractDynamicProgramming.simplify(regions, conflictMap);

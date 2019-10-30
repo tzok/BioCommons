@@ -25,17 +25,13 @@ public final class Asparagine extends ProteinSidechain {
         "Asparagine",
         'N',
         "ASN");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.ASPARAGINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.ASPARAGINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
   }
 
   public static Asparagine getInstance() {
     return Asparagine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.ASPARAGINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.ASPARAGINE_ATOMS);
   }
 }

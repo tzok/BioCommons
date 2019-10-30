@@ -40,7 +40,7 @@ public class MaxConflicts extends AbstractRegionRemover {
       return minGainRegions.get(0);
     }
 
-    maxConflictsRegions.sort((t, t1) -> Integer.compare(t.getBegin(), t1.getBegin()));
+    maxConflictsRegions.sort(Comparator.comparingInt(Region::getBegin));
     return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
   }
 }

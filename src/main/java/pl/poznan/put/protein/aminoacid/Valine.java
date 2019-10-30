@@ -26,15 +26,11 @@ public final class Valine extends ProteinSidechain {
         "Valine",
         'V',
         "VAL");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.VALINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
   }
 
   public static Valine getInstance() {
     return Valine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.VALINE_ATOMS);
   }
 }

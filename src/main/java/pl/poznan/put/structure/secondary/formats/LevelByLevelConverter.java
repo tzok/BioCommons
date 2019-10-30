@@ -1,8 +1,14 @@
 package pl.poznan.put.structure.secondary.formats;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import pl.poznan.put.structure.secondary.pseudoknots.PseudoknotFinder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class LevelByLevelConverter implements Converter {
   private static final char[] BRACKETS_OPENING = "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
@@ -36,27 +42,27 @@ public class LevelByLevelConverter implements Converter {
   private static String traceback(final State state) {
     final char[] structure = new char[state.size()];
     Arrays.fill(structure, '.');
-    State current = state.parent;
+    State current = state.getParent();
 
     while (current != null) {
-      for (final BpSeq.Entry pairs : current.bpSeq.getPaired()) {
+      for (final BpSeq.Entry pairs : current.getBpSeq().getPaired()) {
         final int i = pairs.getIndex();
         final int j = pairs.getPair();
 
         if (structure[i - 1] == '.') {
-          structure[i - 1] = LevelByLevelConverter.BRACKETS_OPENING[current.level];
-          structure[j - 1] = LevelByLevelConverter.BRACKETS_CLOSING[current.level];
+          structure[i - 1] = LevelByLevelConverter.BRACKETS_OPENING[current.getLevel()];
+          structure[j - 1] = LevelByLevelConverter.BRACKETS_CLOSING[current.getLevel()];
         }
       }
 
-      current = current.parent;
+      current = current.getParent();
     }
 
     return new String(structure);
   }
 
   @Override
-  public final DotBracket convert(final BpSeq bpSeq) throws InvalidStructureException {
+  public final DotBracket convert(final BpSeq bpSeq) {
     List<State> states = new ArrayList<>();
     states.add(new State(null, bpSeq, 0));
 
@@ -69,12 +75,11 @@ public class LevelByLevelConverter implements Converter {
     return new DotBracket(bpSeq.getSequence(), structure);
   }
 
-  private List<State> processStates(final Collection<State> states)
-      throws InvalidStructureException {
+  private List<State> processStates(final Collection<State> states) {
     final List<State> nextStates = new ArrayList<>(states.size());
     for (final State state : states) {
-      for (final BpSeq bpSeq : pkRemover.findPseudoknots(state.bpSeq)) {
-        final State nextState = new State(state, bpSeq, state.level + 1);
+      for (final BpSeq bpSeq : pkRemover.findPseudoknots(state.getBpSeq())) {
+        final State nextState = new State(state, bpSeq, state.getLevel() + 1);
         nextStates.add(nextState);
 
         if (nextStates.size() > maxSolutions) {
@@ -85,6 +90,8 @@ public class LevelByLevelConverter implements Converter {
     return nextStates;
   }
 
+  @EqualsAndHashCode
+  @Getter
   private static final class State implements Comparable<State> {
     private final State parent;
     private final BpSeq bpSeq;
@@ -99,11 +106,11 @@ public class LevelByLevelConverter implements Converter {
       score = bpSeq.getPaired().size();
     }
 
-    public boolean isFinal() {
+    private boolean isFinal() {
       return score == 0;
     }
 
-    public int size() {
+    private int size() {
       return bpSeq.size();
     }
 
@@ -125,27 +132,6 @@ public class LevelByLevelConverter implements Converter {
         return parent.compareTo(t.parent);
       }
       return 0;
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(bpSeq, level, parent, score);
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-      if (this == o) {
-        return true;
-      }
-      if ((o == null) || (getClass() != o.getClass())) {
-        return false;
-      }
-      final State state = (State) o;
-      boolean result = level == state.level;
-      result &= score == state.score;
-      result &= Objects.equals(bpSeq, state.bpSeq);
-      result &= Objects.equals(parent, state.parent);
-      return result;
     }
 
     @Override

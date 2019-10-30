@@ -37,16 +37,16 @@ public abstract class Base extends NucleicAcidResidueComponent
         }
       };
 
-  protected final List<TorsionAngleType> torsionAngleTypes = new ArrayList<>();
+  final List<TorsionAngleType> torsionAngleTypes = new ArrayList<>();
   private final String longName;
   private final char oneLetterName;
   private final List<String> pdbNames;
 
-  protected Base(
-      final List<AtomName> atoms,
-      final String longName,
-      final char oneLetterName,
-      final String... pdbNames) {
+  Base(
+          final List<AtomName> atoms,
+          final String longName,
+          final char oneLetterName,
+          final String... pdbNames) {
     super(RNAResidueComponentType.BASE, atoms);
     this.longName = longName;
     this.oneLetterName = oneLetterName;
@@ -107,7 +107,7 @@ public abstract class Base extends NucleicAcidResidueComponent
     return Collections.unmodifiableList(torsionAngleTypes);
   }
 
-  public abstract Sugar getDefaultSugarInstance();
+  protected abstract Sugar getDefaultSugarInstance();
 
   public abstract Quadruplet<AtomName> getChiAtoms();
 }

@@ -1,11 +1,13 @@
 package pl.poznan.put.structure.secondary.formats;
 
+import lombok.EqualsAndHashCode;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = false)
 public class StrandDirect extends AbstractStrand {
   private final List<DotBracketSymbol> symbols;
 

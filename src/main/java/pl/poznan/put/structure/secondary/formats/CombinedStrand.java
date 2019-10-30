@@ -12,7 +12,7 @@ public class CombinedStrand implements DotBracketInterface {
   protected final List<Strand> strands = new ArrayList<>();
   protected final List<DotBracketSymbol> symbols = new ArrayList<>();
 
-  public CombinedStrand(final Iterable<Strand> strands) {
+  public CombinedStrand(final Iterable<? extends Strand> strands) {
     super();
 
     final Map<DotBracketSymbol, Integer> symbolToIndex = new HashMap<>();
@@ -49,7 +49,7 @@ public class CombinedStrand implements DotBracketInterface {
     }
   }
 
-  protected CombinedStrand() {
+  CombinedStrand() {
     super();
   }
 
@@ -58,16 +58,12 @@ public class CombinedStrand implements DotBracketInterface {
   }
 
   public final int getLength() {
-    int length = 0;
-    for (final Strand strand : strands) {
-      length += strand.getLength();
-    }
-    return length;
+    return strands.stream().mapToInt(Strand::getLength).sum();
   }
 
   @Override
   public final List<DotBracketSymbol> getSymbols() {
-    return symbols;
+    return Collections.unmodifiableList(symbols);
   }
 
   @Override
@@ -111,33 +107,19 @@ public class CombinedStrand implements DotBracketInterface {
   }
 
   public final boolean contains(final DotBracketSymbol symbol) {
-    for (final Strand strand : strands) {
-      if (strand.getSymbols().contains(symbol)) {
-        return true;
-      }
-    }
-    return false;
+      return strands.stream().anyMatch(strand -> strand.getSymbols().contains(symbol));
   }
 
   @Override
   public final String toString() {
-    final StringBuilder builder = new StringBuilder();
+    final String builder = strands.stream().map(Strand::getName).collect(Collectors.joining());
 
-    for (final Strand strand : strands) {
-      builder.append(strand.getName());
-    }
-
-    return ">strand_" + builder + '\n' + getSequence(false) + '\n' + getStructure(false);
+      return ">strand_" + builder + '\n' + getSequence(false) + '\n' + getStructure(false);
   }
 
   @Override
   public final String toStringWithStrands() {
-    final StringBuilder builder = new StringBuilder();
-    for (final Strand strand : strands) {
-      builder.append(strand);
-      builder.append('\n');
-    }
-    return builder.toString();
+    return strands.stream().map(strand -> String.valueOf(strand) + '\n').collect(Collectors.joining());
   }
 
   @Override
@@ -150,7 +132,7 @@ public class CombinedStrand implements DotBracketInterface {
     return symbol.getIndex() + 1;
   }
 
-  public final String getSequence(final boolean separateStrands) {
+  private String getSequence(final boolean separateStrands) {
     final StringBuilder builder = new StringBuilder();
     for (final Strand strand : strands) {
       builder.append(strand.getSequence());
@@ -161,7 +143,7 @@ public class CombinedStrand implements DotBracketInterface {
     return builder.toString();
   }
 
-  public final String getStructure(final boolean separateStrands) {
+  private String getStructure(final boolean separateStrands) {
     final StringBuilder builder = new StringBuilder();
     for (final Strand strand : strands) {
       builder.append(strand.getStructure());

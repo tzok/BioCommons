@@ -32,17 +32,13 @@ public final class Tyrosine extends ProteinSidechain {
         "Tyrosine",
         'Y',
         "TYR");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.TYROSINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.TYROSINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
   }
 
   public static Tyrosine getInstance() {
     return Tyrosine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.TYROSINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.TYROSINE_ATOMS);
   }
 }

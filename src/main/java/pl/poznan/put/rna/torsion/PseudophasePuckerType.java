@@ -9,6 +9,7 @@ import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public final class PseudophasePuckerType extends TorsionAngleType {
   private static final PseudophasePuckerType INSTANCE = new PseudophasePuckerType();
@@ -37,23 +38,19 @@ public final class PseudophasePuckerType extends TorsionAngleType {
   }
 
   @Override
-  public TorsionAngleValue calculate(final List<PdbResidue> residues, final int currentIndex) {
+  public TorsionAngleValue calculate(final List<? extends PdbResidue> residues, final int currentIndex) {
     final TorsionAngleValue nu0 = Nu0.getInstance().calculate(residues, currentIndex);
     final TorsionAngleValue nu1 = Nu1.getInstance().calculate(residues, currentIndex);
     final TorsionAngleValue nu2 = Nu2.getInstance().calculate(residues, currentIndex);
     final TorsionAngleValue nu3 = Nu3.getInstance().calculate(residues, currentIndex);
     final TorsionAngleValue nu4 = Nu4.getInstance().calculate(residues, currentIndex);
 
-    if (!nu0.getValue().isValid()
-        || !nu1.getValue().isValid()
-        || !nu2.getValue().isValid()
-        || !nu3.getValue().isValid()
-        || !nu4.getValue().isValid()) {
+    if (Stream.of(nu0, nu1, nu2, nu3, nu4).anyMatch(torsionAngleValue -> !torsionAngleValue.getValue().isValid())) {
       return TorsionAngleValue.invalidInstance(this);
     }
 
     final double scale =
-        2 * (FastMath.sin(Math.toRadians(36.0)) + FastMath.sin(Math.toRadians(72.0)));
+            2.0 * (FastMath.sin(Math.toRadians(36.0)) + FastMath.sin(Math.toRadians(72.0)));
     final double y =
         (nu1.getValue().getRadians() + nu4.getValue().getRadians())
             - nu0.getValue().getRadians()

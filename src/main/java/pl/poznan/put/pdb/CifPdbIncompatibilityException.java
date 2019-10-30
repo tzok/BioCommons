@@ -1,7 +1,7 @@
 package pl.poznan.put.pdb;
 
-public class CifPdbIncompatibilityException extends Exception {
-  public CifPdbIncompatibilityException(final String message) {
+class CifPdbIncompatibilityException extends RuntimeException {
+  CifPdbIncompatibilityException(final String message) {
     super(message);
   }
 }

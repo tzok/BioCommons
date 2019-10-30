@@ -18,17 +18,13 @@ public final class AsparticAcid extends ProteinSidechain {
         "Aspartic acid",
         'D',
         "ASP");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.ASPARTIC_ACID_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.ASPARTIC_ACID_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
   }
 
   public static AsparticAcid getInstance() {
     return AsparticAcid.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.ASPARTIC_ACID_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.ASPARTIC_ACID_ATOMS);
   }
 }

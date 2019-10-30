@@ -4,25 +4,23 @@ import lombok.Getter;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
 
+import java.util.Arrays;
+
 /** Torsion angle ranges as defined in Saenger's "Principles...". */
 @Getter
 public enum TorsionRange implements Range {
-  SYN_CIS("sp", -30, 30),
-  ANTI_TRANS("ap", 150, -150),
-  SYNCLINAL_GAUCHE_PLUS("+sc", 30, 90),
-  SYNCLINAL_GAUCHE_MINUS("-sc", -90, -30),
-  ANTICLINAL_PLUS("+ac", 90, 150),
-  ANTICLINAL_MINUS("-ac", -150, -90),
+  SYN_CIS("sp", -30.0, 30.0),
+  ANTI_TRANS("ap", 150.0, -150.0),
+  SYNCLINAL_GAUCHE_PLUS("+sc", 30.0, 90.0),
+  SYNCLINAL_GAUCHE_MINUS("-sc", -90.0, -30.0),
+  ANTICLINAL_PLUS("+ac", 90.0, 150.0),
+  ANTICLINAL_MINUS("-ac", -150.0, -90.0),
   INVALID("invalid", Double.NaN, Double.NaN);
 
   private static final RangeProvider PROVIDER =
       angle -> {
         if (angle.isValid()) {
-          for (final TorsionRange torsionRange : TorsionRange.values()) {
-            if (angle.isBetween(torsionRange.begin, torsionRange.end)) {
-              return torsionRange;
-            }
-          }
+            return Arrays.stream(TorsionRange.values()).filter(torsionRange -> angle.isBetween(torsionRange.begin, torsionRange.end)).findFirst().orElse(TorsionRange.INVALID);
         }
         return TorsionRange.INVALID;
       };

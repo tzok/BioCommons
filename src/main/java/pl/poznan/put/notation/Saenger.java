@@ -2,6 +2,7 @@ package pl.poznan.put.notation;
 
 import pl.poznan.put.structure.secondary.BasePair;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public enum Saenger {
@@ -36,12 +37,7 @@ public enum Saenger {
   UNKNOWN;
 
   public static Saenger fromString(final String str) {
-    for (final Saenger s : Saenger.values()) {
-      if (Objects.equals(s.toString(), str)) {
-        return s;
-      }
-    }
-    return Saenger.UNKNOWN;
+      return Arrays.stream(Saenger.values()).filter(s -> Objects.equals(s.toString(), str)).findFirst().orElse(Saenger.UNKNOWN);
   }
 
   public static Saenger fromOrdinal(final int ordinal) {

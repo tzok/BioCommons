@@ -16,12 +16,9 @@ public class MinGain extends AbstractRegionRemover {
     final SortedMap<Integer, List<Region>> mapGainRegions = new TreeMap<>();
 
     for (final Region region : regions) {
-      int conflictLength = 0;
-      for (final Region conflicting : conflictMap.conflictsWith(region)) {
-        conflictLength += conflicting.getLength();
-      }
+      final int conflictLength = conflictMap.conflictsWith(region).stream().mapToInt(Region::getLength).sum();
 
-      final int gain = region.getLength() - conflictLength;
+        final int gain = region.getLength() - conflictLength;
       if (!mapGainRegions.containsKey(gain)) {
         mapGainRegions.put(gain, new ArrayList<>());
       }
@@ -47,7 +44,7 @@ public class MinGain extends AbstractRegionRemover {
       return maxConflictsRegions.get(0);
     }
 
-    maxConflictsRegions.sort((t, t1) -> Integer.compare(t.getBegin(), t1.getBegin()));
+    maxConflictsRegions.sort(Comparator.comparingInt(Region::getBegin));
     return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
   }
 }

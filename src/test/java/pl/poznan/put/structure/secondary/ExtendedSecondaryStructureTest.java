@@ -7,18 +7,12 @@ import java.util.Collection;
 import org.junit.Test;
 
 public class ExtendedSecondaryStructureTest {
-  // @formatter:off
-  private final String quadruplex =
-      "seq uAGGGUUAGGGUuAGGGUUAGGGU\n"
-          + "cWH ..([{...)]}...([{...)]}.\n"
-          + "cWH ........([{...)]}.......\n"
-          + "cHW ..([{...............)]}.\n";
-  private final String simple = "seq ACGUACGUACGU\n" + "cWW ....((..))..\n" + "cWH (([[..))]]..\n";
-  // @formatter:on
+    // @formatter:on
 
   @Test
-  public void simple() {
-    final ExtendedSecondaryStructure secondaryStructure =
+  public final void simple() {
+      final String simple = "seq ACGUACGUACGU\n" + "cWW ....((..))..\n" + "cWH (([[..))]]..\n";
+      final ExtendedSecondaryStructure secondaryStructure =
         ExtendedSecondaryStructure.fromMultilineDotBracket(simple);
     assertThat(secondaryStructure.toString(), is(simple));
 
@@ -30,8 +24,13 @@ public class ExtendedSecondaryStructureTest {
   }
 
   @Test
-  public void quadruplex() {
-    final ExtendedSecondaryStructure secondaryStructure =
+  public final void quadruplex() {
+      // @formatter:off
+      final String quadruplex = "seq uAGGGUUAGGGUuAGGGUUAGGGU\n"
+              + "cWH ..([{...)]}...([{...)]}.\n"
+              + "cWH ........([{...)]}.......\n"
+              + "cHW ..([{...............)]}.\n";
+      final ExtendedSecondaryStructure secondaryStructure =
         ExtendedSecondaryStructure.fromMultilineDotBracket(quadruplex);
     assertThat(secondaryStructure.toString(), is(quadruplex));
 

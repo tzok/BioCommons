@@ -1,10 +1,10 @@
 package pl.poznan.put.structure.secondary.formats;
 
 import lombok.Data;
-import org.apache.commons.collections4.CollectionUtils;
+import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
@@ -14,23 +14,33 @@ import pl.poznan.put.structure.secondary.DotBracketSymbol;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+@EqualsAndHashCode
+@Slf4j
 public class BpSeq implements Serializable {
-  private static final long serialVersionUID = 7463893480150381692L;
   private static final Pattern WHITESPACE = Pattern.compile("\\s+");
   private static final boolean WRITE_COMMENTS = false;
-  private static final Logger LOGGER = LoggerFactory.getLogger(BpSeq.class);
+
   private final SortedSet<Entry> entries;
 
-  public BpSeq(final Collection<Entry> entries) throws InvalidStructureException {
+  public BpSeq(final Collection<Entry> entries) {
     super();
     this.entries = new TreeSet<>(entries);
     validate();
   }
 
-  public static BpSeq fromString(final String data) throws InvalidStructureException {
+  public static BpSeq fromString(final String data) {
     final List<Entry> entries = new ArrayList<>();
 
     for (String line : data.split(System.lineSeparator())) {
@@ -57,9 +67,9 @@ public class BpSeq implements Serializable {
       final char seq;
 
       try {
-        index = Integer.valueOf(split[0]);
+        index = Integer.parseInt(split[0]);
         seq = split[1].charAt(0);
-        pair = Integer.valueOf(split[2]);
+        pair = Integer.parseInt(split[2]);
       } catch (final NumberFormatException e) {
         throw new InvalidStructureException(
             String.format("Line does not conform to BPSEQ format: %s", line), e);
@@ -71,18 +81,17 @@ public class BpSeq implements Serializable {
     return new BpSeq(entries);
   }
 
-  public static BpSeq fromCt(final Ct ct) throws InvalidStructureException {
+  public static BpSeq fromCt(final Ct ct) {
     final List<Entry> bpseqEntries = new ArrayList<>();
 
-    for (final Ct.Entry e : ct.getEntries()) {
+    for (final Ct.ExtendedEntry e : ct.getEntries()) {
       bpseqEntries.add(new Entry(e.getIndex(), e.getPair(), e.getSeq()));
     }
 
     return new BpSeq(bpseqEntries);
   }
 
-  public static BpSeq fromDotBracket(final DotBracketInterface db)
-      throws InvalidStructureException {
+  public static BpSeq fromDotBracket(final DotBracketInterface db) {
     final List<Entry> entries = new ArrayList<>();
 
     for (final DotBracketSymbol symbol : db.getSymbols()) {
@@ -98,8 +107,8 @@ public class BpSeq implements Serializable {
   }
 
   public static BpSeq fromResidueCollection(
-      final ResidueCollection residueCollection, final Iterable<ClassifiedBasePair> basePairs)
-      throws InvalidStructureException {
+      final ResidueCollection residueCollection,
+      final Iterable<? extends ClassifiedBasePair> basePairs) {
     final Collection<BasePair> allBasePairs = new ArrayList<>();
     final Map<BasePair, String> basePairToComment = new HashMap<>();
 
@@ -125,7 +134,7 @@ public class BpSeq implements Serializable {
 
   private static Collection<Entry> generateEntriesForPaired(
       final ResidueCollection residueCollection,
-      final Iterable<BasePair> basePairs,
+      final Iterable<? extends BasePair> basePairs,
       final Map<BasePair, String> basePairToComment) {
     final Collection<Entry> entries = new ArrayList<>();
     final List<PdbResidue> residues = residueCollection.getResidues();
@@ -140,15 +149,14 @@ public class BpSeq implements Serializable {
       entries.add(
           new Entry(
               indexR, indexL, right.getOneLetterName(), basePairToComment.get(basePair.invert())));
-      BpSeq.LOGGER.trace(
-          "Storing pair ({} -> {}) which is ({} -> {})", indexL, indexR, left, right);
+      BpSeq.log.trace("Storing pair ({} -> {}) which is ({} -> {})", indexL, indexR, left, right);
     }
 
     return entries;
   }
 
   private static Collection<Entry> generateEntriesForUnpaired(
-      final ResidueCollection residueCollection, final Iterable<BasePair> allBasePairs) {
+      final ResidueCollection residueCollection, final Iterable<? extends BasePair> allBasePairs) {
     final List<PdbResidue> residues = residueCollection.getResidues();
     final Collection<PdbResidueIdentifier> paired = new HashSet<>();
 
@@ -171,7 +179,7 @@ public class BpSeq implements Serializable {
   /*
    * Check if all pairs match.
    */
-  private void validate() throws InvalidStructureException {
+  private void validate() {
     final Map<Integer, Integer> map = new HashMap<>();
 
     for (final Entry e : entries) {
@@ -217,21 +225,13 @@ public class BpSeq implements Serializable {
   }
 
   public final String getSequence() {
-    final StringBuilder builder = new StringBuilder(entries.size());
-    for (final Entry e : entries) {
-      builder.append(e.getSeq());
-    }
-    return builder.toString();
+    return entries.stream().map(e -> String.valueOf(e.getSeq())).collect(Collectors.joining());
   }
 
   public final SortedSet<Entry> getPaired() {
-    final SortedSet<Entry> sortedSet = new TreeSet<>();
-    for (final Entry entry : entries) {
-      if (entry.getIndex() < entry.getPair()) {
-        sortedSet.add(entry);
-      }
-    }
-    return sortedSet;
+    return entries.stream()
+        .filter(entry -> entry.getIndex() < entry.getPair())
+        .collect(Collectors.toCollection(TreeSet::new));
   }
 
   public final boolean removePair(final Entry toRemove) {
@@ -243,8 +243,8 @@ public class BpSeq implements Serializable {
       if (entry.getIndex() == toRemove.getPair()) {
         entries.remove(toRemove);
         entries.remove(entry);
-        entries.add(new Entry(toRemove.index, 0, toRemove.seq));
-        entries.add(new Entry(entry.index, 0, entry.seq));
+        entries.add(new Entry(toRemove.getIndex(), 0, toRemove.getSeq()));
+        entries.add(new Entry(entry.getIndex(), 0, entry.getSeq()));
         return true;
       }
     }
@@ -256,53 +256,21 @@ public class BpSeq implements Serializable {
   }
 
   public final boolean hasAnyPair() {
-    for (final Entry entry : entries) {
-      if (entry.isPaired()) {
-        return true;
-      }
-    }
-    return false;
+    return entries.stream().anyMatch(Entry::isPaired);
   }
 
   public final boolean removeIsolatedPairs() {
     final List<Region> regions = Region.createRegions(this);
     final boolean[] flag = {false};
-    regions.forEach(
-        region -> {
-          if (region.getLength() == 1) {
-            flag[0] |= removePair(region.getEntries().get(0));
-          }
-        });
+    regions.stream()
+        .filter(region -> region.getLength() == 1)
+        .forEach(region -> flag[0] |= removePair(region.getEntries().get(0)));
     return flag[0];
   }
 
   @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-    final BpSeq bpSeq = (BpSeq) o;
-    return CollectionUtils.isEqualCollection(entries, bpSeq.entries);
-  }
-
-  @Override
-  public final int hashCode() {
-    return Objects.hash(entries);
-  }
-
-  @Override
   public final String toString() {
-    final StringBuilder builder = new StringBuilder(10 * entries.size());
-
-    for (final Entry e : entries) {
-      builder.append(e);
-      builder.append(System.lineSeparator());
-    }
-
-    return builder.toString();
+    return entries.stream().map(e -> e + System.lineSeparator()).collect(Collectors.joining());
   }
 
   @Data
@@ -322,11 +290,11 @@ public class BpSeq implements Serializable {
       this.comment = comment;
     }
 
-    public Entry(final int index, final int pair, final char seq) {
+    private Entry(final int index, final int pair, final char seq) {
       this(index, pair, seq, "");
     }
 
-    public final boolean isPaired() {
+    private boolean isPaired() {
       return pair != 0;
     }
 
@@ -339,7 +307,7 @@ public class BpSeq implements Serializable {
     }
 
     @Override
-    public final int compareTo(final Entry t) {
+    public final int compareTo(final @NotNull Entry t) {
       if (equals(t)) {
         return 0;
       }

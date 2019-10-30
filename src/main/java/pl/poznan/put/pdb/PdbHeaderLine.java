@@ -24,7 +24,7 @@ public class PdbHeaderLine implements Serializable {
   // @formatter:on
   private static final String FORMAT = "HEADER    %-40s%9s   %4s              "; // NON-NLS
   private static final String RECORD_NAME = "HEADER"; // NON-NLS
-  private static final PdbHeaderLine EMPTY_INSTANCE = new PdbHeaderLine("", new Date(0), "");
+  private static final PdbHeaderLine EMPTY_INSTANCE = new PdbHeaderLine("", new Date(0L), "");
   private final DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy", Locale.US);
   private final String classification;
   private final Date depositionDate;
@@ -38,7 +38,7 @@ public class PdbHeaderLine implements Serializable {
     this.idCode = idCode;
   }
 
-  public static PdbHeaderLine parse(final String line) throws PdbParsingException {
+  public static PdbHeaderLine parse(final String line) {
     if (line.length() < 66) {
       throw new PdbParsingException("PDB HEADER line is not at least 66 characters long");
     }

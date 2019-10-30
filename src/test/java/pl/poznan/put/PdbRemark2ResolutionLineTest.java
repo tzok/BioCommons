@@ -1,10 +1,10 @@
 package pl.poznan.put;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
+import org.junit.Assert;
 import org.junit.Test;
-import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark2Line;
 
 public class PdbRemark2ResolutionLineTest {
@@ -16,21 +16,21 @@ public class PdbRemark2ResolutionLineTest {
   // @formatter:on
 
   @Test
-  public final void testParseXray() throws PdbParsingException {
+  public final void testParseXray() {
     final PdbRemark2Line parsed =
         PdbRemark2Line.parse(PdbRemark2ResolutionLineTest.VALID_XRAY_LINE);
     assertEquals(1.89, parsed.getResolution(), 0.001);
 
     final String parsedToString = parsed.toString();
-    assertEquals(PdbRemark2ResolutionLineTest.VALID_XRAY_LINE, parsedToString);
+    Assert.assertThat(parsedToString, is(PdbRemark2ResolutionLineTest.VALID_XRAY_LINE));
   }
 
   @Test
-  public final void testParseNmr() throws PdbParsingException {
+  public final void testParseNmr() {
     final PdbRemark2Line parsed = PdbRemark2Line.parse(PdbRemark2ResolutionLineTest.VALID_NMR_LINE);
-    assertTrue(Double.isNaN(parsed.getResolution()));
+    Assert.assertThat(Double.isNaN(parsed.getResolution()), is(true));
 
     final String parsedToString = parsed.toString();
-    assertEquals(PdbRemark2ResolutionLineTest.VALID_NMR_LINE, parsedToString);
+    Assert.assertThat(parsedToString, is(PdbRemark2ResolutionLineTest.VALID_NMR_LINE));
   }
 }

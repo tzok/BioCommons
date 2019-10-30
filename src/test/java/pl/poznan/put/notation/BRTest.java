@@ -1,14 +1,15 @@
 package pl.poznan.put.notation;
 
+import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.*;
 
 public class BRTest {
 
   @Test
-  public void fromString() {
-    assertEquals(BR.UNKNOWN, BR.fromString("testing"));
-    assertEquals(BR._0, BR.fromString("0BR"));
+  public final void fromString() {
+    Assert.assertThat(BR.fromString("testing"), is(BR.UNKNOWN));
+    Assert.assertThat(BR.fromString("0BR"), is(BR._0));
   }
 }

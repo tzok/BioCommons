@@ -1,8 +1,8 @@
 package pl.poznan.put.structure.tertiary;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.*;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class StructureInfoTest {
@@ -11,17 +11,17 @@ public class StructureInfoTest {
     final StructureInfo a = new StructureInfo(null, null, "A");
     final StructureInfo b = new StructureInfo(null, null, "B");
     final StructureInfo c = new StructureInfo(null, null, "C");
-    assertEquals(0, a.compareTo(a));
-    assertEquals(0, b.compareTo(b));
-    assertEquals(0, c.compareTo(c));
+    Assert.assertThat(a.compareTo(a), is(0));
+    Assert.assertThat(b.compareTo(b), is(0));
+    Assert.assertThat(c.compareTo(c), is(0));
 
-    assertTrue(a.compareTo(b) < 0);
-    assertTrue(a.compareTo(c) < 0);
+    Assert.assertThat(a.compareTo(b), lessThan(0));
+    Assert.assertThat(a.compareTo(c), lessThan(0));
 
-    assertTrue(b.compareTo(a) > 0);
-    assertTrue(b.compareTo(c) < 0);
+    Assert.assertThat(b.compareTo(a), greaterThan(0));
+    Assert.assertThat(b.compareTo(c), lessThan(0));
 
-    assertTrue(c.compareTo(a) > 0);
-    assertTrue(c.compareTo(b) > 0);
+    Assert.assertThat(c.compareTo(a), greaterThan(0));
+    Assert.assertThat(c.compareTo(b), greaterThan(0));
   }
 }

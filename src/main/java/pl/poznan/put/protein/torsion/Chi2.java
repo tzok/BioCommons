@@ -62,7 +62,7 @@ public final class Chi2 extends AtomBasedTorsionAngleType {
     instances.add(Chi2.getInstance(Chi2.PHENYLALANINE_ATOMS));
     instances.add(Chi2.getInstance(Chi2.PROLINE_ATOMS));
     instances.add(Chi2.getInstance(Chi2.TRYPTOPHAN_ATOMS));
-    return instances.toArray(new Chi2[instances.size()]);
+    return instances.toArray(new Chi2[0]);
   }
 
   public static Chi2 getInstance(final Quadruplet<AtomName> atoms) {

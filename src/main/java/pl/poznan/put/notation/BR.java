@@ -1,6 +1,6 @@
 package pl.poznan.put.notation;
 
-import java.util.Objects;
+import java.util.Arrays;
 
 /**
  * Base-ribose notation. Zirbel, C. L., et al (2009). Classification and energetics of the
@@ -27,14 +27,7 @@ public enum BR {
   }
 
   public static BR fromString(final String candidate) {
-    for (final BR br : BR.values()) {
-      for (final String displayName : br.displayNames) {
-        if (Objects.equals(displayName, candidate)) {
-          return br;
-        }
-      }
-    }
-    return BR.UNKNOWN;
+      return Arrays.stream(BR.values()).filter(br -> Arrays.asList(br.displayNames).contains(candidate)).findFirst().orElse(BR.UNKNOWN);
   }
 
   public String getDisplayName() {

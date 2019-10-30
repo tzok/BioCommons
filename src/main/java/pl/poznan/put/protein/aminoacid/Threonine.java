@@ -24,15 +24,11 @@ public final class Threonine extends ProteinSidechain {
         "Threonine",
         'T',
         "THR");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.THREONINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
   }
 
   public static Threonine getInstance() {
     return Threonine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.THREONINE_ATOMS);
   }
 }

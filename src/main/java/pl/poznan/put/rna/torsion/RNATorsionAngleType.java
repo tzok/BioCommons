@@ -55,7 +55,7 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
   }
 
   public static MasterTorsionAngleType[] mainAngles() {
-    return RNATorsionAngleType.MAIN;
+    return RNATorsionAngleType.MAIN.clone();
   }
 
   public static AverageTorsionAngleType getAverageOverMainAngles() {

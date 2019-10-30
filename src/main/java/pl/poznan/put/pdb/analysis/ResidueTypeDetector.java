@@ -13,8 +13,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
 
-public final class ResidueTypeDetector {
+final class ResidueTypeDetector {
   private static final Collection<ResidueInformationProvider> PROVIDERS = new LinkedHashSet<>();
 
   static {
@@ -46,8 +47,8 @@ public final class ResidueTypeDetector {
     return new InvalidResidueInformationProvider(residueName);
   }
 
-  public static ResidueInformationProvider detectResidueTypeFromAtoms(
-      final Collection<AtomName> atomNames, final String residueName) {
+  private static ResidueInformationProvider detectResidueTypeFromAtoms(
+          final Collection<AtomName> atomNames, final String residueName) {
     final boolean hasHydrogen = ResidueTypeDetector.hasHydrogen(atomNames);
     final Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils.invokerPredicate("isHeavy");
 
@@ -60,20 +61,11 @@ public final class ResidueTypeDetector {
     ResidueInformationProvider bestProvider = null;
 
     for (final ResidueInformationProvider provider : ResidueTypeDetector.PROVIDERS) {
-      final Collection<AtomName> expected = EnumSet.noneOf(AtomName.class);
+      final Collection<AtomName> expected = provider.getAllMoleculeComponents().stream().flatMap(component -> component.getAtoms().stream()).filter(atomName -> hasHydrogen || (atomName.getType() != AtomType.H)).collect(Collectors.toCollection(() -> EnumSet.noneOf(AtomName.class)));
 
-      for (final ResidueComponent component : provider.getAllMoleculeComponents()) {
-        for (final AtomName atomName : component.getAtoms()) {
-          if (!hasHydrogen && (atomName.getType() == AtomType.H)) {
-            continue;
-          }
-          expected.add(atomName);
-        }
-      }
-
-      final Collection<AtomName> disjunction = CollectionUtils.disjunction(expected, actual);
+        final Collection<AtomName> disjunction = CollectionUtils.disjunction(expected, actual);
       final Collection<AtomName> union = CollectionUtils.union(expected, actual);
-      final double score = disjunction.size() / (double) union.size();
+      final double score = (double) disjunction.size() / union.size();
 
       if (score < bestScore) {
         bestScore = score;

@@ -6,12 +6,12 @@ import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.util.List;
 
-public interface DotBracketFromPdbInterface extends DotBracketInterface {
+interface DotBracketFromPdbInterface extends DotBracketInterface {
   PdbResidueIdentifier getResidueIdentifier(final DotBracketSymbol symbol);
 
   DotBracketSymbol getSymbol(final PdbResidueIdentifier residueIdentifier);
 
   boolean contains(final PdbResidueIdentifier residueIdentifier);
 
-  List<CombinedStrandFromPdb> combineStrands(List<ClassifiedBasePair> availableNonCanonical);
+  List<CombinedStrandFromPdb> combineStrands(List<? extends ClassifiedBasePair> availableNonCanonical);
 }

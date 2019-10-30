@@ -1,16 +1,15 @@
 package pl.poznan.put.pdb.analysis;
 
+import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.PredicateUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.biojava.nbio.structure.Atom;
 import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.ResidueNumber;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbAtomLine;
@@ -33,18 +32,19 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+// atomNames, identifier, residueName, modifiedResidueName, atoms, isModified, isMissing);
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Slf4j
 public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNumberICode {
-  private static final long serialVersionUID = 8274994774089305365L;
-  private static final Logger LOGGER = LoggerFactory.getLogger(PdbResidue.class);
+  @EqualsAndHashCode.Include private final List<AtomName> atomNames;
+  @EqualsAndHashCode.Include private final PdbResidueIdentifier identifier;
+  @EqualsAndHashCode.Include private final String residueName;
+  @EqualsAndHashCode.Include private final String modifiedResidueName;
+  @EqualsAndHashCode.Include private final List<PdbAtomLine> atoms;
+  @EqualsAndHashCode.Include private final boolean isModified;
+  @EqualsAndHashCode.Include private final boolean isMissing;
 
-  private final List<AtomName> atomNames;
   private final ResidueInformationProvider residueInformationProvider;
-  private final PdbResidueIdentifier identifier;
-  private final String residueName;
-  private final String modifiedResidueName;
-  private final List<PdbAtomLine> atoms;
-  private final boolean isModified;
-  private final boolean isMissing;
 
   public PdbResidue(
       final PdbResidueIdentifier identifier,
@@ -94,22 +94,15 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
             : Character.toString(residueNumberObject.getInsCode());
     final PdbResidueIdentifier residueIdentifier =
         new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
-    final List<PdbAtomLine> atoms = new ArrayList<>();
-
-    for (final Atom atom : group.getAtoms()) {
-      atoms.add(PdbAtomLine.fromBioJavaAtom(atom));
-    }
+    final List<PdbAtomLine> atoms =
+        group.getAtoms().stream().map(PdbAtomLine::fromBioJavaAtom).collect(Collectors.toList());
 
     final String residueName = group.getPDBName();
     return new PdbResidue(residueIdentifier, residueName, atoms, false);
   }
 
   private List<AtomName> detectAtomNames() {
-    final List<AtomName> result = new ArrayList<>();
-    for (final PdbAtomLine atom : atoms) {
-      result.add(atom.detectAtomName());
-    }
-    return result;
+    return atoms.stream().map(PdbAtomLine::detectAtomName).collect(Collectors.toList());
   }
 
   public final boolean wasSuccessfullyDetected() {
@@ -139,18 +132,18 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
       expected.removeAll(intersection);
 
       if (!actual.isEmpty()) {
-        PdbResidue.LOGGER.debug(
+        PdbResidue.log.debug(
             "Residue {} ({}) contains additional atoms: {}",
             this,
             getDetectedResidueName(),
-            Arrays.toString(actual.toArray(new AtomName[actual.size()])));
+            Arrays.toString(actual.toArray(new AtomName[0])));
       }
       if (!expected.isEmpty()) {
-        PdbResidue.LOGGER.debug(
+        PdbResidue.log.debug(
             "Residue {} ({}) has missing atoms: {}",
             this,
             getDetectedResidueName(),
-            Arrays.toString(expected.toArray(new AtomName[expected.size()])));
+            Arrays.toString(expected.toArray(new AtomName[0])));
       }
     }
 
@@ -214,30 +207,6 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
   }
 
   @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-    final PdbResidue other = (PdbResidue) o;
-    return (isModified == other.isModified)
-        && (isMissing == other.isMissing)
-        && Objects.equals(atomNames, other.atomNames)
-        && Objects.equals(identifier, other.identifier)
-        && Objects.equals(residueName, other.residueName)
-        && Objects.equals(modifiedResidueName, other.modifiedResidueName)
-        && Objects.equals(atoms, other.atoms);
-  }
-
-  @Override
-  public final int hashCode() {
-    return Objects.hash(
-        atomNames, identifier, residueName, modifiedResidueName, atoms, isModified, isMissing);
-  }
-
-  @Override
   public final String toString() {
     final String chainIdentifier = identifier.getChainIdentifier();
     final int residueNumber = identifier.getResidueNumber();
@@ -279,7 +248,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     return moleculeType.areConnected(this, other);
   }
 
-  public final int findConnectedResidueIndex(final List<PdbResidue> candidates) {
+  public final int findConnectedResidueIndex(final List<? extends PdbResidue> candidates) {
     final MoleculeType moleculeType = residueInformationProvider.getMoleculeType();
     for (int i = 0; i < candidates.size(); i++) {
       final PdbResidue candidate = candidates.get(i);
@@ -291,21 +260,13 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
   }
 
   public final String toPdb() {
-    final StringBuilder builder = new StringBuilder();
-    for (final PdbAtomLine atom : atoms) {
-      builder.append(atom);
-      builder.append('\n');
-    }
-    return builder.toString();
+    return atoms.stream().map(atom -> String.valueOf(atom) + '\n').collect(Collectors.joining());
   }
 
   public final String toCif() {
-    final StringBuilder builder = new StringBuilder();
-    builder.append(PdbAtomLine.CIF_LOOP).append('\n');
-    for (final PdbAtomLine atom : atoms) {
-      builder.append(atom.toCif()).append('\n');
-    }
-    return builder.toString();
+    return atoms.stream()
+        .map(atom -> atom.toCif() + '\n')
+        .collect(Collectors.joining("", PdbAtomLine.CIF_LOOP + '\n', ""));
   }
 
   public final ResidueInformationProvider getResidueInformationProvider() {
@@ -328,7 +289,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
         .orElse(Collections.emptyList());
   }
 
-  public Plane getNucleobasePlane() {
+  public final Plane getNucleobasePlane() {
     if (residueInformationProvider instanceof NucleobaseType) {
       final Base base = ((NucleobaseType) residueInformationProvider).getBaseInstance();
 

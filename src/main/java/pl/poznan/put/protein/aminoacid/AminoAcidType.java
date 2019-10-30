@@ -66,7 +66,7 @@ public enum AminoAcidType implements ResidueInformationProvider {
       }
     }
 
-    return typesList.toArray(new TorsionAngleType[typesList.size()]);
+    return typesList.toArray(new TorsionAngleType[0]);
   }
 
   public ProteinSidechain getProteinSidechainInstance() {

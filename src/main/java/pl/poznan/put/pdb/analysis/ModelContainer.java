@@ -1,6 +1,5 @@
 package pl.poznan.put.pdb.analysis;
 
-import java.io.Closeable;
 import java.io.File;
 import java.util.List;
 
@@ -8,7 +7,7 @@ import java.util.List;
  * An interface representing a set of PDB files which all correspond to the same structure and also
  * their chain names' mapping.
  */
-public interface ModelContainer extends Closeable {
+public interface ModelContainer {
   boolean isCif();
 
   File getCifFile();

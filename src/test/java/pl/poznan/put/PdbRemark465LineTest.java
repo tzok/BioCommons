@@ -1,5 +1,6 @@
 package pl.poznan.put;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,28 +24,28 @@ public class PdbRemark465LineTest {
       StringUtils.normalizeSpace(PdbRemark465LineTest.VALID_LINE);
 
   @Test
-  public final void testParseToString() throws PdbParsingException {
+  public final void testParseToString() {
     final PdbRemark465Line parsed = PdbRemark465Line.parse(PdbRemark465LineTest.VALID_LINE);
     final String parsedToString = parsed.toString();
-    assertFalse(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.VALID_LINE));
-    assertEquals(PdbRemark465LineTest.VALID_LINE, parsedToString);
+    assertThat(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.VALID_LINE), is(false));
+    assertThat(parsedToString, is(PdbRemark465LineTest.VALID_LINE));
   }
 
   @Test(expected = PdbParsingException.class)
-  public final void testShortLine() throws PdbParsingException {
-    assertFalse(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.TOO_SHORT_LINE));
+  public final void testShortLine() {
+    assertThat(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.TOO_SHORT_LINE), is(false));
     PdbRemark465Line.parse(PdbRemark465LineTest.TOO_SHORT_LINE);
   }
 
   @Test(expected = PdbParsingException.class)
-  public final void testMisalignedLine() throws PdbParsingException {
-    assertFalse(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.MISALIGNED_LINE));
+  public final void testMisalignedLine() {
+    assertThat(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.MISALIGNED_LINE), is(false));
     PdbRemark465Line.parse(PdbRemark465LineTest.MISALIGNED_LINE);
   }
 
   @Test
   public final void testCommentLines() {
-    assertTrue(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.COMMENT_LINE_1));
-    assertTrue(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.COMMENT_LINE_2));
+    assertThat(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.COMMENT_LINE_1), is(true));
+    assertThat(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.COMMENT_LINE_2), is(true));
   }
 }

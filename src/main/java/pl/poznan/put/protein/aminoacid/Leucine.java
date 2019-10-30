@@ -30,17 +30,13 @@ public final class Leucine extends ProteinSidechain {
         "Leucine",
         'L',
         "LEU");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.LEUCINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.LEUCINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
   }
 
   public static Leucine getInstance() {
     return Leucine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.LEUCINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.LEUCINE_ATOMS);
   }
 }

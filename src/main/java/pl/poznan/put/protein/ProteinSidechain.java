@@ -4,11 +4,20 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
-import pl.poznan.put.protein.torsion.*;
+import pl.poznan.put.protein.torsion.Calpha;
+import pl.poznan.put.protein.torsion.Omega;
+import pl.poznan.put.protein.torsion.Phi;
+import pl.poznan.put.protein.torsion.ProteinChiType;
+import pl.poznan.put.protein.torsion.Psi;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class ProteinSidechain extends ResidueComponent
     implements ResidueInformationProvider {
@@ -30,48 +39,44 @@ public abstract class ProteinSidechain extends ResidueComponent
     this.oneLetterName = oneLetterName;
     this.pdbNames = Arrays.asList(pdbNames);
 
-    fillChiAtomsMap();
-
     torsionAngleTypes.add(Phi.getInstance());
     torsionAngleTypes.add(Psi.getInstance());
     torsionAngleTypes.add(Omega.getInstance());
     torsionAngleTypes.add(Calpha.getInstance());
   }
 
-  protected abstract void fillChiAtomsMap();
-
   @Override
-  public List<ResidueComponent> getAllMoleculeComponents() {
+  public final List<ResidueComponent> getAllMoleculeComponents() {
     return Arrays.asList(ProteinBackbone.getInstance(), this);
   }
 
   @Override
-  public String getDescription() {
+  public final String getDescription() {
     return longName;
   }
 
   @Override
-  public char getOneLetterName() {
+  public final char getOneLetterName() {
     return oneLetterName;
   }
 
   @Override
-  public String getDefaultPdbName() {
+  public final String getDefaultPdbName() {
     assert !pdbNames.isEmpty();
     return pdbNames.get(0);
   }
 
   @Override
-  public List<String> getPdbNames() {
+  public final List<String> getPdbNames() {
     return Collections.unmodifiableList(pdbNames);
   }
 
   @Override
-  public List<TorsionAngleType> getTorsionAngleTypes() {
+  public final List<TorsionAngleType> getTorsionAngleTypes() {
     return Collections.unmodifiableList(torsionAngleTypes);
   }
 
-  public Quadruplet<AtomName> getChiAtoms(final ProteinChiType chiType) {
+  public final Quadruplet<AtomName> getChiAtoms(final ProteinChiType chiType) {
     if (!hasChiDefined(chiType)) {
       throw new IllegalArgumentException("Invalid " + chiType + " angle for " + longName);
     }
@@ -79,7 +84,7 @@ public abstract class ProteinSidechain extends ResidueComponent
     return chiAtoms.get(chiType);
   }
 
-  public boolean hasChiDefined(final ProteinChiType chiType) {
+  public final boolean hasChiDefined(final ProteinChiType chiType) {
     return chiAtoms.containsKey(chiType);
   }
 }
