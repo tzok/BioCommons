@@ -39,11 +39,11 @@ public final class ExecHelper {
     return ExecHelper.execute(null, environment, command, arguments);
   }
 
-  public static ExecutionResult execute(
-      final File workingDirectory,
-      final Map<String, String> environment,
-      final String command,
-      final String... arguments)
+  private static ExecutionResult execute(
+          final File workingDirectory,
+          final Map<String, String> environment,
+          final String command,
+          final String... arguments)
       throws IOException {
     // run `chmod a+x` on the command
     ExecHelper.makeExecutable(command);

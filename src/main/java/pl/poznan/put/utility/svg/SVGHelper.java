@@ -1,19 +1,5 @@
 package pl.poznan.put.utility.svg;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.util.*;
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
@@ -40,6 +26,25 @@ import org.w3c.dom.Node;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
 import pl.poznan.put.utility.ExecHelper;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 public final class SVGHelper {
@@ -140,7 +145,7 @@ public final class SVGHelper {
     return SVGHelper.merge(Arrays.asList(svgs));
   }
 
-  public static SVGDocument merge(final List<SVGDocument> svgs) {
+  public static SVGDocument merge(final List<? extends SVGDocument> svgs) {
     if (svgs.isEmpty()) {
       return SVGHelper.emptyDocument();
     }
@@ -242,7 +247,7 @@ public final class SVGHelper {
     }
 
     @Override
-    public final Iterator getPrefixes(final String s) {
+    public final Iterator<String> getPrefixes(final String s) {
       throw new UnsupportedOperationException("N/A");
     }
   }

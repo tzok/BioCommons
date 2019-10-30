@@ -1,39 +1,41 @@
 package pl.poznan.put.constant;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.*;
 
 import java.awt.Color;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 public class ColorsTest {
   @Test
-  public void getDistinctColors() {
-    assertEquals(33, Colors.getDistinctColors().length);
+  public final void getDistinctColors() {
+    Assert.assertThat(Colors.getDistinctColors().length, is(33));
   }
 
   @Test
-  public void interpolateColor() {
+  public final void interpolateColor() {
     final Color minimumColor = Colors.interpolateColor(0.0, 0.0, 1.0);
     final Color maximumColor = Colors.interpolateColor(1.0, 0.0, 1.0);
-    assertEquals(minimumColor, Colors.interpolateColor(-10.0, 0.0, 1.0));
-    assertEquals(maximumColor, Colors.interpolateColor(10.0, 0.0, 1.0));
+    Assert.assertThat(Colors.interpolateColor(-10.0, 0.0, 1.0), is(minimumColor));
+    Assert.assertThat(Colors.interpolateColor(10.0, 0.0, 1.0), is(maximumColor));
   }
 
   @Test
-  public void toHexString() {
-    assertEquals("#000000", Colors.toHexString(Color.BLACK));
-    assertEquals("#FF0000", Colors.toHexString(Color.RED));
-    assertEquals("#00FF00", Colors.toHexString(Color.GREEN));
-    assertEquals("#0000FF", Colors.toHexString(Color.BLUE));
-    assertEquals("#FFFFFF", Colors.toHexString(Color.WHITE));
+  public final void toHexString() {
+    Assert.assertThat(Colors.toHexString(Color.BLACK), is("#000000"));
+    Assert.assertThat(Colors.toHexString(Color.RED), is("#FF0000"));
+    Assert.assertThat(Colors.toHexString(Color.GREEN), is("#00FF00"));
+    Assert.assertThat(Colors.toHexString(Color.BLUE), is("#0000FF"));
+    Assert.assertThat(Colors.toHexString(Color.WHITE), is("#FFFFFF"));
   }
 
   @Test
-  public void toSvgString() {
-    assertEquals("rgb(0,0,0)", Colors.toSvgString(Color.BLACK));
-    assertEquals("rgb(255,0,0)", Colors.toSvgString(Color.RED));
-    assertEquals("rgb(0,255,0)", Colors.toSvgString(Color.GREEN));
-    assertEquals("rgb(0,0,255)", Colors.toSvgString(Color.BLUE));
-    assertEquals("rgb(255,255,255)", Colors.toSvgString(Color.WHITE));
+  public final void toSvgString() {
+    Assert.assertThat(Colors.toSvgString(Color.BLACK), is("rgb(0,0,0)"));
+    Assert.assertThat(Colors.toSvgString(Color.RED), is("rgb(255,0,0)"));
+    Assert.assertThat(Colors.toSvgString(Color.GREEN), is("rgb(0,255,0)"));
+    Assert.assertThat(Colors.toSvgString(Color.BLUE), is("rgb(0,0,255)"));
+    Assert.assertThat(Colors.toSvgString(Color.WHITE), is("rgb(255,255,255)"));
   }
 }
