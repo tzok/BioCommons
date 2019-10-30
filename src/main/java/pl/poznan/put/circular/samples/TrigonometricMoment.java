@@ -2,11 +2,11 @@ package pl.poznan.put.circular.samples;
 
 import pl.poznan.put.circular.Angle;
 
-public class TrigonometricMoment {
+class TrigonometricMoment {
   private final Angle meanDirection;
   private final double meanResultantLength;
 
-  public TrigonometricMoment(final Angle meanDirection, final double meanResultantLength) {
+  TrigonometricMoment(final Angle meanDirection, final double meanResultantLength) {
     super();
     this.meanDirection = meanDirection;
     this.meanResultantLength = meanResultantLength;

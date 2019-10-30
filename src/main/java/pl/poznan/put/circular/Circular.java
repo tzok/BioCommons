@@ -1,7 +1,6 @@
 package pl.poznan.put.circular;
 
-import java.io.Serializable;
-import java.util.Objects;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
@@ -9,12 +8,12 @@ import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.utility.AngleFormat;
 import pl.poznan.put.utility.NumberFormatUtils;
 
-public abstract class Circular implements Comparable<Circular>, Serializable {
-  private static final long serialVersionUID = -4674646476160594025L;
+import java.io.Serializable;
 
+public abstract class Circular implements Comparable<Circular>, Serializable {
   private final double radians;
 
-  protected Circular(final double value, final ValueType valueType) {
+  Circular(final double value, final ValueType valueType) {
     super();
     radians = valueType.toRadians(value);
   }
@@ -36,24 +35,7 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
   }
 
   @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-    final Circular circular = (Circular) o;
-    return Precision.equals(getRadians2PI(), circular.getRadians2PI(), 1.0e-3);
-  }
-
-  @Override
-  public final int hashCode() {
-    return Objects.hash(radians);
-  }
-
-  @Override
-  public String toString() {
+  public final String toString() {
     if (isValid()) {
       return String.format(
           "%s rad, %s",
@@ -70,5 +52,20 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
   @Override
   public final int compareTo(final Circular t) {
     return Double.compare(getRadians2PI(), t.getRadians2PI());
+  }
+
+  @Override
+  public final boolean equals(final Object o) {
+    if (this == o) return true;
+
+    if (!(o instanceof Circular)) return false;
+
+    final Circular circular = (Circular) o;
+    return Precision.equals(0.0, Angle.subtractByMinimum(radians, circular.radians), 1.0e-3);
+  }
+
+  @Override
+  public final int hashCode() {
+    return new HashCodeBuilder(17, 37).append(radians).toHashCode();
   }
 }

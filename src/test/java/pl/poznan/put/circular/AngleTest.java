@@ -1,5 +1,6 @@
 package pl.poznan.put.circular;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.apache.commons.math3.util.FastMath;
@@ -9,13 +10,13 @@ import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 
 public class AngleTest {
   private static final Angle DEGREES_0 = new Angle(0, ValueType.DEGREES);
-  private static final Angle DEGREES_45 = new Angle(45, ValueType.DEGREES);
-  private static final Angle DEGREES_90 = new Angle(90, ValueType.DEGREES);
-  private static final Angle DEGREES_135 = new Angle(135, ValueType.DEGREES);
-  private static final Angle DEGREES_180 = new Angle(180, ValueType.DEGREES);
-  private static final Angle DEGREES_225 = new Angle(225, ValueType.DEGREES);
-  private static final Angle DEGREES_270 = new Angle(270, ValueType.DEGREES);
-  private static final Angle DEGREES_315 = new Angle(315, ValueType.DEGREES);
+  private static final Angle DEGREES_45 = new Angle(45.0, ValueType.DEGREES);
+  private static final Angle DEGREES_90 = new Angle(90.0, ValueType.DEGREES);
+  private static final Angle DEGREES_135 = new Angle(135.0, ValueType.DEGREES);
+  private static final Angle DEGREES_180 = new Angle(180.0, ValueType.DEGREES);
+  private static final Angle DEGREES_225 = new Angle(225.0, ValueType.DEGREES);
+  private static final Angle DEGREES_270 = new Angle(270.0, ValueType.DEGREES);
+  private static final Angle DEGREES_315 = new Angle(315.0, ValueType.DEGREES);
   private static final Angle[] ANGLES = {
     AngleTest.DEGREES_0, AngleTest.DEGREES_45, AngleTest.DEGREES_90,
     AngleTest.DEGREES_135, AngleTest.DEGREES_180, AngleTest.DEGREES_225,
@@ -23,24 +24,24 @@ public class AngleTest {
   };
 
   @Test
-  public void fromHourMinuteString() {
-    assertEquals(AngleTest.DEGREES_0, Angle.fromHourMinuteString("00.00"));
-    assertEquals(AngleTest.DEGREES_45, Angle.fromHourMinuteString("03.00"));
-    assertEquals(AngleTest.DEGREES_90, Angle.fromHourMinuteString("06.00"));
-    assertEquals(AngleTest.DEGREES_135, Angle.fromHourMinuteString("09.00"));
-    assertEquals(AngleTest.DEGREES_180, Angle.fromHourMinuteString("12.00"));
-    assertEquals(AngleTest.DEGREES_225, Angle.fromHourMinuteString("15.00"));
-    assertEquals(AngleTest.DEGREES_270, Angle.fromHourMinuteString("18.00"));
-    assertEquals(AngleTest.DEGREES_315, Angle.fromHourMinuteString("21.00"));
+  public final void fromHourMinuteString() {
+    assertThat(Angle.fromHourMinuteString("00.00"), is(AngleTest.DEGREES_0));
+    assertThat(Angle.fromHourMinuteString("03.00"), is(AngleTest.DEGREES_45));
+    assertThat(Angle.fromHourMinuteString("06.00"), is(AngleTest.DEGREES_90));
+    assertThat(Angle.fromHourMinuteString("09.00"), is(AngleTest.DEGREES_135));
+    assertThat(Angle.fromHourMinuteString("12.00"), is(AngleTest.DEGREES_180));
+    assertThat(Angle.fromHourMinuteString("15.00"), is(AngleTest.DEGREES_225));
+    assertThat(Angle.fromHourMinuteString("18.00"), is(AngleTest.DEGREES_270));
+    assertThat(Angle.fromHourMinuteString("21.00"), is(AngleTest.DEGREES_315));
   }
 
   @Test(expected = InvalidVectorFormatException.class)
-  public void fromHourMinuteStringInvalidDots() {
+  public final void fromHourMinuteStringInvalidDots() {
     Angle.fromHourMinuteString("00.00.00");
   }
 
   @Test(expected = InvalidVectorFormatException.class)
-  public void fromHourMinuteStringInvalidNumber() {
+  public final void fromHourMinuteStringInvalidNumber() {
     Angle.fromHourMinuteString("aa.bb");
   }
 
@@ -51,62 +52,62 @@ public class AngleTest {
       for (int j = 0; j < 360; j++) {
         final double rj = FastMath.toRadians(j);
         assertEquals(
-            String.format("Difference in subtraction for: %d and %d", i, j),
-            Angle.subtractByMinimum(ri, rj),
-            Angle.subtractAsVectors(ri, rj),
-            1.0e-6);
+                String.format("Difference in subtraction for: %d and %d", i, j),
+                Angle.subtractByMinimum(ri, rj),
+                Angle.subtractAsVectors(ri, rj),
+                1.0e-6);
       }
     }
   }
 
   @Test
-  public void invalidInstance() {
+  public final void invalidInstance() {
     final Angle invalidInstance = Angle.invalidInstance();
-    assertFalse(invalidInstance.isValid());
+    assertThat(invalidInstance.isValid(), is(false));
 
     // whatever operation you do, the result remains invalid
     for (final Angle angle : AngleTest.ANGLES) {
-      assertFalse(invalidInstance.subtract(angle).isValid());
+      assertThat(invalidInstance.subtract(angle).isValid(), is(false));
     }
 
     // all values are NaN
-    assertTrue(Double.isNaN(invalidInstance.getDegrees()));
-    assertTrue(Double.isNaN(invalidInstance.getDegrees360()));
-    assertTrue(Double.isNaN(invalidInstance.getRadians()));
-    assertTrue(Double.isNaN(invalidInstance.getRadians2PI()));
+    assertThat(Double.isNaN(invalidInstance.getDegrees()), is(true));
+    assertThat(Double.isNaN(invalidInstance.getDegrees360()), is(true));
+    assertThat(Double.isNaN(invalidInstance.getRadians()), is(true));
+    assertThat(Double.isNaN(invalidInstance.getRadians2PI()), is(true));
   }
 
   @Test
-  public void isBetween() {
+  public final void testIsBetween() {
     // 0 <= 45 < 90
-    assertTrue(AngleTest.DEGREES_45.isBetween(AngleTest.DEGREES_0, AngleTest.DEGREES_90));
+    assertThat(AngleTest.DEGREES_45.isBetween(AngleTest.DEGREES_0, AngleTest.DEGREES_90), is(true));
     // 45 <= 45 < 90
-    assertTrue(AngleTest.DEGREES_45.isBetween(AngleTest.DEGREES_45, AngleTest.DEGREES_90));
+    assertThat(AngleTest.DEGREES_45.isBetween(AngleTest.DEGREES_45, AngleTest.DEGREES_90), is(true));
     // not (0 <= 45 < 45)
-    assertFalse(AngleTest.DEGREES_45.isBetween(AngleTest.DEGREES_0, AngleTest.DEGREES_45));
+    assertThat(AngleTest.DEGREES_45.isBetween(AngleTest.DEGREES_0, AngleTest.DEGREES_45), is(false));
     // not (45 <= 0 < 90)
-    assertFalse(AngleTest.DEGREES_0.isBetween(AngleTest.DEGREES_45, AngleTest.DEGREES_90));
+    assertThat(AngleTest.DEGREES_0.isBetween(AngleTest.DEGREES_45, AngleTest.DEGREES_90), is(false));
     // 315 <= 0 < 45
-    assertTrue(AngleTest.DEGREES_0.isBetween(AngleTest.DEGREES_315, AngleTest.DEGREES_45));
+    assertThat(AngleTest.DEGREES_0.isBetween(AngleTest.DEGREES_315, AngleTest.DEGREES_45), is(true));
     // 270 <= 315 < 45
-    assertTrue(AngleTest.DEGREES_315.isBetween(AngleTest.DEGREES_270, AngleTest.DEGREES_45));
+    assertThat(AngleTest.DEGREES_315.isBetween(AngleTest.DEGREES_270, AngleTest.DEGREES_45), is(true));
   }
 
   @Test
-  public void multiply() {
+  public final void multiply() {
     // multiplied by 1.0 does not change the value
     for (final Angle angle : AngleTest.ANGLES) {
-      assertEquals(angle, angle.multiply(1.0));
+      assertThat(angle.multiply(1.0), is(angle));
     }
 
     // multiplied by 2.0, the distance is equal to the value itself
     for (final Angle angle : AngleTest.ANGLES) {
-      assertEquals(angle, angle.multiply(2.0).orderedSubtract(angle));
+      assertThat(angle.multiply(2.0).orderedSubtract(angle), is(angle));
     }
   }
 
   @Test
-  public void orderedSubtract() {
+  public final void orderedSubtract() {
     final int length = AngleTest.ANGLES.length;
     for (int i = 1; i < length; i++) {
       final Angle ai = AngleTest.ANGLES[i];

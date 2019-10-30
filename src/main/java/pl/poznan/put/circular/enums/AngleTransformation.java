@@ -23,7 +23,7 @@ public enum AngleTransformation {
   public double transform(final double radians) {
     switch (this) {
       case CLOCK:
-        return (-radians + (Math.PI / 2)) % MathUtils.TWO_PI;
+        return (-radians + (Math.PI / 2.0)) % MathUtils.TWO_PI;
       case MATH:
         return radians;
       default:

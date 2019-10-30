@@ -1,13 +1,5 @@
 package pl.poznan.put.circular.utility;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.svg.SVGDocument;
@@ -18,8 +10,24 @@ import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 /** A class providing helper functions. */
-public final class Helper {
+final class Helper {
+  private Helper() {
+    super();
+  }
+
   /**
    * Read a resource of this project.
    *
@@ -30,7 +38,7 @@ public final class Helper {
   public static String readResource(final String name) throws IOException {
     final ClassLoader classLoader = Helper.class.getClassLoader();
     try (final InputStream stream = classLoader.getResourceAsStream(name)) {
-      return IOUtils.toString(stream, Charset.defaultCharset());
+      return IOUtils.toString(Objects.requireNonNull(stream), Charset.defaultCharset());
     }
   }
 
@@ -56,21 +64,13 @@ public final class Helper {
    */
   public static List<Angle> loadHourMinuteData(final String content) {
     final String[] lines = StringUtils.split(content, '\n');
-    final List<Angle> data = new ArrayList<>(lines.length);
 
-    for (final String line : lines) {
-      if (!line.isEmpty() && (line.charAt(0) == '#')) {
-        continue;
-      }
-
-      for (final String token : StringUtils.split(line)) {
-        if (!StringUtils.isBlank(token)) {
-          data.add(Angle.fromHourMinuteString(token));
-        }
-      }
-    }
-
-    return data;
+    return Arrays.stream(lines)
+        .filter(line -> line.isEmpty() || (line.charAt(0) != '#'))
+        .flatMap(line -> Arrays.stream(StringUtils.split(line)))
+        .filter(token -> !StringUtils.isBlank(token))
+        .map(Angle::fromHourMinuteString)
+        .collect(Collectors.toCollection(() -> new ArrayList<>(lines.length)));
   }
 
   /**
@@ -82,25 +82,13 @@ public final class Helper {
    */
   public static List<Axis> loadAxisData(final String content) {
     final String[] lines = StringUtils.split(content, '\n');
-    final List<Axis> data = new ArrayList<>(lines.length);
 
-    for (final String line : lines) {
-      if (!line.isEmpty() && (line.charAt(0) == '#')) {
-        continue;
-      }
-
-      for (final String token : StringUtils.split(line)) {
-        if (!StringUtils.isBlank(token)) {
-          final double degrees = Double.parseDouble(token);
-          data.add(new Axis(degrees, ValueType.DEGREES));
-        }
-      }
-    }
-
-    return data;
-  }
-
-  private Helper() {
-    super();
+    return Arrays.stream(lines)
+        .filter(line -> line.isEmpty() || (line.charAt(0) != '#'))
+        .flatMap(line -> Arrays.stream(StringUtils.split(line)))
+        .filter(token -> !StringUtils.isBlank(token))
+        .mapToDouble(Double::parseDouble)
+        .mapToObj(degrees -> new Axis(degrees, ValueType.DEGREES))
+        .collect(Collectors.toCollection(() -> new ArrayList<>(lines.length)));
   }
 }

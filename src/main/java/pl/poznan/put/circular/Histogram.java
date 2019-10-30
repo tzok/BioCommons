@@ -49,12 +49,7 @@ public class Histogram {
   }
 
   private Collection<Circular> getBin(final double radiansStart) {
-    for (final Bin bin : bins) {
-      if (Precision.equals(bin.getRadiansStart(), radiansStart, 1.0e-3)) {
-        return bin.getData();
-      }
-    }
-    return Collections.emptyList();
+      return bins.stream().filter(bin -> Precision.equals(bin.getRadiansStart(), radiansStart, 1.0e-3)).findFirst().map(Bin::getData).orElse(Collections.emptyList());
   }
 
   public final double getMaxFrequency() {

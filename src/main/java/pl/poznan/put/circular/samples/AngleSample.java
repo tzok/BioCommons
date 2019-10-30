@@ -43,22 +43,22 @@ public final class AngleSample {
     final TrigonometricMoment um1 = getUncenteredMoment(1);
     meanDirection = um1.getMeanDirection();
     meanResultantLength = um1.getMeanResultantLength();
-    circularVariance = 1 - meanResultantLength;
-    circularStandardDeviation = FastMath.sqrt(-2 * FastMath.log(meanResultantLength));
+    circularVariance = 1.0 - meanResultantLength;
+    circularStandardDeviation = FastMath.sqrt(-2.0 * FastMath.log(meanResultantLength));
 
     final TrigonometricMoment cm2 = getCenteredMoment(2);
     final TrigonometricMoment um2 = getUncenteredMoment(2);
     circularDispersion =
-        (1.0 - cm2.getMeanResultantLength()) / (2 * FastMath.pow(meanResultantLength, 2));
+        (1.0 - cm2.getMeanResultantLength()) / (2.0 * FastMath.pow(meanResultantLength, 2));
     skewness =
         (cm2.getMeanResultantLength()
                 * FastMath.sin(
-                    cm2.getMeanDirection().subtract(meanDirection.multiply(2)).getRadians()))
+                    cm2.getMeanDirection().subtract(meanDirection.multiply(2.0)).getRadians()))
             / FastMath.sqrt(circularVariance);
     kurtosis =
         ((cm2.getMeanResultantLength()
                     * FastMath.cos(
-                        um2.getMeanDirection().subtract(meanDirection.multiply(2)).getRadians()))
+                        um2.getMeanDirection().subtract(meanDirection.multiply(2.0)).getRadians()))
                 - FastMath.pow(meanResultantLength, 4))
             / FastMath.pow(circularVariance, 2);
 
@@ -67,22 +67,18 @@ public final class AngleSample {
     meanDeviation = medianFunctionRoot.getValue();
   }
 
-  public TrigonometricMoment getUncenteredMoment(final int p) {
+  private TrigonometricMoment getUncenteredMoment(final int p) {
     return getMoment(p, false);
   }
 
-  public TrigonometricMoment getCenteredMoment(final int p) {
+  private TrigonometricMoment getCenteredMoment(final int p) {
     return getMoment(p, true);
   }
 
   private UnivariatePointValuePair minimizeMedianFunction() {
     final UnivariateFunction medianObjectiveFunction =
         v -> {
-          double sum = 0;
-          for (final Angle vector : data) {
-            sum +=
-                Angle.subtractByMinimum(Math.PI, Angle.subtractByMinimum(vector.getRadians(), v));
-          }
+          final double sum = data.stream().mapToDouble(vector -> Angle.subtractByMinimum(Math.PI, Angle.subtractByMinimum(vector.getRadians(), v))).sum();
           return FastMath.PI - (sum / data.size());
         };
 

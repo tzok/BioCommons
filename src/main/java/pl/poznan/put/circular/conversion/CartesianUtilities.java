@@ -1,5 +1,7 @@
 package pl.poznan.put.circular.conversion;
 
+import org.apache.commons.math3.geometry.Vector;
+import org.apache.commons.math3.geometry.euclidean.threed.Euclidean3D;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.RotationConvention;
@@ -8,6 +10,10 @@ import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
 
 public final class CartesianUtilities {
+  private CartesianUtilities() {
+    super();
+  }
+
   public static void main(final String[] args) {
     final Vector3D coordA = new Vector3D(50.626, 49.730, 50.573); // P
     final Vector3D coordB = new Vector3D(50.161, 49.136, 52.023); // O5'
@@ -48,7 +54,10 @@ public final class CartesianUtilities {
     final Plane plane = new Plane(coordC, coordB, coordA, 1.0e-3);
 
     final Rotation rotationFirst =
-        new Rotation(plane.getNormal().normalize(), angleBCD.getRadians(), RotationConvention.VECTOR_OPERATOR);
+        new Rotation(
+            plane.getNormal().normalize(),
+            angleBCD.getRadians(),
+            RotationConvention.VECTOR_OPERATOR);
     final Rotation rotationSecond =
         new Rotation(unitBC, torsionABCD.getRadians(), RotationConvention.VECTOR_OPERATOR);
 
@@ -60,11 +69,7 @@ public final class CartesianUtilities {
   }
 
   private static Vector3D coordD0(
-      final Vector3D coordB, final Vector3D coordC, final double lengthCD) {
-    return coordB.subtract(coordC).normalize().scalarMultiply(lengthCD);
-  }
-
-  private CartesianUtilities() {
-    super();
+      final Vector<Euclidean3D> coordB, final Vector<Euclidean3D> coordC, final double lengthCD) {
+    return (Vector3D) coordB.subtract(coordC).normalize().scalarMultiply(lengthCD);
   }
 }

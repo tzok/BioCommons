@@ -35,12 +35,12 @@ public class RawDataPlot extends AbstractDrawable {
   private double observationSize;
   private double tickTextWidth;
 
-  public RawDataPlot(
-      final Collection<? extends Circular> data,
-      final double diameter,
-      final double majorTickSpread,
-      final double minorTickSpread,
-      final AngleTransformation angleTransformation) {
+  RawDataPlot(
+          final Collection<? extends Circular> data,
+          final double diameter,
+          final double majorTickSpread,
+          final double minorTickSpread,
+          final AngleTransformation angleTransformation) {
     super();
     this.data = new ArrayList<>(data);
     this.diameter = diameter;
@@ -56,12 +56,12 @@ public class RawDataPlot extends AbstractDrawable {
     init();
   }
 
-  public RawDataPlot(final Collection<? extends Circular> data, final double diameter) {
-    this(data, diameter, FastMath.PI / 2, FastMath.PI / 12, AngleTransformation.CLOCK);
+  RawDataPlot(final Collection<? extends Circular> data, final double diameter) {
+    this(data, diameter, FastMath.PI / 2.0, FastMath.PI / 12.0, AngleTransformation.CLOCK);
   }
 
   public RawDataPlot(final Collection<? extends Circular> data) {
-    this(data, 640);
+    this(data, 640.0);
   }
 
   private void init() {
@@ -76,7 +76,7 @@ public class RawDataPlot extends AbstractDrawable {
     tickTextWidth = Double.NEGATIVE_INFINITY;
   }
 
-  protected final double transform(final double radians) {
+  final double transform(final double radians) {
     return angleTransformation.transform(radians);
   }
 
@@ -164,24 +164,24 @@ public class RawDataPlot extends AbstractDrawable {
     if ((td == 0) || (td == 180)) {
       // special case for 90 and 270 degrees
       x1 = xv;
-      y1 = yv + (observationSize / 2);
+      y1 = yv + (observationSize / 2.0);
       x2 = xv;
-      y2 = yv - (observationSize / 2);
+      y2 = yv - (observationSize / 2.0);
     } else {
       // 'ap', 'bp' = equation for perpendicular line to 'a',
       // 'b'
       final double ap = -a;
       final double bp = yv + (a * xv);
       // 'sa', 'sb', 'sc' = quadratic equation parameters
-      final double sa = 1 + FastMath.pow(ap, 2);
-      final double sb = (-2 * xv) + (2 * ap * (bp - yv));
+      final double sa = 1.0 + FastMath.pow(ap, 2);
+      final double sb = (-2.0 * xv) + (2.0 * ap * (bp - yv));
       final double sc =
-          (FastMath.pow(xv, 2) + FastMath.pow(bp - yv, 2)) - FastMath.pow(observationSize / 2, 2);
+          (FastMath.pow(xv, 2) + FastMath.pow(bp - yv, 2)) - FastMath.pow(observationSize / 2.0, 2);
       // solve
-      final double delta = (sb * sb) - (4 * sa * sc);
-      x1 = (-sb - FastMath.sqrt(delta)) / (2 * sa);
+      final double delta = (sb * sb) - (4.0 * sa * sc);
+      x1 = (-sb - FastMath.sqrt(delta)) / (2.0 * sa);
       y1 = (ap * x1) + bp;
-      x2 = (-sb + FastMath.sqrt(delta)) / (2 * sa);
+      x2 = (-sb + FastMath.sqrt(delta)) / (2.0 * sa);
       y2 = (ap * x2) + bp;
     }
 
@@ -239,22 +239,22 @@ public class RawDataPlot extends AbstractDrawable {
       }
 
       // center the text around found point coordinates
-      xv -= (width / 2) * FastMath.abs(FastMath.sin(t));
-      yv += (height / 2) * FastMath.abs(FastMath.cos(t));
+      xv -= (width / 2.0) * FastMath.abs(FastMath.sin(t));
+      yv += (height / 2.0) * FastMath.abs(FastMath.cos(t));
 
       svgGraphics.drawString(text, (float) xv, (float) yv);
     }
   }
 
-  public final Collection<Circular> getData() {
+  final Collection<Circular> getData() {
     return Collections.unmodifiableCollection(data);
   }
 
-  public final double getDiameter() {
+  final double getDiameter() {
     return diameter;
   }
 
-  public final boolean isAxes() {
+  final boolean isAxes() {
     return isAxes;
   }
 
@@ -266,7 +266,7 @@ public class RawDataPlot extends AbstractDrawable {
     return minorTickSpread;
   }
 
-  public final double getCenterX() {
+  final double getCenterX() {
     return centerX;
   }
 
@@ -274,7 +274,7 @@ public class RawDataPlot extends AbstractDrawable {
     this.centerX = centerX;
   }
 
-  public final double getCenterY() {
+  final double getCenterY() {
     return centerY;
   }
 
@@ -282,7 +282,7 @@ public class RawDataPlot extends AbstractDrawable {
     this.centerY = centerY;
   }
 
-  public final double getRadius() {
+  final double getRadius() {
     return radius;
   }
 

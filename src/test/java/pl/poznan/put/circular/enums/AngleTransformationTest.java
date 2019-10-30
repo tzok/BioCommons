@@ -1,9 +1,10 @@
 package pl.poznan.put.circular.enums;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.*;
 
 import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
 
@@ -14,7 +15,7 @@ public class AngleTransformationTest {
   private static final Angle ONE_AND_HALF = new Angle(270.0, ValueType.DEGREES);
 
   @Test
-  public void transform() {
+  public final void transform() {
     // tests on MATH transformation
     Stream.of(
             Pair.of(AngleTransformationTest.ZERO, AngleTransformationTest.ZERO),
@@ -28,7 +29,7 @@ public class AngleTransformationTest {
                   new Angle(
                       AngleTransformation.MATH.transform(pair.getRight().getRadians()),
                       ValueType.RADIANS);
-              assertEquals(expected, actual);
+              Assert.assertThat(actual, is(expected));
             });
 
     // tests on CLOCK transformation
@@ -44,7 +45,7 @@ public class AngleTransformationTest {
                   new Angle(
                       AngleTransformation.CLOCK.transform(pair.getRight().getRadians()),
                       ValueType.RADIANS);
-              assertEquals(expected, actual);
+              Assert.assertThat(actual, is(expected));
             });
   }
 }

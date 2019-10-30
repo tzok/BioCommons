@@ -1,6 +1,5 @@
 package pl.poznan.put.circular;
 
-import java.util.regex.Pattern;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
@@ -10,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
+
+import java.util.regex.Pattern;
 
 /**
  * A class of measurements where one can distinguish a direction (i.e. [0..360) degrees)
@@ -98,6 +99,26 @@ public class Angle extends Circular {
     }
   }
 
+  public static double subtractByMinimum(final double left, final double right) {
+    final double d = FastMath.abs(left - right);
+    return FastMath.min(d, MathUtils.TWO_PI - d);
+  }
+
+  /**
+   * Calculate angles' difference using formula acos(dot(left, right)).
+   *
+   * @param left Minuend.
+   * @param right Subtrahend.
+   * @return The result of minuend - subtrahend in angular space.
+   */
+  public static double subtractAsVectors(final double left, final double right) {
+    double v = FastMath.sin(left) * FastMath.sin(right);
+    v += FastMath.cos(left) * FastMath.cos(right);
+    v = FastMath.min(1.0, v);
+    v = FastMath.max(-1.0, v);
+    return FastMath.acos(v);
+  }
+
   /**
    * Return true if this instance is in range [begin; end). For example 45 degrees is between 30
    * degrees and 60 degrees. Also, 15 degrees is between -30 and 30 degrees.
@@ -122,26 +143,6 @@ public class Angle extends Circular {
 
   public final @NotNull Angle subtract(final @NotNull Angle other) {
     return new Angle(Angle.subtractByMinimum(getRadians(), other.getRadians()), ValueType.RADIANS);
-  }
-
-  public static double subtractByMinimum(final double left, final double right) {
-    final double d = FastMath.abs(left - right);
-    return FastMath.min(d, MathUtils.TWO_PI - d);
-  }
-
-  /**
-   * Calculate angles' difference using formula acos(dot(left, right)).
-   *
-   * @param left Minuend.
-   * @param right Subtrahend.
-   * @return The result of minuend - subtrahend in angular space.
-   */
-  public static double subtractAsVectors(final double left, final double right) {
-    double v = FastMath.sin(left) * FastMath.sin(right);
-    v += FastMath.cos(left) * FastMath.cos(right);
-    v = FastMath.min(1, v);
-    v = FastMath.max(-1, v);
-    return FastMath.acos(v);
   }
 
   /**

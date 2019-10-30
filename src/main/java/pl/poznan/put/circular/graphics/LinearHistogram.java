@@ -1,9 +1,5 @@
 package pl.poznan.put.circular.graphics;
 
-import java.awt.FontMetrics;
-import java.awt.font.LineMetrics;
-import java.util.ArrayList;
-import java.util.Collection;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import pl.poznan.put.circular.Circular;
@@ -11,12 +7,17 @@ import pl.poznan.put.circular.Histogram;
 import pl.poznan.put.utility.AngleFormat;
 import pl.poznan.put.utility.svg.SVGHelper;
 
+import java.awt.*;
+import java.awt.font.LineMetrics;
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class LinearHistogram extends AbstractDrawable {
   private final Collection<Circular> data;
   private final double binRadians;
   private final int drawingUnitSize;
 
-  public LinearHistogram(
+  private LinearHistogram(
       final Collection<? extends Circular> data,
       final double binRadians,
       final int drawingUnitSize) {
@@ -31,7 +32,7 @@ public class LinearHistogram extends AbstractDrawable {
   }
 
   public LinearHistogram(final Collection<? extends Circular> data) {
-    this(data, FastMath.PI / 12, 20);
+    this(data, FastMath.PI / 12.0, 20);
   }
 
   @Override
@@ -55,7 +56,8 @@ public class LinearHistogram extends AbstractDrawable {
      * X axis lines
      */
     svgGraphics.drawLine(0, drawingUnitSize, (int) maxWidth, drawingUnitSize);
-    svgGraphics.drawLine(0, drawingUnitSize, 0, (int) (drawingUnitSize + (0.2 * drawingUnitSize)));
+    svgGraphics.drawLine(
+        0, drawingUnitSize, 0, (int) (drawingUnitSize + (0.2 * drawingUnitSize)));
     svgGraphics.drawLine(
         (int) maxWidth,
         drawingUnitSize,
@@ -71,7 +73,10 @@ public class LinearHistogram extends AbstractDrawable {
         (int) (-drawingUnitSize - (0.2 * drawingUnitSize)),
         (int) -maxHeight);
     svgGraphics.drawLine(
-        -drawingUnitSize, 0, (int) (-drawingUnitSize - (0.2 * drawingUnitSize)), 0);
+        -drawingUnitSize,
+        0,
+        (int) (-drawingUnitSize - (0.2 * drawingUnitSize)),
+        0);
 
     final LineMetrics lineMetrics = SVGHelper.getLineMetrics(svgGraphics);
     final FontMetrics fontMetrics = SVGHelper.getFontMetrics(svgGraphics);
@@ -79,17 +84,19 @@ public class LinearHistogram extends AbstractDrawable {
 
     for (int j = 0; j <= maxFrequency; j++) {
       svgGraphics.drawString(
-          String.valueOf(j), -drawingUnitSize << 1, (-j * drawingUnitSize) + (fontHeight / 6));
+          String.valueOf(j),
+              (-drawingUnitSize << 1),
+          (-j * drawingUnitSize) + (fontHeight / 6.0F));
     }
 
-    i = 0;
-    for (double d = 0; d < MathUtils.TWO_PI; d += binRadians, i += 1) {
+    int j = 0;
+    for (double d = 0; d < MathUtils.TWO_PI; d += binRadians, j += 1) {
       final String label = AngleFormat.degreesRoundedToOne(d);
       final int labelWidth = fontMetrics.stringWidth(label.substring(0, label.length() - 1));
       svgGraphics.drawString(
           label,
-          ((i * drawingUnitSize) + (drawingUnitSize / 2)) - (labelWidth / 2),
-          (drawingUnitSize << 1) + (((i % 2) == 0) ? 0 : drawingUnitSize));
+          ((j * drawingUnitSize) + (drawingUnitSize / 2)) - (labelWidth / 2),
+          (drawingUnitSize << 1) + (((j % 2) == 0) ? 0 : drawingUnitSize));
     }
   }
 }

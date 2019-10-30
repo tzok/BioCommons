@@ -9,8 +9,8 @@ import org.w3c.dom.svg.SVGSVGElement;
 import pl.poznan.put.utility.svg.SVGHelper;
 
 public abstract class AbstractDrawable implements Drawable {
-  protected SVGDocument svgDocument = SVGHelper.emptyDocument();
-  protected SVGGraphics2D svgGraphics = new SVGGraphics2D(svgDocument);
+  private final SVGDocument svgDocument = SVGHelper.emptyDocument();
+  final SVGGraphics2D svgGraphics = new SVGGraphics2D(svgDocument);
 
   @Override
   public final SVGDocument finalizeDrawing() {
