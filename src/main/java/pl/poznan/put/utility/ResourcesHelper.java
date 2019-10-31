@@ -1,5 +1,7 @@
 package pl.poznan.put.utility;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,9 +9,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import org.apache.commons.io.IOUtils;
 
 public final class ResourcesHelper {
+  private ResourcesHelper() {
+    super();
+  }
+
   /**
    * Load contents of a resource file available in the JAR of running process.
    *
@@ -45,9 +50,5 @@ public final class ResourcesHelper {
 
   public static File loadResourceFile(final String resource) throws URISyntaxException {
     return new File(ResourcesHelper.loadResourceUri(resource));
-  }
-
-  private ResourcesHelper() {
-    super();
   }
 }

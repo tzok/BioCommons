@@ -1,12 +1,5 @@
 package pl.poznan.put.utility;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -15,6 +8,14 @@ import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 public final class ExecHelper {
@@ -40,10 +41,10 @@ public final class ExecHelper {
   }
 
   private static ExecutionResult execute(
-          final File workingDirectory,
-          final Map<String, String> environment,
-          final String command,
-          final String... arguments)
+      final File workingDirectory,
+      final Map<String, String> environment,
+      final String command,
+      final String... arguments)
       throws IOException {
     // run `chmod a+x` on the command
     ExecHelper.makeExecutable(command);

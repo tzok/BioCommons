@@ -1,10 +1,11 @@
 package pl.poznan.put.utility;
 
+import org.jumpmind.symmetric.csv.CsvWriter;
+
+import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import javax.swing.table.TableModel;
-import org.jumpmind.symmetric.csv.CsvWriter;
 
 public final class TabularExporter {
   private TabularExporter() {

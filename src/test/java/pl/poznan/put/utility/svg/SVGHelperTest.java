@@ -1,18 +1,19 @@
 package pl.poznan.put.utility.svg;
 
-import static org.hamcrest.CoreMatchers.*;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import javax.xml.XMLConstants;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.svg.SVGDocument;
 import pl.poznan.put.utility.ResourcesHelper;
+
+import javax.xml.XMLConstants;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class SVGHelperTest {
   @Test
@@ -48,8 +49,11 @@ public class SVGHelperTest {
 
   @Test
   public final void svgNamespaceContext() {
-    Assert.assertThat(SVGHelper.svgNamespaceContext().getNamespaceURI("svg"), is(SVGDOMImplementation.SVG_NAMESPACE_URI));
-    Assert.assertThat(SVGHelper.svgNamespaceContext().getNamespaceURI(""), is(XMLConstants.NULL_NS_URI));
+    Assert.assertThat(
+        SVGHelper.svgNamespaceContext().getNamespaceURI("svg"),
+        is(SVGDOMImplementation.SVG_NAMESPACE_URI));
+    Assert.assertThat(
+        SVGHelper.svgNamespaceContext().getNamespaceURI(""), is(XMLConstants.NULL_NS_URI));
   }
 
   @Test(expected = IllegalArgumentException.class)
