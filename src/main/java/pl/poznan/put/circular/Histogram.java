@@ -1,26 +1,20 @@
 package pl.poznan.put.circular;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import lombok.Data;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 
-public class Histogram {
-  @Data
-  private static final class Bin {
-    private final double radiansStart;
-    private final List<Circular> data;
-  }
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
+public class Histogram {
   private final Collection<Bin> bins = new ArrayList<>();
   private final double binWidth;
   private final double dataSize;
-
   public Histogram(final Collection<? extends Circular> data, final double binWidth) {
     super();
     this.binWidth = binWidth;
@@ -49,7 +43,11 @@ public class Histogram {
   }
 
   private Collection<Circular> getBin(final double radiansStart) {
-      return bins.stream().filter(bin -> Precision.equals(bin.getRadiansStart(), radiansStart, 1.0e-3)).findFirst().map(Bin::getData).orElse(Collections.emptyList());
+    return bins.stream()
+        .filter(bin -> Precision.equals(bin.getRadiansStart(), radiansStart, 1.0e-3))
+        .findFirst()
+        .map(Bin::getData)
+        .orElse(Collections.emptyList());
   }
 
   public final double getMaxFrequency() {
@@ -59,5 +57,11 @@ public class Histogram {
       maxFrequency = FastMath.max(frequency, maxFrequency);
     }
     return maxFrequency;
+  }
+
+  @Data
+  private static final class Bin {
+    private final double radiansStart;
+    private final List<Circular> data;
   }
 }

@@ -1,12 +1,13 @@
 package pl.poznan.put.circular.enums;
 
-import static org.hamcrest.CoreMatchers.*;
-
-import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
+
+import java.util.stream.Stream;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class AngleTransformationTest {
   private static final Angle ZERO = new Angle(0.0, ValueType.DEGREES);

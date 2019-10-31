@@ -1,12 +1,13 @@
 package pl.poznan.put.circular;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
 import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class AngleTest {
   private static final Angle DEGREES_0 = new Angle(0, ValueType.DEGREES);
@@ -52,10 +53,10 @@ public class AngleTest {
       for (int j = 0; j < 360; j++) {
         final double rj = FastMath.toRadians(j);
         assertEquals(
-                String.format("Difference in subtraction for: %d and %d", i, j),
-                Angle.subtractByMinimum(ri, rj),
-                Angle.subtractAsVectors(ri, rj),
-                1.0e-6);
+            String.format("Difference in subtraction for: %d and %d", i, j),
+            Angle.subtractByMinimum(ri, rj),
+            Angle.subtractAsVectors(ri, rj),
+            1.0e-6);
       }
     }
   }
@@ -82,15 +83,20 @@ public class AngleTest {
     // 0 <= 45 < 90
     assertThat(AngleTest.DEGREES_45.isBetween(AngleTest.DEGREES_0, AngleTest.DEGREES_90), is(true));
     // 45 <= 45 < 90
-    assertThat(AngleTest.DEGREES_45.isBetween(AngleTest.DEGREES_45, AngleTest.DEGREES_90), is(true));
+    assertThat(
+        AngleTest.DEGREES_45.isBetween(AngleTest.DEGREES_45, AngleTest.DEGREES_90), is(true));
     // not (0 <= 45 < 45)
-    assertThat(AngleTest.DEGREES_45.isBetween(AngleTest.DEGREES_0, AngleTest.DEGREES_45), is(false));
+    assertThat(
+        AngleTest.DEGREES_45.isBetween(AngleTest.DEGREES_0, AngleTest.DEGREES_45), is(false));
     // not (45 <= 0 < 90)
-    assertThat(AngleTest.DEGREES_0.isBetween(AngleTest.DEGREES_45, AngleTest.DEGREES_90), is(false));
+    assertThat(
+        AngleTest.DEGREES_0.isBetween(AngleTest.DEGREES_45, AngleTest.DEGREES_90), is(false));
     // 315 <= 0 < 45
-    assertThat(AngleTest.DEGREES_0.isBetween(AngleTest.DEGREES_315, AngleTest.DEGREES_45), is(true));
+    assertThat(
+        AngleTest.DEGREES_0.isBetween(AngleTest.DEGREES_315, AngleTest.DEGREES_45), is(true));
     // 270 <= 315 < 45
-    assertThat(AngleTest.DEGREES_315.isBetween(AngleTest.DEGREES_270, AngleTest.DEGREES_45), is(true));
+    assertThat(
+        AngleTest.DEGREES_315.isBetween(AngleTest.DEGREES_270, AngleTest.DEGREES_45), is(true));
   }
 
   @Test

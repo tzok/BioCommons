@@ -1,9 +1,5 @@
 package pl.poznan.put.circular.samples;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.optim.MaxEval;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
@@ -17,6 +13,11 @@ import org.apache.commons.math3.util.MathUtils;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public final class AngleSample {
   private final List<Angle> data;
@@ -78,7 +79,13 @@ public final class AngleSample {
   private UnivariatePointValuePair minimizeMedianFunction() {
     final UnivariateFunction medianObjectiveFunction =
         v -> {
-          final double sum = data.stream().mapToDouble(vector -> Angle.subtractByMinimum(Math.PI, Angle.subtractByMinimum(vector.getRadians(), v))).sum();
+          final double sum =
+              data.stream()
+                  .mapToDouble(
+                      vector ->
+                          Angle.subtractByMinimum(
+                              Math.PI, Angle.subtractByMinimum(vector.getRadians(), v)))
+                  .sum();
           return FastMath.PI - (sum / data.size());
         };
 

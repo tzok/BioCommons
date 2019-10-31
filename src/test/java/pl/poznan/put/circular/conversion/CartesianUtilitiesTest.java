@@ -1,11 +1,11 @@
 package pl.poznan.put.circular.conversion;
 
-import static org.hamcrest.CoreMatchers.*;
-
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class CartesianUtilitiesTest {
   private static final double[] ATOM_OP3 = {50.193, 51.190, 50.534};

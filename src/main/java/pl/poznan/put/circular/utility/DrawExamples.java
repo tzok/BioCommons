@@ -1,8 +1,5 @@
 package pl.poznan.put.circular.utility;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.svg.SVGDocument;
 import pl.poznan.put.circular.Angle;
@@ -13,6 +10,10 @@ import pl.poznan.put.circular.graphics.LinearHistogram;
 import pl.poznan.put.circular.graphics.RawDataPlot;
 import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public final class DrawExamples {
   private DrawExamples() {

@@ -56,8 +56,7 @@ public class LinearHistogram extends AbstractDrawable {
      * X axis lines
      */
     svgGraphics.drawLine(0, drawingUnitSize, (int) maxWidth, drawingUnitSize);
-    svgGraphics.drawLine(
-        0, drawingUnitSize, 0, (int) (drawingUnitSize + (0.2 * drawingUnitSize)));
+    svgGraphics.drawLine(0, drawingUnitSize, 0, (int) (drawingUnitSize + (0.2 * drawingUnitSize)));
     svgGraphics.drawLine(
         (int) maxWidth,
         drawingUnitSize,
@@ -73,10 +72,7 @@ public class LinearHistogram extends AbstractDrawable {
         (int) (-drawingUnitSize - (0.2 * drawingUnitSize)),
         (int) -maxHeight);
     svgGraphics.drawLine(
-        -drawingUnitSize,
-        0,
-        (int) (-drawingUnitSize - (0.2 * drawingUnitSize)),
-        0);
+        -drawingUnitSize, 0, (int) (-drawingUnitSize - (0.2 * drawingUnitSize)), 0);
 
     final LineMetrics lineMetrics = SVGHelper.getLineMetrics(svgGraphics);
     final FontMetrics fontMetrics = SVGHelper.getFontMetrics(svgGraphics);
@@ -84,9 +80,7 @@ public class LinearHistogram extends AbstractDrawable {
 
     for (int j = 0; j <= maxFrequency; j++) {
       svgGraphics.drawString(
-          String.valueOf(j),
-              (-drawingUnitSize << 1),
-          (-j * drawingUnitSize) + (fontHeight / 6.0F));
+          String.valueOf(j), (-drawingUnitSize << 1), (-j * drawingUnitSize) + (fontHeight / 6.0F));
     }
 
     int j = 0;
