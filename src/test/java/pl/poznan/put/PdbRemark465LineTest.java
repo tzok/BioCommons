@@ -1,12 +1,12 @@
 package pl.poznan.put;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark465Line;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class PdbRemark465LineTest {
   // @formatter:off

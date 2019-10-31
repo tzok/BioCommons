@@ -86,7 +86,9 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
   public static boolean isCommentLine(final String line) {
     final String lineTrimmed = StringUtils.normalizeSpace(line);
 
-      return Arrays.stream(PdbRemark465Line.COMMENT_LINES).anyMatch(comment -> Objects.equals(lineTrimmed, StringUtils.normalizeSpace(comment))) || lineTrimmed.startsWith("REMARK 465   MODELS");
+    return Arrays.stream(PdbRemark465Line.COMMENT_LINES)
+            .anyMatch(comment -> Objects.equals(lineTrimmed, StringUtils.normalizeSpace(comment)))
+        || lineTrimmed.startsWith("REMARK 465   MODELS");
   }
 
   public static PdbRemark465Line parse(final String line) {

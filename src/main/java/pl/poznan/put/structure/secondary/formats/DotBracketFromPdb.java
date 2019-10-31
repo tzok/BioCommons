@@ -73,7 +73,8 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     }
   }
 
-  private void markRepresentedNonCanonicals(final Iterable<? extends ClassifiedBasePair> nonCanonical) {
+  private void markRepresentedNonCanonicals(
+      final Iterable<? extends ClassifiedBasePair> nonCanonical) {
     final Collection<BasePair> representedSet = new HashSet<>();
 
     for (final DotBracketSymbol symbol : symbols) {
@@ -215,7 +216,11 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
   @Override
   public final List<? extends CombinedStrand> combineStrands() {
-    return super.combineStrands().stream().map(combinedStrand -> new CombinedStrandFromPdb(combinedStrand.getStrands(), symbolToResidue)).collect(Collectors.toList());
+    return super.combineStrands().stream()
+        .map(
+            combinedStrand ->
+                new CombinedStrandFromPdb(combinedStrand.getStrands(), symbolToResidue))
+        .collect(Collectors.toList());
   }
 
   @Override

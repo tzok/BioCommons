@@ -6,7 +6,14 @@ import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.RegionRemover;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Java implementation of OPT ALL algorithm as presented in: Smit, S. et al., 2008. From knotted to
@@ -34,7 +41,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
   }
 
   static SubSolution[] solveSingleCase(
-          final SubSolution[][][] matrix, final Clique clique, final int i, final int j) {
+      final SubSolution[][][] matrix, final Clique clique, final int i, final int j) {
     final int size = clique.endpointCount();
     final Collection<SubSolution> candidates = new HashSet<>(size);
 
@@ -73,7 +80,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
   }
 
   private static Collection<SubSolution> merge(
-          final SubSolution[][][] matrix, final Clique clique, final int i, final int j) {
+      final SubSolution[][][] matrix, final Clique clique, final int i, final int j) {
     final SubSolution[] left = matrix[i][j - 1];
     final SubSolution[] below = matrix[i + 1][j];
 
@@ -110,7 +117,8 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     return result;
   }
 
-  private static List<SubSolution> selectBestCandidates(final Collection<? extends SubSolution> candidates) {
+  private static List<SubSolution> selectBestCandidates(
+      final Collection<? extends SubSolution> candidates) {
     if (candidates.isEmpty()) {
       return Collections.emptyList();
     }

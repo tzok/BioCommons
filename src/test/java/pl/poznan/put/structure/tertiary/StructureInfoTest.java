@@ -1,9 +1,9 @@
 package pl.poznan.put.structure.tertiary;
 
-import static org.hamcrest.Matchers.*;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.hamcrest.Matchers.*;
 
 public class StructureInfoTest {
   @Test

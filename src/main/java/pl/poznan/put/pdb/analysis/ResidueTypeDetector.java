@@ -48,7 +48,7 @@ final class ResidueTypeDetector {
   }
 
   private static ResidueInformationProvider detectResidueTypeFromAtoms(
-          final Collection<AtomName> atomNames, final String residueName) {
+      final Collection<AtomName> atomNames, final String residueName) {
     final boolean hasHydrogen = ResidueTypeDetector.hasHydrogen(atomNames);
     final Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils.invokerPredicate("isHeavy");
 
@@ -61,9 +61,13 @@ final class ResidueTypeDetector {
     ResidueInformationProvider bestProvider = null;
 
     for (final ResidueInformationProvider provider : ResidueTypeDetector.PROVIDERS) {
-      final Collection<AtomName> expected = provider.getAllMoleculeComponents().stream().flatMap(component -> component.getAtoms().stream()).filter(atomName -> hasHydrogen || (atomName.getType() != AtomType.H)).collect(Collectors.toCollection(() -> EnumSet.noneOf(AtomName.class)));
+      final Collection<AtomName> expected =
+          provider.getAllMoleculeComponents().stream()
+              .flatMap(component -> component.getAtoms().stream())
+              .filter(atomName -> hasHydrogen || (atomName.getType() != AtomType.H))
+              .collect(Collectors.toCollection(() -> EnumSet.noneOf(AtomName.class)));
 
-        final Collection<AtomName> disjunction = CollectionUtils.disjunction(expected, actual);
+      final Collection<AtomName> disjunction = CollectionUtils.disjunction(expected, actual);
       final Collection<AtomName> union = CollectionUtils.union(expected, actual);
       final double score = (double) disjunction.size() / union.size();
 

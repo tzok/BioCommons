@@ -6,14 +6,26 @@ import org.apache.commons.collections4.bidimap.TreeBidiMap;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.poznan.put.pdb.*;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbExpdtaLine;
+import pl.poznan.put.pdb.PdbModresLine;
+import pl.poznan.put.pdb.PdbRemark2Line;
+import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 final class CifConverter {
@@ -49,8 +61,8 @@ final class CifConverter {
     return CifConverter.convert(cifFile, models);
   }
 
-  private static ModelContainer convert(final File mmCifFile, final Iterable<? extends PdbModel> models)
-      throws IOException {
+  private static ModelContainer convert(
+      final File mmCifFile, final Iterable<? extends PdbModel> models) throws IOException {
     final List<PdbModel> rnaModels = new ArrayList<>();
 
     for (final PdbModel model : models) {
@@ -195,9 +207,12 @@ final class CifConverter {
       for (int j = i + 1; (toMerge == -1) && (j < chainGroups.size()); j++) {
         final Set<String> groupR = chainGroups.get(j);
 
-          if (groupL.stream().filter(chainContacts::containsKey).map(chainContacts::get).anyMatch(contactsL -> CollectionUtils.containsAny(contactsL, groupR))) {
-              toMerge = j;
-          }
+        if (groupL.stream()
+            .filter(chainContacts::containsKey)
+            .map(chainContacts::get)
+            .anyMatch(contactsL -> CollectionUtils.containsAny(contactsL, groupR))) {
+          toMerge = j;
+        }
       }
 
       if (toMerge == -1) {
@@ -220,7 +235,9 @@ final class CifConverter {
    * @return A list of sets, each containing one chain.
    */
   private static List<Set<String>> initializeChainGroups(final PdbModel model) {
-    return model.getChains().stream().map(chain -> new HashSet<>(Collections.singleton(chain.getIdentifier()))).collect(Collectors.toList());
+    return model.getChains().stream()
+        .map(chain -> new HashSet<>(Collections.singleton(chain.getIdentifier())))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -328,7 +345,11 @@ final class CifConverter {
    */
   private static MoleculeType getChainType(
       final PdbModel firstModel, final String chainIdentifier) {
-      return firstModel.getChains().stream().filter(chain -> Objects.equals(chain.getIdentifier(), chainIdentifier)).findFirst().map(PdbChain::getMoleculeType).orElse(MoleculeType.UNKNOWN);
+    return firstModel.getChains().stream()
+        .filter(chain -> Objects.equals(chain.getIdentifier(), chainIdentifier))
+        .findFirst()
+        .map(PdbChain::getMoleculeType)
+        .orElse(MoleculeType.UNKNOWN);
   }
 
   /**
@@ -340,7 +361,7 @@ final class CifConverter {
    * @return The PDB identifier.
    */
   private static String mapChain(
-          final BidiMap<? super String, String> chainMap, final String chainIdentifier) {
+      final BidiMap<? super String, String> chainMap, final String chainIdentifier) {
     if (!chainMap.containsKey(chainIdentifier)) {
       chainMap.put(chainIdentifier, CifConverter.PRINTABLE_CHARS.get(chainMap.size()));
     }

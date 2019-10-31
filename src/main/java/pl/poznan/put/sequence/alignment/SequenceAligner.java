@@ -67,7 +67,7 @@ public final class SequenceAligner {
     return SubstitutionMatrixHelper.getBlosum62();
   }
 
-  @SuppressWarnings({"rawtypes"})
+  @SuppressWarnings("rawtypes")
   public SequenceAlignment align() throws CompoundNotFoundException {
     if (fragments.isEmpty()) {
       return new SequenceAlignment(isGlobal, "");

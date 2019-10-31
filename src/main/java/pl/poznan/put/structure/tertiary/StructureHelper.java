@@ -7,7 +7,11 @@ import org.biojava.nbio.structure.Structure;
 import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.atom.AtomName;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
 
 final class StructureHelper {
   private StructureHelper() {
@@ -50,13 +54,17 @@ final class StructureHelper {
     final LinkedHashSet<Atom> atoms = new LinkedHashSet<>(group.getAtoms());
 
     for (final Group altloc : group.getAltLocs()) {
-        atoms.addAll(altloc.getAtoms());
+      atoms.addAll(altloc.getAtoms());
     }
 
     group.setAtoms(new ArrayList<>(atoms));
   }
 
   public static boolean isModified(final Group group, final AtomName... atomNames) {
-      return Arrays.stream(atomNames).anyMatch(atomName -> atomName.getType().isHeavy() && (StructureHelper.findAtom(group, atomName) == null));
+    return Arrays.stream(atomNames)
+        .anyMatch(
+            atomName ->
+                atomName.getType().isHeavy()
+                    && (StructureHelper.findAtom(group, atomName) == null));
   }
 }

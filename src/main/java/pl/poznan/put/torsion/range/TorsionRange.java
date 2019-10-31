@@ -20,13 +20,17 @@ public enum TorsionRange implements Range {
   private static final RangeProvider PROVIDER =
       angle -> {
         if (angle.isValid()) {
-            return Arrays.stream(TorsionRange.values()).filter(torsionRange -> angle.isBetween(torsionRange.begin, torsionRange.end)).findFirst().orElse(TorsionRange.INVALID);
+          return Arrays.stream(TorsionRange.values())
+              .filter(torsionRange -> angle.isBetween(torsionRange.begin, torsionRange.end))
+              .findFirst()
+              .orElse(TorsionRange.INVALID);
         }
         return TorsionRange.INVALID;
       };
   private final String displayName;
   private final Angle begin;
   private final Angle end;
+
   TorsionRange(final String displayName, final double begin, final double end) {
     this.displayName = displayName;
     this.begin = new Angle(begin, ValueType.DEGREES);

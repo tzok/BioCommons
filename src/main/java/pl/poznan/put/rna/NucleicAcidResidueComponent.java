@@ -11,15 +11,14 @@ public abstract class NucleicAcidResidueComponent extends ResidueComponent {
   private final RNAResidueComponentType type;
 
   NucleicAcidResidueComponent(
-          final RNAResidueComponentType type,
-          final List<AtomName> atoms,
-          final List<AtomName> additionalAtoms) {
+      final RNAResidueComponentType type,
+      final List<AtomName> atoms,
+      final List<AtomName> additionalAtoms) {
     super(type.name().toLowerCase(Locale.ENGLISH), MoleculeType.RNA, atoms, additionalAtoms);
     this.type = type;
   }
 
-  NucleicAcidResidueComponent(
-          final RNAResidueComponentType type, final List<AtomName> atoms) {
+  NucleicAcidResidueComponent(final RNAResidueComponentType type, final List<AtomName> atoms) {
     super(type.name().toLowerCase(Locale.ENGLISH), MoleculeType.RNA, atoms);
     this.type = type;
   }

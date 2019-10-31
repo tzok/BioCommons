@@ -3,7 +3,7 @@ package pl.poznan.put.atom;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 public class BondTest {

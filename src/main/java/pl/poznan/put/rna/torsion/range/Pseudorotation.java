@@ -36,13 +36,17 @@ public enum Pseudorotation implements Range {
   private static final RangeProvider PROVIDER =
       angle -> {
         if (angle.isValid()) {
-            return Arrays.stream(Pseudorotation.values()).filter(candidate -> angle.isBetween(candidate.begin, candidate.end)).findFirst().orElse(Pseudorotation.INVALID);
+          return Arrays.stream(Pseudorotation.values())
+              .filter(candidate -> angle.isBetween(candidate.begin, candidate.end))
+              .findFirst()
+              .orElse(Pseudorotation.INVALID);
         }
         return Pseudorotation.INVALID;
       };
   private final String displayName;
   private final Angle begin;
   private final Angle end;
+
   Pseudorotation(final String displayName, final double degrees) {
     this.displayName = displayName;
     begin = new Angle(degrees - 9.0, ValueType.DEGREES);

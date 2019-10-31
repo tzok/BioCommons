@@ -25,7 +25,10 @@ public enum ChiRange implements Range {
   private static final RangeProvider PROVIDER =
       angle -> {
         if (angle.isValid()) {
-            return Arrays.stream(ChiRange.values()).filter(range -> angle.isBetween(range.begin, range.end)).findFirst().orElse(ChiRange.INVALID);
+          return Arrays.stream(ChiRange.values())
+              .filter(range -> angle.isBetween(range.begin, range.end))
+              .findFirst()
+              .orElse(ChiRange.INVALID);
         }
         return ChiRange.INVALID;
       };
@@ -45,6 +48,7 @@ public enum ChiRange implements Range {
   private final String displayName;
   private final Angle begin;
   private final Angle end;
+
   ChiRange(final String displayName, final double begin, final double end) {
     this.displayName = displayName;
     this.begin = new Angle(begin, ValueType.DEGREES);

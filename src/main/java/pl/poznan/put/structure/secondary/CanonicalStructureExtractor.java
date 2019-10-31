@@ -41,7 +41,7 @@ public final class CanonicalStructureExtractor {
    * http://rnapdbee.cs.put.poznan.pl
    */
   private static @NotNull Collection<ClassifiedBasePair> basePairs(
-          final ResidueCollection residueCollection) {
+      final ResidueCollection residueCollection) {
     final List<PdbResidue> residues = residueCollection.getResidues();
     final Collection<ClassifiedBasePair> basePairs = new ArrayList<>();
     final Collection<PdbResidueIdentifier> paired = new HashSet<>();

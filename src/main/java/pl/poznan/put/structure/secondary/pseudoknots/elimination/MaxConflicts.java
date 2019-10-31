@@ -3,7 +3,12 @@ package pl.poznan.put.structure.secondary.pseudoknots.elimination;
 import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Java implementation of Elimination Conflicts algorithm as presented in: Smit, S. et al., 2008.

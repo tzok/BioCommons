@@ -45,8 +45,11 @@ public class PdbChain implements Comparable<PdbChain>, Serializable {
   }
 
   public static PdbChain fromBioJavaChain(final Chain chain) {
-    final List<PdbResidue> residues = chain.getAtomGroups().stream().map(PdbResidue::fromBioJavaGroup).collect(Collectors.toList());
-      return new PdbChain(chain.getId(), residues);
+    final List<PdbResidue> residues =
+        chain.getAtomGroups().stream()
+            .map(PdbResidue::fromBioJavaGroup)
+            .collect(Collectors.toList());
+    return new PdbChain(chain.getId(), residues);
   }
 
   public final String getIdentifier() {
@@ -91,7 +94,9 @@ public class PdbChain implements Comparable<PdbChain>, Serializable {
   }
 
   public final String getSequence() {
-    return residues.stream().map(residue -> String.valueOf(residue.getOneLetterName())).collect(Collectors.joining());
+    return residues.stream()
+        .map(residue -> String.valueOf(residue.getOneLetterName()))
+        .collect(Collectors.joining());
   }
 
   public final MoleculeType getMoleculeType() {

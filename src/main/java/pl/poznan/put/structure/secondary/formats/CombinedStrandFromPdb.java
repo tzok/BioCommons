@@ -5,7 +5,12 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketFromPdbInterface {

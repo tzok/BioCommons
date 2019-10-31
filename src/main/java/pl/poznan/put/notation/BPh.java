@@ -27,7 +27,10 @@ public enum BPh {
   }
 
   public static BPh fromString(final String candidate) {
-      return Arrays.stream(BPh.values()).filter(bph -> Arrays.asList(bph.displayNames).contains(candidate)).findFirst().orElse(BPh.UNKNOWN);
+    return Arrays.stream(BPh.values())
+        .filter(bph -> Arrays.asList(bph.displayNames).contains(candidate))
+        .findFirst()
+        .orElse(BPh.UNKNOWN);
   }
 
   public String getDisplayName() {

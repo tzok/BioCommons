@@ -28,7 +28,7 @@ public abstract class TorsionAngleType implements DisplayableExportable {
 
         @Override
         public TorsionAngleValue calculate(
-                final List<? extends PdbResidue> residues, final int currentIndex) {
+            final List<? extends PdbResidue> residues, final int currentIndex) {
           return TorsionAngleValue.invalidInstance(this);
         }
       };
@@ -39,5 +39,6 @@ public abstract class TorsionAngleType implements DisplayableExportable {
     return TorsionAngleType.INVALID_INSTANCE;
   }
 
-  public abstract TorsionAngleValue calculate(List<? extends PdbResidue> residues, int currentIndex);
+  public abstract TorsionAngleValue calculate(
+      List<? extends PdbResidue> residues, int currentIndex);
 }

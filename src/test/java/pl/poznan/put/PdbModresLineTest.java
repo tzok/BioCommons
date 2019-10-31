@@ -1,12 +1,12 @@
 package pl.poznan.put;
 
-import static org.hamcrest.Matchers.*;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbParsingException;
+
+import static org.hamcrest.Matchers.is;
 
 public class PdbModresLineTest {
   // @formatter:off

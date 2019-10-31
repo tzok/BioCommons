@@ -40,7 +40,10 @@ public enum LeontisWesthof {
   }
 
   public static LeontisWesthof fromString(final CharSequence input) {
-      return Arrays.stream(LeontisWesthof.values()).filter(leontisWesthof -> StringUtils.equalsIgnoreCase(leontisWesthof.name(), input)).findFirst().orElse(LeontisWesthof.UNKNOWN);
+    return Arrays.stream(LeontisWesthof.values())
+        .filter(leontisWesthof -> StringUtils.equalsIgnoreCase(leontisWesthof.name(), input))
+        .findFirst()
+        .orElse(LeontisWesthof.UNKNOWN);
   }
 
   /**

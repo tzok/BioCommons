@@ -1,11 +1,11 @@
 package pl.poznan.put;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.pdb.PdbRemark2Line;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
 public class PdbRemark2ResolutionLineTest {
   // @formatter:off

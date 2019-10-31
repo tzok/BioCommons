@@ -28,7 +28,10 @@ public enum ExperimentalTechnique {
   }
 
   public static ExperimentalTechnique fromFullName(final String fullName) {
-      return Arrays.stream(ExperimentalTechnique.values()).filter(technique -> technique.pdbName.equalsIgnoreCase(fullName)).findFirst().orElse(ExperimentalTechnique.UNKNOWN);
+    return Arrays.stream(ExperimentalTechnique.values())
+        .filter(technique -> technique.pdbName.equalsIgnoreCase(fullName))
+        .findFirst()
+        .orElse(ExperimentalTechnique.UNKNOWN);
   }
 
   public String getPdbName() {

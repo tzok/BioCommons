@@ -27,7 +27,10 @@ public enum BR {
   }
 
   public static BR fromString(final String candidate) {
-      return Arrays.stream(BR.values()).filter(br -> Arrays.asList(br.displayNames).contains(candidate)).findFirst().orElse(BR.UNKNOWN);
+    return Arrays.stream(BR.values())
+        .filter(br -> Arrays.asList(br.displayNames).contains(candidate))
+        .findFirst()
+        .orElse(BR.UNKNOWN);
   }
 
   public String getDisplayName() {

@@ -10,7 +10,13 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.TorsionRange;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 public class AverageTorsionAngleType extends TorsionAngleType implements MasterTorsionAngleType {
@@ -115,7 +121,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
 
   @Override
   public final @NotNull TorsionAngleValue calculate(
-          final List<? extends PdbResidue> residues, final int currentIndex) {
+      final List<? extends PdbResidue> residues, final int currentIndex) {
     final PdbResidue residue = residues.get(currentIndex);
     final List<Angle> angles = new ArrayList<>();
 
@@ -132,7 +138,8 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     return new TorsionAngleValue(this, angleSample.getMeanDirection());
   }
 
-  public final @NotNull TorsionAngleValue calculate(final Iterable<? extends TorsionAngleValue> values) {
+  public final @NotNull TorsionAngleValue calculate(
+      final Iterable<? extends TorsionAngleValue> values) {
     final List<Angle> angles = new ArrayList<>();
 
     for (final MasterTorsionAngleType masterType : consideredAngles) {

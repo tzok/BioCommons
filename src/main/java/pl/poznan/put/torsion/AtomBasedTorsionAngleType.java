@@ -118,10 +118,10 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     private final Bond.Length bondLength;
 
     private AtomPair(
-            final PdbResidue leftResidue,
-            final PdbResidue rightResidue,
-            final PdbAtomLine leftAtom,
-            final PdbAtomLine rightAtom) {
+        final PdbResidue leftResidue,
+        final PdbResidue rightResidue,
+        final PdbAtomLine leftAtom,
+        final PdbAtomLine rightAtom) {
       super();
       this.leftResidue = leftResidue;
       this.rightResidue = rightResidue;

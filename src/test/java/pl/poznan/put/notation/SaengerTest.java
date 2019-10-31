@@ -5,7 +5,7 @@ import org.junit.Test;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.BasePair;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 public class SaengerTest {
   @Test

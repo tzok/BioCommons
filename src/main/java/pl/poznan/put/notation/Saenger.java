@@ -37,7 +37,10 @@ public enum Saenger {
   UNKNOWN;
 
   public static Saenger fromString(final String str) {
-      return Arrays.stream(Saenger.values()).filter(s -> Objects.equals(s.toString(), str)).findFirst().orElse(Saenger.UNKNOWN);
+    return Arrays.stream(Saenger.values())
+        .filter(s -> Objects.equals(s.toString(), str))
+        .findFirst()
+        .orElse(Saenger.UNKNOWN);
   }
 
   public static Saenger fromOrdinal(final int ordinal) {

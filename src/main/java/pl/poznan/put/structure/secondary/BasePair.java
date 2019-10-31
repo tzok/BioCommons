@@ -49,9 +49,7 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     if ((leftName == 'A') && (rightName == 'U')) {
       return BasePair.isCanonicalAU(left, right);
     }
-    return (leftName == 'G')
-        && (rightName == 'U')
-        && BasePair.isCanonicalGU(left, right);
+    return (leftName == 'G') && (rightName == 'U') && BasePair.isCanonicalGU(left, right);
   }
 
   private static boolean isCanonicalGU(final PdbResidue guanine, final PdbResidue uracil) {

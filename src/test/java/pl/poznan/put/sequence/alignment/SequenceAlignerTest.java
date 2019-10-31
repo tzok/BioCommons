@@ -1,10 +1,5 @@
 package pl.poznan.put.sequence.alignment;
 
-import static org.hamcrest.Matchers.*;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,6 +8,12 @@ import pl.poznan.put.pdb.analysis.PdbCompactFragment;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.utility.ResourcesHelper;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
 
 public class SequenceAlignerTest {
   // @formatter:off
@@ -27,14 +28,14 @@ public class SequenceAlignerTest {
           + "\n";
   // @formatter:on
 
-    private PdbCompactFragment fragment1EHZ;
+  private PdbCompactFragment fragment1EHZ;
   private PdbCompactFragment fragment2MIY;
 
   @Before
   public final void setUp() throws IOException {
     final PdbParser parser = new PdbParser();
-      final List<PdbModel> models1EHZ = parser.parse(ResourcesHelper.loadResource("1EHZ.pdb"));
-      final List<PdbModel> models2MIY = parser.parse(ResourcesHelper.loadResource("2MIY.pdb"));
+    final List<PdbModel> models1EHZ = parser.parse(ResourcesHelper.loadResource("1EHZ.pdb"));
+    final List<PdbModel> models2MIY = parser.parse(ResourcesHelper.loadResource("2MIY.pdb"));
 
     Assert.assertThat(!models1EHZ.isEmpty(), is(true));
     Assert.assertThat(!models2MIY.isEmpty(), is(true));

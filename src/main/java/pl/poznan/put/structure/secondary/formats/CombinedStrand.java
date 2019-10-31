@@ -3,7 +3,14 @@ package pl.poznan.put.structure.secondary.formats;
 import lombok.EqualsAndHashCode;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -107,19 +114,21 @@ public class CombinedStrand implements DotBracketInterface {
   }
 
   public final boolean contains(final DotBracketSymbol symbol) {
-      return strands.stream().anyMatch(strand -> strand.getSymbols().contains(symbol));
+    return strands.stream().anyMatch(strand -> strand.getSymbols().contains(symbol));
   }
 
   @Override
   public final String toString() {
     final String builder = strands.stream().map(Strand::getName).collect(Collectors.joining());
 
-      return ">strand_" + builder + '\n' + getSequence(false) + '\n' + getStructure(false);
+    return ">strand_" + builder + '\n' + getSequence(false) + '\n' + getStructure(false);
   }
 
   @Override
   public final String toStringWithStrands() {
-    return strands.stream().map(strand -> String.valueOf(strand) + '\n').collect(Collectors.joining());
+    return strands.stream()
+        .map(strand -> String.valueOf(strand) + '\n')
+        .collect(Collectors.joining());
   }
 
   @Override

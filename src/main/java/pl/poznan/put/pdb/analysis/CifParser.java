@@ -19,8 +19,7 @@ public class CifParser implements StructureParser {
   }
 
   @Override
-  public final List<PdbModel> parse(final String structureContent)
-      throws IOException {
+  public final List<PdbModel> parse(final String structureContent) throws IOException {
     synchronized (parser) {
       try (final Reader reader = new StringReader(structureContent)) {
         parser.parse(IOUtils.toBufferedReader(reader));

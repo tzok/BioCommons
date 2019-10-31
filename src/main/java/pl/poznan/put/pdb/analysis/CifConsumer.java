@@ -115,7 +115,9 @@ class CifConsumer implements MMcifConsumer {
 
   private static Map<String, String> convertToMap(
       final List<String> loopFields, final List<String> lineData) {
-    return IntStream.range(0, loopFields.size()).boxed().collect(Collectors.toMap(loopFields::get, lineData::get, (a, b) -> b));
+    return IntStream.range(0, loopFields.size())
+        .boxed()
+        .collect(Collectors.toMap(loopFields::get, lineData::get, (a, b) -> b));
   }
 
   private static double getDoubleWithDefaultNaN(final Map<String, String> map, final String key) {

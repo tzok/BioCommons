@@ -3,7 +3,14 @@ package pl.poznan.put.structure.secondary.pseudoknots;
 import org.apache.commons.collections4.CollectionUtils;
 import pl.poznan.put.structure.secondary.pseudoknots.dp.Clique;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A map of conflicts between regions. A conflict is when one region starts/end in the middle of
@@ -12,7 +19,7 @@ import java.util.*;
 public class ConflictMap {
   private final Map<Region, Set<Region>> conflicts;
 
-    // Create a basic 2DMap from which tells about conflicts. It can return
+  // Create a basic 2DMap from which tells about conflicts. It can return
   // if given Region have conflicts and give these conflicts
   public ConflictMap(final List<Region> regions) {
     super();
@@ -39,7 +46,7 @@ public class ConflictMap {
       }
     }
 
-      final int conflictsCount = count;
+    final int conflictsCount = count;
   }
 
   // Check if given Regions are conflicting

@@ -1,8 +1,5 @@
 package pl.poznan.put;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-
 import org.apache.commons.math3.geometry.Vector;
 import org.apache.commons.math3.geometry.euclidean.threed.Euclidean3D;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -13,6 +10,9 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.rna.torsion.Beta;
 import pl.poznan.put.torsion.TorsionAngleValue;
 import pl.poznan.put.torsion.TorsionAnglesHelper;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
 public class TorsionAnglesTest {
   private static final double EPSILON_E6 = 1.0e-6;
@@ -33,7 +33,8 @@ public class TorsionAnglesTest {
 
   private static final Vector<Euclidean3D> TMP1 = new Vector3D(-1.882478, 0.631705, -0.34491);
   private static final Vector<Euclidean3D> TMP2 = new Vector3D(1.743467, 0.832179, -0.650059);
-  private static final Vector<Euclidean3D> TMP3 = new Vector3D(-0.6692346816, -0.8548933352, 2.0868608351);
+  private static final Vector<Euclidean3D> TMP3 =
+      new Vector3D(-0.6692346816, -0.8548933352, 2.0868608351);
 
   private static final double RADIANS = -2.2349490129;
   private static final double DEGREES = -128.0531458665;
@@ -73,12 +74,12 @@ public class TorsionAnglesTest {
 
     Assert.assertThat(angleValue.getValue().isValid(), is(true));
     assertEquals(
-            TorsionAnglesTest.RADIANS,
-            angleValue.getValue().getRadians(),
-            TorsionAnglesTest.EPSILON_E6);
+        TorsionAnglesTest.RADIANS,
+        angleValue.getValue().getRadians(),
+        TorsionAnglesTest.EPSILON_E6);
     assertEquals(
-            TorsionAnglesTest.DEGREES,
-            angleValue.getValue().getDegrees(),
-            TorsionAnglesTest.EPSILON_E6);
+        TorsionAnglesTest.DEGREES,
+        angleValue.getValue().getDegrees(),
+        TorsionAnglesTest.EPSILON_E6);
   }
 }

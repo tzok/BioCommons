@@ -5,9 +5,21 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.poznan.put.pdb.*;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbExpdtaLine;
+import pl.poznan.put.pdb.PdbHeaderLine;
+import pl.poznan.put.pdb.PdbModresLine;
+import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.PdbRemark2Line;
+import pl.poznan.put.pdb.PdbRemark465Line;
+import pl.poznan.put.pdb.PdbTitleLine;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class PdbParser implements StructureParser {
@@ -40,51 +52,52 @@ public class PdbParser implements StructureParser {
 
   @Override
   public final synchronized List<PdbModel> parse(final String structureContent) {
-      resetState();
+    resetState();
 
-      for (final String line : structureContent.split("\n")) {
-        if (line.startsWith("MODEL")) {
-          handleModelLine(line);
-        } else if (line.startsWith("ATOM") || line.startsWith("HETATM")) {
-          handleAtomLine(line);
-        } else if (line.startsWith("TER   ")) {
-          handleTerLine(line);
-        } else if (line.startsWith("REMARK 465")) {
-          handleMissingResidueLine(line);
-        } else if (line.startsWith("MODRES")) {
-          handleModifiedResidueLine(line);
-        } else if (line.startsWith("HEADER")) {
-          handleHeaderLine(line);
-        } else if (line.startsWith("EXPDTA")) {
-          handleExperimentalDataLine(line);
-        } else if (line.startsWith("REMARK   2 RESOLUTION.")) {
-          handleResolutionLine(line);
-        } else if (line.startsWith("TITLE ")) {
-          handleTitleLine(line);
-        }
+    for (final String line : structureContent.split("\n")) {
+      if (line.startsWith("MODEL")) {
+        handleModelLine(line);
+      } else if (line.startsWith("ATOM") || line.startsWith("HETATM")) {
+        handleAtomLine(line);
+      } else if (line.startsWith("TER   ")) {
+        handleTerLine(line);
+      } else if (line.startsWith("REMARK 465")) {
+        handleMissingResidueLine(line);
+      } else if (line.startsWith("MODRES")) {
+        handleModifiedResidueLine(line);
+      } else if (line.startsWith("HEADER")) {
+        handleHeaderLine(line);
+      } else if (line.startsWith("EXPDTA")) {
+        handleExperimentalDataLine(line);
+      } else if (line.startsWith("REMARK   2 RESOLUTION.")) {
+        handleResolutionLine(line);
+      } else if (line.startsWith("TITLE ")) {
+        handleTitleLine(line);
       }
+    }
 
-      final String titleBuilder = titleLines.stream().map(PdbTitleLine::getTitle).collect(Collectors.joining());
+    final String titleBuilder =
+        titleLines.stream().map(PdbTitleLine::getTitle).collect(Collectors.joining());
 
-      final List<PdbModel> result = new ArrayList<>();
+    final List<PdbModel> result = new ArrayList<>();
 
-      for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
-        final int modelNumber = entry.getKey();
-        final List<PdbAtomLine> atoms = entry.getValue();
-        final PdbModel pdbModel =
-                new PdbModel(
-                        headerLine,
-                        experimentalDataLine,
-                        resolutionLine,
-                        modelNumber,
-                        atoms,
-                        modifiedResidues,
-                        missingResidues,
-                        titleBuilder);
-        result.add(pdbModel);
-      }
+    for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
+      final int modelNumber = entry.getKey();
+      final List<PdbAtomLine> atoms = entry.getValue();
+      final PdbModel pdbModel =
+          new PdbModel(
+              headerLine,
+              experimentalDataLine,
+              resolutionLine,
+              modelNumber,
+              atoms,
+              modifiedResidues,
+              missingResidues,
+              titleBuilder);
+      result.add(pdbModel);
+    }
 
-      return result;
+    return result;
   }
 
   private void resetState() {
