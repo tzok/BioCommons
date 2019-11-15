@@ -1,6 +1,7 @@
 package pl.poznan.put.structure.secondary;
 
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
@@ -60,7 +61,7 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
     return interactionType;
   }
 
-  final Saenger getSaenger() {
+  public final Saenger getSaenger() {
     return saenger;
   }
 
@@ -152,12 +153,14 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
       return 0;
     }
 
-    final int interactionComparison = interactionType.compareTo(t.interactionType);
-    if (interactionComparison != 0) {
-      return interactionComparison;
-    }
-
-    return basePair.compareTo(t.basePair);
+    return new CompareToBuilder()
+        .append(basePair, t.basePair)
+        .append(interactionType, t.interactionType)
+        .append(leontisWesthof, t.leontisWesthof)
+        .append(saenger, t.saenger)
+        .append(bph, t.bph)
+        .append(br, t.br)
+        .toComparison();
   }
 
   public final String generateComment() {

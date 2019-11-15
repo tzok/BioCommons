@@ -196,15 +196,15 @@ public class PdbModel implements Serializable, ResidueCollection {
     }
   }
 
-  private boolean isMissing(final PdbResidueIdentifier residueIdentifier) {
+  public boolean isMissing(final PdbResidueIdentifier residueIdentifier) {
     return missingResiduesIdentifiers.contains(residueIdentifier);
   }
 
-  private boolean isModified(final PdbResidueIdentifier residueIdentifier) {
+  public boolean isModified(final PdbResidueIdentifier residueIdentifier) {
     return identifierToModification.containsKey(residueIdentifier);
   }
 
-  private String getModifiedResidueName(final PdbResidueIdentifier residueIdentifier) {
+  public String getModifiedResidueName(final PdbResidueIdentifier residueIdentifier) {
     if (!identifierToModification.containsKey(residueIdentifier)) {
       throw new IllegalArgumentException(
           "Failed to find information about modification of: " + residueIdentifier);

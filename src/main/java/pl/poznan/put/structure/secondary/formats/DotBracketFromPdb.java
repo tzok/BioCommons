@@ -36,7 +36,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     markRepresentedNonCanonicals(nonCanonical);
   }
 
-  private DotBracketFromPdb(final String sequence, final String structure, final PdbModel model) {
+  public DotBracketFromPdb(final String sequence, final String structure, final PdbModel model) {
     super(sequence, DotBracketFromPdb.updateMissingIndices(structure, model));
 
     mapSymbolsAndResidues(model);

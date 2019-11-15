@@ -37,7 +37,7 @@ public final class ExtendedSecondaryStructure {
   private final String sequence;
   private final Collection<ClassifiedBasePair> basePairs;
 
-  private ExtendedSecondaryStructure(
+  public ExtendedSecondaryStructure(
       final String sequence, final Collection<ClassifiedBasePair> basePairs) {
     super();
     this.sequence = sequence;

@@ -290,11 +290,11 @@ public class BpSeq implements Serializable {
       this.comment = comment;
     }
 
-    private Entry(final int index, final int pair, final char seq) {
+    public Entry(final int index, final int pair, final char seq) {
       this(index, pair, seq, "");
     }
 
-    private boolean isPaired() {
+    public boolean isPaired() {
       return pair != 0;
     }
 

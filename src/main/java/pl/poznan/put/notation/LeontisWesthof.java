@@ -103,6 +103,43 @@ public enum LeontisWesthof {
     }
   }
 
+  /**
+   * This is not a "real" enum's ordinal, but a numeric index of Leontis-Westhof pair as used by
+   * other tools.
+   *
+   * @return Value between 1-12 or Integer.MAX_VALUE for unknown LW.
+   */
+  public int toOrdinal() {
+    switch (this) {
+      case CWW:
+        return 1;
+      case TWW:
+        return 2;
+      case CWH:
+        return 3;
+      case TWH:
+        return 4;
+      case CWS:
+        return 5;
+      case TWS:
+        return 6;
+      case CHH:
+        return 7;
+      case THH:
+        return 8;
+      case CHS:
+        return 9;
+      case THS:
+        return 10;
+      case CSS:
+        return 11;
+      case TSS:
+        return 12;
+      default:
+        return Integer.MAX_VALUE;
+    }
+  }
+
   @Override
   public String toString() {
     return getShortName();

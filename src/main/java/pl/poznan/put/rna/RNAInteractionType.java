@@ -31,7 +31,7 @@ public final class RNAInteractionType implements Serializable, Comparable<RNAInt
   private final boolean isPairing;
   private final String description;
 
-  private RNAInteractionType(
+  public RNAInteractionType(
       final RNAResidueComponentType left,
       final RNAResidueComponentType right,
       final boolean isPairing) {
@@ -43,7 +43,7 @@ public final class RNAInteractionType implements Serializable, Comparable<RNAInt
         left.name().toLowerCase(Locale.ENGLISH) + " - " + right.name().toLowerCase(Locale.ENGLISH);
   }
 
-  private RNAInteractionType(
+  public RNAInteractionType(
       final RNAResidueComponentType left,
       final RNAResidueComponentType right,
       final String description) {

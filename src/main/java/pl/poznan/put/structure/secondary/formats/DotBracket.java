@@ -57,7 +57,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
     strands.add(new StrandView("", this, 0, structure.length()));
   }
 
-  private static List<List<Strand>> candidatesToCombine(final Iterable<? extends Strand> strands) {
+  public static List<List<Strand>> candidatesToCombine(final Iterable<? extends Strand> strands) {
     final List<List<Strand>> result = new ArrayList<>();
     final List<Strand> toCombine = new ArrayList<>();
     int level = 0;
