@@ -1,35 +1,34 @@
 package pl.poznan.put.types;
 
-import lombok.EqualsAndHashCode;
+import org.immutables.value.Value;
 
-@EqualsAndHashCode
-public class Quadruplet<T> {
-  public final T a;
-  public final T b;
-  public final T c;
-  public final T d;
+@Value.Immutable
+public interface Quadruplet<T> {
+  @Value.Parameter
+  T a();
 
-  public Quadruplet(final T a, final T b, final T c, final T d) {
-    super();
-    this.a = a;
-    this.b = b;
-    this.c = c;
-    this.d = d;
-  }
+  @Value.Parameter
+  T b();
 
-  public final T get(final int index) {
+  @Value.Parameter
+  T c();
+
+  @Value.Parameter
+  T d();
+
+  default T get(final int index) {
     switch (index) {
       case 0:
-        return a;
+        return a();
       case 1:
-        return b;
+        return b();
       case 2:
-        return c;
+        return c();
       case 3:
-        return d;
+        return d();
       default:
         throw new IllegalArgumentException(
-            "UniTypeQuadruplet.get(index) was called with index < 0 or index > 3");
+            "Quadruplet.get(index) was called with index < 0 or index > 3");
     }
   }
 }

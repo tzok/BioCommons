@@ -11,7 +11,7 @@ public class QuadrupletTest {
 
   @Before
   public final void setUp() {
-    fromParameters = new Quadruplet<>(1, 2, 3, 4);
+    fromParameters = ImmutableQuadruplet.<Integer>builder().a(1).b(2).c(3).d(4).build();
   }
 
   @Test

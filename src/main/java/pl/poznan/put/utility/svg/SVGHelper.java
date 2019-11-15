@@ -1,6 +1,5 @@
 package pl.poznan.put.utility.svg;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.bridge.BridgeContext;
@@ -20,6 +19,8 @@ import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.math3.stat.StatUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -46,8 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@Slf4j
 public final class SVGHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SVGHelper.class);
   private static final NamespaceContext SVG_NAMESPACE = new SVGNamespace();
   private static final DOMImplementation DOM_IMPLEMENTATION =
       SVGDOMImplementation.getDOMImplementation();
@@ -104,7 +105,7 @@ public final class SVGHelper {
 
       return FileUtils.readFileToByteArray(outputFile);
     } catch (final ExecuteException ignored) {
-      SVGHelper.log.warn("Failed to run inkscape to export image, will try to use Apache FOP");
+      SVGHelper.LOGGER.warn("Failed to run inkscape to export image, will try to use Apache FOP");
       return SVGHelper.exportInternal(svgDocument, format);
     } finally {
       FileUtils.deleteQuietly(inputFile);
