@@ -1,6 +1,5 @@
 package pl.poznan.put.circular;
 
-import lombok.Data;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
@@ -15,6 +14,7 @@ public class Histogram {
   private final Collection<Bin> bins = new ArrayList<>();
   private final double binWidth;
   private final double dataSize;
+
   public Histogram(final Collection<? extends Circular> data, final double binWidth) {
     super();
     this.binWidth = binWidth;
@@ -34,7 +34,7 @@ public class Histogram {
         }
       }
 
-      bins.add(new Bin(radiansStart, binData));
+      bins.add(ImmutableBin.of(radiansStart, binData));
     }
   }
 
@@ -44,9 +44,9 @@ public class Histogram {
 
   private Collection<Circular> getBin(final double radiansStart) {
     return bins.stream()
-        .filter(bin -> Precision.equals(bin.getRadiansStart(), radiansStart, 1.0e-3))
+        .filter(bin -> Precision.equals(bin.radiansStart(), radiansStart, 1.0e-3))
         .findFirst()
-        .map(Bin::getData)
+        .map(Bin::data)
         .orElse(Collections.emptyList());
   }
 
@@ -57,11 +57,5 @@ public class Histogram {
       maxFrequency = FastMath.max(frequency, maxFrequency);
     }
     return maxFrequency;
-  }
-
-  @Data
-  private static final class Bin {
-    private final double radiansStart;
-    private final List<Circular> data;
   }
 }
