@@ -4,6 +4,7 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
+import pl.poznan.put.types.ImmutableQuadruplet;
 import pl.poznan.put.types.Quadruplet;
 
 import java.util.ArrayList;
@@ -13,38 +14,38 @@ import java.util.Map;
 
 public final class Chi2 extends AtomBasedTorsionAngleType {
   public static final Quadruplet<AtomName> ARGININE_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
   public static final Quadruplet<AtomName> ASPARAGINE_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.OD1);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.OD1);
   public static final Quadruplet<AtomName> ASPARTIC_ACID_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.OD1);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.OD1);
   public static final Quadruplet<AtomName> GLUTAMIC_ACID_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
   public static final Quadruplet<AtomName> GLUTAMINE_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
   public static final Quadruplet<AtomName> HISTIDINE_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.ND1);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.ND1);
   public static final Quadruplet<AtomName> ISOLEUCINE_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG1, AtomName.CD1);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG1, AtomName.CD1);
   public static final Quadruplet<AtomName> LEUCINE_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
   public static final Quadruplet<AtomName> LYSINE_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
   public static final Quadruplet<AtomName> METHIONINE_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.SD);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.SD);
   public static final Quadruplet<AtomName> PHENYLALANINE_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
   public static final Quadruplet<AtomName> PROLINE_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD);
   public static final Quadruplet<AtomName> TRYPTOPHAN_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
   public static final Quadruplet<AtomName> TYROSINE_ATOMS =
-      new Quadruplet<>(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
+      ImmutableQuadruplet.of(AtomName.CA, AtomName.CB, AtomName.CG, AtomName.CD1);
 
   private static final Map<Quadruplet<AtomName>, Chi2> INSTANCE_CACHE = new HashMap<>();
 
   private Chi2(final Quadruplet<AtomName> atoms) {
-    super(MoleculeType.PROTEIN, Unicode.CHI2, atoms, new Quadruplet<>(0, 0, 0, 0));
+    super(MoleculeType.PROTEIN, Unicode.CHI2, atoms, ImmutableQuadruplet.of(0, 0, 0, 0));
   }
 
   public static Chi2[] getInstances() {

@@ -4,6 +4,7 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
+import pl.poznan.put.types.ImmutableQuadruplet;
 import pl.poznan.put.types.Quadruplet;
 
 public final class Omega extends AtomBasedTorsionAngleType {
@@ -13,8 +14,8 @@ public final class Omega extends AtomBasedTorsionAngleType {
     super(
         MoleculeType.PROTEIN,
         Unicode.OMEGA,
-        new Quadruplet<>(AtomName.CA, AtomName.C, AtomName.N, AtomName.CA),
-        new Quadruplet<>(0, 0, 1, 1));
+        ImmutableQuadruplet.of(AtomName.CA, AtomName.C, AtomName.N, AtomName.CA),
+        ImmutableQuadruplet.of(0, 0, 1, 1));
   }
 
   public static Omega getInstance() {

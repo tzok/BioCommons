@@ -20,6 +20,7 @@ import pl.poznan.put.rna.torsion.Theta;
 import pl.poznan.put.rna.torsion.ThetaPrim;
 import pl.poznan.put.rna.torsion.Zeta;
 import pl.poznan.put.torsion.TorsionAngleType;
+import pl.poznan.put.types.ImmutableQuadruplet;
 import pl.poznan.put.types.Quadruplet;
 
 import java.util.ArrayList;
@@ -32,9 +33,12 @@ public abstract class Base extends NucleicAcidResidueComponent
   private static final Base INVALID =
       new Base(Collections.emptyList(), "UNK", 'X', "UNK") {
         private final Quadruplet<AtomName> chiAtoms =
-            new Quadruplet<>(
-                AtomName.UNKNOWN, AtomName.UNKNOWN,
-                AtomName.UNKNOWN, AtomName.UNKNOWN);
+            ImmutableQuadruplet.<AtomName>builder()
+                .a(AtomName.UNKNOWN)
+                .b(AtomName.UNKNOWN)
+                .c(AtomName.UNKNOWN)
+                .d(AtomName.UNKNOWN)
+                .build();
 
         @Override
         public List<TorsionAngleType> getTorsionAngleTypes() {

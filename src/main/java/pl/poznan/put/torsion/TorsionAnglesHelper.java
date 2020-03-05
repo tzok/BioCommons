@@ -24,7 +24,7 @@ public final class TorsionAnglesHelper {
    * @return Value of the tosion angle.
    */
   public static Angle calculateTorsionAngle(final Quadruplet<? extends PdbAtomLine> atoms) {
-    return TorsionAnglesHelper.calculateTorsionAngle(atoms.a, atoms.b, atoms.c, atoms.d);
+    return TorsionAnglesHelper.calculateTorsionAngle(atoms.a(), atoms.b(), atoms.c(), atoms.d());
   }
 
   /**
