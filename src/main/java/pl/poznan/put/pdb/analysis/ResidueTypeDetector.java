@@ -15,7 +15,7 @@ import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
-final class ResidueTypeDetector {
+public final class ResidueTypeDetector {
   private static final Collection<ResidueInformationProvider> PROVIDERS = new LinkedHashSet<>();
 
   static {
