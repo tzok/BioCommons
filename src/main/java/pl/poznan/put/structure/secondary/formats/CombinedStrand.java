@@ -141,7 +141,7 @@ public class CombinedStrand implements DotBracketInterface {
     return symbol.getIndex() + 1;
   }
 
-  private String getSequence(final boolean separateStrands) {
+  public String getSequence(final boolean separateStrands) {
     final StringBuilder builder = new StringBuilder();
     for (final Strand strand : strands) {
       builder.append(strand.getSequence());
@@ -152,7 +152,7 @@ public class CombinedStrand implements DotBracketInterface {
     return builder.toString();
   }
 
-  private String getStructure(final boolean separateStrands) {
+  public String getStructure(final boolean separateStrands) {
     final StringBuilder builder = new StringBuilder();
     for (final Strand strand : strands) {
       builder.append(strand.getStructure());

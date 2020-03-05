@@ -6,7 +6,7 @@ import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.util.List;
 
-interface DotBracketFromPdbInterface extends DotBracketInterface {
+public interface DotBracketFromPdbInterface extends DotBracketInterface {
   PdbResidueIdentifier getResidueIdentifier(final DotBracketSymbol symbol);
 
   DotBracketSymbol getSymbol(final PdbResidueIdentifier residueIdentifier);

@@ -40,4 +40,9 @@ public final class EmptyModelContainer implements ModelContainer {
   public String getPdbChain(final File pdbFile, final String cifChain) {
     return cifChain;
   }
+
+  @Override
+  public void close() {
+    // do nothing
+  }
 }
