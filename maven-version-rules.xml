@@ -5,5 +5,6 @@
     <ignoreVersions>
         <ignoreVersion type="regex">.*-[Aa][Ll][Pp][Hh][Aa][0-9]*</ignoreVersion>
         <ignoreVersion type="regex">.*-[Bb][Ee][Tt][Aa][0-9]*</ignoreVersion>
+        <ignoreVersion type="regex">.*-b[0-9]*</ignoreVersion>
     </ignoreVersions>
 </ruleset>
