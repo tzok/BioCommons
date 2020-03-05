@@ -104,8 +104,8 @@ public final class SVGHelper {
           inputFile.getAbsolutePath());
 
       return FileUtils.readFileToByteArray(outputFile);
-    } catch (final ExecuteException ignored) {
-      SVGHelper.LOGGER.warn("Failed to run inkscape to export image, will try to use Apache FOP");
+    } catch (final IOException e) {
+      SVGHelper.LOGGER.warn("Failed to run inkscape to export image, will try to use Apache FOP", e);
       return SVGHelper.exportInternal(svgDocument, format);
     } finally {
       FileUtils.deleteQuietly(inputFile);
