@@ -33,7 +33,7 @@ public class BpSeq implements Serializable {
   public static BpSeq fromString(final String data) throws InvalidStructureException {
     final List<Entry> entries = new ArrayList<>();
 
-    for (String line : data.split(System.lineSeparator())) {
+    for (String line : data.split("\n")) {
       line = line.trim();
 
       final int hash = line.indexOf('#');
