@@ -4,6 +4,7 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
+import pl.poznan.put.types.ImmutableQuadruplet;
 import pl.poznan.put.types.Quadruplet;
 
 public final class Epsilon extends AtomBasedTorsionAngleType {
@@ -13,8 +14,8 @@ public final class Epsilon extends AtomBasedTorsionAngleType {
     super(
         MoleculeType.RNA,
         Unicode.EPSILON,
-        new Quadruplet<>(AtomName.C4p, AtomName.C3p, AtomName.O3p, AtomName.P),
-        new Quadruplet<>(0, 0, 0, 1));
+        ImmutableQuadruplet.of(AtomName.C4p, AtomName.C3p, AtomName.O3p, AtomName.P),
+        ImmutableQuadruplet.of(0, 0, 0, 1));
   }
 
   public static Epsilon getInstance() {

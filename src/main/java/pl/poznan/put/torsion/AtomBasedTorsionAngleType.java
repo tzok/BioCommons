@@ -39,7 +39,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
   @Override
   public final String getLongDisplayName() {
     return String.format(
-        "%s(%s)%s-%s-%s-%s", displayName, getExportName(), atoms.a, atoms.b, atoms.c, atoms.d);
+        "%s(%s)%s-%s-%s-%s", displayName, getExportName(), atoms.a(), atoms.b(), atoms.c(), atoms.d());
   }
 
   @Override
