@@ -12,7 +12,7 @@ public class ResourcesHelperTest {
   @Test
   public final void loadResource() throws IOException {
     final String resource = ResourcesHelper.loadResource("test.txt");
-    assertEquals("Test\n", resource);
+    assertEquals("Test" + System.lineSeparator(), resource);
   }
 
   @Test(expected = IllegalArgumentException.class)
