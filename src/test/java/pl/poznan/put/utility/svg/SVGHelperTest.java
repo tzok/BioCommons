@@ -43,7 +43,7 @@ public class SVGHelperTest {
     final byte[] bytes = SVGHelper.export(merged, Format.SVG);
     final String actualString = new String(bytes, Charset.defaultCharset());
     final String expectedString = ResourcesHelper.loadResource("merged.svg");
-    assertEquals(expectedString, actualString);
+    assertEquals(expectedString.replaceAll("[\r\n]", ""), actualString.replaceAll("[\r\n]", ""));
   }
 
   @Test
@@ -52,7 +52,7 @@ public class SVGHelperTest {
     final byte[] bytes = SVGHelper.export(emptyDocument, Format.SVG);
     final String actualString = new String(bytes, Charset.defaultCharset());
     final String expectedString = ResourcesHelper.loadResource("empty.svg");
-    assertEquals(expectedString, actualString);
+    assertEquals(expectedString.replaceAll("[\r\n]", ""), actualString.replaceAll("[\r\n]", ""));
   }
 
   @Test
