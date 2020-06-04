@@ -1,7 +1,9 @@
 package pl.poznan.put.constant;
 
-import java.awt.Color;
 import org.apache.commons.math3.util.FastMath;
+
+import java.awt.*;
+import java.util.Arrays;
 
 public final class Colors {
   // @formatter:off
@@ -50,16 +52,12 @@ public final class Colors {
   private static final float[] GREEN_HSB = Color.RGBtoHSB(17, 102, 17, null);
   private static final float[] RED_HSB = Color.RGBtoHSB(170, 57, 57, null);
 
-  public static Color[] getDistinctColors() {
-    final Color[] colors = new Color[Colors.DISTINCT_COLORS_HEX.length];
-    for (int i = 0; i < Colors.DISTINCT_COLORS_HEX.length; i++) {
-      colors[i] = Color.decode(Colors.DISTINCT_COLORS_HEX[i]);
-    }
-    return colors;
-  }
-
   private Colors() {
     super();
+  }
+
+  public static Color[] getDistinctColors() {
+    return Arrays.stream(Colors.DISTINCT_COLORS_HEX).map(Color::decode).toArray(Color[]::new);
   }
 
   public static Color interpolateColor(final double value, final double min, final double max) {

@@ -1,10 +1,11 @@
 package pl.poznan.put.utility;
 
+import org.jumpmind.symmetric.csv.CsvWriter;
+
+import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
-import javax.swing.table.TableModel;
-import org.jumpmind.symmetric.csv.CsvWriter;
+import java.nio.charset.StandardCharsets;
 
 public final class TabularExporter {
   private TabularExporter() {
@@ -13,7 +14,7 @@ public final class TabularExporter {
 
   public static void export(final TableModel tableModel, final OutputStream stream)
       throws IOException {
-    final CsvWriter csvWriter = new CsvWriter(stream, ',', Charset.forName("UTF-8"));
+    final CsvWriter csvWriter = new CsvWriter(stream, ',', StandardCharsets.UTF_8);
 
     for (int i = 0; i < tableModel.getColumnCount(); i++) {
       csvWriter.write(tableModel.getColumnName(i));

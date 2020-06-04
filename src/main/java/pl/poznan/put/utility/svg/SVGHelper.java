@@ -1,20 +1,5 @@
 package pl.poznan.put.utility.svg;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.util.*;
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.bridge.BridgeContext;
@@ -34,6 +19,8 @@ import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.math3.stat.StatUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -41,8 +28,27 @@ import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
 import pl.poznan.put.utility.ExecHelper;
 
-@Slf4j
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 public final class SVGHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SVGHelper.class);
   private static final NamespaceContext SVG_NAMESPACE = new SVGNamespace();
   private static final DOMImplementation DOM_IMPLEMENTATION =
       SVGDOMImplementation.getDOMImplementation();
@@ -98,8 +104,8 @@ public final class SVGHelper {
           inputFile.getAbsolutePath());
 
       return FileUtils.readFileToByteArray(outputFile);
-    } catch (final ExecuteException ignored) {
-      SVGHelper.log.warn("Failed to run inkscape to export image, will try to use Apache FOP");
+    } catch (final IOException e) {
+      SVGHelper.LOGGER.warn("Failed to run inkscape to export image, will try to use Apache FOP", e);
       return SVGHelper.exportInternal(svgDocument, format);
     } finally {
       FileUtils.deleteQuietly(inputFile);
@@ -140,7 +146,7 @@ public final class SVGHelper {
     return SVGHelper.merge(Arrays.asList(svgs));
   }
 
-  public static SVGDocument merge(final List<SVGDocument> svgs) {
+  public static SVGDocument merge(final List<? extends SVGDocument> svgs) {
     if (svgs.isEmpty()) {
       return SVGHelper.emptyDocument();
     }
@@ -242,7 +248,7 @@ public final class SVGHelper {
     }
 
     @Override
-    public final Iterator getPrefixes(final String s) {
+    public final Iterator<String> getPrefixes(final String s) {
       throw new UnsupportedOperationException("N/A");
     }
   }

@@ -4,6 +4,10 @@ import org.apache.commons.math3.util.Precision;
 import pl.poznan.put.constant.Unicode;
 
 public final class AngleFormat {
+  private AngleFormat() {
+    super();
+  }
+
   /**
    * Format an angle value given in radians. The method detects NaN and infinity. Values is rounded
    * to the nearest degree.
@@ -60,9 +64,5 @@ public final class AngleFormat {
   public static String degrees(final double radians) {
     final double degrees = Math.toDegrees(radians);
     return Double.toString(degrees);
-  }
-
-  private AngleFormat() {
-    super();
   }
 }

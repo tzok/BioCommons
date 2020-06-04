@@ -1,25 +1,25 @@
 package pl.poznan.put.types;
 
-import static org.junit.Assert.assertEquals;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class QuadrupletTest {
   private Quadruplet<Integer> fromParameters;
 
   @Before
   public final void setUp() {
-    final Integer[] array = {1, 2, 3, 4};
-    fromParameters = new Quadruplet<>(1, 2, 3, 4);
+    fromParameters = ImmutableQuadruplet.<Integer>builder().a(1).b(2).c(3).d(4).build();
   }
 
   @Test
   public final void getTest() {
-    assertEquals(1, (int) fromParameters.get(0));
-    assertEquals(2, (int) fromParameters.get(1));
-    assertEquals(3, (int) fromParameters.get(2));
-    assertEquals(4, (int) fromParameters.get(3));
+    Assert.assertThat(fromParameters.get(0), is(1));
+    Assert.assertThat(fromParameters.get(1), is(2));
+    Assert.assertThat(fromParameters.get(2), is(3));
+    Assert.assertThat(fromParameters.get(3), is(4));
   }
 
   @Test(expected = IllegalArgumentException.class)

@@ -14,11 +14,11 @@ public final class NumberFormatUtils {
   private static final NumberFormat THREE_DECIMAL_DIGITS =
       new DecimalFormat(".###", new DecimalFormatSymbols(Locale.US));
 
-  public static NumberFormat threeDecimalDigits() {
-    return NumberFormatUtils.THREE_DECIMAL_DIGITS;
-  }
-
   private NumberFormatUtils() {
     super();
+  }
+
+  public static NumberFormat threeDecimalDigits() {
+    return NumberFormatUtils.THREE_DECIMAL_DIGITS;
   }
 }
