@@ -4,6 +4,7 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
+import pl.poznan.put.types.ImmutableQuadruplet;
 import pl.poznan.put.types.Quadruplet;
 
 import java.util.ArrayList;
@@ -13,12 +14,12 @@ import java.util.Map;
 
 public final class Chi5 extends AtomBasedTorsionAngleType {
   public static final Quadruplet<AtomName> ARGININE_ATOMS =
-      new Quadruplet<>(AtomName.CD, AtomName.NE, AtomName.CZ, AtomName.NH1);
+      ImmutableQuadruplet.of(AtomName.CD, AtomName.NE, AtomName.CZ, AtomName.NH1);
 
   private static final Map<Quadruplet<AtomName>, Chi5> INSTANCE_CACHE = new HashMap<>();
 
   private Chi5(final Quadruplet<AtomName> atoms) {
-    super(MoleculeType.PROTEIN, Unicode.CHI5, atoms, new Quadruplet<>(0, 0, 0, 0));
+    super(MoleculeType.PROTEIN, Unicode.CHI5, atoms, ImmutableQuadruplet.of(0, 0, 0, 0));
   }
 
   public static Chi5[] getInstances() {

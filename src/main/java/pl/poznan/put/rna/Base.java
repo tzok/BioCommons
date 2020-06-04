@@ -5,6 +5,7 @@ import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.rna.torsion.*;
 import pl.poznan.put.torsion.TorsionAngleType;
+import pl.poznan.put.types.ImmutableQuadruplet;
 import pl.poznan.put.types.Quadruplet;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public abstract class Base extends NucleicAcidResidueComponent
   private static final Base INVALID =
       new Base(Collections.emptyList(), "UNK", 'X', "UNK") {
         private final Quadruplet<AtomName> chiAtoms =
-            new Quadruplet<>(
+            ImmutableQuadruplet.of(
                 AtomName.UNKNOWN, AtomName.UNKNOWN,
                 AtomName.UNKNOWN, AtomName.UNKNOWN);
 
