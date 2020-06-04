@@ -14,7 +14,7 @@ public class ResourcesHelperTest {
   @Test
   public final void loadResource() throws IOException {
     final String resource = ResourcesHelper.loadResource("test.txt");
-    assertThat(resource, is("Test\n"));
+    assertThat(resource, is("Test" + System.lineSeparator()));
   }
 
   @Test(expected = IllegalArgumentException.class)

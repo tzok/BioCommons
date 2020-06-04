@@ -17,7 +17,7 @@ public class TabularExporterTest {
     final ByteArrayOutputStream stream = new ByteArrayOutputStream();
     TabularExporter.export(tableModel, stream);
 
-    Assert.assertThat(stream.toString(Charset.defaultCharset()), is("\n"));
+    Assert.assertThat(stream.toString(Charset.defaultCharset()), is(System.lineSeparator()));
   }
 
   @Test
@@ -28,7 +28,7 @@ public class TabularExporterTest {
     final ByteArrayOutputStream stream = new ByteArrayOutputStream();
     TabularExporter.export(tableModel, stream);
 
-    Assert.assertThat(stream.toString(Charset.defaultCharset()), is("A,B,C\n"));
+    Assert.assertThat(stream.toString(Charset.defaultCharset()), is("A,B,C" + System.lineSeparator()));
   }
 
   @Test
@@ -39,7 +39,7 @@ public class TabularExporterTest {
     final ByteArrayOutputStream stream = new ByteArrayOutputStream();
     TabularExporter.export(tableModel, stream);
 
-    Assert.assertThat(stream.toString(Charset.defaultCharset()), is("A,B,C\n1,2,3\nx,y,z\n"));
+    Assert.assertThat(stream.toString(Charset.defaultCharset()), is("A,B,C" + System.lineSeparator() + "1,2,3" + System.lineSeparator() + "x,y,z" + System.lineSeparator()));
   }
 
   @Test
@@ -50,6 +50,6 @@ public class TabularExporterTest {
     final ByteArrayOutputStream stream = new ByteArrayOutputStream();
     TabularExporter.export(tableModel, stream);
 
-    Assert.assertThat(stream.toString(Charset.defaultCharset()), is("A,B,C\n1,,3\n"));
+    Assert.assertThat(stream.toString(Charset.defaultCharset()), is("A,B,C" + System.lineSeparator() + "1,,3" + System.lineSeparator()));
   }
 }
