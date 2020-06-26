@@ -13,10 +13,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.*;
 
 public final class ExecHelper {
   private static final Logger LOGGER = LoggerFactory.getLogger(ExecHelper.class);
@@ -109,22 +109,9 @@ public final class ExecHelper {
   }
 
   private static void makeExecutable(final String path) {
-    try {
-      // prepare commandline
-      final CommandLine chmod = new CommandLine("chmod");
-      chmod.addArgument("a+x");
-      chmod.addArgument(path);
-
-      // prepare handler for output and error streams
-      final ExecuteStreamHandler handler = new PumpStreamHandler(null, null);
-
-      // execute the command
-      final Executor executor = new DefaultExecutor();
-      executor.setStreamHandler(handler);
-      executor.execute(chmod);
-    } catch (final IOException ignored) {
-      // do nothing
-    }
+      File file = new File(path);
+      if(!file.canExecute())
+        file.setExecutable(true);
   }
 
   public static final class ExecutionResult {
