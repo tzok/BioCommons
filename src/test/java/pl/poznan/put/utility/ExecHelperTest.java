@@ -1,8 +1,9 @@
 package pl.poznan.put.utility;
 
 import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -10,41 +11,40 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
-import java.io.IOException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ExecHelper.class)
 public class ExecHelperTest {
+  private File testFile;
 
-    static File classTestFile;
+  @Mock private DefaultExecutor mockExecHelper;
 
-    @Mock
-    DefaultExecutor mockExecHelper;
+  @Before
+  public final void init() throws Exception {
+    testFile = File.createTempFile("ExecHelperTest", ".exe");
+    testFile.setExecutable(false);
+  }
 
-    @BeforeClass
-    public static void init() throws Exception {
-        classTestFile = File.createTempFile("test", null);
-        classTestFile.setExecutable(false);
+  @After
+  public final void cleanUp() {
+    testFile.delete();
+  }
+
+  @Test
+  public final void testFilePermissionsChange() throws Exception {
+    // on Windows, File.canExecute() always returns true
+    // even if @Before method explicitly calls File.setExecutable(false);
+    if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
+      MockitoAnnotations.initMocks(this);
+      whenNew(DefaultExecutor.class).withNoArguments().thenReturn(mockExecHelper);
+
+      assertFalse(testFile.canExecute());
+      ExecHelper.execute(testFile.getAbsolutePath());
+      assertTrue(testFile.canExecute());
     }
-
-    @AfterClass
-    public static void cleanUp(){
-        classTestFile.delete();
-    }
-
-    @Test
-    public final void checkOperatingSystemCompatibility() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        whenNew(DefaultExecutor.class).withNoArguments().thenReturn(mockExecHelper);
-        if(!System.getProperty("os.name").toLowerCase().contains("windows")){
-            assertFalse(classTestFile.canExecute());
-        }
-        ExecHelper.execute(classTestFile.getAbsolutePath());
-        assertTrue(classTestFile.canExecute());
-    }
+  }
 }

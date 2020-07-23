@@ -1,10 +1,6 @@
 package pl.poznan.put.utility;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteStreamHandler;
-import org.apache.commons.exec.Executor;
-import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
@@ -13,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
 
 public final class ExecHelper {
   private static final Logger LOGGER = LoggerFactory.getLogger(ExecHelper.class);
@@ -109,9 +105,10 @@ public final class ExecHelper {
   }
 
   private static void makeExecutable(final String path) {
-      File file = new File(path);
-      if(!file.canExecute())
-        file.setExecutable(true);
+    final File file = new File(path);
+    if (!file.canExecute()) {
+      file.setExecutable(true);
+    }
   }
 
   public static final class ExecutionResult {
