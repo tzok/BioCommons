@@ -174,13 +174,10 @@ public class PdbModel implements Serializable, ResidueCollection {
 
   private void addMissingResiduesAndSaveChain(
       List<PdbResidue> chainResidues, String chainIdentifier, List<PdbResidue> missingResidues) {
-    for (final PdbResidue missingResidue : missingResidues) {
-      if (!chainIdentifier.equals(missingResidue.getChainIdentifier())) {
-        continue;
-      }
-      putMissingResidueInRightPlace(chainResidues, missingResidue);
-    }
-
+    missingResidues.stream()
+        .filter(pdbResidue -> chainIdentifier.equals(pdbResidue.getChainIdentifier()))
+        .forEach(pdbResidue -> putMissingResidueInRightPlace(chainResidues, pdbResidue));
+    missingResidues.removeIf(pdbResidue -> chainIdentifier.equals(pdbResidue.getChainIdentifier()));
     chains.add(new PdbChain(chainIdentifier, chainResidues));
   }
 
