@@ -1,11 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
-import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbExpdtaLine;
-import pl.poznan.put.pdb.PdbHeaderLine;
-import pl.poznan.put.pdb.PdbModresLine;
-import pl.poznan.put.pdb.PdbRemark2Line;
-import pl.poznan.put.pdb.PdbRemark465Line;
+import pl.poznan.put.pdb.*;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
 import java.util.ArrayList;
@@ -25,7 +20,8 @@ public class CifModel extends PdbModel {
       final List<PdbModresLine> modifiedResidues,
       final List<PdbRemark465Line> missingResidues,
       final List<QuantifiedBasePair> basePairs,
-      final String title) {
+      final String title,
+      final List<PdbAtomLine> chainTerminatedAfter) {
     super(
         headerLine,
         experimentalDataLine,
@@ -34,7 +30,8 @@ public class CifModel extends PdbModel {
         atoms,
         modifiedResidues,
         missingResidues,
-        title);
+        title,
+        chainTerminatedAfter);
     this.basePairs = new ArrayList<>(basePairs);
   }
 
@@ -55,6 +52,7 @@ public class CifModel extends PdbModel {
         modifiedResidues,
         filteredMissing,
         basePairs,
-        title);
+        title,
+        chainTerminatedAfter);
   }
 }

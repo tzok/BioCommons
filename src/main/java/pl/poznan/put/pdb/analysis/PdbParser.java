@@ -5,21 +5,9 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbExpdtaLine;
-import pl.poznan.put.pdb.PdbHeaderLine;
-import pl.poznan.put.pdb.PdbModresLine;
-import pl.poznan.put.pdb.PdbParsingException;
-import pl.poznan.put.pdb.PdbRemark2Line;
-import pl.poznan.put.pdb.PdbRemark465Line;
-import pl.poznan.put.pdb.PdbTitleLine;
+import pl.poznan.put.pdb.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PdbParser implements StructureParser {
@@ -27,17 +15,18 @@ public class PdbParser implements StructureParser {
 
   private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
   private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
-  private final Collection<String> terminatedChainIdentifiers = new HashSet<>();
-  private final Collection<Integer> endedModelNumbers = new HashSet<>();
+  private final Set<PdbResidueIdentifier> processedIdentifiers = new HashSet<>();
+  private final List<PdbAtomLine> chainTerminatedAfter = new ArrayList<>();
+  private final Set<Integer> endedModelNumbers = new HashSet<>();
   private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
-  private final Collection<PdbTitleLine> titleLines = new ArrayList<>();
+  private final List<PdbTitleLine> titleLines = new ArrayList<>();
 
   private final boolean strictMode;
 
   private PdbHeaderLine headerLine;
   private PdbExpdtaLine experimentalDataLine;
   private PdbRemark2Line resolutionLine;
-  private char currentChainIdentifier;
+  private PdbResidueIdentifier currentIdentifier = PdbResidueIdentifier.invalid();
   private int currentModelNumber;
 
   public PdbParser(final boolean strictMode) {
@@ -60,7 +49,7 @@ public class PdbParser implements StructureParser {
       } else if (line.startsWith("ATOM") || line.startsWith("HETATM")) {
         handleAtomLine(line);
       } else if (line.startsWith("TER   ")) {
-        handleTerLine(line);
+        handleTerLine();
       } else if (line.startsWith("REMARK 465")) {
         handleMissingResidueLine(line);
       } else if (line.startsWith("MODRES")) {
@@ -93,7 +82,8 @@ public class PdbParser implements StructureParser {
               atoms,
               modifiedResidues,
               missingResidues,
-              titleBuilder);
+              titleBuilder,
+              chainTerminatedAfter);
       result.add(pdbModel);
     }
 
@@ -103,18 +93,16 @@ public class PdbParser implements StructureParser {
   private void resetState() {
     modifiedResidues.clear();
     missingResidues.clear();
-    terminatedChainIdentifiers.clear();
+    processedIdentifiers.clear();
+    chainTerminatedAfter.clear();
     endedModelNumbers.clear();
     modelAtoms.clear();
     titleLines.clear();
 
-    // on default, the ' ' chain id is terminated
-    terminatedChainIdentifiers.add(" ");
-
     headerLine = PdbHeaderLine.emptyInstance();
     experimentalDataLine = PdbExpdtaLine.emptyInstance();
-    currentChainIdentifier = 'a';
     currentModelNumber = 0;
+    currentIdentifier = PdbResidueIdentifier.invalid();
   }
 
   private void handleModelLine(final String line) {
@@ -130,15 +118,26 @@ public class PdbParser implements StructureParser {
     }
 
     currentModelNumber = modelNumber;
-    terminatedChainIdentifiers.clear();
+
+    processedIdentifiers.clear();
+    chainTerminatedAfter.clear();
+    currentIdentifier = PdbResidueIdentifier.invalid();
   }
 
   private void handleAtomLine(final String line) {
     try {
       PdbAtomLine atomLine = PdbAtomLine.parse(line, strictMode);
+      PdbResidueIdentifier identifier = atomLine.getResidueIdentifier();
 
-      if (terminatedChainIdentifiers.contains(atomLine.getChainIdentifier())) {
-        atomLine = atomLine.replaceChainIdentifier(Character.toString(currentChainIdentifier));
+      if (processedIdentifiers.contains(identifier)) {
+        PdbParser.LOGGER.warn("Duplicate residue, ignoring it: {}", identifier);
+        return;
+      }
+
+      if (!currentIdentifier.equals(PdbResidueIdentifier.invalid())
+          && !identifier.equals(currentIdentifier)) {
+        processedIdentifiers.add(currentIdentifier);
+        currentIdentifier = identifier;
       }
 
       if (!modelAtoms.containsKey(currentModelNumber)) {
@@ -165,15 +164,9 @@ public class PdbParser implements StructureParser {
     }
   }
 
-  private void handleTerLine(final CharSequence line) {
-    String chain = (line.length() > 21) ? Character.toString(line.charAt(21)) : " ";
-
-    if (terminatedChainIdentifiers.contains(chain)) {
-      chain = Character.toString(currentChainIdentifier);
-      currentChainIdentifier++;
-    }
-
-    terminatedChainIdentifiers.add(chain);
+  private void handleTerLine() {
+    List<PdbAtomLine> atomLines = modelAtoms.get(currentModelNumber);
+    chainTerminatedAfter.add(atomLines.get(atomLines.size() - 1));
   }
 
   private void handleMissingResidueLine(final String line) {
