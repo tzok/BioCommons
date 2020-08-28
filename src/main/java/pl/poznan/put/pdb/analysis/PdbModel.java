@@ -331,22 +331,13 @@ public class PdbModel implements Serializable, ResidueCollection {
     return builder.toString();
   }
 
-  public final String toCifString() {
+  public final String toCif() {
     final StringBuilder builder = new StringBuilder();
     builder.append("data_").append(getIdCode()).append('\n');
     builder.append(PdbAtomLine.CIF_LOOP).append('\n');
 
-    final Collection<Pair<PdbResidueIdentifier, AtomName>> resolved = new HashSet<>();
     for (final PdbResidue residue : residues) {
-      for (final PdbAtomLine atom : residue.getAtoms()) {
-        final Pair<PdbResidueIdentifier, AtomName> pair =
-            Pair.of(residue.getResidueIdentifier(), atom.detectAtomName());
-
-        if (!resolved.contains(pair)) {
-          builder.append(atom.replaceAlternateLocation(" ").toCif()).append('\n');
-          resolved.add(pair);
-        }
-      }
+      builder.append(residue.toCif());
     }
 
     return builder.toString();

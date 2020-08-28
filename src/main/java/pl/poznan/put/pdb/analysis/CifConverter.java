@@ -146,7 +146,7 @@ public final class CifConverter {
     }
 
     final File cifFile = File.createTempFile("cif2pdb", ".cif");
-    FileUtils.write(cifFile, model.toCifString(), Charset.defaultCharset());
+    FileUtils.write(cifFile, model.toCif(), Charset.defaultCharset());
     return new CifContainer(cifFile, fileChainMap);
   }
 

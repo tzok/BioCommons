@@ -428,7 +428,7 @@ public class PdbModelTest {
     assertEquals(1, pdbModels.size());
     final PdbModel pdbModel = pdbModels.get(0);
 
-    final String cif1EHZ = pdbModel.toCifString();
+    final String cif1EHZ = pdbModel.toCif();
 
     final StructureParser cifParser = new CifParser();
     final List<PdbModel> cifModels = cifParser.parse(cif1EHZ);

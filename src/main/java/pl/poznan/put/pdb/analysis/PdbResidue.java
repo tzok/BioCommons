@@ -6,6 +6,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.PredicateUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.biojava.nbio.structure.Group;
@@ -308,5 +309,26 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
 
     throw new IllegalArgumentException(
         "Cannot compute base plane for not a nucleotide: " + identifier);
+  }
+
+  /**
+   * Important! Print {@link PdbAtomLine#CIF_LOOP} before these coordinates.
+   *
+   * @return
+   */
+  public String toCif() {
+    final Set<AtomName> used = new HashSet<>();
+    final StringBuilder builder = new StringBuilder();
+
+    for (final PdbAtomLine atom : atoms) {
+      final AtomName atomName = atom.detectAtomName();
+
+      if (!used.contains(atomName)) {
+        builder.append(atom.replaceAlternateLocation(" ").toCif()).append('\n');
+        used.add(atomName);
+      }
+    }
+
+    return builder.toString();
   }
 }
