@@ -310,25 +310,4 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     throw new IllegalArgumentException(
         "Cannot compute base plane for not a nucleotide: " + identifier);
   }
-
-  /**
-   * Important! Print {@link PdbAtomLine#CIF_LOOP} before these coordinates.
-   *
-   * @return
-   */
-  public String toCif() {
-    final Set<AtomName> used = new HashSet<>();
-    final StringBuilder builder = new StringBuilder();
-
-    for (final PdbAtomLine atom : atoms) {
-      final AtomName atomName = atom.detectAtomName();
-
-      if (!used.contains(atomName)) {
-        builder.append(atom.replaceAlternateLocation(" ").toCif()).append('\n');
-        used.add(atomName);
-      }
-    }
-
-    return builder.toString();
-  }
 }
