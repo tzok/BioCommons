@@ -140,8 +140,8 @@
           <groupId>com.fasterxml.jackson.core</groupId>
         </exclusion>
         <exclusion>
-          <groupId>commons-lang</groupId>
           <artifactId>commons-lang</artifactId>
+          <groupId>commons-lang</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -195,6 +195,13 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>1.3</version>
       <scope>test</scope>
     </dependency>
 
@@ -265,6 +272,13 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.1.2</version>
+        <configuration>
+          <usedDependencies>
+            <dependency>org.apache.xmlgraphics:batik-codec</dependency>
+            <dependency>org.projectlombok:lombok</dependency>
+            <dependency>ch.qos.logback:logback-classic</dependency>
+          </usedDependencies>
+        </configuration>
       </plugin>
 
       <plugin>
