@@ -3,7 +3,6 @@ package pl.poznan.put.torsion;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.Bond;
 import pl.poznan.put.pdb.PdbAtomLine;
@@ -209,7 +208,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     }
 
     @Override
-    public int compareTo(final @NotNull AtomBasedTorsionAngleType.AtomPair t) {
+    public int compareTo(final AtomBasedTorsionAngleType.AtomPair t) {
       return Integer.compare(leftAtom.getSerialNumber(), t.leftAtom.getSerialNumber());
     }
   }

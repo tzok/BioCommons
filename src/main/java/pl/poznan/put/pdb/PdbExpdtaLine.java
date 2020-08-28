@@ -75,6 +75,6 @@ public class PdbExpdtaLine implements Serializable {
         builder.append(experimentalTechniques.get(i).getPdbName());
       }
     }
-    return String.format(Locale.US, PdbExpdtaLine.FORMAT, builder.toString());
+    return String.format(Locale.US, PdbExpdtaLine.FORMAT, builder);
   }
 }

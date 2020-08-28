@@ -1,6 +1,5 @@
 package pl.poznan.put;
 
-import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.Converter;
@@ -9,7 +8,8 @@ import pl.poznan.put.structure.secondary.formats.LevelByLevelConverter;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.MinGain;
 import pl.poznan.put.utility.ResourcesHelper;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class DotBracketTest {
   public static final String FROM_2Z74 =
@@ -41,7 +41,7 @@ public class DotBracketTest {
   @Test
   public final void from2Z74() {
     final DotBracket dotBracket = DotBracket.fromString(DotBracketTest.FROM_2Z74);
-    Assert.assertEquals(2, dotBracket.getStrands().size());
+    assertThat(dotBracket.getStrands().size(), is(2));
   }
 
   @Test
@@ -50,7 +50,7 @@ public class DotBracketTest {
     final BpSeq bpSeq = BpSeq.fromString(DotBracketTest.BPSEQ);
     final DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
     final DotBracket dotBracketFromString = DotBracket.fromString(DotBracketTest.DOTBRACKET);
-    Assert.assertThat(dotBracketFromBpSeq, is(dotBracketFromString));
+    assertThat(dotBracketFromBpSeq, is(dotBracketFromString));
   }
 
   @Test
@@ -62,13 +62,13 @@ public class DotBracketTest {
     final BpSeq bpSeq = BpSeq.fromString(bpseq1EHZ);
     final DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
     final DotBracket dotBracketFromString = DotBracket.fromString(dotBracket1EHZ);
-    Assert.assertThat(dotBracketFromBpSeq, is(dotBracketFromString));
+    assertThat(dotBracketFromBpSeq, is(dotBracketFromString));
   }
 
   @Test
   public final void testWithWindowsNewline() {
     final DotBracket dotBracket = DotBracket.fromString(DotBracketTest.WITH_WINDOWS_NEWLINE);
-    Assert.assertThat(dotBracket.getSequence(), is("ACAAGU"));
-    Assert.assertThat(dotBracket.getStructure(), is("((..))"));
+    assertThat(dotBracket.getSequence(), is("ACAAGU"));
+    assertThat(dotBracket.getStructure(), is("((..))"));
   }
 }

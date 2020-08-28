@@ -2,7 +2,6 @@ package pl.poznan.put.notation;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NonNls;
 
 import java.util.Arrays;
 
@@ -84,7 +83,6 @@ public enum LeontisWesthof {
     }
   }
 
-  @NonNls
   private static String edgeName(final char c) {
     switch (Character.toLowerCase(c)) {
       case 'c':

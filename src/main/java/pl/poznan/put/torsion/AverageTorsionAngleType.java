@@ -1,8 +1,6 @@
 package pl.poznan.put.torsion;
 
 import lombok.EqualsAndHashCode;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.samples.AngleSample;
 import pl.poznan.put.pdb.analysis.MoleculeType;
@@ -51,7 +49,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     this.exportName = exportName;
   }
 
-  private static @NotNull String toDisplayName(
+  private static String toDisplayName(
       final Iterable<? extends MasterTorsionAngleType> consideredAngles) {
     final Collection<String> angleNames = new LinkedHashSet<>();
     for (final MasterTorsionAngleType angleType : consideredAngles) {
@@ -71,7 +69,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     return builder.toString();
   }
 
-  private static @NotNull String toExportName(
+  private static String toExportName(
       final Iterable<? extends MasterTorsionAngleType> consideredAngles) {
     final Collection<String> angleNames = new LinkedHashSet<>();
     for (final MasterTorsionAngleType angleType : consideredAngles) {
@@ -90,37 +88,32 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     return builder.toString();
   }
 
-  @Contract(pure = true)
   @Override
   public final String getLongDisplayName() {
     return displayName;
   }
 
-  @Contract(pure = true)
   @Override
   public final String getShortDisplayName() {
     return displayName;
   }
 
-  @Contract(pure = true)
   @Override
   public final String getExportName() {
     return exportName;
   }
 
-  @Contract(pure = true)
   @Override
   public final String toString() {
     return displayName;
   }
 
-  @Contract(pure = true)
-  public final @NotNull List<MasterTorsionAngleType> getConsideredAngles() {
+  public final List<MasterTorsionAngleType> getConsideredAngles() {
     return Collections.unmodifiableList(consideredAngles);
   }
 
   @Override
-  public final @NotNull TorsionAngleValue calculate(
+  public final TorsionAngleValue calculate(
       final List<? extends PdbResidue> residues, final int currentIndex) {
     final PdbResidue residue = residues.get(currentIndex);
     final List<Angle> angles = new ArrayList<>();
@@ -138,7 +131,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     return new TorsionAngleValue(this, angleSample.getMeanDirection());
   }
 
-  public final @NotNull TorsionAngleValue calculate(
+  public final TorsionAngleValue calculate(
       final Iterable<? extends TorsionAngleValue> values) {
     final List<Angle> angles = new ArrayList<>();
 
@@ -157,8 +150,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
   }
 
   @Override
-  @Contract(pure = true)
-  public final @NotNull List<TorsionAngleType> getAngleTypes() {
+  public final List<TorsionAngleType> getAngleTypes() {
     return Collections.singletonList(this);
   }
 

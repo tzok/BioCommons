@@ -39,12 +39,13 @@ public class ExecHelperTest {
     // on Windows, File.canExecute() always returns true
     // even if @Before method explicitly calls File.setExecutable(false);
     if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
-      MockitoAnnotations.initMocks(this);
-      whenNew(DefaultExecutor.class).withNoArguments().thenReturn(mockExecHelper);
+      try (final AutoCloseable closeable = MockitoAnnotations.openMocks(this)) {
+        whenNew(DefaultExecutor.class).withNoArguments().thenReturn(mockExecHelper);
 
-      assertFalse(testFile.canExecute());
-      ExecHelper.execute(testFile.getAbsolutePath());
-      assertTrue(testFile.canExecute());
+        assertFalse(testFile.canExecute());
+        ExecHelper.execute(testFile.getAbsolutePath());
+        assertTrue(testFile.canExecute());
+      }
     }
   }
 }

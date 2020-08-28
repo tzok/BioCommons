@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.atom.AtomName;
 
-import javax.vecmath.Point3d;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
@@ -485,10 +484,6 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
       builder.append('?');
     }
     return builder.toString();
-  }
-
-  public final Point3d toPoint3d() {
-    return new Point3d(x, y, z);
   }
 
   public final Vector3D toVector3D() {

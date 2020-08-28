@@ -1,6 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.rna.torsion.Chi;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;

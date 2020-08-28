@@ -5,7 +5,6 @@ import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.PseudoTorsionAngleType;
 import pl.poznan.put.types.ImmutableQuadruplet;
-import pl.poznan.put.types.Quadruplet;
 
 public final class Eta extends PseudoTorsionAngleType {
   private static final Eta INSTANCE = new Eta();

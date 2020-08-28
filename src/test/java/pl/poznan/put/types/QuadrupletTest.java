@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class QuadrupletTest {
   private Quadruplet<Integer> fromParameters;
@@ -16,10 +17,10 @@ public class QuadrupletTest {
 
   @Test
   public final void getTest() {
-    Assert.assertThat(fromParameters.get(0), is(1));
-    Assert.assertThat(fromParameters.get(1), is(2));
-    Assert.assertThat(fromParameters.get(2), is(3));
-    Assert.assertThat(fromParameters.get(3), is(4));
+    assertThat(fromParameters.get(0), is(1));
+    assertThat(fromParameters.get(1), is(2));
+    assertThat(fromParameters.get(2), is(3));
+    assertThat(fromParameters.get(3), is(4));
   }
 
   @Test(expected = IllegalArgumentException.class)

@@ -22,7 +22,7 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
   private final BR br;
 
   @EqualsAndHashCode.Exclude private HelixOrigin helixOrigin;
-  @EqualsAndHashCode.Exclude private boolean isRepresented = false;
+  @EqualsAndHashCode.Exclude private boolean isRepresented;
 
   public ClassifiedBasePair(
       final BasePair basePair,

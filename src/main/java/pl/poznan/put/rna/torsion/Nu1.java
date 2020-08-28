@@ -5,7 +5,6 @@ import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.types.ImmutableQuadruplet;
-import pl.poznan.put.types.Quadruplet;
 
 public final class Nu1 extends AtomBasedTorsionAngleType {
   private static final Nu1 INSTANCE = new Nu1();

@@ -4,8 +4,6 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
@@ -28,7 +26,6 @@ public class Angle extends Circular {
     super(value, valueType);
   }
 
-  @Contract(pure = true)
   public static Angle invalidInstance() {
     return Angle.INVALID;
   }
@@ -80,7 +77,7 @@ public class Angle extends Circular {
    * @throws InvalidCircularValueException If the input string is parsed to a value outside the
    *     range [0..360)
    */
-  public static @NotNull Angle fromHourMinuteString(final @NotNull String hourMinute) {
+  public static Angle fromHourMinuteString(final String hourMinute) {
     final String[] split = Angle.DOT.split(hourMinute);
 
     if (split.length != 2) {
@@ -127,7 +124,7 @@ public class Angle extends Circular {
    * @param end Ending of the range of values.
    * @return true if object is between [begin; end)
    */
-  public final boolean isBetween(final @NotNull Angle begin, final @NotNull Angle end) {
+  public final boolean isBetween(final Angle begin, final Angle end) {
     final double degrees360 = getDegrees360();
     final double begin360 = begin.getDegrees360();
     final double end360 = end.getDegrees360();
@@ -137,11 +134,11 @@ public class Angle extends Circular {
         : ((degrees360 >= begin360) || (degrees360 < end360));
   }
 
-  public final @NotNull Angle multiply(final double v) {
+  public final Angle multiply(final double v) {
     return new Angle((getRadians() * v) % MathUtils.TWO_PI, ValueType.RADIANS);
   }
 
-  public final @NotNull Angle subtract(final @NotNull Angle other) {
+  public final Angle subtract(final Angle other) {
     return new Angle(Angle.subtractByMinimum(getRadians(), other.getRadians()), ValueType.RADIANS);
   }
 
@@ -152,7 +149,7 @@ public class Angle extends Circular {
    * @param other The other angle which value should be subtracted from this one.
    * @return An ordered difference from first to second angle in range [-180; 180) degrees.
    */
-  public final @NotNull Angle orderedSubtract(final @NotNull Angle other) {
+  public final Angle orderedSubtract(final Angle other) {
     double d = getRadians() - other.getRadians();
     while (Precision.compareTo(d, -FastMath.PI, 1.0e-3) < 0) {
       d += MathUtils.TWO_PI;

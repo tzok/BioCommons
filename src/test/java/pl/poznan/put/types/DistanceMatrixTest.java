@@ -1,6 +1,7 @@
 package pl.poznan.put.types;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -17,19 +18,19 @@ public class DistanceMatrixTest {
   @Test
   public final void getNames() {
     final List<String> matrixNames = distanceMatrix.getNames();
-    Assert.assertThat(matrixNames.size(), is(3));
-    Assert.assertThat(matrixNames.get(0), is("A"));
-    Assert.assertThat(matrixNames.get(1), is("B"));
-    Assert.assertThat(matrixNames.get(2), is("C"));
+    assertThat(matrixNames.size(), is(3));
+    assertThat(matrixNames.get(0), is("A"));
+    assertThat(matrixNames.get(1), is("B"));
+    assertThat(matrixNames.get(2), is("C"));
   }
 
   @Test
   public final void getMatrix() {
     final double[][] matrix = distanceMatrix.getMatrix();
-    Assert.assertThat(matrix.length, is(3));
+    assertThat(matrix.length, is(3));
 
     for (int i = 0; i < 3; i++) {
-      Assert.assertThat(matrix[i].length, is(3));
+      assertThat(matrix[i].length, is(3));
       for (int j = 0; j < 3; j++) {
         assertEquals(data[i][j], matrix[i][j], 1.0e-3);
       }

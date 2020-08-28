@@ -15,7 +15,6 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.TranscodingHints;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
-import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.math3.stat.StatUtils;
@@ -105,7 +104,8 @@ public final class SVGHelper {
 
       return FileUtils.readFileToByteArray(outputFile);
     } catch (final IOException e) {
-      SVGHelper.LOGGER.warn("Failed to run inkscape to export image, will try to use Apache FOP", e);
+      SVGHelper.LOGGER.warn(
+          "Failed to run inkscape to export image, will try to use Apache FOP", e);
       return SVGHelper.exportInternal(svgDocument, format);
     } finally {
       FileUtils.deleteQuietly(inputFile);

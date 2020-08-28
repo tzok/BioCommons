@@ -13,9 +13,8 @@ import pl.poznan.put.utility.ResourcesHelper;
 import java.io.IOException;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class BpSeqTest {
   // @formatter:off
@@ -119,7 +118,7 @@ public class BpSeqTest {
   public final void testManyChainsWithMissingResidues() {
     final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb1XPO);
-    assertEquals(1, models.size());
+    assertThat(models.size(), is(1));
     final PdbModel model = models.get(0);
 
     final BpSeq bpSeq = BpSeq.fromString(bpseq1XPO);

@@ -8,6 +8,7 @@ import pl.poznan.put.circular.Angle;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AngleTransformationTest {
   private static final Angle ZERO = new Angle(0.0, ValueType.DEGREES);
@@ -30,7 +31,7 @@ public class AngleTransformationTest {
                   new Angle(
                       AngleTransformation.MATH.transform(pair.getRight().getRadians()),
                       ValueType.RADIANS);
-              Assert.assertThat(actual, is(expected));
+              assertThat(actual, is(expected));
             });
 
     // tests on CLOCK transformation
@@ -46,7 +47,7 @@ public class AngleTransformationTest {
                   new Angle(
                       AngleTransformation.CLOCK.transform(pair.getRight().getRadians()),
                       ValueType.RADIANS);
-              Assert.assertThat(actual, is(expected));
+              assertThat(actual, is(expected));
             });
   }
 }

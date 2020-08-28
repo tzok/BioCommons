@@ -15,7 +15,7 @@ import java.util.Map;
  * An implementation of {@link ModelContainer} which is created from mmCIF file and its possible
  * split into multiple PDB files.
  */
-public class CifContainer implements Closeable, ModelContainer {
+public class CifContainer implements ModelContainer {
   private final File cifFile;
   private final Map<File, BidiMap<String, String>> fileChainMap;
 

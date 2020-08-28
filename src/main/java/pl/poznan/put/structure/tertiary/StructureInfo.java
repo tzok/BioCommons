@@ -1,7 +1,6 @@
 package pl.poznan.put.structure.tertiary;
 
 import lombok.Data;
-import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.pdb.analysis.PdbModel;
 
 import java.io.File;
@@ -16,7 +15,7 @@ public class StructureInfo implements Comparable<StructureInfo> {
   private final Comparator<StructureInfo> comparator = Comparator.comparing(StructureInfo::getName);
 
   @Override
-  public final int compareTo(final @NotNull StructureInfo t) {
+  public final int compareTo(final StructureInfo t) {
     return comparator.compare(this, t);
   }
 }

@@ -1,7 +1,6 @@
 package pl.poznan.put.sequence.alignment;
 
 import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.pdb.analysis.PdbCompactFragment;
@@ -13,7 +12,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SequenceAlignerTest {
   // @formatter:off
@@ -37,8 +37,8 @@ public class SequenceAlignerTest {
     final List<PdbModel> models1EHZ = parser.parse(ResourcesHelper.loadResource("1EHZ.pdb"));
     final List<PdbModel> models2MIY = parser.parse(ResourcesHelper.loadResource("2MIY.pdb"));
 
-    Assert.assertThat(!models1EHZ.isEmpty(), is(true));
-    Assert.assertThat(!models2MIY.isEmpty(), is(true));
+    assertThat(!models1EHZ.isEmpty(), is(true));
+    assertThat(!models2MIY.isEmpty(), is(true));
 
     fragment1EHZ = new PdbCompactFragment("1EHZ", models1EHZ.get(0).getResidues());
     fragment2MIY = new PdbCompactFragment("2MIY", models2MIY.get(0).getResidues());
@@ -51,6 +51,6 @@ public class SequenceAlignerTest {
     final SequenceAlignment actual = aligner.align();
     final SequenceAlignment expected =
         new SequenceAlignment(true, SequenceAlignerTest.GLOBAL_ALIGNMENT);
-    Assert.assertThat(actual, is(expected));
+    assertThat(actual, is(expected));
   }
 }

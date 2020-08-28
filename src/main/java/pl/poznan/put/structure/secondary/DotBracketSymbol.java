@@ -24,10 +24,10 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
   @EqualsAndHashCode.Include private final char structure;
   @EqualsAndHashCode.Include private final int index;
 
-  private DotBracketSymbol previous = null;
-  private DotBracketSymbol next = null;
-  private DotBracketSymbol pair = null;
-  private boolean isNonCanonical = false;
+  private DotBracketSymbol previous;
+  private DotBracketSymbol next;
+  private DotBracketSymbol pair;
+  private boolean isNonCanonical;
 
   public DotBracketSymbol(final char sequence, final char structure, final int index) {
     super();

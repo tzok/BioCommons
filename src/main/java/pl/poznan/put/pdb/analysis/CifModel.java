@@ -1,6 +1,11 @@
 package pl.poznan.put.pdb.analysis;
 
-import pl.poznan.put.pdb.*;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbExpdtaLine;
+import pl.poznan.put.pdb.PdbHeaderLine;
+import pl.poznan.put.pdb.PdbModresLine;
+import pl.poznan.put.pdb.PdbRemark2Line;
+import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
 import java.util.ArrayList;

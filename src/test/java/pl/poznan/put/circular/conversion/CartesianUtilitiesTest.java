@@ -6,6 +6,7 @@ import org.junit.Test;
 import pl.poznan.put.circular.Angle;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class CartesianUtilitiesTest {
   private static final double[] ATOM_OP3 = {50.193, 51.190, 50.534};
@@ -46,7 +47,7 @@ public class CartesianUtilitiesTest {
             expectedAtomC5p.distance(atomO5p),
             Angle.betweenPoints(atomP, atomO5p, expectedAtomC5p),
             Angle.torsionAngle(atomOP3, atomP, atomO5p, expectedAtomC5p));
-    Assert.assertThat(actualAtomC5p, is(expectedAtomC5p));
+    assertThat(actualAtomC5p, is(expectedAtomC5p));
 
     final Vector3D expectedAtomC4p =
         new Vector3D(
@@ -61,7 +62,7 @@ public class CartesianUtilitiesTest {
             expectedAtomC4p.distance(actualAtomC5p),
             Angle.betweenPoints(atomO5p, actualAtomC5p, expectedAtomC4p),
             Angle.torsionAngle(atomP, atomO5p, actualAtomC5p, expectedAtomC4p));
-    Assert.assertThat(actualAtomC4p, is(expectedAtomC4p));
+    assertThat(actualAtomC4p, is(expectedAtomC4p));
 
     final Vector3D expectedAtomC3p =
         new Vector3D(
@@ -76,6 +77,6 @@ public class CartesianUtilitiesTest {
             expectedAtomC3p.distance(actualAtomC4p),
             Angle.betweenPoints(actualAtomC5p, actualAtomC4p, expectedAtomC3p),
             Angle.torsionAngle(atomO5p, actualAtomC5p, actualAtomC4p, expectedAtomC3p));
-    Assert.assertThat(actualAtomC3p, is(expectedAtomC3p));
+    assertThat(actualAtomC3p, is(expectedAtomC3p));
   }
 }

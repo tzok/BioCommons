@@ -14,6 +14,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SVGHelperTest {
   @Test
@@ -35,7 +36,7 @@ public class SVGHelperTest {
     final byte[] bytes = SVGHelper.export(merged, Format.SVG);
     final String actualString = new String(bytes, Charset.defaultCharset());
     final String expectedString = ResourcesHelper.loadResource("merged.svg");
-    Assert.assertThat(actualString.replaceAll("[\r\n]", ""), is(expectedString.replaceAll("[\r\n]", "")));
+    assertThat(actualString.replaceAll("[\r\n]", ""), is(expectedString.replaceAll("[\r\n]", "")));
   }
 
   @Test
@@ -44,15 +45,15 @@ public class SVGHelperTest {
     final byte[] bytes = SVGHelper.export(emptyDocument, Format.SVG);
     final String actualString = new String(bytes, Charset.defaultCharset());
     final String expectedString = ResourcesHelper.loadResource("empty.svg");
-    Assert.assertThat(actualString.replaceAll("[\r\n]", ""), is(expectedString.replaceAll("[\r\n]", "")));
+    assertThat(actualString.replaceAll("[\r\n]", ""), is(expectedString.replaceAll("[\r\n]", "")));
   }
 
   @Test
   public final void svgNamespaceContext() {
-    Assert.assertThat(
+    assertThat(
         SVGHelper.svgNamespaceContext().getNamespaceURI("svg"),
         is(SVGDOMImplementation.SVG_NAMESPACE_URI));
-    Assert.assertThat(
+    assertThat(
         SVGHelper.svgNamespaceContext().getNamespaceURI(""), is(XMLConstants.NULL_NS_URI));
   }
 

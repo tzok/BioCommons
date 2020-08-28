@@ -1,6 +1,5 @@
 package pl.poznan.put.structure.secondary;
 
-import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
@@ -40,7 +39,7 @@ public final class CanonicalStructureExtractor {
    * This is just a simple implementation. For a robust solution, see RNApdbee
    * http://rnapdbee.cs.put.poznan.pl
    */
-  private static @NotNull Collection<ClassifiedBasePair> basePairs(
+  private static Collection<ClassifiedBasePair> basePairs(
       final ResidueCollection residueCollection) {
     final List<PdbResidue> residues = residueCollection.getResidues();
     final Collection<ClassifiedBasePair> basePairs = new ArrayList<>();

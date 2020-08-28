@@ -5,9 +5,22 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.poznan.put.pdb.*;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbExpdtaLine;
+import pl.poznan.put.pdb.PdbHeaderLine;
+import pl.poznan.put.pdb.PdbModresLine;
+import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.PdbRemark2Line;
+import pl.poznan.put.pdb.PdbRemark465Line;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.PdbTitleLine;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class PdbParser implements StructureParser {
@@ -126,8 +139,8 @@ public class PdbParser implements StructureParser {
 
   private void handleAtomLine(final String line) {
     try {
-      PdbAtomLine atomLine = PdbAtomLine.parse(line, strictMode);
-      PdbResidueIdentifier identifier = atomLine.getResidueIdentifier();
+      final PdbAtomLine atomLine = PdbAtomLine.parse(line, strictMode);
+      final PdbResidueIdentifier identifier = atomLine.getResidueIdentifier();
 
       if (processedIdentifiers.contains(identifier)) {
         PdbParser.LOGGER.warn("Duplicate residue, ignoring it: {}", identifier);
@@ -165,7 +178,7 @@ public class PdbParser implements StructureParser {
   }
 
   private void handleTerLine() {
-    List<PdbAtomLine> atomLines = modelAtoms.get(currentModelNumber);
+    final List<PdbAtomLine> atomLines = modelAtoms.get(currentModelNumber);
     chainTerminatedAfter.add(atomLines.get(atomLines.size() - 1));
   }
 

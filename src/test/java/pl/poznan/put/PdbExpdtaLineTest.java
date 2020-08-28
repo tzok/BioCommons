@@ -1,6 +1,5 @@
 package pl.poznan.put;
 
-import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.pdb.ExperimentalTechnique;
 import pl.poznan.put.pdb.PdbExpdtaLine;
@@ -8,7 +7,8 @@ import pl.poznan.put.pdb.PdbParsingException;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static pl.poznan.put.pdb.PdbExpdtaLine.parse;
 
 public class PdbExpdtaLineTest {
@@ -29,44 +29,44 @@ public class PdbExpdtaLineTest {
   public final void testParseXray() {
     final PdbExpdtaLine parsed = parse(PdbExpdtaLineTest.VALID_XRAY_LINE);
     final List<ExperimentalTechnique> experimentalTechniques = parsed.getExperimentalTechniques();
-    Assert.assertEquals(1, experimentalTechniques.size());
-    Assert.assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
+    assertThat(experimentalTechniques.size(), is(1));
+    assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
 
     final String parsedToString = parsed.toString();
-    Assert.assertThat(parsedToString, is(PdbExpdtaLineTest.VALID_XRAY_LINE));
+    assertThat(parsedToString, is(PdbExpdtaLineTest.VALID_XRAY_LINE));
   }
 
   @Test
   public final void testParseNmr() {
     final PdbExpdtaLine parsed = parse(PdbExpdtaLineTest.VALID_NMR_LINE);
     final List<ExperimentalTechnique> experimentalTechniques = parsed.getExperimentalTechniques();
-    Assert.assertEquals(1, experimentalTechniques.size());
-    Assert.assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.SOLUTION_NMR));
+    assertThat(experimentalTechniques.size(), is(1));
+    assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.SOLUTION_NMR));
 
     final String parsedToString = parsed.toString();
-    Assert.assertThat(parsedToString, is(PdbExpdtaLineTest.VALID_NMR_LINE));
+    assertThat(parsedToString, is(PdbExpdtaLineTest.VALID_NMR_LINE));
   }
 
   @Test
   public final void testParseThreeMethods() {
     final PdbExpdtaLine parsed = parse(PdbExpdtaLineTest.VALID_THREE_METHODS);
     final List<ExperimentalTechnique> experimentalTechniques = parsed.getExperimentalTechniques();
-    Assert.assertEquals(3, experimentalTechniques.size());
-    Assert.assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.SOLID_STATE_NMR));
-    Assert.assertThat(experimentalTechniques.get(1), is(ExperimentalTechnique.SOLUTION_SCATTERING));
-    Assert.assertThat(experimentalTechniques.get(2), is(ExperimentalTechnique.ELECTRON_MICROSCOPY));
+    assertThat(experimentalTechniques.size(), is(3));
+    assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.SOLID_STATE_NMR));
+    assertThat(experimentalTechniques.get(1), is(ExperimentalTechnique.SOLUTION_SCATTERING));
+    assertThat(experimentalTechniques.get(2), is(ExperimentalTechnique.ELECTRON_MICROSCOPY));
 
     final String parsedToString = parsed.toString();
-    Assert.assertThat(parsedToString, is(PdbExpdtaLineTest.VALID_THREE_METHODS));
+    assertThat(parsedToString, is(PdbExpdtaLineTest.VALID_THREE_METHODS));
   }
 
   @Test
   public final void testParseValidWithSpace() {
     final PdbExpdtaLine parsed = parse(PdbExpdtaLineTest.VALID_WITH_SPACE);
     final List<ExperimentalTechnique> experimentalTechniques = parsed.getExperimentalTechniques();
-    Assert.assertEquals(2, experimentalTechniques.size());
-    Assert.assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.SOLUTION_NMR));
-    Assert.assertThat(experimentalTechniques.get(1), is(ExperimentalTechnique.THEORETICAL_MODEL));
+    assertThat(experimentalTechniques.size(), is(2));
+    assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.SOLUTION_NMR));
+    assertThat(experimentalTechniques.get(1), is(ExperimentalTechnique.THEORETICAL_MODEL));
   }
 
   @Test(expected = PdbParsingException.class)

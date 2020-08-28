@@ -1,12 +1,12 @@
 package pl.poznan.put;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbParsingException;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PdbHeaderLineTest {
   // @formatter:off
@@ -23,7 +23,7 @@ public class PdbHeaderLineTest {
   public final void testParseToString() {
     final PdbHeaderLine parsed = PdbHeaderLine.parse(PdbHeaderLineTest.VALID_LINE);
     final String parsedToString = parsed.toString();
-    Assert.assertThat(parsedToString, is(PdbHeaderLineTest.VALID_LINE));
+    assertThat(parsedToString, is(PdbHeaderLineTest.VALID_LINE));
   }
 
   @Test(expected = PdbParsingException.class)

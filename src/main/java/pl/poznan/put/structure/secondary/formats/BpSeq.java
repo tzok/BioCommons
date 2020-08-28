@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
@@ -307,7 +306,7 @@ public class BpSeq implements Serializable {
     }
 
     @Override
-    public final int compareTo(final @NotNull Entry t) {
+    public final int compareTo(final Entry t) {
       if (equals(t)) {
         return 0;
       }

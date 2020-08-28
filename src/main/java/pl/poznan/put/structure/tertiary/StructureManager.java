@@ -3,7 +3,6 @@ package pl.poznan.put.structure.tertiary;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NonNls;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
@@ -148,7 +147,7 @@ public final class StructureManager {
 
   private static void storeStructureInfo(
       final File file, final List<? extends PdbModel> structures) {
-    @NonNls String format = "%s";
+    String format = "%s";
 
     if (structures.size() > 1) {
       final int count = structures.size();

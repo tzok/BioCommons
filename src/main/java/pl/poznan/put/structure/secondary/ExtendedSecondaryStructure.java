@@ -20,7 +20,6 @@ import pl.poznan.put.structure.secondary.formats.LevelByLevelConverter;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.MinGain;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Data
 @Slf4j

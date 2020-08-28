@@ -22,9 +22,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AverageTorsionAngleTypeTest {
   private final AverageTorsionAngleType averageTorsionAngleType =
@@ -104,8 +104,7 @@ public class AverageTorsionAngleTypeTest {
             new TorsionAngleValue(Alpha.getInstance(), new Angle(-150.0, ValueType.DEGREES)));
     final TorsionAngleValue result = averageTorsionAngleType.calculate(values);
 
-    final Angle expected = new Angle(-15.363804, ValueType.DEGREES);
-    assertEquals(expected, result.getValue());
+    assertThat(result.getValue(), is(new Angle(-15.363804, ValueType.DEGREES)));
   }
 
   @Test
@@ -113,6 +112,6 @@ public class AverageTorsionAngleTypeTest {
     final Collection<? extends TorsionAngleType> angleTypes =
         averageTorsionAngleType.getAngleTypes();
     assertThat(angleTypes.size(), is(1));
-    assertTrue(angleTypes.contains(averageTorsionAngleType));
+    assertThat(angleTypes.contains(averageTorsionAngleType), is(true));
   }
 }

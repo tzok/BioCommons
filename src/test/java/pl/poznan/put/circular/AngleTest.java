@@ -6,8 +6,7 @@ import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AngleTest {
   private static final Angle DEGREES_0 = new Angle(0, ValueType.DEGREES);
@@ -23,6 +22,11 @@ public class AngleTest {
     AngleTest.DEGREES_135, AngleTest.DEGREES_180, AngleTest.DEGREES_225,
     AngleTest.DEGREES_270, AngleTest.DEGREES_315
   };
+  private static final double EPS = 1.0e-6;
+
+  private static boolean isBelowEpsilon(final double value) {
+    return FastMath.abs(value) < AngleTest.EPS;
+  }
 
   @Test
   public final void fromHourMinuteString() {
@@ -52,11 +56,11 @@ public class AngleTest {
       final double ri = FastMath.toRadians(i);
       for (int j = 0; j < 360; j++) {
         final double rj = FastMath.toRadians(j);
-        assertEquals(
+        assertThat(
             String.format("Difference in subtraction for: %d and %d", i, j),
-            Angle.subtractByMinimum(ri, rj),
-            Angle.subtractAsVectors(ri, rj),
-            1.0e-6);
+            AngleTest.isBelowEpsilon(
+                Angle.subtractAsVectors(ri, rj) - Angle.subtractByMinimum(ri, rj)),
+            is(true));
       }
     }
   }
@@ -122,7 +126,7 @@ public class AngleTest {
         final Angle aj = AngleTest.ANGLES[j];
         final double dij = ai.orderedSubtract(aj).getRadians();
         final double dji = aj.orderedSubtract(ai).getRadians();
-        assertEquals(String.format("Test failed for: %s and %s", ai, aj), dij, -dji, 1.0e-3);
+        assertThat(String.format("Test failed for: %s and %s", ai, aj), dij, is(-dji));
       }
     }
   }
