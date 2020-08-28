@@ -1,12 +1,13 @@
 package pl.poznan.put.structure.secondary;
 
+import lombok.EqualsAndHashCode;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializable {
-  private static final long serialVersionUID = 362493908870317368L;
-
   private static final List<Character> OPENING = new ArrayList<>();
   private static final List<Character> CLOSING = new ArrayList<>();
 
@@ -19,13 +20,14 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
     }
   }
 
-  private final char sequence;
-  private final char structure;
-  private final int index;
-  private DotBracketSymbol previous;
-  private DotBracketSymbol next;
-  private DotBracketSymbol pair;
-  private boolean isNonCanonical;
+  @EqualsAndHashCode.Include private final char sequence;
+  @EqualsAndHashCode.Include private final char structure;
+  @EqualsAndHashCode.Include private final int index;
+
+  private DotBracketSymbol previous = null;
+  private DotBracketSymbol next = null;
+  private DotBracketSymbol pair = null;
+  private boolean isNonCanonical = false;
 
   public DotBracketSymbol(final char sequence, final char structure, final int index) {
     super();
@@ -111,7 +113,7 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
   }
 
   // required to be named like this by Spring
-  public final boolean getIsNonCanonical() {
+  public final Boolean getIsNonCanonical() {
     return isNonCanonical;
   }
 
@@ -144,46 +146,12 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
   }
 
   @Override
-  public final int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = (prime * result) + index;
-    result = (prime * result) + sequence;
-    result = (prime * result) + structure;
-    return result;
-  }
-
-  @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null) {
-      return false;
-    }
-    if (getClass() != o.getClass()) {
-      return false;
-    }
-    final DotBracketSymbol other = (DotBracketSymbol) o;
-    return (index == other.index) && (sequence == other.sequence) && (structure == other.structure);
-  }
-
-  @Override
   public final String toString() {
     return index + " " + sequence + ' ' + structure;
   }
 
   @Override
   public final int compareTo(final DotBracketSymbol t) {
-    if (t == null) {
-      throw new NullPointerException();
-    }
-
-    if (equals(t)) {
-      return 0;
-    }
-
-    if (index < t.index) return -1;
-    else return (index == t.index) ? 0 : 1;
+    return Integer.compare(index, t.index);
   }
 }

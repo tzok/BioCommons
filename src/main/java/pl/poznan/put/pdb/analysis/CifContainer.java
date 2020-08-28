@@ -3,6 +3,7 @@ package pl.poznan.put.pdb.analysis;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.io.FileUtils;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.Map;
  * An implementation of {@link ModelContainer} which is created from mmCIF file and its possible
  * split into multiple PDB files.
  */
-public class CifContainer implements ModelContainer {
+public class CifContainer implements Closeable, ModelContainer {
   private final File cifFile;
   private final Map<File, BidiMap<String, String>> fileChainMap;
 
@@ -64,7 +65,7 @@ public class CifContainer implements ModelContainer {
    * @throws IOException When file removal could not be done.
    */
   @Override
-  public void close() throws IOException {
+  public final void close() throws IOException {
     FileUtils.forceDelete(cifFile);
     for (final File file : fileChainMap.keySet()) {
       FileUtils.forceDelete(file);

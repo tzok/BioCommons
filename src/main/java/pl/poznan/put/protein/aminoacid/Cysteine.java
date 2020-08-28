@@ -16,15 +16,11 @@ public final class Cysteine extends ProteinSidechain {
         "Cysteine",
         'C',
         "CYS");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.CYSTEINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
   }
 
   public static Cysteine getInstance() {
     return Cysteine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.CYSTEINE_ATOMS);
   }
 }

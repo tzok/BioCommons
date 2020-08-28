@@ -131,12 +131,12 @@ public class CtTest {
   // @formatter:on
 
   @Test
-  public final void testGood() throws InvalidStructureException {
+  public final void testGood() {
     Ct.fromString(CtTest.INPUT_GOOD);
   }
 
   @Test
-  public final void testGoodMulti() throws InvalidStructureException {
+  public final void testGoodMulti() {
     Ct.fromString(CtTest.INPUT_GOOD_MULTI);
   }
 
@@ -153,97 +153,97 @@ public class CtTest {
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidFirstLine1() throws InvalidStructureException {
+  public final void testInvalidFirstLine1() {
     Ct.fromString(CtTest.INPUT_BAD_FIRST_LINE_1);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidFirstLine2() throws InvalidStructureException {
+  public final void testInvalidFirstLine2() {
     Ct.fromString(CtTest.INPUT_BAD_FIRST_LINE_2);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidTooFew() throws InvalidStructureException {
+  public final void testInvalidTooFew() {
     Ct.fromString(CtTest.INPUT_BAD_TOO_FEW);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidTooMany() throws InvalidStructureException {
+  public final void testInvalidTooMany() {
     Ct.fromString(CtTest.INPUT_BAD_TOO_MANY);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadIndex1() throws InvalidStructureException {
+  public final void testInvalidBadIndex1() {
     Ct.fromString(CtTest.INPUT_BAD_INDEX_1);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadIndex2() throws InvalidStructureException {
+  public final void testInvalidBadIndex2() {
     Ct.fromString(CtTest.INPUT_BAD_INDEX_2);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadBefore1() throws InvalidStructureException {
+  public final void testInvalidBadBefore1() {
     Ct.fromString(CtTest.INPUT_BAD_BEFORE_1);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadBefore2() throws InvalidStructureException {
+  public final void testInvalidBadBefore2() {
     Ct.fromString(CtTest.INPUT_BAD_BEFORE_2);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadBefore3() throws InvalidStructureException {
+  public final void testInvalidBadBefore3() {
     Ct.fromString(CtTest.INPUT_BAD_BEFORE_3);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadBefore4() throws InvalidStructureException {
+  public final void testInvalidBadBefore4() {
     Ct.fromString(CtTest.INPUT_BAD_BEFORE_4);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadAfter1() throws InvalidStructureException {
+  public final void testInvalidBadAfter1() {
     Ct.fromString(CtTest.INPUT_BAD_AFTER_1);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadAfter2() throws InvalidStructureException {
+  public final void testInvalidBadAfter2() {
     Ct.fromString(CtTest.INPUT_BAD_AFTER_2);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadAfter3() throws InvalidStructureException {
+  public final void testInvalidBadAfter3() {
     Ct.fromString(CtTest.INPUT_BAD_AFTER_3);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadPair1() throws InvalidStructureException {
+  public final void testInvalidBadPair1() {
     Ct.fromString(CtTest.INPUT_BAD_PAIR_1);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadPair2() throws InvalidStructureException {
+  public final void testInvalidBadPair2() {
     Ct.fromString(CtTest.INPUT_BAD_PAIR_2);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadOriginal() throws InvalidStructureException {
+  public final void testInvalidBadOriginal() {
     Ct.fromString(CtTest.INPUT_BAD_ORIGINAL);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadNumbering() throws InvalidStructureException {
+  public final void testInvalidBadNumbering() {
     Ct.fromString(CtTest.INPUT_BAD_NUMBERING);
   }
 
   @Test(expected = InvalidStructureException.class)
-  public final void testInvalidBadMapping() throws InvalidStructureException {
+  public final void testInvalidBadMapping() {
     Ct.fromString(CtTest.INPUT_BAD_MAPPING);
   }
 
   @Test
-  public final void fromDotBracket() throws InvalidStructureException {
+  public final void fromDotBracket() {
     Ct.fromDotBracket(DotBracket.fromString(DotBracketTest.FROM_2Z74));
   }
 

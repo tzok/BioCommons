@@ -3,7 +3,6 @@ package pl.poznan.put.pdb.analysis;
 import org.apache.commons.io.IOUtils;
 import org.biojava.nbio.structure.io.mmcif.MMcifParser;
 import org.biojava.nbio.structure.io.mmcif.SimpleMMcifParser;
-import pl.poznan.put.pdb.PdbParsingException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -20,8 +19,7 @@ public class CifParser implements StructureParser {
   }
 
   @Override
-  public final List<PdbModel> parse(final String structureContent)
-      throws IOException, PdbParsingException {
+  public final List<PdbModel> parse(final String structureContent) throws IOException {
     synchronized (parser) {
       try (final Reader reader = new StringReader(structureContent)) {
         parser.parse(IOUtils.toBufferedReader(reader));

@@ -1,8 +1,16 @@
 package pl.poznan.put.pdb;
 
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.geometry.Vector;
+import org.apache.commons.math3.geometry.euclidean.threed.Euclidean3D;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.biojava.nbio.structure.*;
+import org.biojava.nbio.structure.Atom;
+import org.biojava.nbio.structure.AtomImpl;
+import org.biojava.nbio.structure.Element;
+import org.biojava.nbio.structure.Group;
+import org.biojava.nbio.structure.HetatomImpl;
+import org.biojava.nbio.structure.ResidueNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.atom.AtomName;
@@ -12,6 +20,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PdbAtomLine implements Serializable, ChainNumberICode {
   public static final String CIF_LOOP =
       "loop_\n"
@@ -59,15 +68,15 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
   // @formatter:on
   private static final String RECORD_NAME = "ATOM";
   private final int serialNumber;
-  private final String atomName;
+  @EqualsAndHashCode.Include private final String atomName;
   private final String alternateLocation;
-  private final String residueName;
-  private final String chainIdentifier;
-  private final int residueNumber;
-  private final String insertionCode;
-  private final double x;
-  private final double y;
-  private final double z;
+  @EqualsAndHashCode.Include private final String residueName;
+  @EqualsAndHashCode.Include private final String chainIdentifier;
+  @EqualsAndHashCode.Include private final int residueNumber;
+  @EqualsAndHashCode.Include private final String insertionCode;
+  @EqualsAndHashCode.Include private final double x;
+  @EqualsAndHashCode.Include private final double y;
+  @EqualsAndHashCode.Include private final double z;
   private final double occupancy;
   private final double temperatureFactor;
   private final String elementSymbol;
@@ -144,12 +153,11 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         charge);
   }
 
-  public static PdbAtomLine parse(final String line) throws PdbParsingException {
+  public static PdbAtomLine parse(final String line) {
     return PdbAtomLine.parse(line, true);
   }
 
-  public static PdbAtomLine parse(final String line, final boolean strictMode)
-      throws PdbParsingException {
+  public static PdbAtomLine parse(final String line, final boolean strictMode) {
     // in non-strict mode, only up to X, Y, Z fields are required, rest is
     // optional
     final int minLineLenth = strictMode ? 80 : 54;
@@ -407,12 +415,12 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
   }
 
   public final double distanceTo(final PdbAtomLine other) {
-    final Vector3D v1 = new Vector3D(x, y, z);
-    final Vector3D v2 = new Vector3D(other.x, other.y, other.z);
+    final Vector<Euclidean3D> v1 = new Vector3D(x, y, z);
+    final Vector<Euclidean3D> v2 = new Vector3D(other.x, other.y, other.z);
     return v1.distance(v2);
   }
 
-  public final Atom toBioJavaAtom() throws CifPdbIncompatibilityException {
+  public final Atom toBioJavaAtom() {
     if (alternateLocation.length() != 1) {
       throw new CifPdbIncompatibilityException(
           "Cannot convert to PDB. Field 'alternateLocation' is " + "longer than 1 char");
@@ -481,31 +489,6 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
 
   public final Point3d toPoint3d() {
     return new Point3d(x, y, z);
-  }
-
-  @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-    final PdbAtomLine other = (PdbAtomLine) o;
-    return (residueNumber == other.residueNumber)
-        && (Double.compare(other.x, x) == 0)
-        && (Double.compare(other.y, y) == 0)
-        && (Double.compare(other.z, z) == 0)
-        && Objects.equals(atomName, other.atomName)
-        && Objects.equals(residueName, other.residueName)
-        && Objects.equals(chainIdentifier, other.chainIdentifier)
-        && Objects.equals(insertionCode, other.insertionCode);
-  }
-
-  @Override
-  public final int hashCode() {
-    return Objects.hash(
-        atomName, residueName, chainIdentifier, residueNumber, insertionCode, x, y, z);
   }
 
   public final Vector3D toVector3D() {

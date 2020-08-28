@@ -20,7 +20,11 @@ import pl.poznan.put.pdb.analysis.PdbCompactFragment;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public final class SequenceAligner {
@@ -63,10 +67,10 @@ public final class SequenceAligner {
     return SubstitutionMatrixHelper.getBlosum62();
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
+  @SuppressWarnings("rawtypes")
   public SequenceAlignment align() throws CompoundNotFoundException {
     if (fragments.isEmpty()) {
-      return null;
+      return new SequenceAlignment(isGlobal, "");
     }
 
     final List<AbstractSequence> sequences = new ArrayList<>();
@@ -76,11 +80,10 @@ public final class SequenceAligner {
       final String fragmentSequence = fragment.toSequence();
       final AbstractSequence sequence;
 
-      if (moleculeType == MoleculeType.RNA) {
-        sequence = new RNASequence(fragmentSequence.replace('T', 'U'));
-      } else {
-        sequence = new ProteinSequence(fragmentSequence);
-      }
+      sequence =
+          moleculeType == MoleculeType.RNA
+              ? new RNASequence(fragmentSequence.replace('T', 'U'))
+              : new ProteinSequence(fragmentSequence);
 
       sequences.add(sequence);
       mapSequenceName.put(sequence, fragment);

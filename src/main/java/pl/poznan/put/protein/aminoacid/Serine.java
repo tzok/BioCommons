@@ -16,15 +16,11 @@ public final class Serine extends ProteinSidechain {
         "Serine",
         'S',
         "SER");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.SERINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
   }
 
   public static Serine getInstance() {
     return Serine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.SERINE_ATOMS);
   }
 }

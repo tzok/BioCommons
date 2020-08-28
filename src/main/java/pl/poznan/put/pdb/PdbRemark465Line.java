@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -85,16 +86,12 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
   public static boolean isCommentLine(final String line) {
     final String lineTrimmed = StringUtils.normalizeSpace(line);
 
-    for (final String comment : PdbRemark465Line.COMMENT_LINES) {
-      if (Objects.equals(lineTrimmed, StringUtils.normalizeSpace(comment))) {
-        return true;
-      }
-    }
-
-    return lineTrimmed.startsWith("REMARK 465   MODELS");
+    return Arrays.stream(PdbRemark465Line.COMMENT_LINES)
+            .anyMatch(comment -> Objects.equals(lineTrimmed, StringUtils.normalizeSpace(comment)))
+        || lineTrimmed.startsWith("REMARK 465   MODELS");
   }
 
-  public static PdbRemark465Line parse(final String line) throws PdbParsingException {
+  public static PdbRemark465Line parse(final String line) {
     if (line.length() < 79) {
       throw new PdbParsingException("PDB REMARK line is not at least 79 character long");
     }

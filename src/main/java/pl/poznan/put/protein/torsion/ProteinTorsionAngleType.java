@@ -35,7 +35,7 @@ public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
   }
 
   public static MasterTorsionAngleType[] mainAngles() {
-    return ProteinTorsionAngleType.MAIN;
+    return ProteinTorsionAngleType.MAIN.clone();
   }
 
   public static AverageTorsionAngleType getAverageOverMainAngles() {

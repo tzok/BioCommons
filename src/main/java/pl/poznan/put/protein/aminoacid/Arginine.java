@@ -2,7 +2,12 @@ package pl.poznan.put.protein.aminoacid;
 
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.protein.ProteinSidechain;
-import pl.poznan.put.protein.torsion.*;
+import pl.poznan.put.protein.torsion.Chi1;
+import pl.poznan.put.protein.torsion.Chi2;
+import pl.poznan.put.protein.torsion.Chi3;
+import pl.poznan.put.protein.torsion.Chi4;
+import pl.poznan.put.protein.torsion.Chi5;
+import pl.poznan.put.protein.torsion.ProteinChiType;
 
 import java.util.Arrays;
 
@@ -33,6 +38,11 @@ public final class Arginine extends ProteinSidechain {
         "Arginine",
         'R',
         "ARG");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.ARGININE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.ARGININE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI3, Chi3.ARGININE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI4, Chi4.ARGININE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI5, Chi5.ARGININE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
     torsionAngleTypes.add(Chi3.getInstance(getChiAtoms(ProteinChiType.CHI3)));
@@ -42,14 +52,5 @@ public final class Arginine extends ProteinSidechain {
 
   public static Arginine getInstance() {
     return Arginine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.ARGININE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.ARGININE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI3, Chi3.ARGININE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI4, Chi4.ARGININE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI5, Chi5.ARGININE_ATOMS);
   }
 }

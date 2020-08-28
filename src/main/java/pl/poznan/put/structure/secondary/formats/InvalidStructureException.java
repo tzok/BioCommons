@@ -1,6 +1,6 @@
 package pl.poznan.put.structure.secondary.formats;
 
-public class InvalidStructureException extends Exception {
+public class InvalidStructureException extends RuntimeException {
   public InvalidStructureException() {
     super();
   }

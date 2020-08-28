@@ -43,7 +43,7 @@ public class PdbRemark2Line implements Serializable {
     return PdbRemark2Line.EMPTY_INSTANCE;
   }
 
-  public static PdbRemark2Line parse(final String line) throws PdbParsingException {
+  public static PdbRemark2Line parse(final String line) {
     if (!line.startsWith("REMARK   2 RESOLUTION.")) {
       throw new PdbParsingException("Failed to parse REMARK   2 RESOLUTION. line: " + line);
     }

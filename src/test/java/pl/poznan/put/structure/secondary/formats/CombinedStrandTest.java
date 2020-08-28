@@ -1,22 +1,24 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
-import pl.poznan.put.structure.secondary.DotBracketSymbol;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class CombinedStrandTest {
   @Test
-  public final void getInternalMissingOneStrand() throws InvalidStructureException {
+  public final void getInternalMissingOneStrand() {
     final DotBracket dotBracket = DotBracket.fromString(">strand_A\nACGUACGUACGU\n.((------)).");
     final CombinedStrand combinedStrand =
         new CombinedStrand(
             Collections.singletonList(new StrandView("", dotBracket, 0, dotBracket.getLength())));
     final List<DotBracketSymbol> internalMissing = combinedStrand.getInternalMissing();
-    assertEquals(6, internalMissing.size());
+    assertThat(internalMissing.size(), is(6));
   }
 
   @Test
@@ -32,15 +34,15 @@ public class CombinedStrandTest {
 
     // each strand has 0 internal missing residues
     final CombinedStrand combinedFirst = new CombinedStrand(Collections.singletonList(strandFirst));
-    assertEquals(0, combinedFirst.getInternalMissing().size());
+    assertThat(combinedFirst.getInternalMissing().size(), is(0));
     final CombinedStrand combinedSecond =
         new CombinedStrand(Collections.singletonList(strandSecond));
-    assertEquals(0, combinedSecond.getInternalMissing().size());
+    assertThat(combinedSecond.getInternalMissing().size(), is(0));
 
     // combined, the strands still have 0 internal missing residues, even though they form ".--."
     // structure
     final CombinedStrand combinedBoth =
         new CombinedStrand(Arrays.asList(strandFirst, strandSecond));
-    assertEquals(0, combinedBoth.getInternalMissing().size());
+    assertThat(combinedBoth.getInternalMissing().size(), is(0));
   }
 }

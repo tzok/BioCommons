@@ -1,22 +1,22 @@
 package pl.poznan.put.structure.tertiary;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.utility.ResourcesHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import pl.poznan.put.pdb.PdbParsingException;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.utility.ResourcesHelper;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class StructureManagerTest {
   private File file1EHZ;
@@ -25,25 +25,25 @@ public class StructureManagerTest {
   private PdbModel model1EVV;
 
   @Before
-  public final void setUp() throws URISyntaxException, IOException, PdbParsingException {
+  public final void setUp() throws URISyntaxException, IOException {
     file1EHZ = ResourcesHelper.loadResourceFile("1EHZ.pdb");
     final List<? extends PdbModel> models1EHZ = StructureManager.loadStructure(file1EHZ);
-    assertEquals(1, models1EHZ.size());
+    assertThat(models1EHZ.size(), is(1));
     model1EHZ = models1EHZ.get(0);
 
     final List<PdbModel> models1EVV = StructureManager.loadStructure("1EVV");
-    assertEquals(1, models1EVV.size());
+    assertThat(models1EVV.size(), is(1));
     model1EVV = models1EVV.get(0);
     file1EVV = StructureManager.getFile(model1EVV);
   }
 
   @After
   public final void tearDown() {
-    assertEquals(2, StructureManager.getAllStructures().size());
+    assertThat(StructureManager.getAllStructures().size(), is(2));
     StructureManager.remove(file1EHZ);
-    assertEquals(1, StructureManager.getAllStructures().size());
+    assertThat(StructureManager.getAllStructures().size(), is(1));
     StructureManager.remove(file1EVV);
-    assertTrue(StructureManager.getAllStructures().isEmpty());
+    assertThat(StructureManager.getAllStructures().isEmpty(), is(true));
 
     // this is temporary file downloaded each time in @Before method
     FileUtils.deleteQuietly(file1EVV);
@@ -74,19 +74,19 @@ public class StructureManagerTest {
   @Test
   public final void getFile() {
     final File file = StructureManager.getFile(model1EHZ);
-    assertEquals(file1EHZ, file);
+    assertThat(file, is(file1EHZ));
   }
 
   @Test
   public final void getStructure() {
     final PdbModel structure = StructureManager.getStructure("1EHZ");
-    assertEquals(model1EHZ, structure);
+    assertThat(structure, is(model1EHZ));
   }
 
   @Test
   public final void getName() {
     final String name = StructureManager.getName(model1EHZ);
-    assertEquals("1EHZ", name);
+    assertThat(name, is("1EHZ"));
   }
 
   @Test
@@ -94,13 +94,13 @@ public class StructureManagerTest {
     final File file = ResourcesHelper.loadResourceFile("2MIY.pdb");
     final List<? extends PdbModel> models = StructureManager.loadStructure(file);
     final int size = models.size();
-    assertEquals(18, size);
+    assertThat(size, is(18));
 
     for (int i = 0; i < size; i++) {
       final PdbModel model = models.get(i);
       final String expected = String.format("2MIY.%02d", i + 1);
       final String actual = StructureManager.getName(model);
-      assertEquals(expected, actual);
+      assertThat(actual, is(expected));
     }
 
     StructureManager.remove(file);
@@ -109,25 +109,27 @@ public class StructureManagerTest {
   @Test
   public final void getAllStructures() {
     final List<PdbModel> structures = StructureManager.getAllStructures();
-    assertTrue(CollectionUtils.isEqualCollection(Arrays.asList(model1EHZ, model1EVV), structures));
+    assertThat(
+        CollectionUtils.isEqualCollection(Arrays.asList(model1EHZ, model1EVV), structures),
+        is(true));
   }
 
   @Test
   public final void getAllNames() {
     final List<String> names = StructureManager.getAllNames();
-    assertTrue(CollectionUtils.isEqualCollection(Arrays.asList("1EHZ", "1EVV"), names));
+    assertThat(CollectionUtils.isEqualCollection(Arrays.asList("1EHZ", "1EVV"), names), is(true));
   }
 
   @Test
   public final void getNames() {
     final List<String> names = StructureManager.getNames(Arrays.asList(model1EHZ, model1EVV));
-    assertTrue(CollectionUtils.isEqualCollection(Arrays.asList("1EHZ", "1EVV"), names));
+    assertThat(CollectionUtils.isEqualCollection(Arrays.asList("1EHZ", "1EVV"), names), is(true));
   }
 
   @Test
   public final void getModels() {
     final List<PdbModel> models = StructureManager.getModels(file1EHZ);
-    assertEquals(1, models.size());
-    assertEquals(model1EHZ, models.get(0));
+    assertThat(models.size(), is(1));
+    assertThat(models.get(0), is(model1EHZ));
   }
 }

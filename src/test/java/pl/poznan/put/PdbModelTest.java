@@ -7,32 +7,38 @@ import org.biojava.nbio.structure.io.PDBFileParser;
 import org.junit.Test;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.pdb.analysis.*;
+import pl.poznan.put.pdb.analysis.CifParser;
+import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbChain;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbParser;
+import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.pdb.analysis.StructureParser;
 import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class PdbModelTest {
-  private static void assertBpSeqEquals(final String pdbString, final String bpSeqString)
-      throws PdbParsingException, InvalidStructureException {
+  private static void assertBpSeqEquals(final String pdbString, final String bpSeqString) {
     final PdbParser parser = new PdbParser(false);
     final List<PdbModel> models = parser.parse(pdbString);
     final PdbModel model = models.get(0);
 
     final BpSeq bpSeqFromModel = CanonicalStructureExtractor.bpSeq(model);
-    assertEquals(bpSeqString, bpSeqFromModel.toString());
+    assertThat(bpSeqFromModel.toString(), is(bpSeqString));
 
     final BpSeq bpSeqFromString = BpSeq.fromString(bpSeqString);
-    assertEquals(bpSeqFromString, bpSeqFromModel);
+    assertThat(bpSeqFromModel, is(bpSeqFromString));
   }
 
   @Test
@@ -70,9 +76,9 @@ public class PdbModelTest {
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
     final PdbResidue residue = model.findResidue(new PdbResidueIdentifier("A", 10, " "));
-    assertEquals("2MG", residue.getOriginalResidueName());
-    assertEquals("G", residue.getModifiedResidueName());
-    assertEquals("G", residue.getDetectedResidueName());
+    assertThat(residue.getOriginalResidueName(), is("2MG"));
+    assertThat(residue.getModifiedResidueName(), is("G"));
+    assertThat(residue.getDetectedResidueName(), is("G"));
   }
 
   @Test
@@ -82,9 +88,9 @@ public class PdbModelTest {
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
     final PdbResidue residue = model.findResidue("A", 74, " ");
-    assertEquals("C", residue.getOriginalResidueName());
-    assertEquals("C", residue.getModifiedResidueName());
-    assertEquals("C", residue.getDetectedResidueName());
+    assertThat(residue.getOriginalResidueName(), is("C"));
+    assertThat(residue.getModifiedResidueName(), is("C"));
+    assertThat(residue.getDetectedResidueName(), is("C"));
   }
 
   @Test
@@ -98,8 +104,8 @@ public class PdbModelTest {
     // for first residue expect a mismatch in atom count because it has an
     // unusual O3P terminal atom
     final PdbResidue residue = residues.get(0);
-    assertTrue(residue.isModified());
-    assertFalse(residue.hasAllAtoms());
+    assertThat(residue.isModified(), is(true));
+    assertThat(residue.hasAllAtoms(), is(false));
   }
 
   @Test
@@ -112,22 +118,22 @@ public class PdbModelTest {
     // the H2U (dihydrouridine) is modified by two additional hydrogens
     // which is undetectable in a non-hydrogen PDB file
     PdbResidue residue = model.findResidue("A", 16, " ");
-    assertTrue(residue.isModified());
-    assertTrue(residue.hasAllAtoms());
+    assertThat(residue.isModified(), is(true));
+    assertThat(residue.hasAllAtoms(), is(true));
 
     // the PSU (pseudouridine) contains the same atoms, but it is an isomer
     // and therefore a modified residue
     residue = model.findResidue("A", 39, " ");
-    assertTrue(residue.isModified());
-    assertTrue(residue.hasAllAtoms());
+    assertThat(residue.isModified(), is(true));
+    assertThat(residue.hasAllAtoms(), is(true));
 
     // the 5MU (methyluridine) is the RNA counterpart of thymine
     residue = model.findResidue("A", 54, " ");
-    assertEquals("5MU", residue.getOriginalResidueName());
-    assertEquals("U", residue.getModifiedResidueName());
-    assertEquals("U", residue.getDetectedResidueName());
-    assertTrue(residue.isModified());
-    assertFalse(residue.hasAllAtoms());
+    assertThat(residue.getOriginalResidueName(), is("5MU"));
+    assertThat(residue.getModifiedResidueName(), is("U"));
+    assertThat(residue.getDetectedResidueName(), is("U"));
+    assertThat(residue.isModified(), is(true));
+    assertThat(residue.hasAllAtoms(), is(false));
   }
 
   @Test
@@ -141,7 +147,7 @@ public class PdbModelTest {
     // which is undetectable in a non-hydrogen PDB file; there can be a
     // mismatch between MODRES entry and hasAllAtoms() call
     final PdbResidue residue = model.findResidue("A", 39, " ");
-    assertEquals(residue.isModified(), residue.hasAllAtoms());
+    assertThat(residue.hasAllAtoms(), is(residue.isModified()));
   }
 
   @Test
@@ -157,28 +163,28 @@ public class PdbModelTest {
       }
 
       if (residue.hasAtom(AtomName.O3P)) {
-        assertTrue(residue.isModified());
-        assertFalse(residue.hasAllAtoms());
-      } else if (residue.getOriginalResidueName().equals("H2U")
-          || residue.getOriginalResidueName().equals("PSU")) {
-        assertTrue(residue.isModified());
-        assertTrue(residue.hasAllAtoms());
-      } else if (residue.getOriginalResidueName().equals("5MU")) {
-        assertEquals("5MU", residue.getOriginalResidueName());
-        assertEquals("U", residue.getModifiedResidueName());
-        assertEquals("U", residue.getDetectedResidueName());
-        assertTrue(residue.isModified());
-        assertFalse(residue.hasAllAtoms());
+        assertThat(residue.isModified(), is(true));
+        assertThat(residue.hasAllAtoms(), is(false));
+      } else if ("H2U".equals(residue.getOriginalResidueName())
+          || "PSU".equals(residue.getOriginalResidueName())) {
+        assertThat(residue.isModified(), is(true));
+        assertThat(residue.hasAllAtoms(), is(true));
+      } else if ("5MU".equals(residue.getOriginalResidueName())) {
+        assertThat(residue.getOriginalResidueName(), is("5MU"));
+        assertThat(residue.getModifiedResidueName(), is("U"));
+        assertThat(residue.getDetectedResidueName(), is("U"));
+        assertThat(residue.isModified(), is(true));
+        assertThat(residue.hasAllAtoms(), is(false));
       } else {
-        assertEquals(
+        assertThat(
             String.format(
                 "Detected %s for %s/%s",
                 residue.getDetectedResidueName(),
                 residue.getOriginalResidueName(),
                 residue.getModifiedResidueName()),
-            residue.getModifiedResidueName(),
-            residue.getDetectedResidueName());
-        assertEquals(residue.isModified(), !residue.hasAllAtoms());
+            residue.getDetectedResidueName(),
+            is(residue.getModifiedResidueName()));
+        assertThat(!residue.hasAllAtoms(), is(residue.isModified()));
       }
     }
   }
@@ -192,8 +198,7 @@ public class PdbModelTest {
     final List<PdbChain> chains = model.getChains();
     assertEquals(
         String.format(
-            "Found chains (expected [A, B]): %s",
-            Arrays.toString(chains.toArray(new PdbChain[chains.size()]))),
+            "Found chains (expected [A, B]): %s", Arrays.toString(chains.toArray(new PdbChain[0]))),
         2,
         chains.size());
   }
@@ -205,9 +210,9 @@ public class PdbModelTest {
     final List<PdbModel> models = parser.parse(pdb2Z74);
     final PdbModel model = models.get(0);
     PdbResidue residue = model.findResidue("A", 21, " ");
-    assertTrue(residue.isMissing());
+    assertThat(residue.isMissing(), is(true));
     residue = model.findResidue("B", 21, " ");
-    assertTrue(residue.isMissing());
+    assertThat(residue.isMissing(), is(true));
   }
 
   @Test
@@ -254,41 +259,45 @@ public class PdbModelTest {
     List<PdbModel> models = parser.parse(pdb1EHZ);
     PdbModel model = models.get(0);
     String sequence = model.getSequence();
-    assertEquals(
-        "GCGGAUUUAGCUCAGUUGGGAGAGCGCCAGACUGAAGAUCUGGAGGUCCUGUGUUCGAUCCACAGAAUUCGCACCA",
-        sequence.toUpperCase());
+    assertThat(
+        sequence.toUpperCase(Locale.ENGLISH),
+        is("GCGGAUUUAGCUCAGUUGGGAGAGCGCCAGACUGAAGAUCUGGAGGUCCUGUGUUCGAUCCACAGAAUUCGCACCA"));
 
     final String pdb2Z74 = ResourcesHelper.loadResource("2Z74.pdb");
     models = parser.parse(pdb2Z74);
     model = models.get(0);
     List<PdbChain> chains = model.getChains();
     sequence = chains.get(0).getSequence();
-    assertEquals("AGCGCCUGGACUUAAAGCCAUUGCACU", sequence.toUpperCase());
+    assertThat(sequence.toUpperCase(Locale.ENGLISH), is("AGCGCCUGGACUUAAAGCCAUUGCACU"));
     sequence = chains.get(1).getSequence();
-    assertEquals(
-        "CCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA",
-        sequence.toUpperCase());
+    assertThat(
+        sequence.toUpperCase(Locale.ENGLISH),
+        is(
+            "CCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA"));
     sequence = model.getSequence();
-    assertEquals(
-        "AGCGCCUGGACUUAAAGCCAUUGCACUCCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA",
-        sequence.toUpperCase());
+    assertThat(
+        sequence.toUpperCase(Locale.ENGLISH),
+        is(
+            "AGCGCCUGGACUUAAAGCCAUUGCACUCCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA"));
 
     final String pdb4A04 = ResourcesHelper.loadResource("4A04.pdb");
     models = parser.parse(pdb4A04);
     model = models.get(0);
     chains = model.getChains();
     sequence = chains.get(0).getSequence();
-    assertEquals(
-        "MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD",
-        sequence.toUpperCase());
+    assertThat(
+        sequence.toUpperCase(Locale.ENGLISH),
+        is(
+            "MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD"));
     sequence = chains.get(1).getSequence();
-    assertEquals(
-        "MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD",
-        sequence.toUpperCase());
+    assertThat(
+        sequence.toUpperCase(Locale.ENGLISH),
+        is(
+            "MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD"));
     sequence = chains.get(2).getSequence();
-    assertEquals("AATTTCACACCTAGGTGTGAAATT", sequence.toUpperCase());
+    assertThat(sequence.toUpperCase(Locale.ENGLISH), is("AATTTCACACCTAGGTGTGAAATT"));
     sequence = chains.get(2).getSequence();
-    assertEquals("AATTTCACACCTAGGTGTGAAATT", sequence.toUpperCase());
+    assertThat(sequence.toUpperCase(Locale.ENGLISH), is("AATTTCACACCTAGGTGTGAAATT"));
   }
 
   @Test
@@ -340,8 +349,8 @@ public class PdbModelTest {
 
     final PdbChain chain = chains.get(0);
     final String sequence = chain.getSequence();
-    assertTrue(Character.isLowerCase(sequence.charAt(0)));
-    assertTrue(StringUtils.isAllUpperCase(sequence.substring(1)));
+    assertThat(Character.isLowerCase(sequence.charAt(0)), is(true));
+    assertThat(StringUtils.isAllUpperCase(sequence.substring(1)), is(true));
   }
 
   @Test
@@ -404,11 +413,11 @@ public class PdbModelTest {
     final PdbModel model = models.get(0);
 
     PdbResidue residue = model.findResidue("E", 164, " ");
-    assertTrue(residue.isMissing());
+    assertThat(residue.isMissing(), is(true));
 
     residue = model.findResidue("S", 169, " ");
-    assertEquals("API", residue.getOriginalResidueName());
-    assertEquals("LYS", residue.getModifiedResidueName());
+    assertThat(residue.getOriginalResidueName(), is("API"));
+    assertThat(residue.getModifiedResidueName(), is("LYS"));
   }
 
   @Test
@@ -421,20 +430,20 @@ public class PdbModelTest {
 
     final String cif1EHZ = pdbModel.toCifString();
 
-    final CifParser cifParser = new CifParser();
+    final StructureParser cifParser = new CifParser();
     final List<PdbModel> cifModels = cifParser.parse(cif1EHZ);
     assertEquals(1, cifModels.size());
     final PdbModel cifModel = cifModels.get(0);
 
     final List<PdbResidue> pdbResidues = pdbModel.getResidues();
     final List<PdbResidue> cifResidues = cifModel.getResidues();
-    assertEquals(pdbResidues.size(), cifResidues.size());
+    assertEquals(cifResidues.size(), pdbResidues.size());
 
     for (int i = 0; i < pdbResidues.size(); i++) {
       final PdbResidue pdbResidue = pdbResidues.get(i);
       final PdbResidue cifResidue = cifResidues.get(i);
       if (!pdbResidue.isModified()) {
-        assertEquals(pdbResidue, cifResidue);
+        assertThat(cifResidue, is(pdbResidue));
       }
     }
   }

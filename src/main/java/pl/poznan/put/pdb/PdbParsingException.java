@@ -1,6 +1,6 @@
 package pl.poznan.put.pdb;
 
-public class PdbParsingException extends Exception {
+public class PdbParsingException extends RuntimeException {
   public PdbParsingException() {
     super();
   }

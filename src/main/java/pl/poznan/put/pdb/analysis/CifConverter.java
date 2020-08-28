@@ -6,14 +6,27 @@ import org.apache.commons.collections4.bidimap.TreeBidiMap;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.poznan.put.pdb.*;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbExpdtaLine;
+import pl.poznan.put.pdb.PdbModresLine;
+import pl.poznan.put.pdb.PdbRemark2Line;
+import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class CifConverter {
   private static final Logger LOGGER = LoggerFactory.getLogger(CifConverter.class);
@@ -40,7 +53,7 @@ public final class CifConverter {
     super();
   }
 
-  public static ModelContainer convert(final File cifFile) throws IOException, PdbParsingException {
+  public static ModelContainer convert(final File cifFile) throws IOException {
     @SuppressWarnings("TypeMayBeWeakened")
     final CifParser cifParser = new CifParser();
     final String cifContents = FileUtils.readFileToString(cifFile, Charset.defaultCharset());
@@ -48,8 +61,8 @@ public final class CifConverter {
     return CifConverter.convert(cifFile, models);
   }
 
-  private static ModelContainer convert(final File mmCifFile, final Iterable<PdbModel> models)
-      throws IOException, PdbParsingException {
+  private static ModelContainer convert(
+      final File mmCifFile, final Iterable<? extends PdbModel> models) throws IOException {
     final List<PdbModel> rnaModels = new ArrayList<>();
 
     for (final PdbModel model : models) {
@@ -146,7 +159,7 @@ public final class CifConverter {
    * @return List of packed chain groups. A packed chain group contains one or more regular chain
    *     groups such that they can be fitted into a single PDB file.
    */
-  private static List<Set<String>> packGroups(final List<Set<String>> chainGroups) {
+  private static List<Set<String>> packGroups(final List<? extends Set<String>> chainGroups) {
     // sort chain groups in descending size order
     chainGroups.sort((t, t1) -> -Integer.compare(t.size(), t1.size()));
 
@@ -194,14 +207,11 @@ public final class CifConverter {
       for (int j = i + 1; (toMerge == -1) && (j < chainGroups.size()); j++) {
         final Set<String> groupR = chainGroups.get(j);
 
-        for (final String chainL : groupL) {
-          if (chainContacts.containsKey(chainL)) {
-            final Set<String> contactsL = chainContacts.get(chainL);
-            if (CollectionUtils.containsAny(contactsL, groupR)) {
-              toMerge = j;
-              break;
-            }
-          }
+        if (groupL.stream()
+            .filter(chainContacts::containsKey)
+            .map(chainContacts::get)
+            .anyMatch(contactsL -> CollectionUtils.containsAny(contactsL, groupR))) {
+          toMerge = j;
         }
       }
 
@@ -225,11 +235,9 @@ public final class CifConverter {
    * @return A list of sets, each containing one chain.
    */
   private static List<Set<String>> initializeChainGroups(final PdbModel model) {
-    final List<Set<String>> chainGroups = new ArrayList<>();
-    for (final PdbChain chain : model.getChains()) {
-      chainGroups.add(new HashSet<>(Collections.singleton(chain.getIdentifier())));
-    }
-    return chainGroups;
+    return model.getChains().stream()
+        .map(chain -> new HashSet<>(Collections.singleton(chain.getIdentifier())))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -264,7 +272,7 @@ public final class CifConverter {
   private static void writeModel(
       final PdbModel rnaModel,
       final Collection<String> allowedChains,
-      final BidiMap<String, String> chainMap,
+      final BidiMap<? super String, String> chainMap,
       final StringBuilder pdbBuilder) {
     pdbBuilder.append("MODEL ").append(rnaModel.getModelNumber()).append(System.lineSeparator());
 
@@ -295,7 +303,7 @@ public final class CifConverter {
 
   private static void writeHeader(
       final PdbModel firstModel,
-      final BidiMap<String, String> chainMap,
+      final BidiMap<? super String, String> chainMap,
       final StringBuilder pdbBuilder) {
     pdbBuilder.append(firstModel.getHeaderLine()).append(System.lineSeparator());
 
@@ -337,12 +345,11 @@ public final class CifConverter {
    */
   private static MoleculeType getChainType(
       final PdbModel firstModel, final String chainIdentifier) {
-    for (final PdbChain chain : firstModel.getChains()) {
-      if (Objects.equals(chain.getIdentifier(), chainIdentifier)) {
-        return chain.getMoleculeType();
-      }
-    }
-    return MoleculeType.UNKNOWN;
+    return firstModel.getChains().stream()
+        .filter(chain -> Objects.equals(chain.getIdentifier(), chainIdentifier))
+        .findFirst()
+        .map(PdbChain::getMoleculeType)
+        .orElse(MoleculeType.UNKNOWN);
   }
 
   /**
@@ -354,7 +361,7 @@ public final class CifConverter {
    * @return The PDB identifier.
    */
   private static String mapChain(
-      final BidiMap<String, String> chainMap, final String chainIdentifier) {
+      final BidiMap<? super String, String> chainMap, final String chainIdentifier) {
     if (!chainMap.containsKey(chainIdentifier)) {
       chainMap.put(chainIdentifier, CifConverter.PRINTABLE_CHARS.get(chainMap.size()));
     }

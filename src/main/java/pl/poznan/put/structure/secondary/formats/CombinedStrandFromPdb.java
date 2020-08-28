@@ -5,7 +5,12 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketFromPdbInterface {
@@ -13,8 +18,8 @@ public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketF
   private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<>();
 
   public CombinedStrandFromPdb(
-      final Iterable<Strand> strands,
-      final Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue) {
+      final Iterable<? extends Strand> strands,
+      final Map<DotBracketSymbol, ? extends PdbResidueIdentifier> symbolToResidue) {
     super();
 
     final Map<DotBracketSymbol, Integer> symbolToIndex = new HashMap<>();
@@ -76,7 +81,7 @@ public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketF
 
   @Override
   public final List<CombinedStrandFromPdb> combineStrands(
-      final List<ClassifiedBasePair> availableNonCanonical) {
+      final List<? extends ClassifiedBasePair> availableNonCanonical) {
     return Collections.singletonList(this);
   }
 

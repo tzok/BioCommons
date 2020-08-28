@@ -1,20 +1,27 @@
 package pl.poznan.put.structure.secondary.formats;
 
+import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.TreeBidiMap;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Slf4j
 public class DotBracket implements DotBracketInterface, Serializable {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DotBracket.class);
-  private static final long serialVersionUID = -517503434874402102L;
   /*
    * Regex:
    * (>.+\r?\n)?([ACGUTRYNacgutryn]+)\r?\n([-.()\[\]{}<>A-Za-z]+)
@@ -28,12 +35,13 @@ public class DotBracket implements DotBracketInterface, Serializable {
       Pattern.compile("(>.+\\r?\\n)?([ACGUTRYNacgutryn]+)\\r?\\n([-.()" + "\\[\\]{}<>A-Za-z]+)");
   private static final Pattern SEQUENCE_PATTERN = Pattern.compile("[ACGUTRYNacgutryn]+");
   private static final Pattern STRUCTURE_PATTERN = Pattern.compile("[-.()\\[\\]{}<>A-Za-z]+");
-  protected final List<Strand> strands = new ArrayList<>();
-  protected final List<DotBracketSymbol> symbols = new ArrayList<>();
-  protected final String sequence;
-  protected final String structure;
-  public DotBracket(final String sequence, final String structure)
-      throws InvalidStructureException {
+  final List<Strand> strands = new ArrayList<>();
+  final List<DotBracketSymbol> symbols = new ArrayList<>();
+
+  @EqualsAndHashCode.Include private final String sequence;
+  @EqualsAndHashCode.Include private final String structure;
+
+  public DotBracket(final String sequence, final String structure) {
     super();
     this.sequence = sequence;
     this.structure = structure;
@@ -49,7 +57,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
     strands.add(new StrandView("", this, 0, structure.length()));
   }
 
-  public static List<List<Strand>> candidatesToCombine(final List<Strand> strands) {
+  public static List<List<Strand>> candidatesToCombine(final Iterable<? extends Strand> strands) {
     final List<List<Strand>> result = new ArrayList<>();
     final List<Strand> toCombine = new ArrayList<>();
     int level = 0;
@@ -71,7 +79,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
     return result;
   }
 
-  public static DotBracket fromString(final String data) throws InvalidStructureException {
+  public static DotBracket fromString(final String data) {
     final Matcher matcher = DotBracket.DOTBRACKET_PATTERN.matcher(data);
 
     final Collection<Pair<Integer, Integer>> pairBeginEnd = new ArrayList<>();
@@ -137,7 +145,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
     assert symbols.size() == seq.length;
   }
 
-  private void analyzePairing() throws InvalidStructureException {
+  private void analyzePairing() {
     final BidiMap<Character, Character> parentheses = new TreeBidiMap<>();
     parentheses.put('(', ')');
     parentheses.put('[', ']');
@@ -185,35 +193,15 @@ public class DotBracket implements DotBracketInterface, Serializable {
         continue;
       }
 
-      DotBracket.LOGGER.error("Unknown symbol in dot-bracket string: {}", str);
+      DotBracket.log.error("Unknown symbol in dot-bracket string: {}", str);
     }
   }
 
   @Override
   public final String toStringWithStrands() {
-    final StringBuilder builder = new StringBuilder(sequence.length() + structure.length());
-    for (final Strand strand : strands) {
-      builder.append(strand);
-      builder.append('\n');
-    }
-    return builder.toString();
-  }
-
-  @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-    final DotBracket other = (DotBracket) o;
-    return Objects.equals(sequence, other.sequence) && Objects.equals(structure, other.structure);
-  }
-
-  @Override
-  public final int hashCode() {
-    return Objects.hash(sequence, structure);
+    return strands.stream()
+        .map(strand -> String.valueOf(strand) + '\n')
+        .collect(Collectors.joining());
   }
 
   @Override
@@ -261,7 +249,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
     int start = 0;
     int i = 0;
 
-    for (final Ct.Entry e : ct.getEntries()) {
+    for (final Ct.ExtendedEntry e : ct.getEntries()) {
       if (e.getAfter() == 0) {
         final Strand strand = new StrandView("", this, start, i + 1);
         strands.add(strand);
@@ -274,11 +262,9 @@ public class DotBracket implements DotBracketInterface, Serializable {
 
   @Override
   public List<? extends CombinedStrand> combineStrands() {
-    final List<CombinedStrand> result = new ArrayList<>();
-    for (final List<Strand> toCombine : DotBracket.candidatesToCombine(strands)) {
-      result.add(new CombinedStrand(toCombine));
-    }
-    return result;
+    return DotBracket.candidatesToCombine(strands).stream()
+        .map(CombinedStrand::new)
+        .collect(Collectors.toList());
   }
 
   @Override

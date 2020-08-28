@@ -1,28 +1,26 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.assertEquals;
-
+import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.Converter;
 import pl.poznan.put.structure.secondary.formats.DotBracket;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.structure.secondary.formats.LevelByLevelConverter;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.MinGain;
 import pl.poznan.put.utility.ResourcesHelper;
 
+import static org.hamcrest.Matchers.is;
+
 public class DotBracketTest {
-  // @formatter:off
-  private static final String WITH_WINDOWS_NEWLINE = ">strand_A\r\n" + "ACAAGU\r\n" + "((..))";
   public static final String FROM_2Z74 =
       ">strand_A\n"
           + "aGCGCCuGGACUUAAAGCCAUUGCACU\n"
           + "..[[[[.[(((((((((((..------\n"
           + ">strand_B\n"
-          + "CCGGCUUUAAGUUGACGAGGGCAGGGUUuAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUG"
-          + "CGACCGUUAGAGGACUGGuAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA\n"
-          + "--)))))))))))..[[[...((((((...]]]......]]]]]...))))))[[[[[.((((("
-          + "(]]]]].....((((((......((((((....)))))).......))))))..)))))).";
+          + "CCGGCUUUAAGUUGACGAGGGCAGGGUUuAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGuAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA\n"
+          + "--)))))))))))..[[[...((((((...]]]......]]]]]...))))))[[[[[.((((((]]]]].....((((((......((((((....)))))).......))))))..)))))).";
+  // @formatter:off
+  private static final String WITH_WINDOWS_NEWLINE = ">strand_A\r\n" + "ACAAGU\r\n" + "((..))";
   private static final String BPSEQ =
       "1 C 11\n"
           + "2 C 9\n"
@@ -37,22 +35,22 @@ public class DotBracketTest {
           + "11 C 1\n"
           + "12 C 7\n"
           + "13 C 4";
-  private static final String DOTBRACKET = ">strand_1" + "CCCCCCCCCCCCC\n" + "((.[[.{.)])}]";
+  private static final String DOTBRACKET = ">strand_1\n" + "CCCCCCCCCCCCC\n" + "((.[[.{.)])}]";
   // @formatter:on
 
   @Test
-  public final void from2Z74() throws InvalidStructureException {
+  public final void from2Z74() {
     final DotBracket dotBracket = DotBracket.fromString(DotBracketTest.FROM_2Z74);
-    assertEquals(2, dotBracket.getStrands().size());
+    Assert.assertEquals(2, dotBracket.getStrands().size());
   }
 
   @Test
-  public final void fromBpSeq() throws InvalidStructureException {
+  public final void fromBpSeq() {
     final Converter converter = new LevelByLevelConverter(new MinGain(), 1);
     final BpSeq bpSeq = BpSeq.fromString(DotBracketTest.BPSEQ);
     final DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
     final DotBracket dotBracketFromString = DotBracket.fromString(DotBracketTest.DOTBRACKET);
-    assertEquals(dotBracketFromString, dotBracketFromBpSeq);
+    Assert.assertThat(dotBracketFromBpSeq, is(dotBracketFromString));
   }
 
   @Test
@@ -64,13 +62,13 @@ public class DotBracketTest {
     final BpSeq bpSeq = BpSeq.fromString(bpseq1EHZ);
     final DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
     final DotBracket dotBracketFromString = DotBracket.fromString(dotBracket1EHZ);
-    assertEquals(dotBracketFromString, dotBracketFromBpSeq);
+    Assert.assertThat(dotBracketFromBpSeq, is(dotBracketFromString));
   }
 
   @Test
-  public final void testWithWindowsNewline() throws InvalidStructureException {
+  public final void testWithWindowsNewline() {
     final DotBracket dotBracket = DotBracket.fromString(DotBracketTest.WITH_WINDOWS_NEWLINE);
-    assertEquals("ACAAGU", dotBracket.getSequence());
-    assertEquals("((..))", dotBracket.getStructure());
+    Assert.assertThat(dotBracket.getSequence(), is("ACAAGU"));
+    Assert.assertThat(dotBracket.getStructure(), is("((..))"));
   }
 }

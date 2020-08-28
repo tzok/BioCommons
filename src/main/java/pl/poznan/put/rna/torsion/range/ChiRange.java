@@ -8,26 +8,27 @@ import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.torsion.range.RangeProvider;
 
+import java.util.Arrays;
+
 /**
  * Torsion angle ranges for CHI as defined in Saenger's "Principles...".
  * http://jenalib.leibniz-fli.de/Piet/help/backbone.html
  */
 @Getter
 public enum ChiRange implements Range {
-  HIGH_ANTI("high anti", -90, -15),
-  SYN("syn", -15, 110),
-  ANTI("anti", 110, 270),
+  HIGH_ANTI("high anti", -90.0, -15.0),
+  SYN("syn", -15.0, 110.0),
+  ANTI("anti", 110.0, 270.0),
   INVALID("invalid", Double.NaN, Double.NaN);
 
   private static final MultiKeyMap<ChiRange, RangeDifference> DIFFERENCE_MAP = new MultiKeyMap<>();
   private static final RangeProvider PROVIDER =
       angle -> {
         if (angle.isValid()) {
-          for (final ChiRange range : ChiRange.values()) {
-            if (angle.isBetween(range.begin, range.end)) {
-              return range;
-            }
-          }
+          return Arrays.stream(ChiRange.values())
+              .filter(range -> angle.isBetween(range.begin, range.end))
+              .findFirst()
+              .orElse(ChiRange.INVALID);
         }
         return ChiRange.INVALID;
       };
@@ -47,6 +48,7 @@ public enum ChiRange implements Range {
   private final String displayName;
   private final Angle begin;
   private final Angle end;
+
   ChiRange(final String displayName, final double begin, final double end) {
     this.displayName = displayName;
     this.begin = new Angle(begin, ValueType.DEGREES);

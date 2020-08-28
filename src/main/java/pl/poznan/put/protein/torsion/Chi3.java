@@ -4,6 +4,7 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
+import pl.poznan.put.types.ImmutableQuadruplet;
 import pl.poznan.put.types.Quadruplet;
 
 import java.util.ArrayList;
@@ -13,20 +14,20 @@ import java.util.Map;
 
 public final class Chi3 extends AtomBasedTorsionAngleType {
   public static final Quadruplet<AtomName> ARGININE_ATOMS =
-      new Quadruplet<>(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.NE);
+      ImmutableQuadruplet.of(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.NE);
   public static final Quadruplet<AtomName> GLUTAMIC_ACID_ATOMS =
-      new Quadruplet<>(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.OE1);
+      ImmutableQuadruplet.of(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.OE1);
   public static final Quadruplet<AtomName> GLUTAMINE_ATOMS =
-      new Quadruplet<>(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.OE1);
+      ImmutableQuadruplet.of(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.OE1);
   public static final Quadruplet<AtomName> LYSINE_ATOMS =
-      new Quadruplet<>(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.CE);
+      ImmutableQuadruplet.of(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.CE);
   public static final Quadruplet<AtomName> METHIONINE_ATOMS =
-      new Quadruplet<>(AtomName.CB, AtomName.CG, AtomName.SD, AtomName.CE);
+      ImmutableQuadruplet.of(AtomName.CB, AtomName.CG, AtomName.SD, AtomName.CE);
 
   private static final Map<Quadruplet<AtomName>, Chi3> INSTANCE_CACHE = new HashMap<>();
 
   private Chi3(final Quadruplet<AtomName> atoms) {
-    super(MoleculeType.PROTEIN, Unicode.CHI3, atoms, new Quadruplet<>(0, 0, 0, 0));
+    super(MoleculeType.PROTEIN, Unicode.CHI3, atoms, ImmutableQuadruplet.of(0, 0, 0, 0));
   }
 
   public static Chi3[] getInstances() {
@@ -36,7 +37,7 @@ public final class Chi3 extends AtomBasedTorsionAngleType {
     instances.add(Chi3.getInstance(Chi3.GLUTAMINE_ATOMS));
     instances.add(Chi3.getInstance(Chi3.LYSINE_ATOMS));
     instances.add(Chi3.getInstance(Chi3.METHIONINE_ATOMS));
-    return instances.toArray(new Chi3[instances.size()]);
+    return instances.toArray(new Chi3[0]);
   }
 
   public static Chi3 getInstance(final Quadruplet<AtomName> atoms) {

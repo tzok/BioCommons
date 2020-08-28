@@ -27,6 +27,9 @@ public final class GlutamicAcid extends ProteinSidechain {
         "Glutamic acid",
         'E',
         "GLU");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.GLUTAMIC_ACID_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.GLUTAMIC_ACID_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI3, Chi3.GLUTAMIC_ACID_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
     torsionAngleTypes.add(Chi3.getInstance(getChiAtoms(ProteinChiType.CHI3)));
@@ -34,12 +37,5 @@ public final class GlutamicAcid extends ProteinSidechain {
 
   public static GlutamicAcid getInstance() {
     return GlutamicAcid.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.GLUTAMIC_ACID_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.GLUTAMIC_ACID_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI3, Chi3.GLUTAMIC_ACID_ATOMS);
   }
 }

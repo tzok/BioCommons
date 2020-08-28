@@ -13,5 +13,6 @@ public interface DotBracketFromPdbInterface extends DotBracketInterface {
 
   boolean contains(final PdbResidueIdentifier residueIdentifier);
 
-  List<CombinedStrandFromPdb> combineStrands(List<ClassifiedBasePair> availableNonCanonical);
+  List<CombinedStrandFromPdb> combineStrands(
+      List<? extends ClassifiedBasePair> availableNonCanonical);
 }

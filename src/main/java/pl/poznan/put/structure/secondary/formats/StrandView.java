@@ -1,14 +1,18 @@
 package pl.poznan.put.structure.secondary.formats;
 
+import lombok.EqualsAndHashCode;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 public class StrandView extends AbstractStrand {
   private final DotBracketInterface parent;
   private final int from;
   private final int to;
+
+  @EqualsAndHashCode.Include private final List<DotBracketSymbol> symbols;
 
   public StrandView(
       final String name, final DotBracketInterface parent, final int from, final int to) {
@@ -16,6 +20,7 @@ public class StrandView extends AbstractStrand {
     this.parent = parent;
     this.from = from;
     this.to = to;
+    symbols = parent.getSymbols().subList(from, to);
   }
 
   public final DotBracketInterface getParent() {

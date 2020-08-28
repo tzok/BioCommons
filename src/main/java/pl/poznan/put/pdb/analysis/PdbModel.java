@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.poznan.put.atom.AtomName;
@@ -7,27 +8,29 @@ import pl.poznan.put.pdb.*;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PdbModel implements Serializable, ResidueCollection {
-  private static final long serialVersionUID = -2769758924241993375L;
-
-  protected final PdbHeaderLine headerLine;
-  protected final PdbExpdtaLine experimentalDataLine;
-  protected final PdbRemark2Line resolutionLine;
-  protected final int modelNumber;
-  protected final List<PdbModresLine> modifiedResidues;
   @Getter protected final String title;
+  final PdbHeaderLine headerLine;
+  final PdbExpdtaLine experimentalDataLine;
+  final PdbRemark2Line resolutionLine;
+  final int modelNumber;
+  final List<PdbModresLine> modifiedResidues;
+  final List<PdbAtomLine> chainTerminatedAfter;
+
   private final List<PdbChain> chains = new ArrayList<>();
   private final List<PdbResidue> residues = new ArrayList<>();
   private final Collection<PdbResidueIdentifier> missingResiduesIdentifiers = new HashSet<>();
   private final Map<PdbResidueIdentifier, PdbModresLine> identifierToModification = new HashMap<>();
   private final Map<PdbResidueIdentifier, PdbResidue> identifierToResidue = new HashMap<>();
   private final Map<PdbResidueIdentifier, PdbChain> identifierToChain = new HashMap<>();
-  private final List<PdbAtomLine> atoms;
+  @EqualsAndHashCode.Include private final List<PdbAtomLine> atoms;
   private final List<PdbRemark465Line> missingResidues;
 
-  public PdbModel(final List<PdbAtomLine> atoms) throws PdbParsingException {
+  public PdbModel(final List<PdbAtomLine> atoms) {
     this(
         PdbHeaderLine.emptyInstance(),
         PdbExpdtaLine.emptyInstance(),
@@ -36,7 +39,8 @@ public class PdbModel implements Serializable, ResidueCollection {
         atoms,
         Collections.emptyList(),
         Collections.emptyList(),
-        "");
+        "",
+        Collections.emptyList());
   }
 
   public PdbModel(
@@ -47,8 +51,8 @@ public class PdbModel implements Serializable, ResidueCollection {
       final List<PdbAtomLine> atoms,
       final List<PdbModresLine> modifiedResidues,
       final List<PdbRemark465Line> missingResidues,
-      final String title)
-      throws PdbParsingException {
+      final String title,
+      final List<PdbAtomLine> chainTerminatedAfter) {
     super();
     this.title = title;
     this.headerLine = headerLine;
@@ -58,6 +62,7 @@ public class PdbModel implements Serializable, ResidueCollection {
     this.atoms = new ArrayList<>(atoms);
     this.modifiedResidues = new ArrayList<>(modifiedResidues);
     this.missingResidues = new ArrayList<>(missingResidues);
+    this.chainTerminatedAfter = new ArrayList<>(chainTerminatedAfter);
 
     for (final PdbRemark465Line missing : missingResidues) {
       missingResiduesIdentifiers.add(missing.getResidueIdentifier());
@@ -74,7 +79,7 @@ public class PdbModel implements Serializable, ResidueCollection {
     }
   }
 
-  private void analyzeResidues() throws PdbParsingException {
+  private void analyzeResidues() {
     assert !atoms.isEmpty();
 
     List<PdbAtomLine> residueAtoms = new ArrayList<>();
@@ -135,29 +140,57 @@ public class PdbModel implements Serializable, ResidueCollection {
   private void analyzeChains() {
     assert !residues.isEmpty();
 
-    final Map<String, List<PdbResidue>> foundChains = new LinkedHashMap<>();
+    final Predicate<PdbResidue> isMissing = PdbResidue::isMissing;
+    final List<PdbResidue> missingResidues =
+        residues.stream().filter(isMissing).collect(Collectors.toList());
+    final List<PdbResidue> notMissingResidues =
+        residues.stream().filter(isMissing.negate()).collect(Collectors.toList());
 
-    for (final PdbResidue residue : residues) {
+    List<PdbResidue> chainResidues = new ArrayList<>();
+    String lastChainIdentifier = residues.get(0).getChainIdentifier();
+    boolean chainTerminated = false;
+
+    for (final PdbResidue residue : notMissingResidues) {
       final String chainIdentifier = residue.getChainIdentifier();
 
-      if (!foundChains.containsKey(chainIdentifier)) {
-        foundChains.put(chainIdentifier, new ArrayList<>());
+      if (!chainIdentifier.equals(lastChainIdentifier) || chainTerminated) {
+        addMissingResiduesAndSaveChain(chainResidues, lastChainIdentifier, missingResidues);
+        chainResidues = new ArrayList<>();
+        lastChainIdentifier = chainIdentifier;
       }
 
-      final List<PdbResidue> chainResidues = foundChains.get(chainIdentifier);
       chainResidues.add(residue);
+      chainTerminated = residue.getAtoms().stream().anyMatch(chainTerminatedAfter::contains);
     }
 
-    for (final Map.Entry<String, List<PdbResidue>> entry : foundChains.entrySet()) {
-      final String chainIdentifier = entry.getKey();
-      final List<PdbResidue> chainResidues = entry.getValue();
-      final PdbChain chain = new PdbChain(chainIdentifier, chainResidues);
-      chains.add(chain);
+    addMissingResiduesAndSaveChain(chainResidues, lastChainIdentifier, missingResidues);
 
-      for (final PdbResidue residue : chainResidues) {
+    for (final PdbChain chain : chains) {
+      for (final PdbResidue residue : chain.getResidues()) {
         identifierToChain.put(residue.getResidueIdentifier(), chain);
       }
     }
+  }
+
+  private void addMissingResiduesAndSaveChain(
+      List<PdbResidue> chainResidues, String chainIdentifier, List<PdbResidue> missingResidues) {
+    missingResidues.stream()
+        .filter(pdbResidue -> chainIdentifier.equals(pdbResidue.getChainIdentifier()))
+        .forEach(pdbResidue -> putMissingResidueInRightPlace(chainResidues, pdbResidue));
+    missingResidues.removeIf(pdbResidue -> chainIdentifier.equals(pdbResidue.getChainIdentifier()));
+    chains.add(new PdbChain(chainIdentifier, chainResidues));
+  }
+
+  private void putMissingResidueInRightPlace(
+      List<PdbResidue> chainResidues, PdbResidue missingResidue) {
+    for (int i = 0; i < chainResidues.size(); i++) {
+      final PdbResidue chainResidue = chainResidues.get(i);
+      if (chainResidue.compareTo(missingResidue) > 0) {
+        chainResidues.add(i, missingResidue);
+        return;
+      }
+    }
+    chainResidues.add(missingResidue);
   }
 
   private void saveExistingResidueIfValid(
@@ -182,15 +215,15 @@ public class PdbModel implements Serializable, ResidueCollection {
     }
   }
 
-  public final boolean isMissing(final PdbResidueIdentifier residueIdentifier) {
+  public boolean isMissing(final PdbResidueIdentifier residueIdentifier) {
     return missingResiduesIdentifiers.contains(residueIdentifier);
   }
 
-  public final boolean isModified(final PdbResidueIdentifier residueIdentifier) {
+  public boolean isModified(final PdbResidueIdentifier residueIdentifier) {
     return identifierToModification.containsKey(residueIdentifier);
   }
 
-  private String getModifiedResidueName(final PdbResidueIdentifier residueIdentifier) {
+  public String getModifiedResidueName(final PdbResidueIdentifier residueIdentifier) {
     if (!identifierToModification.containsKey(residueIdentifier)) {
       throw new IllegalArgumentException(
           "Failed to find information about modification of: " + residueIdentifier);
@@ -274,11 +307,9 @@ public class PdbModel implements Serializable, ResidueCollection {
   }
 
   public final String getSequence() {
-    final StringBuilder builder = new StringBuilder();
-    for (final PdbResidue residue : residues) {
-      builder.append(residue.getOneLetterName());
-    }
-    return builder.toString();
+    return residues.stream()
+        .map(residue -> String.valueOf(residue.getOneLetterName()))
+        .collect(Collectors.joining());
   }
 
   public final String toPdbString() {
@@ -322,15 +353,10 @@ public class PdbModel implements Serializable, ResidueCollection {
   }
 
   public final boolean containsAny(final MoleculeType moleculeType) {
-    for (final PdbChain chain : chains) {
-      if (chain.getMoleculeType() == moleculeType) {
-        return true;
-      }
-    }
-    return false;
+    return chains.stream().anyMatch(chain -> chain.getMoleculeType() == moleculeType);
   }
 
-  public PdbModel filteredNewInstance(final MoleculeType moleculeType) throws PdbParsingException {
+  public PdbModel filteredNewInstance(final MoleculeType moleculeType) {
     final List<PdbAtomLine> filteredAtoms = filterAtoms(moleculeType);
     final List<PdbRemark465Line> filteredMissing = filterMissing(moleculeType);
     return new PdbModel(
@@ -341,10 +367,11 @@ public class PdbModel implements Serializable, ResidueCollection {
         filteredAtoms,
         modifiedResidues,
         filteredMissing,
-        title);
+        title,
+        chainTerminatedAfter);
   }
 
-  protected final List<PdbAtomLine> filterAtoms(final MoleculeType moleculeType) {
+  final List<PdbAtomLine> filterAtoms(final MoleculeType moleculeType) {
     final List<PdbAtomLine> filteredAtoms = new ArrayList<>();
 
     for (final PdbResidue residue : residues) {
@@ -356,7 +383,7 @@ public class PdbModel implements Serializable, ResidueCollection {
     return filteredAtoms;
   }
 
-  protected final List<PdbRemark465Line> filterMissing(final MoleculeType moleculeType) {
+  final List<PdbRemark465Line> filterMissing(final MoleculeType moleculeType) {
     final List<PdbRemark465Line> filteredMissing = new ArrayList<>();
 
     for (final PdbResidue residue : residues) {
@@ -376,22 +403,5 @@ public class PdbModel implements Serializable, ResidueCollection {
 
   public final List<PdbResidueIdentifier> residueIdentifiers() {
     return residues.stream().map(PdbResidue::getResidueIdentifier).collect(Collectors.toList());
-  }
-
-  @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (!getClass().equals(o.getClass()))) {
-      return false;
-    }
-    final PdbModel pdbModel = (PdbModel) o;
-    return Objects.equals(atoms, pdbModel.atoms);
-  }
-
-  @Override
-  public final int hashCode() {
-    return Objects.hash(atoms);
   }
 }

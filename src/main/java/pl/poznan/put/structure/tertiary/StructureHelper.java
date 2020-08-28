@@ -7,9 +7,13 @@ import org.biojava.nbio.structure.Structure;
 import org.jetbrains.annotations.NotNull;
 import pl.poznan.put.atom.AtomName;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
 
-public final class StructureHelper {
+final class StructureHelper {
   private StructureHelper() {
     super();
   }
@@ -20,7 +24,7 @@ public final class StructureHelper {
         .toArray(Atom[]::new);
   }
 
-  public static Atom findAtom(final Group residue, final AtomName atomName) {
+  private static Atom findAtom(final Group residue, final AtomName atomName) {
     return residue.getAtoms().stream()
         .filter(atom -> atomName.matchesName(atom.getName()))
         .findFirst()
@@ -39,7 +43,7 @@ public final class StructureHelper {
     return result.toArray(new Atom[0]);
   }
 
-  public static @NotNull Atom[] findAllAtoms(final Chain chain, final AtomName atomName) {
+  private static @NotNull Atom[] findAllAtoms(final Chain chain, final AtomName atomName) {
     return chain.getAtomGroups().stream()
         .map(group -> StructureHelper.findAtom(group, atomName))
         .filter(Objects::nonNull)
@@ -50,20 +54,17 @@ public final class StructureHelper {
     final LinkedHashSet<Atom> atoms = new LinkedHashSet<>(group.getAtoms());
 
     for (final Group altloc : group.getAltLocs()) {
-      for (final Atom atom : altloc.getAtoms()) {
-        atoms.add(atom);
-      }
+      atoms.addAll(altloc.getAtoms());
     }
 
     group.setAtoms(new ArrayList<>(atoms));
   }
 
   public static boolean isModified(final Group group, final AtomName... atomNames) {
-    for (final AtomName atomName : atomNames) {
-      if (atomName.getType().isHeavy() && (StructureHelper.findAtom(group, atomName) == null)) {
-        return true;
-      }
-    }
-    return false;
+    return Arrays.stream(atomNames)
+        .anyMatch(
+            atomName ->
+                atomName.getType().isHeavy()
+                    && (StructureHelper.findAtom(group, atomName) == null));
   }
 }

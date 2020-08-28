@@ -20,8 +20,8 @@ public class CifModel extends PdbModel {
       final List<PdbModresLine> modifiedResidues,
       final List<PdbRemark465Line> missingResidues,
       final List<QuantifiedBasePair> basePairs,
-      final String title)
-      throws PdbParsingException {
+      final String title,
+      final List<PdbAtomLine> chainTerminatedAfter) {
     super(
         headerLine,
         experimentalDataLine,
@@ -30,7 +30,8 @@ public class CifModel extends PdbModel {
         atoms,
         modifiedResidues,
         missingResidues,
-        title);
+        title,
+        chainTerminatedAfter);
     this.basePairs = new ArrayList<>(basePairs);
   }
 
@@ -39,8 +40,7 @@ public class CifModel extends PdbModel {
   }
 
   @Override
-  public final CifModel filteredNewInstance(final MoleculeType moleculeType)
-      throws PdbParsingException {
+  public final CifModel filteredNewInstance(final MoleculeType moleculeType) {
     final List<PdbAtomLine> filteredAtoms = filterAtoms(moleculeType);
     final List<PdbRemark465Line> filteredMissing = filterMissing(moleculeType);
     return new CifModel(
@@ -52,6 +52,7 @@ public class CifModel extends PdbModel {
         modifiedResidues,
         filteredMissing,
         basePairs,
-        title);
+        title,
+        chainTerminatedAfter);
   }
 }

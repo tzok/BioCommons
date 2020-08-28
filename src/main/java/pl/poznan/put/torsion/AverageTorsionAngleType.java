@@ -10,13 +10,19 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.TorsionRange;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 public class AverageTorsionAngleType extends TorsionAngleType implements MasterTorsionAngleType {
   private final String displayName;
   private final String exportName;
-  private final List<MasterTorsionAngleType> consideredAngles;
+  private final List<? extends MasterTorsionAngleType> consideredAngles;
 
   public AverageTorsionAngleType(
       final MoleculeType moleculeType, final MasterTorsionAngleType... masterTypes) {
@@ -36,7 +42,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
 
   private AverageTorsionAngleType(
       final MoleculeType moleculeType,
-      final List<MasterTorsionAngleType> consideredAngles,
+      final List<? extends MasterTorsionAngleType> consideredAngles,
       final String displayName,
       final String exportName) {
     super(moleculeType);
@@ -46,7 +52,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
   }
 
   private static @NotNull String toDisplayName(
-      final Iterable<MasterTorsionAngleType> consideredAngles) {
+      final Iterable<? extends MasterTorsionAngleType> consideredAngles) {
     final Collection<String> angleNames = new LinkedHashSet<>();
     for (final MasterTorsionAngleType angleType : consideredAngles) {
       angleNames.add(angleType.getShortDisplayName());
@@ -66,7 +72,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
   }
 
   private static @NotNull String toExportName(
-      final Iterable<MasterTorsionAngleType> consideredAngles) {
+      final Iterable<? extends MasterTorsionAngleType> consideredAngles) {
     final Collection<String> angleNames = new LinkedHashSet<>();
     for (final MasterTorsionAngleType angleType : consideredAngles) {
       angleNames.add(angleType.getExportName());
@@ -115,7 +121,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
 
   @Override
   public final @NotNull TorsionAngleValue calculate(
-      final List<PdbResidue> residues, final int currentIndex) {
+      final List<? extends PdbResidue> residues, final int currentIndex) {
     final PdbResidue residue = residues.get(currentIndex);
     final List<Angle> angles = new ArrayList<>();
 
@@ -132,7 +138,8 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     return new TorsionAngleValue(this, angleSample.getMeanDirection());
   }
 
-  public final @NotNull TorsionAngleValue calculate(final Iterable<TorsionAngleValue> values) {
+  public final @NotNull TorsionAngleValue calculate(
+      final Iterable<? extends TorsionAngleValue> values) {
     final List<Angle> angles = new ArrayList<>();
 
     for (final MasterTorsionAngleType masterType : consideredAngles) {

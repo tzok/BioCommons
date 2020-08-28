@@ -3,7 +3,12 @@ package pl.poznan.put.structure.secondary.pseudoknots.elimination;
 import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Java implementation of Elimination Gain algorithm as presented in: Smit, S. et al., 2008. From
@@ -16,10 +21,8 @@ public class MinGain extends AbstractRegionRemover {
     final SortedMap<Integer, List<Region>> mapGainRegions = new TreeMap<>();
 
     for (final Region region : regions) {
-      int conflictLength = 0;
-      for (final Region conflicting : conflictMap.conflictsWith(region)) {
-        conflictLength += conflicting.getLength();
-      }
+      final int conflictLength =
+          conflictMap.conflictsWith(region).stream().mapToInt(Region::getLength).sum();
 
       final int gain = region.getLength() - conflictLength;
       if (!mapGainRegions.containsKey(gain)) {
@@ -47,7 +50,7 @@ public class MinGain extends AbstractRegionRemover {
       return maxConflictsRegions.get(0);
     }
 
-    maxConflictsRegions.sort((t, t1) -> Integer.compare(t.getBegin(), t1.getBegin()));
+    maxConflictsRegions.sort(Comparator.comparingInt(Region::getBegin));
     return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
   }
 }

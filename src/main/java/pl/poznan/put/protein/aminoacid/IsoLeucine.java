@@ -30,17 +30,13 @@ public final class IsoLeucine extends ProteinSidechain {
         "Isoleucine",
         'I',
         "ILE");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.ISOLEUCINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.ISOLEUCINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
   }
 
   public static IsoLeucine getInstance() {
     return IsoLeucine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.ISOLEUCINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.ISOLEUCINE_ATOMS);
   }
 }

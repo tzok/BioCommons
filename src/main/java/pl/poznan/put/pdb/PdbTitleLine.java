@@ -29,7 +29,7 @@ public final class PdbTitleLine implements Serializable {
     this.title = title;
   }
 
-  public static PdbTitleLine parse(final String line) throws PdbParsingException {
+  public static PdbTitleLine parse(final String line) {
     if (line.length() < 80) {
       throw new PdbParsingException(
           String.format(

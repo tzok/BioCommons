@@ -12,31 +12,44 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.pdb.analysis.SimpleResidueCollection;
 import pl.poznan.put.rna.RNAInteractionType;
-import pl.poznan.put.structure.secondary.formats.*;
+import pl.poznan.put.structure.secondary.formats.BpSeq;
+import pl.poznan.put.structure.secondary.formats.Converter;
+import pl.poznan.put.structure.secondary.formats.DotBracket;
+import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
+import pl.poznan.put.structure.secondary.formats.LevelByLevelConverter;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.MinGain;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Data
 @Slf4j
-public class ExtendedSecondaryStructure {
+public final class ExtendedSecondaryStructure {
   private final String sequence;
   private final Collection<ClassifiedBasePair> basePairs;
 
   public ExtendedSecondaryStructure(
       final String sequence, final Collection<ClassifiedBasePair> basePairs) {
+    super();
     this.sequence = sequence;
     this.basePairs =
         basePairs.stream().filter(ClassifiedBasePair::is5to3).collect(Collectors.toSet());
   }
 
   /**
-   * Creates instance of {@link ExtendedSecondaryStructure} by reading a set of lines in dot-bracket
-   * notation. Each line begins with a Leontis-Westhof notation shortand (e.g. cWW, tSH, etc.), a
-   * whitespace, and a dot-bracket. One line contains 'seq' instead of LW notation and it is
-   * followed by the sequence. For example:
+   * Creates instance of by reading a set of lines in dot-bracket notation. Each line begins with a
+   * Leontis-Westhof notation shortand (e.g. cWW, tSH, etc.), a whitespace, and a dot-bracket. One
+   * line contains 'seq' instead of LW notation and it is followed by the sequence. For example:
    *
    * <p>seq AGGGCGGGU
    *
@@ -45,7 +58,7 @@ public class ExtendedSecondaryStructure {
    * <p>cWH .([{.}]).
    *
    * @param input A string containing input in the format specified above.
-   * @return An instance of {@link ExtendedSecondaryStructure}.
+   * @return An instance of .
    */
   public static ExtendedSecondaryStructure fromMultilineDotBracket(final String input) {
     final List<ClassifiedBasePair> basePairs = new ArrayList<>();
@@ -164,7 +177,7 @@ public class ExtendedSecondaryStructure {
   }
 
   @Override
-  public final String toString() {
+  public String toString() {
     final StringBuilder builder = new StringBuilder();
     builder.append("seq ").append(sequence).append('\n');
 
@@ -226,8 +239,8 @@ public class ExtendedSecondaryStructure {
     }
   }
 
-  private DotBracket basePairsToDotBracket(final Iterable<ClassifiedBasePair> filteredBasePairs)
-      throws InvalidStructureException {
+  private DotBracket basePairsToDotBracket(
+      final Iterable<? extends ClassifiedBasePair> filteredBasePairs) {
     final List<PdbResidue> residues = new ArrayList<>();
     final char[] array = sequence.toCharArray();
 

@@ -9,6 +9,7 @@ import pl.poznan.put.utility.AngleFormat;
 public class TorsionAngleValue implements DisplayableExportable {
   private TorsionAngleType angleType;
   private Angle value;
+
   public TorsionAngleValue(final TorsionAngleType angleType, final Angle value) {
     super();
     this.angleType = angleType;

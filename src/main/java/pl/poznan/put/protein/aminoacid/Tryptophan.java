@@ -35,17 +35,13 @@ public final class Tryptophan extends ProteinSidechain {
         "Tryptophan",
         'W',
         "TRP");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.TRYPTOPHAN_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.TRYPTOPHAN_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
   }
 
   public static Tryptophan getInstance() {
     return Tryptophan.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.TRYPTOPHAN_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.TRYPTOPHAN_ATOMS);
   }
 }

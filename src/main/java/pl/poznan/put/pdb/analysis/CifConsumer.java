@@ -19,8 +19,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public class CifConsumer implements MMcifConsumer {
+class CifConsumer implements MMcifConsumer {
   private static final Logger LOGGER = LoggerFactory.getLogger(CifConsumer.class);
 
   private static final String PDBX_STRUCT_MOD_RESIDUE = "_pdbx_struct_mod_residue"; // NON-NLS
@@ -45,26 +47,24 @@ public class CifConsumer implements MMcifConsumer {
   @Nullable private String classification;
   @Nullable private String idCode;
   @Nullable private String title;
-  private double resolution;
+  private double resolution = Double.NaN;
 
-  private FileParsingParameters parameters;
+  private FileParsingParameters parameters = new FileParsingParameters();
 
-  public CifConsumer(final FileParsingParameters parameters) {
+  private CifConsumer(final FileParsingParameters parameters) {
     super();
     this.parameters = parameters;
   }
 
-  public CifConsumer() {
+  CifConsumer() {
     super();
   }
 
   private static Map<String, String> convertToMap(
       final List<String> loopFields, final List<String> lineData) {
-    final Map<String, String> map = new HashMap<>();
-    for (int i = 0; i < loopFields.size(); i++) {
-      map.put(loopFields.get(i), lineData.get(i));
-    }
-    return map;
+    return IntStream.range(0, loopFields.size())
+        .boxed()
+        .collect(Collectors.toMap(loopFields::get, lineData::get, (a, b) -> b));
   }
 
   private static double getDoubleWithDefaultNaN(final Map<String, String> map, final String key) {
@@ -186,7 +186,7 @@ public class CifConsumer implements MMcifConsumer {
   }
 
   @Override
-  public void setStruct(final Struct struct) {
+  public final void setStruct(final Struct struct) {
     title = StringUtils.upperCase(struct.getTitle());
   }
 
@@ -479,8 +479,8 @@ public class CifConsumer implements MMcifConsumer {
     }
   }
 
-  public final List<PdbModel> getModels() throws PdbParsingException {
-    final Date date = (depositionDate == null) ? new Date(0) : depositionDate;
+  public final List<PdbModel> getModels() {
+    final Date date = (depositionDate == null) ? new Date(0L) : depositionDate;
     final PdbHeaderLine headerLine = new PdbHeaderLine(classification, date, idCode);
 
     final List<ExperimentalTechnique> techniques =
@@ -505,7 +505,8 @@ public class CifConsumer implements MMcifConsumer {
               modifiedResidues,
               missingResidues,
               basePairs,
-              title);
+              title,
+              Collections.emptyList());
       result.add(pdbModel);
     }
 

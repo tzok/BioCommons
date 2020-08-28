@@ -1,6 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
@@ -16,16 +17,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Slf4j
 public class PdbCompactFragment implements ResidueCollection {
-  private String name;
+  @EqualsAndHashCode.Include private String name;
+  @EqualsAndHashCode.Include private List<PdbResidue> residues;
+
   private Map<PdbResidueIdentifier, List<TorsionAngleValue>> mapResidueAngleValue =
       new LinkedHashMap<>();
-  private List<PdbResidue> residues;
 
-  public PdbCompactFragment(final String name, final List<PdbResidue> residues) {
+  public PdbCompactFragment(final String name, final List<? extends PdbResidue> residues) {
     super();
     this.name = name;
     this.residues = new ArrayList<>(residues);
@@ -44,19 +48,13 @@ public class PdbCompactFragment implements ResidueCollection {
   }
 
   public final String toPdb() {
-    final StringBuilder builder = new StringBuilder();
-    for (final PdbResidue residue : residues) {
-      builder.append(residue.toPdb());
-    }
-    return builder.toString();
+    return residues.stream().map(PdbResidue::toPdb).collect(Collectors.joining());
   }
 
   public final String toSequence() {
-    final StringBuilder builder = new StringBuilder();
-    for (final PdbResidue residue : residues) {
-      builder.append(residue.getOneLetterName());
-    }
-    return builder.toString();
+    return residues.stream()
+        .map(residue -> String.valueOf(residue.getOneLetterName()))
+        .collect(Collectors.joining());
   }
 
   public final PdbCompactFragment shift(final int shift, final int size) {
@@ -108,26 +106,6 @@ public class PdbCompactFragment implements ResidueCollection {
       }
     }
     throw new IllegalArgumentException("Failed to find residue: " + query);
-  }
-
-  @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    final PdbCompactFragment other = (PdbCompactFragment) o;
-    return Objects.equals(name, other.name) && Objects.equals(residues, other.residues);
-  }
-
-  @Override
-  public final int hashCode() {
-    return Objects.hash(super.hashCode(), name, residues);
   }
 
   @Override

@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.secondary;
 
+import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
@@ -10,17 +12,17 @@ import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Objects;
 
+@EqualsAndHashCode
 public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBasePair> {
-  private static final long serialVersionUID = -7311037449944786616L;
-
   private final BasePair basePair;
   private final RNAInteractionType interactionType;
   private final Saenger saenger;
   private final LeontisWesthof leontisWesthof;
   private final BPh bph;
   private final BR br;
-  private HelixOrigin helixOrigin;
-  private boolean isRepresented;
+
+  @EqualsAndHashCode.Exclude private HelixOrigin helixOrigin;
+  @EqualsAndHashCode.Exclude private boolean isRepresented = false;
 
   public ClassifiedBasePair(
       final BasePair basePair,
@@ -92,7 +94,7 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
   }
 
   // required for Spring to get "isRepresented" field
-  public final boolean getIsRepresented() {
+  public final Boolean getIsRepresented() {
     return isRepresented;
   }
 
@@ -129,28 +131,6 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(basePair, interactionType, saenger, leontisWesthof, bph, br);
-  }
-
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-    final ClassifiedBasePair other = (ClassifiedBasePair) o;
-    return Objects.equals(basePair, other.basePair)
-        && Objects.equals(interactionType, other.interactionType)
-        && (saenger == other.saenger)
-        && (leontisWesthof == other.leontisWesthof)
-        && (bph == other.bph)
-        && (br == other.br);
-  }
-
-  @Override
   public String toString() {
     return "ClassifiedBasePair [basePair="
         + basePair
@@ -173,12 +153,14 @@ public class ClassifiedBasePair implements Serializable, Comparable<ClassifiedBa
       return 0;
     }
 
-    final int interactionComparison = interactionType.compareTo(t.interactionType);
-    if (interactionComparison != 0) {
-      return interactionComparison;
-    }
-
-    return basePair.compareTo(t.basePair);
+    return new CompareToBuilder()
+        .append(basePair, t.basePair)
+        .append(interactionType, t.interactionType)
+        .append(leontisWesthof, t.leontisWesthof)
+        .append(saenger, t.saenger)
+        .append(bph, t.bph)
+        .append(br, t.br)
+        .toComparison();
   }
 
   public final String generateComment() {

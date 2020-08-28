@@ -4,6 +4,7 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
+import pl.poznan.put.types.ImmutableQuadruplet;
 import pl.poznan.put.types.Quadruplet;
 
 public final class Phi extends AtomBasedTorsionAngleType {
@@ -13,8 +14,8 @@ public final class Phi extends AtomBasedTorsionAngleType {
     super(
         MoleculeType.PROTEIN,
         Unicode.PHI,
-        new Quadruplet<>(AtomName.C, AtomName.N, AtomName.CA, AtomName.C),
-        new Quadruplet<>(-1, 0, 0, 0));
+        ImmutableQuadruplet.of(AtomName.C, AtomName.N, AtomName.CA, AtomName.C),
+        ImmutableQuadruplet.of(-1, 0, 0, 0));
   }
 
   public static Phi getInstance() {

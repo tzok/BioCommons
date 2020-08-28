@@ -53,7 +53,7 @@ public class PdbModresLine implements ChainNumberICode, Serializable {
     this.comment = comment;
   }
 
-  public static PdbModresLine parse(final String line) throws PdbParsingException {
+  public static PdbModresLine parse(final String line) {
     if (line.length() < 70) {
       throw new PdbParsingException("PDB MODRES line is not at least 70 character long");
     }

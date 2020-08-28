@@ -23,8 +23,8 @@ public final class TorsionAnglesHelper {
    * @param atoms A 4-tuple of atoms.
    * @return Value of the tosion angle.
    */
-  public static Angle calculateTorsionAngle(final Quadruplet<PdbAtomLine> atoms) {
-    return TorsionAnglesHelper.calculateTorsionAngle(atoms.a, atoms.b, atoms.c, atoms.d);
+  public static Angle calculateTorsionAngle(final Quadruplet<? extends PdbAtomLine> atoms) {
+    return TorsionAnglesHelper.calculateTorsionAngle(atoms.a(), atoms.b(), atoms.c(), atoms.d());
   }
 
   /**
@@ -50,7 +50,7 @@ public final class TorsionAnglesHelper {
    * @param a4 Atom 4.
    * @return Dihedral angle between atoms 1-4.
    */
-  public static Angle calculateTorsionAtan(
+  private static Angle calculateTorsionAtan(
       final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3, final PdbAtomLine a4) {
     if ((a1 == null) || (a2 == null) || (a3 == null) || (a4 == null)) {
       return Angle.invalidInstance();
@@ -93,8 +93,7 @@ public final class TorsionAnglesHelper {
     final Vector3D u2 = d2.crossProduct(d3);
 
     double ctor = u1.dotProduct(u2) / FastMath.sqrt(u1.dotProduct(u1) * u2.dotProduct(u2));
-    if (ctor < -1) ctor = -1;
-    else ctor = (ctor > 1) ? 1 : ctor;
+    ctor = ctor < -1.0 ? -1.0 : Math.min(ctor, 1.0);
     double torp = FastMath.acos(ctor);
     if (u1.dotProduct(u2.crossProduct(d2)) < 0) {
       torp = -torp;
@@ -107,7 +106,7 @@ public final class TorsionAnglesHelper {
       return Double.NaN;
     }
 
-    final double full = 2 * Math.PI;
+    final double full = 2.0 * Math.PI;
     final double a1Mod = (a1 + full) % full;
     final double a2Mod = (a2 + full) % full;
     double diff = Math.abs(a1Mod - a2Mod);

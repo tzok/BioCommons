@@ -1,6 +1,6 @@
 package pl.poznan.put.notation;
 
-import java.util.Objects;
+import java.util.Arrays;
 
 /**
  * Base-phosphate notation. Zirbel, C. L., et al (2009). Classification and energetics of the
@@ -27,14 +27,10 @@ public enum BPh {
   }
 
   public static BPh fromString(final String candidate) {
-    for (final BPh bph : BPh.values()) {
-      for (final String displayName : bph.displayNames) {
-        if (Objects.equals(displayName, candidate)) {
-          return bph;
-        }
-      }
-    }
-    return BPh.UNKNOWN;
+    return Arrays.stream(BPh.values())
+        .filter(bph -> Arrays.asList(bph.displayNames).contains(candidate))
+        .findFirst()
+        .orElse(BPh.UNKNOWN);
   }
 
   public String getDisplayName() {

@@ -6,6 +6,7 @@ import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import java.util.List;
 
 /** Interface for classes which find pseudoknots from secondary structures. */
+@FunctionalInterface
 public interface PseudoknotFinder {
   /**
    * Find pairs in 'flat' BPSEQ information which are pseudoknots i.e. their removal will leave a
@@ -18,5 +19,5 @@ public interface PseudoknotFinder {
    *     which are non-pseudoknots.
    * @throws InvalidStructureException If recreation of BPSEQ fails.
    */
-  List<BpSeq> findPseudoknots(BpSeq bpSeq) throws InvalidStructureException;
+  List<BpSeq> findPseudoknots(BpSeq bpSeq);
 }

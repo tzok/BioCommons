@@ -1,11 +1,12 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbParsingException;
+
+import static org.hamcrest.Matchers.is;
 
 public class PdbHeaderLineTest {
   // @formatter:off
@@ -19,19 +20,19 @@ public class PdbHeaderLineTest {
       StringUtils.normalizeSpace(PdbHeaderLineTest.VALID_LINE);
 
   @Test
-  public final void testParseToString() throws PdbParsingException {
+  public final void testParseToString() {
     final PdbHeaderLine parsed = PdbHeaderLine.parse(PdbHeaderLineTest.VALID_LINE);
     final String parsedToString = parsed.toString();
-    assertEquals(PdbHeaderLineTest.VALID_LINE, parsedToString);
+    Assert.assertThat(parsedToString, is(PdbHeaderLineTest.VALID_LINE));
   }
 
   @Test(expected = PdbParsingException.class)
-  public final void testShortLine() throws PdbParsingException {
+  public final void testShortLine() {
     PdbHeaderLine.parse(PdbHeaderLineTest.TOO_SHORT_LINE);
   }
 
   @Test(expected = PdbParsingException.class)
-  public final void testMisalignedLine() throws PdbParsingException {
+  public final void testMisalignedLine() {
     PdbHeaderLine.parse(PdbHeaderLineTest.MISALIGNED_LINE);
   }
 }

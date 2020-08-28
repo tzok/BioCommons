@@ -1,7 +1,11 @@
 package pl.poznan.put.pdb;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class PdbExpdtaLine implements Serializable {
   private static final long serialVersionUID = 6276886553884351623L;
@@ -30,7 +34,7 @@ public class PdbExpdtaLine implements Serializable {
     return PdbExpdtaLine.EMPTY_INSTANCE;
   }
 
-  public static PdbExpdtaLine parse(final String line) throws PdbParsingException {
+  public static PdbExpdtaLine parse(final String line) {
     final String recordName = line.substring(0, 6).trim();
 
     if (!Objects.equals(PdbExpdtaLine.RECORD_NAME, recordName)) {

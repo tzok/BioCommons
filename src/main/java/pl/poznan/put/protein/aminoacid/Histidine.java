@@ -32,17 +32,13 @@ public final class Histidine extends ProteinSidechain {
         "HSD",
         "HSE",
         "HSP");
+    chiAtoms.put(ProteinChiType.CHI1, Chi1.HISTIDINE_ATOMS);
+    chiAtoms.put(ProteinChiType.CHI2, Chi2.HISTIDINE_ATOMS);
     torsionAngleTypes.add(Chi1.getInstance(getChiAtoms(ProteinChiType.CHI1)));
     torsionAngleTypes.add(Chi2.getInstance(getChiAtoms(ProteinChiType.CHI2)));
   }
 
   public static Histidine getInstance() {
     return Histidine.INSTANCE;
-  }
-
-  @Override
-  protected void fillChiAtomsMap() {
-    chiAtoms.put(ProteinChiType.CHI1, Chi1.HISTIDINE_ATOMS);
-    chiAtoms.put(ProteinChiType.CHI2, Chi2.HISTIDINE_ATOMS);
   }
 }
