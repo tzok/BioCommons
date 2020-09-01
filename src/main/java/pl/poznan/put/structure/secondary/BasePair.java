@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public class BasePair implements Serializable, Comparable<BasePair> {
-  private static final long serialVersionUID = -8951633864787036880L;
   private static final double GU_DISTANCE_O6_N3 = 2.83 + (0.13 * 3.0);
   private static final double GU_DISTANCE_N1_O2 = 2.79 + (0.13 * 3.0);
   private static final double AU_DISTANCE_N6_O4 = 3.00 + (0.17 * 3.0);

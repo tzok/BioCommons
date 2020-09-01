@@ -140,7 +140,7 @@ public class PdbParser implements StructureParser {
   private void handleAtomLine(final String line) {
     try {
       final PdbAtomLine atomLine = PdbAtomLine.parse(line, strictMode);
-      final PdbResidueIdentifier identifier = atomLine.getResidueIdentifier();
+      final PdbResidueIdentifier identifier = atomLine.toResidueIdentifer();
 
       if (processedIdentifiers.contains(identifier)) {
         PdbParser.LOGGER.warn("Duplicate residue, ignoring it: {}", identifier);

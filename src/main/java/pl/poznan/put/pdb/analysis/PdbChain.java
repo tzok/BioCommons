@@ -11,8 +11,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class PdbChain implements Comparable<PdbChain>, Serializable {
-  private static final long serialVersionUID = -954932883855490919L;
-
   private final String identifier;
   private final List<PdbResidue> residues;
   private final MoleculeType moleculeType;

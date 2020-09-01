@@ -7,7 +7,6 @@ import java.util.Objects;
 public class PdbRemark2Line implements Serializable {
   public static final String PROLOGUE =
       "REMARK   2                                                      " + "                ";
-  private static final long serialVersionUID = -4818750947185900609L;
   // @formatter:off
   // COLUMNS        DATA TYPE     FIELD          DEFINITION
   // --------------------------------------------------------------------------------

@@ -26,7 +26,7 @@ public class SimpleResidueCollection implements ResidueCollection {
   @Override
   public final PdbResidue findResidue(final PdbResidueIdentifier query) {
     for (final PdbResidue residue : residues) {
-      if (query.equals(residue.getResidueIdentifier())) {
+      if (query.equals(residue.toResidueIdentifer())) {
         return residue;
       }
     }

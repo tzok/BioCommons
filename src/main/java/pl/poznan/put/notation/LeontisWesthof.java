@@ -1,11 +1,13 @@
 package pl.poznan.put.notation;
 
-import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 
-@Getter
+/**
+ * A classification of RNA base pairs described in: Geometric Nomenclature and Classification of RNA
+ * Base Pairs. N.B. Leontis, E. Westhof. RNA. 2001. 7(4):499–512. doi:10.1017/S1355838201002515
+ */
 public enum LeontisWesthof {
   CWW(Stericity.CIS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.WATSON_CRICK),
   CWH(Stericity.CIS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.HOOGSTEEN),
@@ -38,6 +40,13 @@ public enum LeontisWesthof {
     this.edge3 = edge3;
   }
 
+  /**
+   * Find a constant that matches a given name in case-insensitive manner or return UNKNOWN
+   * otherwise. For example, cww is the same as cWW.
+   *
+   * @param input A string representing LW notation.
+   * @return An instance of this class that matches the given name or UNKNONW if none does.
+   */
   public static LeontisWesthof fromString(final CharSequence input) {
     return Arrays.stream(LeontisWesthof.values())
         .filter(leontisWesthof -> StringUtils.equalsIgnoreCase(leontisWesthof.name(), input))
@@ -145,7 +154,7 @@ public enum LeontisWesthof {
 
   /**
    * Generates a three letter representation. "c" for cis, "t" for trans. Next, "W" for
-   * Watson-Crick, "H" for Hoogsteen and "S" for sugar.
+   * Watson-Crick, "H" for Hoogsteen and "S" for sugar. This method returns "n/a" for UNKNOWN.
    *
    * @return A three letter representation.
    */
@@ -159,6 +168,12 @@ public enum LeontisWesthof {
     return new String(chars);
   }
 
+  /**
+   * Generates a full name representation. It consists of words "cis" or "trans", then
+   * "Watson-Crick", "Hoogsteen" or "Sugar". This method returns "n/a" for UNKNOWN.
+   *
+   * @return A long representation.
+   */
   public String getFullName() {
     if (this == LeontisWesthof.UNKNOWN) {
       return "n/a";
@@ -187,5 +202,20 @@ public enum LeontisWesthof {
     chars[1] = chars[2];
     chars[2] = tmp;
     return LeontisWesthof.fromString(new String(chars));
+  }
+
+  /** @return Stericity i.e. cis, trans or unknown. */
+  public Stericity getStericity() {
+    return stericity;
+  }
+
+  /** @return Edge of the 5' partner i.e. Watson-Crick, Hoogsteen, sugar or unknown. */
+  public NucleobaseEdge getEdge5() {
+    return edge5;
+  }
+
+  /** @return Edge of the 3' partner i.e. Watson-Crick, Hoogsteen, sugar or unknown. */
+  public NucleobaseEdge getEdge3() {
+    return edge3;
   }
 }

@@ -161,18 +161,18 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
 
     private boolean isValid() {
       // skip check if any of the residues has icode
-      if (StringUtils.isNotBlank(leftResidue.getInsertionCode())
-          || StringUtils.isNotBlank(rightResidue.getInsertionCode())) {
+      if (StringUtils.isNotBlank(leftResidue.insertionCode())
+          || StringUtils.isNotBlank(rightResidue.insertionCode())) {
         return true;
       }
 
       // skip check if residues are in different chains
-      if (!leftResidue.getChainIdentifier().equals(rightResidue.getChainIdentifier())) {
+      if (!leftResidue.chainIdentifier().equals(rightResidue.chainIdentifier())) {
         return true;
       }
 
       // skip check if residues are not consecutive
-      if (Math.abs(leftResidue.getResidueNumber() - rightResidue.getResidueNumber()) > 1) {
+      if (Math.abs(leftResidue.residueNumber() - rightResidue.residueNumber()) > 1) {
         return true;
       }
 
@@ -188,9 +188,9 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
         return String.format(
             Locale.US,
             "%s-%s distance in %s is %.2f but should be in range [%.2f; %.2f]",
-            leftAtom.getAtomName(),
-            rightAtom.getAtomName(),
-            leftResidue.getResidueIdentifier(),
+            leftAtom.atomName(),
+            rightAtom.atomName(),
+            leftResidue.toResidueIdentifer(),
             distance,
             bondLength.min(),
             bondLength.max());
@@ -199,10 +199,10 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
       return String.format(
           Locale.US,
           "%s-%s distance between %s and %s is %.2f but should be in range [%.2f; %.2f]",
-          leftAtom.getAtomName(),
-          rightAtom.getAtomName(),
-          leftResidue.getResidueIdentifier(),
-          rightResidue.getResidueIdentifier(),
+          leftAtom.atomName(),
+          rightAtom.atomName(),
+          leftResidue.toResidueIdentifer(),
+          rightResidue.toResidueIdentifer(),
           distance,
           bondLength.min(),
           bondLength.max());
@@ -210,7 +210,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
 
     @Override
     public int compareTo(final AtomBasedTorsionAngleType.AtomPair t) {
-      return Integer.compare(leftAtom.getSerialNumber(), t.leftAtom.getSerialNumber());
+      return Integer.compare(leftAtom.serialNumber(), t.leftAtom.serialNumber());
     }
   }
 }

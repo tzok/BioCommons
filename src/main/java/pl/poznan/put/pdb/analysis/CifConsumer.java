@@ -50,6 +50,7 @@ import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.ExperimentalTechnique;
+import pl.poznan.put.pdb.ImmutablePdbAtomLine;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbExpdtaLine;
 import pl.poznan.put.pdb.PdbHeaderLine;
@@ -185,7 +186,7 @@ class CifConsumer implements MMcifConsumer {
       }
 
       final PdbAtomLine atomLine =
-          new PdbAtomLine(
+          ImmutablePdbAtomLine.of(
               serialNumber,
               atomName,
               alternateLocation,

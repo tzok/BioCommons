@@ -27,13 +27,20 @@ public enum ExperimentalTechnique {
     this.pdbName = pdbName;
   }
 
-  public static ExperimentalTechnique fromFullName(final String fullName) {
+  /**
+   * Find a matching instance of this enum in case-insensitive manner.
+   *
+   * @param pdbName A string representation of an experimental technique.
+   * @return An instance of this class that matches {@code fullName} or UNKNOWN if none does.
+   */
+  public static ExperimentalTechnique fromFullName(final String pdbName) {
     return Arrays.stream(ExperimentalTechnique.values())
-        .filter(technique -> technique.pdbName.equalsIgnoreCase(fullName))
+        .filter(technique -> technique.pdbName.equalsIgnoreCase(pdbName))
         .findFirst()
         .orElse(ExperimentalTechnique.UNKNOWN);
   }
 
+  /** @return The name as used in PDB files. */
   public String getPdbName() {
     return pdbName;
   }

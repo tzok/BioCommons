@@ -43,7 +43,7 @@ public class PdbCompactFragment implements ResidueCollection {
         values.add(value);
       }
 
-      mapResidueAngleValue.put(residue.getResidueIdentifier(), values);
+      mapResidueAngleValue.put(residue.toResidueIdentifer(), values);
     }
   }
 
@@ -75,7 +75,7 @@ public class PdbCompactFragment implements ResidueCollection {
     final Collection<? extends TorsionAngleType> angleTypes = masterType.getAngleTypes();
 
     for (final TorsionAngleValue angleValue :
-        mapResidueAngleValue.get(chainNumberICode.getResidueIdentifier())) {
+        mapResidueAngleValue.get(chainNumberICode.toResidueIdentifer())) {
       for (final TorsionAngleType angleType : angleTypes) {
         if (Objects.equals(angleType, angleValue.getAngleType())) {
           return angleValue;
@@ -101,7 +101,7 @@ public class PdbCompactFragment implements ResidueCollection {
   @Override
   public final PdbResidue findResidue(final PdbResidueIdentifier query) {
     for (final PdbResidue residue : residues) {
-      if (Objects.equals(query, residue.getResidueIdentifier())) {
+      if (Objects.equals(query, residue.toResidueIdentifer())) {
         return residue;
       }
     }

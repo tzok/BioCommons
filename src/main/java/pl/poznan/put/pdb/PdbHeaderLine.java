@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class PdbHeaderLine implements Serializable {
-  private static final long serialVersionUID = -2116748731208564528L;
 
   // @formatter:off
   /*

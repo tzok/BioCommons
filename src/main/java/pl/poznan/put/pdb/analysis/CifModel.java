@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class CifModel extends PdbModel {
-  private static final long serialVersionUID = 7057234621953328374L;
   private final List<QuantifiedBasePair> basePairs;
 
   public CifModel(

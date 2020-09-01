@@ -167,7 +167,7 @@ public class BpSeq implements Serializable {
     final Collection<Entry> entries = new ArrayList<>();
     for (int i = 0; i < residues.size(); i++) {
       final PdbResidue residue = residues.get(i);
-      if (!paired.contains(residue.getResidueIdentifier())) {
+      if (!paired.contains(residue.toResidueIdentifer())) {
         entries.add(new Entry(i + 1, 0, residue.getOneLetterName()));
       }
     }
@@ -274,8 +274,6 @@ public class BpSeq implements Serializable {
 
   @Data
   public static class Entry implements Comparable<Entry>, Serializable {
-    private static final long serialVersionUID = 9199473682103805007L;
-
     protected final int index;
     protected final int pair;
     protected final char seq;

@@ -47,11 +47,11 @@ public final class CanonicalStructureExtractor {
 
     for (int i = 0; i < residues.size(); i++) {
       final PdbResidue left = residues.get(i);
-      final PdbResidueIdentifier leftId = left.getResidueIdentifier();
+      final PdbResidueIdentifier leftId = left.toResidueIdentifer();
 
       for (int j = i + 2; j < residues.size(); j++) {
         final PdbResidue right = residues.get(j);
-        final PdbResidueIdentifier rightId = right.getResidueIdentifier();
+        final PdbResidueIdentifier rightId = right.toResidueIdentifer();
 
         if (BasePair.isCanonicalPair(left, right)) {
           final BasePair basePair = new BasePair(leftId, rightId);

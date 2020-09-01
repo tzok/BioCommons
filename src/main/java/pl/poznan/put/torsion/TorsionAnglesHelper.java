@@ -56,16 +56,16 @@ public final class TorsionAnglesHelper {
       return Angle.invalidInstance();
     }
 
-    final Vector3D v1 = new Vector3D(a1.getX(), a1.getY(), a1.getZ());
-    final Vector3D v2 = new Vector3D(a2.getX(), a2.getY(), a2.getZ());
-    final Vector3D v3 = new Vector3D(a3.getX(), a3.getY(), a3.getZ());
-    final Vector3D v4 = new Vector3D(a4.getX(), a4.getY(), a4.getZ());
+    final Vector3D v1 = new Vector3D(a1.x(), a1.y(), a1.z());
+    final Vector3D v2 = new Vector3D(a2.x(), a2.y(), a2.z());
+    final Vector3D v3 = new Vector3D(a3.x(), a3.y(), a3.z());
+    final Vector3D v4 = new Vector3D(a4.x(), a4.y(), a4.z());
     return Angle.torsionAngle(v1, v2, v3, v4);
   }
 
   public static Vector3D atomDistance(final PdbAtomLine a, final PdbAtomLine b) {
-    final Vector3D va = new Vector3D(a.getX(), a.getY(), a.getZ());
-    final Vector3D vb = new Vector3D(b.getX(), b.getY(), b.getZ());
+    final Vector3D va = new Vector3D(a.x(), a.y(), a.z());
+    final Vector3D vb = new Vector3D(b.x(), b.y(), b.z());
     return vb.subtract(va);
   }
 

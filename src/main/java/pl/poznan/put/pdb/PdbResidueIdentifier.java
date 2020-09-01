@@ -7,8 +7,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier>, Serializable {
-  private static final long serialVersionUID = -573135765487167710L;
-
   private static final PdbResidueIdentifier INVALID =
       new PdbResidueIdentifier("", Integer.MIN_VALUE, "");
 
@@ -27,9 +25,9 @@ public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier>, S
 
   public static PdbResidueIdentifier fromChainNumberICode(final ChainNumberICode chainNumberICode) {
     return new PdbResidueIdentifier(
-        chainNumberICode.getChainIdentifier(),
-        chainNumberICode.getResidueNumber(),
-        chainNumberICode.getInsertionCode());
+        chainNumberICode.chainIdentifier(),
+        chainNumberICode.residueNumber(),
+        chainNumberICode.insertionCode());
   }
 
   public static PdbResidueIdentifier invalid() {

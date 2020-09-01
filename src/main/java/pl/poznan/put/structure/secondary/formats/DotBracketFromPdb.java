@@ -23,8 +23,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbInterface {
-  private static final long serialVersionUID = -4415694977869681897L;
-
   private final Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue = new HashMap<>();
   private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<>();
 
@@ -107,7 +105,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     for (int i = 0; i < residues.size(); i++) {
       final DotBracketSymbol symbol = symbols.get(i);
       final PdbResidue residue = residues.get(i);
-      final PdbResidueIdentifier residueIdentifier = residue.getResidueIdentifier();
+      final PdbResidueIdentifier residueIdentifier = residue.toResidueIdentifer();
       symbolToResidue.put(symbol, residueIdentifier);
       residueToSymbol.put(residueIdentifier, symbol);
     }

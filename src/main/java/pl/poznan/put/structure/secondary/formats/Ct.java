@@ -130,14 +130,14 @@ public final class Ct implements Serializable {
 
     for (final BpSeq.Entry entry : entries) {
       final PdbResidue residue = residues.get(i);
-      final PdbChain chain = rna.findChainContainingResidue(residue.getResidueIdentifier());
+      final PdbChain chain = rna.findChainContainingResidue(residue.toResidueIdentifer());
       final List<PdbResidue> chainResidues = chain.getResidues();
 
       final int index = entry.getIndex();
       final int pair = entry.getPair();
       final int before = chainResidues.indexOf(residue);
       final int after = (before + 2) % (chainResidues.size() + 1);
-      final int original = residue.getResidueNumber();
+      final int original = residue.residueNumber();
       final char seq = entry.getSeq();
       final String comment = entry.getComment();
       ctEntries.add(new ExtendedEntry(index, pair, before, after, original, seq, comment));

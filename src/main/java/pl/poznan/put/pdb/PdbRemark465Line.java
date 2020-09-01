@@ -19,7 +19,6 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
           + "REMARK 465 IDENTIFIER; SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)                \n"
           + "REMARK 465                                                                      \n"
           + "REMARK 465   M RES C SSSEQI                                                     ";
-  private static final long serialVersionUID = -6551046160002695423L;
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbRemark465Line.class);
   // @formatter:on
   // @formatter:off
@@ -131,23 +130,18 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
   }
 
   @Override
-  public final String getChainIdentifier() {
+  public final String chainIdentifier() {
     return chainIdentifier;
   }
 
   @Override
-  public final int getResidueNumber() {
+  public final int residueNumber() {
     return residueNumber;
   }
 
   @Override
-  public final String getInsertionCode() {
+  public final String insertionCode() {
     return insertionCode;
-  }
-
-  @Override
-  public final PdbResidueIdentifier getResidueIdentifier() {
-    return new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
   }
 
   @Override

@@ -23,7 +23,7 @@ public class AtomNameTest {
         for (final PdbAtomLine atom : model.getAtoms()) {
           final AtomName atomName = atom.detectAtomName();
           assertThat(
-              String.format("Unknown atom: %s", atom.getAtomName()),
+              String.format("Unknown atom: %s", atom.atomName()),
               atomName,
               not(is(AtomName.UNKNOWN)));
         }

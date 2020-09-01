@@ -6,6 +6,7 @@ import org.apache.commons.collections4.bidimap.TreeBidiMap;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.poznan.put.pdb.ImmutablePdbAtomLine;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbExpdtaLine;
 import pl.poznan.put.pdb.PdbModresLine;
@@ -110,7 +111,7 @@ public final class CifConverter {
   private static boolean isConversionPossible(final PdbModel model) {
     for (final PdbChain chain : model.getChains()) {
       for (final PdbResidue residue : chain.getResidues()) {
-        if (residue.getResidueNumber() > CifConverter.MAX_RESIDUE_NUMBER) {
+        if (residue.residueNumber() > CifConverter.MAX_RESIDUE_NUMBER) {
           CifConverter.LOGGER.error(
               "Cannot continue. Chain {} has residue of index > 9999", chain.getIdentifier());
           return false;
@@ -281,14 +282,16 @@ public final class CifConverter {
     for (final PdbChain chain : rnaModel.getChains()) {
       if (allowedChains.contains(chain.getIdentifier())) {
         for (final PdbResidue residue : chain.getResidues()) {
-          for (PdbAtomLine atom : residue.getAtoms()) {
+          for (final PdbAtomLine atom : residue.getAtoms()) {
             final String chainIdentifier =
-                CifConverter.mapChain(chainMap, atom.getChainIdentifier());
-            atom = atom.replaceSerialNumber(serialNumber);
-            atom = atom.replaceChainIdentifier(chainIdentifier);
+                CifConverter.mapChain(chainMap, atom.chainIdentifier());
+            final ImmutablePdbAtomLine atomLine =
+                ((ImmutablePdbAtomLine) atom)
+                    .withSerialNumber(serialNumber)
+                    .withChainIdentifier(chainIdentifier);
             serialNumber =
                 (serialNumber < CifConverter.MAX_ATOM_SERIAL_NUMBER) ? (serialNumber + 1) : 1;
-            pdbBuilder.append(atom).append(System.lineSeparator());
+            pdbBuilder.append(atomLine).append(System.lineSeparator());
           }
         }
 
@@ -320,7 +323,7 @@ public final class CifConverter {
       pdbBuilder.append(PdbRemark465Line.PROLOGUE).append(System.lineSeparator());
 
       for (PdbRemark465Line missingResidue : missingResidues) {
-        String chainIdentifier = missingResidue.getChainIdentifier();
+        String chainIdentifier = missingResidue.chainIdentifier();
         final MoleculeType moleculeType = CifConverter.getChainType(firstModel, chainIdentifier);
         if (moleculeType == MoleculeType.RNA) {
           chainIdentifier = CifConverter.mapChain(chainMap, chainIdentifier);

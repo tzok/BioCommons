@@ -7,7 +7,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 public final class PdbTitleLine implements Serializable {
-  private static final long serialVersionUID = 6843804077423547537L;
   // @formatter:off
   /*
    *  COLUMNS       DATA  TYPE     FIELD             DEFINITION

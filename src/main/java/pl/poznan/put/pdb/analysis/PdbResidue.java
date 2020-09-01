@@ -12,6 +12,7 @@ import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.ResidueNumber;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ChainNumberICode;
+import pl.poznan.put.pdb.CifConstants;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.rna.Base;
@@ -159,22 +160,22 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
   }
 
   @Override
-  public final String getChainIdentifier() {
+  public final String chainIdentifier() {
     return identifier.getChainIdentifier();
   }
 
   @Override
-  public final int getResidueNumber() {
+  public final int residueNumber() {
     return identifier.getResidueNumber();
   }
 
   @Override
-  public final String getInsertionCode() {
+  public final String insertionCode() {
     return identifier.getInsertionCode();
   }
 
   @Override
-  public final PdbResidueIdentifier getResidueIdentifier() {
+  public final PdbResidueIdentifier toResidueIdentifer() {
     return identifier;
   }
 
@@ -266,7 +267,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
   public final String toCif() {
     return atoms.stream()
         .map(atom -> atom.toCif() + '\n')
-        .collect(Collectors.joining("", PdbAtomLine.CIF_LOOP + '\n', ""));
+        .collect(Collectors.joining("", CifConstants.CIF_LOOP + '\n', ""));
   }
 
   public final ResidueInformationProvider getResidueInformationProvider() {

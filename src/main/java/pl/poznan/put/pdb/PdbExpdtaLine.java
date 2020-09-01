@@ -8,8 +8,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class PdbExpdtaLine implements Serializable {
-  private static final long serialVersionUID = 6276886553884351623L;
-
   // @formatter:off
   //  COLUMNS       DATA TYPE      FIELD         DEFINITION
   //  ------------------------------------------------------------------------------------

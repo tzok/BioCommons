@@ -8,7 +8,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class PdbModresLine implements ChainNumberICode, Serializable {
-  private static final long serialVersionUID = 1679492136825436435L;
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbModresLine.class);
 
   // @formatter:off
@@ -98,23 +97,18 @@ public class PdbModresLine implements ChainNumberICode, Serializable {
   }
 
   @Override
-  public final String getChainIdentifier() {
+  public final String chainIdentifier() {
     return chainIdentifier;
   }
 
   @Override
-  public final int getResidueNumber() {
+  public final int residueNumber() {
     return residueNumber;
   }
 
   @Override
-  public final String getInsertionCode() {
+  public final String insertionCode() {
     return insertionCode;
-  }
-
-  @Override
-  public final PdbResidueIdentifier getResidueIdentifier() {
-    return new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
   }
 
   public final String getStandardResidueName() {

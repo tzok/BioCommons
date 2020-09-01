@@ -18,8 +18,6 @@ import java.util.regex.Pattern;
  * @author tzok
  */
 public class Angle extends Circular {
-  private static final long serialVersionUID = 7888250116422842913L;
-
   private static final Angle INVALID = new Angle(Double.NaN, ValueType.RADIANS);
   private static final Pattern DOT = Pattern.compile("[.]");
   private static final int MINUTES_IN_DAY = 24 * 60;
