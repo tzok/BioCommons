@@ -1,2 +1,2 @@
-/** Main package containing fundamental classes for this project. */
+/** Classes to deal with angular data and circular statistics. */
 package pl.poznan.put.circular;

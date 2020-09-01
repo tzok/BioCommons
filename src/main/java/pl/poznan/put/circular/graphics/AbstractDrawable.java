@@ -9,6 +9,7 @@ import pl.poznan.put.utility.svg.SVGHelper;
 import java.awt.geom.Rectangle2D;
 import java.util.Locale;
 
+@Deprecated
 public abstract class AbstractDrawable implements Drawable {
   private final SVGDocument svgDocument = SVGHelper.emptyDocument();
   final SVGGraphics2D svgGraphics = new SVGGraphics2D(svgDocument);

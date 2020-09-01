@@ -10,21 +10,28 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/** Angular histogram collecting observations in bins of specified width. */
 public class Histogram {
   private final Collection<Bin> bins = new ArrayList<>();
   private final double binWidth;
   private final double dataSize;
 
+  /**
+   * Create an instance of histogram with the given data and specified width of bins.
+   *
+   * @param data A collection of circular data.
+   * @param binWidth Bin width in range [0, pi).
+   */
   public Histogram(final Collection<? extends Circular> data, final double binWidth) {
     super();
     this.binWidth = binWidth;
-    dataSize = data.size();
+    dataSize = (double) data.size();
 
-    if ((binWidth < 0) || (binWidth >= FastMath.PI)) {
-      throw new InvalidCircularValueException("A bins bin size must be in range [0..180)");
+    if ((binWidth < 0.0) || (binWidth >= FastMath.PI)) {
+      throw new InvalidCircularValueException("A bin size must be in range [0..180)");
     }
 
-    for (double radiansStart = 0; radiansStart < MathUtils.TWO_PI; radiansStart += binWidth) {
+    for (double radiansStart = 0.0; radiansStart < MathUtils.TWO_PI; radiansStart += binWidth) {
       final List<Circular> binData = new ArrayList<>();
 
       for (final Circular circular : data) {
@@ -38,11 +45,13 @@ public class Histogram {
     }
   }
 
-  public final int getBinSize(final double radiansStart) {
-    return getBin(radiansStart).size();
-  }
-
-  private Collection<Circular> getBin(final double radiansStart) {
+  /**
+   * Find bin which starts at a given point.
+   *
+   * @param radiansStart Value in radians which describes bin starting point (precision 1.0e-3).
+   * @return A collection of circular values in the found bin.
+   */
+  public final Collection<Circular> getBin(final double radiansStart) {
     return bins.stream()
         .filter(bin -> Precision.equals(bin.radiansStart(), radiansStart, 1.0e-3))
         .findFirst()
@@ -50,10 +59,15 @@ public class Histogram {
         .orElse(Collections.emptyList());
   }
 
+  /**
+   * Find the largest bin and calculate its relative size.
+   *
+   * @return Value in range [0; 1] describing relative size of the largest bin.
+   */
   public final double getMaxFrequency() {
     double maxFrequency = Double.NEGATIVE_INFINITY;
-    for (double d = 0; d < MathUtils.TWO_PI; d += binWidth) {
-      final double frequency = getBinSize(d) / dataSize;
+    for (double d = 0.0; d < MathUtils.TWO_PI; d += binWidth) {
+      final double frequency = (double) getBin(d).size() / dataSize;
       maxFrequency = FastMath.max(frequency, maxFrequency);
     }
     return maxFrequency;

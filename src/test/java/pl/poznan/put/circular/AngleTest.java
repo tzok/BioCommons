@@ -61,6 +61,11 @@ public class AngleTest {
             AngleTest.isBelowEpsilon(
                 Angle.subtractAsVectors(ri, rj) - Angle.subtractByMinimum(ri, rj)),
             is(true));
+        assertThat(
+            String.format("Difference in subtraction for: %d and %d", i, j),
+            AngleTest.isBelowEpsilon(
+                Angle.subtractByAbsolutes(ri, rj) - Angle.subtractByMinimum(ri, rj)),
+            is(true));
       }
     }
   }

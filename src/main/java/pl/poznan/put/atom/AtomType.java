@@ -1,5 +1,6 @@
 package pl.poznan.put.atom;
 
+/** Enumeration of all atom types to be found in PDB and mmCIF files. */
 public enum AtomType {
   C(true),
   H(false),
@@ -9,13 +10,18 @@ public enum AtomType {
   S(true),
   OTHER(true);
 
-  private final boolean isHeavy;
+  private final boolean heavy;
 
   AtomType(final boolean isHeavy) {
-    this.isHeavy = isHeavy;
+    this.heavy = isHeavy;
   }
 
+  /**
+   * Check if this atom is heavy i.e. not a hydrogen.
+   *
+   * @return True if this atom type represents something else than a hydrogen.
+   */
   public boolean isHeavy() {
-    return isHeavy;
+    return heavy;
   }
 }

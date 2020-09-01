@@ -9,6 +9,7 @@ import pl.poznan.put.circular.enums.AngleTransformation;
 
 import java.util.Collection;
 
+@Deprecated
 public class AngularHistogram extends RawDataPlot {
   private final double binRadians;
   private double scalingFactor = 1.0;
@@ -48,7 +49,7 @@ public class AngularHistogram extends RawDataPlot {
     double maxFrequency = Double.NEGATIVE_INFINITY;
 
     for (double d = 0; d < MathUtils.TWO_PI; d += binRadians) {
-      final double frequency = (double) histogram.getBinSize(d) / getData().size();
+      final double frequency = (double) histogram.getBin(d).size() / getData().size();
       maxFrequency = FastMath.max(frequency, maxFrequency);
     }
 
@@ -57,7 +58,7 @@ public class AngularHistogram extends RawDataPlot {
     scalingFactor = 0.8 / FastMath.sqrt(maxFrequency);
 
     for (double d = 0; d < MathUtils.TWO_PI; d += binRadians) {
-      final double frequency = (double) histogram.getBinSize(d) / getData().size();
+      final double frequency = (double) histogram.getBin(d).size() / getData().size();
       if (frequency > 0) {
         drawHistogramTriangle(d, frequency);
       }

@@ -1,5 +1,7 @@
 package pl.poznan.put.circular;
 
+import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
@@ -24,6 +26,47 @@ public class Angle extends Circular {
 
   public Angle(final double value, final ValueType valueType) {
     super(value, valueType);
+  }
+
+  public static void main(final String[] args) {
+    for (int count = 100000; count < 1000000; count += 100000) {
+      final double xs[] = new double[count];
+      final double ys[] = new double[count];
+
+      for (int i = 0; i < count; i++) {
+        xs[i] = RandomUtils.nextDouble(0, 2 * FastMath.PI);
+        ys[i] = RandomUtils.nextDouble(0, 2 * FastMath.PI);
+      }
+
+      System.out.println("Count: " + count);
+
+      final StopWatch stopWatch = new StopWatch();
+      stopWatch.start();
+      for (int i = 0; i < count; i++) {
+        Angle.subtractByMinimum(xs[i], ys[i]);
+        Angle.subtractByMinimum(ys[i], xs[i]);
+      }
+      stopWatch.stop();
+      System.out.println("Angle.subtractByMinimum(x,y):   " + stopWatch);
+
+      stopWatch.reset();
+      stopWatch.start();
+      for (int i = 0; i < count; i++) {
+        Angle.subtractByAbsolutes(xs[i], ys[i]);
+        Angle.subtractByAbsolutes(ys[i], xs[i]);
+      }
+      stopWatch.stop();
+      System.out.println("Angle.subtractByAbsolutes(x,y): " + stopWatch);
+
+      stopWatch.reset();
+      stopWatch.start();
+      for (int i = 0; i < count; i++) {
+        Angle.subtractAsVectors(xs[i], ys[i]);
+        Angle.subtractAsVectors(ys[i], xs[i]);
+      }
+      stopWatch.stop();
+      System.out.println("Angle.subtractAsVectors(x,y):   " + stopWatch);
+    }
   }
 
   public static Angle invalidInstance() {
@@ -89,23 +132,42 @@ public class Angle extends Circular {
       final int hours = Integer.parseInt(split[0]);
       int minutes = Integer.parseInt(split[1]);
       minutes += hours * 60;
-      return new Angle((MathUtils.TWO_PI * minutes) / Angle.MINUTES_IN_DAY, ValueType.RADIANS);
+      return new Angle(
+          (MathUtils.TWO_PI * (double) minutes) / (double) Angle.MINUTES_IN_DAY, ValueType.RADIANS);
     } catch (final NumberFormatException e) {
       throw new InvalidVectorFormatException(
           "Required format is HH.MM eg. 02.40. The input given was: " + hourMinute, e);
     }
   }
 
+  /**
+   * Calculate angles' difference using formula min(|left - right|, 360 - |left - right|).
+   *
+   * @param left Minuend in radians.
+   * @param right Subtrahend in radians.
+   * @return The result of minuend - subtrahend in angular space.
+   */
   public static double subtractByMinimum(final double left, final double right) {
     final double d = FastMath.abs(left - right);
     return FastMath.min(d, MathUtils.TWO_PI - d);
   }
 
   /**
+   * Calculate angles' difference using formula: pi - |pi - |left - right||.
+   *
+   * @param left Minuend in radians.
+   * @param right Subtrahend in radians.
+   * @return The result of minuend - subtrahend in angular space.
+   */
+  public static double subtractByAbsolutes(final double left, final double right) {
+    return FastMath.PI - FastMath.abs(FastMath.PI - FastMath.abs(left - right));
+  }
+
+  /**
    * Calculate angles' difference using formula acos(dot(left, right)).
    *
-   * @param left Minuend.
-   * @param right Subtrahend.
+   * @param left Minuend in radians.
+   * @param right Subtrahend in radians.
    * @return The result of minuend - subtrahend in angular space.
    */
   public static double subtractAsVectors(final double left, final double right) {
@@ -125,21 +187,34 @@ public class Angle extends Circular {
    * @return true if object is between [begin; end)
    */
   public final boolean isBetween(final Angle begin, final Angle end) {
-    final double degrees360 = getDegrees360();
-    final double begin360 = begin.getDegrees360();
-    final double end360 = end.getDegrees360();
+    final double radians2PI = getRadians2PI();
+    final double begin2PI = begin.getRadians2PI();
+    final double end2PI = end.getRadians2PI();
 
-    return (begin360 < end360)
-        ? ((degrees360 >= begin360) && (degrees360 < end360))
-        : ((degrees360 >= begin360) || (degrees360 < end360));
+    return (begin2PI < end2PI)
+        ? ((radians2PI >= begin2PI) && (radians2PI < end2PI))
+        : ((radians2PI >= begin2PI) || (radians2PI < end2PI));
   }
 
+  /**
+   * Multiply the angular value by a constant.
+   *
+   * @param v Multiplier.
+   * @return Angular value multiplied.
+   */
   public final Angle multiply(final double v) {
-    return new Angle((getRadians() * v) % MathUtils.TWO_PI, ValueType.RADIANS);
+    return new Angle((getRadians() * v), ValueType.RADIANS);
   }
 
+  /**
+   * Subtract another angular value from this.
+   *
+   * @param other Another angular value.
+   * @return Result of this - other in angular space.
+   */
   public final Angle subtract(final Angle other) {
-    return new Angle(Angle.subtractByMinimum(getRadians(), other.getRadians()), ValueType.RADIANS);
+    return new Angle(
+        Angle.subtractByAbsolutes(getRadians(), other.getRadians()), ValueType.RADIANS);
   }
 
   /**
@@ -158,5 +233,15 @@ public class Angle extends Circular {
       d -= MathUtils.TWO_PI;
     }
     return new Angle(d, ValueType.RADIANS);
+  }
+
+  /**
+   * Compute a useful distance in range [0; 2] between two angular values.
+   *
+   * @param other The other angle.
+   * @return Value in range [0; 2] denoting distance between two angles.
+   */
+  public final double distance(final Angle other) {
+    return 1 - FastMath.cos(getRadians() - other.getRadians());
   }
 }

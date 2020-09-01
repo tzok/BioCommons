@@ -12,6 +12,7 @@ import java.awt.font.LineMetrics;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Deprecated
 public class LinearHistogram extends AbstractDrawable {
   private final Collection<Circular> data;
   private final double binRadians;
@@ -42,8 +43,8 @@ public class LinearHistogram extends AbstractDrawable {
     int maxFrequency = Integer.MIN_VALUE;
     int i = 0;
 
-    for (double d = 0; d < MathUtils.TWO_PI; d += binRadians, i += 1) {
-      final int frequency = histogram.getBinSize(d);
+    for (double d = 0.0; d < MathUtils.TWO_PI; d += binRadians, i += 1) {
+      final int frequency = histogram.getBin(d).size();
       final int height = frequency * drawingUnitSize;
       svgGraphics.drawRect(i * drawingUnitSize, -height, drawingUnitSize, height);
 

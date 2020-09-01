@@ -10,26 +10,34 @@ import pl.poznan.put.utility.NumberFormatUtils;
 
 import java.io.Serializable;
 
+/**
+ * An abstract class representing any circular value. Check {@link Angle} and {@link Axis} to see
+ * specific subclasses.
+ */
 public abstract class Circular implements Comparable<Circular>, Serializable {
   private final double radians;
 
   Circular(final double value, final ValueType valueType) {
     super();
-    radians = valueType.toRadians(value);
+    radians = valueType.toRadians(value) % MathUtils.TWO_PI;
   }
 
+  /** @return Value in radians in range [-pi; pi). */
   public final double getRadians() {
     return radians;
   }
 
+  /** @return Value in degrees in range [-180; 180). */
   public final double getDegrees() {
     return FastMath.toDegrees(radians);
   }
 
+  /** @return Value in degrees in range [0; 360). */
   public final double getDegrees360() {
     return FastMath.toDegrees(getRadians2PI());
   }
 
+  /** @return Value in radians in range [0; 2pi). */
   public final double getRadians2PI() {
     return (radians < 0.0) ? (radians + MathUtils.TWO_PI) : radians;
   }
@@ -45,6 +53,7 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
     return "invalid";
   }
 
+  /** @return True if value is not NaN. */
   public final boolean isValid() {
     return !Double.isNaN(radians);
   }
@@ -61,7 +70,7 @@ public abstract class Circular implements Comparable<Circular>, Serializable {
     if (!(o instanceof Circular)) return false;
 
     final Circular circular = (Circular) o;
-    return Precision.equals(0.0, Angle.subtractByMinimum(radians, circular.radians), 1.0e-3);
+    return Precision.equals(0.0, Angle.subtractByAbsolutes(radians, circular.radians), 1.0e-3);
   }
 
   @Override

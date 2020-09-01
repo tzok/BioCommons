@@ -9,6 +9,10 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.enums.ValueType;
 
+/**
+ * A class containg utility functions on the edge between cartesian and trigonometric
+ * representations.
+ */
 public final class CartesianUtilities {
   private CartesianUtilities() {
     super();
@@ -42,6 +46,18 @@ public final class CartesianUtilities {
     System.out.println("Torsion:  " + Angle.torsionAngle(coordA, coordB, coordC, actualCoordD));
   }
 
+  /**
+   * Compute position of atom D, if you know positions of A, B and C, and the length of bond B-C,
+   * and and the angle B-C-D and the torsion angle A-B-C-D.
+   *
+   * @param coordA Coordinates of atom A.
+   * @param coordB Coordinates of atom B.
+   * @param coordC Coordinates of atom C.
+   * @param lengthCD Length of bond C-D.
+   * @param angleBCD Angle between atoms B-C-D.
+   * @param torsionABCD Torsion angle between atoms A-B-C-D.
+   * @return Coordinate of atom D.
+   */
   public static Vector3D nextPlacement(
       final Vector3D coordA,
       final Vector3D coordB,

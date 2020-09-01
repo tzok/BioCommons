@@ -16,6 +16,6 @@ public class ProteinBondRule implements ResidueBondRule {
 
     final PdbAtomLine c = r1.findAtom(AtomName.C);
     final PdbAtomLine n = r2.findAtom(AtomName.N);
-    return c.distanceTo(n) <= (Bond.length(AtomType.C, AtomType.N).getMax() * 1.5);
+    return c.distanceTo(n) <= (Bond.length(AtomType.C, AtomType.N).max() * 1.5);
   }
 }

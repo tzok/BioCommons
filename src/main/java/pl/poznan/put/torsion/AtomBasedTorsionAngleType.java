@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.Bond;
+import pl.poznan.put.atom.BondLength;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
@@ -115,7 +116,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     private final PdbAtomLine rightAtom;
 
     private final double distance;
-    private final Bond.Length bondLength;
+    private final BondLength bondLength;
 
     private AtomPair(
         final PdbResidue leftResidue,
@@ -175,7 +176,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
         return true;
       }
 
-      return distance <= bondLength.getMax() * 1.5;
+      return distance <= bondLength.max() * 1.5;
     }
 
     public String generateValidationMessage() {
@@ -191,8 +192,8 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
             rightAtom.getAtomName(),
             leftResidue.getResidueIdentifier(),
             distance,
-            bondLength.getMin(),
-            bondLength.getMax());
+            bondLength.min(),
+            bondLength.max());
       }
 
       return String.format(
@@ -203,8 +204,8 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
           leftResidue.getResidueIdentifier(),
           rightResidue.getResidueIdentifier(),
           distance,
-          bondLength.getMin(),
-          bondLength.getMax());
+          bondLength.min(),
+          bondLength.max());
     }
 
     @Override

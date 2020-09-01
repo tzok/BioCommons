@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+@Deprecated
 public class RawDataPlot extends AbstractDrawable {
   private final Collection<? extends Circular> data;
   private final double diameter;
