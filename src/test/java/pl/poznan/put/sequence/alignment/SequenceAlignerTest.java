@@ -40,8 +40,8 @@ public class SequenceAlignerTest {
     assertThat(!models1EHZ.isEmpty(), is(true));
     assertThat(!models2MIY.isEmpty(), is(true));
 
-    fragment1EHZ = new PdbCompactFragment("1EHZ", models1EHZ.get(0).getResidues());
-    fragment2MIY = new PdbCompactFragment("2MIY", models2MIY.get(0).getResidues());
+    fragment1EHZ = new PdbCompactFragment("1EHZ", models1EHZ.get(0).residues());
+    fragment2MIY = new PdbCompactFragment("2MIY", models2MIY.get(0).residues());
   }
 
   @Test

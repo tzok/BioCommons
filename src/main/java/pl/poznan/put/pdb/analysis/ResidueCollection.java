@@ -1,22 +1,25 @@
 package pl.poznan.put.pdb.analysis;
 
 import org.apache.commons.lang3.StringUtils;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.ChainNumberICode;
+import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.rna.torsion.Chi;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.PseudoTorsionAngleType;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@FunctionalInterface
 public interface ResidueCollection {
   default List<String> findBondLengthViolations() {
     final Set<AtomBasedTorsionAngleType> angleTypes =
-        getResidues().stream()
+        residues().stream()
             .map(PdbResidue::getTorsionAngleTypes)
             .flatMap(Collection::stream)
             .filter(torsionAngleType -> torsionAngleType instanceof AtomBasedTorsionAngleType)
@@ -26,12 +29,12 @@ public interface ResidueCollection {
             .collect(Collectors.toSet());
 
     final Set<AtomBasedTorsionAngleType.AtomPair> atomPairs =
-        IntStream.range(0, getResidues().size())
+        IntStream.range(0, residues().size())
             .boxed()
             .flatMap(
                 i ->
                     angleTypes.stream()
-                        .map(angleType -> angleType.findAtomPairs(getResidues(), i))
+                        .map(angleType -> angleType.findAtomPairs(residues(), i))
                         .flatMap(Collection::stream))
             .collect(Collectors.toCollection(TreeSet::new));
 
@@ -41,9 +44,20 @@ public interface ResidueCollection {
         .collect(Collectors.toList());
   }
 
-  List<PdbResidue> getResidues();
+  List<PdbResidue> residues();
 
-  PdbResidue findResidue(String chainIdentifier, int residueNumber, String insertionCode);
+  default PdbResidue findResidue(
+      final String chainIdentifier, final int residueNumber, final String insertionCode) {
+    return findResidue(
+        ImmutablePdbResidueIdentifier.of(chainIdentifier, residueNumber, insertionCode));
+  }
 
-  PdbResidue findResidue(PdbResidueIdentifier query);
+  default PdbResidue findResidue(final ChainNumberICode query) {
+    for (final PdbResidue residue : residues()) {
+      if (Objects.equals(query.toResidueIdentifer(), residue.toResidueIdentifer())) {
+        return residue;
+      }
+    }
+    throw new IllegalArgumentException("Failed to find residue: " + query);
+  }
 }

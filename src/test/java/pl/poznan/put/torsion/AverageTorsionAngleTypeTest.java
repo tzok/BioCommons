@@ -65,7 +65,7 @@ public class AverageTorsionAngleTypeTest {
     assertThat(models.size(), is(1));
 
     final PdbModel model = models.get(0);
-    final List<PdbResidue> residues = model.getResidues();
+    final List<PdbResidue> residues = model.residues();
     assertThat(residues.size(), is(76));
 
     final TorsionAngleValue alpha = Alpha.getInstance().calculate(residues, 1);

@@ -1,7 +1,7 @@
 package pl.poznan.put.structure.secondary.formats;
 
 import lombok.EqualsAndHashCode;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
@@ -14,12 +14,12 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketFromPdbInterface {
-  private final Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue = new HashMap<>();
-  private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<>();
+  private final Map<DotBracketSymbol, PdbNamedResidueIdentifier> symbolToResidue = new HashMap<>();
+  private final Map<PdbNamedResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<>();
 
   public CombinedStrandFromPdb(
       final Iterable<? extends Strand> strands,
-      final Map<DotBracketSymbol, ? extends PdbResidueIdentifier> symbolToResidue) {
+      final Map<DotBracketSymbol, ? extends PdbNamedResidueIdentifier> symbolToResidue) {
     super();
 
     final Map<DotBracketSymbol, Integer> symbolToIndex = new HashMap<>();
@@ -41,7 +41,7 @@ public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketF
         strandSymbols.add(renumbered);
         symbols.add(renumbered);
 
-        final PdbResidueIdentifier identifier = symbolToResidue.get(symbol);
+        final PdbNamedResidueIdentifier identifier = symbolToResidue.get(symbol);
         this.symbolToResidue.put(renumbered, identifier);
       }
       this.strands.add(new StrandDirect(strand.getName(), strandSymbols));
@@ -58,24 +58,24 @@ public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketF
       }
     }
 
-    for (final Map.Entry<DotBracketSymbol, PdbResidueIdentifier> entry :
+    for (final Map.Entry<DotBracketSymbol, PdbNamedResidueIdentifier> entry :
         this.symbolToResidue.entrySet()) {
       residueToSymbol.put(entry.getValue(), entry.getKey());
     }
   }
 
   @Override
-  public final PdbResidueIdentifier getResidueIdentifier(final DotBracketSymbol symbol) {
+  public final PdbNamedResidueIdentifier getResidueIdentifier(final DotBracketSymbol symbol) {
     return symbolToResidue.get(symbol);
   }
 
   @Override
-  public final DotBracketSymbol getSymbol(final PdbResidueIdentifier residueIdentifier) {
+  public final DotBracketSymbol getSymbol(final PdbNamedResidueIdentifier residueIdentifier) {
     return residueToSymbol.get(residueIdentifier);
   }
 
   @Override
-  public final boolean contains(final PdbResidueIdentifier residueIdentifier) {
+  public final boolean contains(final PdbNamedResidueIdentifier residueIdentifier) {
     return residueToSymbol.containsKey(residueIdentifier);
   }
 
@@ -87,10 +87,10 @@ public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketF
 
   @Override
   public final int getRealSymbolIndex(final DotBracketSymbol symbol) {
-    return symbolToResidue.get(symbol).getResidueNumber();
+    return symbolToResidue.get(symbol).residueNumber();
   }
 
-  public final Set<PdbResidueIdentifier> getResidueIdentifiers() {
+  public final Set<PdbNamedResidueIdentifier> getResidueIdentifiers() {
     return residueToSymbol.keySet();
   }
 }

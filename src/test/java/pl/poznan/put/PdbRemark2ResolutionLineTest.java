@@ -18,7 +18,7 @@ public class PdbRemark2ResolutionLineTest {
   public final void testParseXray() {
     final PdbRemark2Line parsed =
         PdbRemark2Line.parse(PdbRemark2ResolutionLineTest.VALID_XRAY_LINE);
-    assertThat(parsed.getResolution(), is(1.89));
+    assertThat(parsed.resolution(), is(1.89));
 
     final String parsedToString = parsed.toString();
     assertThat(parsedToString, is(PdbRemark2ResolutionLineTest.VALID_XRAY_LINE));
@@ -27,7 +27,7 @@ public class PdbRemark2ResolutionLineTest {
   @Test
   public final void testParseNmr() {
     final PdbRemark2Line parsed = PdbRemark2Line.parse(PdbRemark2ResolutionLineTest.VALID_NMR_LINE);
-    assertThat(Double.isNaN(parsed.getResolution()), is(true));
+    assertThat(Double.isNaN(parsed.resolution()), is(true));
 
     final String parsedToString = parsed.toString();
     assertThat(parsedToString, is(PdbRemark2ResolutionLineTest.VALID_NMR_LINE));

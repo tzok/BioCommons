@@ -1,7 +1,7 @@
 package pl.poznan.put.structure.secondary.formats;
 
 import lombok.EqualsAndHashCode;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.util.List;
@@ -70,9 +70,9 @@ public class StrandView extends AbstractStrand {
   public final String getDescription() {
     if (parent instanceof DotBracketFromPdb) {
       final DotBracketFromPdb fromPdb = (DotBracketFromPdb) parent;
-      final PdbResidueIdentifier fromIdentifier =
+      final PdbNamedResidueIdentifier fromIdentifier =
           fromPdb.getResidueIdentifier(fromPdb.getSymbol(from));
-      final PdbResidueIdentifier toIdentifier =
+      final PdbNamedResidueIdentifier toIdentifier =
           fromPdb.getResidueIdentifier(fromPdb.getSymbol(to - 1));
 
       return String.format(

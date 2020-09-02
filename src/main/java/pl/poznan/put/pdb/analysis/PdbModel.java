@@ -4,12 +4,17 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.CifConstants;
-import pl.poznan.put.pdb.ImmutablePdbAtomLine;
+import pl.poznan.put.pdb.ImmutablePdbExpdtaLine;
+import pl.poznan.put.pdb.ImmutablePdbHeaderLine;
+import pl.poznan.put.pdb.ImmutablePdbRemark2Line;
+import pl.poznan.put.pdb.ImmutablePdbRemark465Line;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbExpdtaLine;
 import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbModresLine;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
@@ -19,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,17 +46,17 @@ public class PdbModel implements Serializable, ResidueCollection {
   private final List<PdbChain> chains = new ArrayList<>();
   private final List<PdbResidue> residues = new ArrayList<>();
   private final Collection<PdbResidueIdentifier> missingResiduesIdentifiers = new HashSet<>();
-  private final Map<PdbResidueIdentifier, PdbModresLine> identifierToModification = new HashMap<>();
-  private final Map<PdbResidueIdentifier, PdbResidue> identifierToResidue = new HashMap<>();
-  private final Map<PdbResidueIdentifier, PdbChain> identifierToChain = new HashMap<>();
+  private final Map<ChainNumberICode, PdbModresLine> identifierToModification = new HashMap<>();
+  private final Map<ChainNumberICode, PdbResidue> identifierToResidue = new HashMap<>();
+  private final Map<ChainNumberICode, PdbChain> identifierToChain = new HashMap<>();
   @EqualsAndHashCode.Include private final List<PdbAtomLine> atoms;
   private final List<PdbRemark465Line> missingResidues;
 
   public PdbModel(final List<PdbAtomLine> atoms) {
     this(
-        PdbHeaderLine.emptyInstance(),
-        PdbExpdtaLine.emptyInstance(),
-        PdbRemark2Line.emptyInstance(),
+        ImmutablePdbHeaderLine.of("", new Date(0L), ""),
+        ImmutablePdbExpdtaLine.of(Collections.emptyList()),
+        ImmutablePdbRemark2Line.of(Double.NaN),
         1,
         atoms,
         Collections.emptyList(),
@@ -99,12 +105,10 @@ public class PdbModel implements Serializable, ResidueCollection {
     assert !atoms.isEmpty();
 
     List<PdbAtomLine> residueAtoms = new ArrayList<>();
-    PdbResidueIdentifier lastResidueIdentifier =
-        PdbResidueIdentifier.fromChainNumberICode(atoms.get(0));
+    PdbResidueIdentifier lastResidueIdentifier = atoms.get(0).toResidueIdentifer();
 
     for (final PdbAtomLine atom : atoms) {
-      final PdbResidueIdentifier residueIdentifier =
-          PdbResidueIdentifier.fromChainNumberICode(atom);
+      final PdbResidueIdentifier residueIdentifier = atom.toResidueIdentifer();
 
       if (!Objects.equals(residueIdentifier, lastResidueIdentifier)) {
         saveExistingResidueIfValid(residueAtoms, lastResidueIdentifier);
@@ -121,8 +125,8 @@ public class PdbModel implements Serializable, ResidueCollection {
       final List<PdbAtomLine> emptyAtomList = Collections.emptyList();
       final PdbResidue residue =
           new PdbResidue(
-              PdbResidueIdentifier.fromChainNumberICode(missingResidue),
-              missingResidue.getResidueName(),
+              missingResidue.toResidueIdentifer(),
+              missingResidue.residueName(),
               emptyAtomList,
               true);
 
@@ -247,7 +251,7 @@ public class PdbModel implements Serializable, ResidueCollection {
           "Failed to find information about modification of: " + residueIdentifier);
     }
 
-    return identifierToModification.get(residueIdentifier).getStandardResidueName();
+    return identifierToModification.get(residueIdentifier).standardResidueName();
   }
 
   public final PdbHeaderLine getHeaderLine() {
@@ -279,23 +283,8 @@ public class PdbModel implements Serializable, ResidueCollection {
   }
 
   @Override
-  public final List<PdbResidue> getResidues() {
+  public final List<PdbResidue> residues() {
     return Collections.unmodifiableList(residues);
-  }
-
-  @Override
-  public final PdbResidue findResidue(
-      final String chainIdentifier, final int residueNumber, final String insertionCode) {
-    return findResidue(new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode));
-  }
-
-  @Override
-  public final PdbResidue findResidue(final PdbResidueIdentifier query) {
-    if (!identifierToResidue.containsKey(query)) {
-      throw new IllegalArgumentException("Failed to find residue: " + query);
-    }
-
-    return identifierToResidue.get(query);
   }
 
   /**
@@ -305,7 +294,7 @@ public class PdbModel implements Serializable, ResidueCollection {
    * @param query A {@link PdbResidueIdentifier} identifying a single residue.
    * @return An index from 0 to the total number of residues in the structure.
    */
-  public final int indexOfResidue(final PdbResidueIdentifier query) {
+  public final int indexOfResidue(final ChainNumberICode query) {
     if (!identifierToResidue.containsKey(query)) {
       throw new IllegalArgumentException("Failed to find residue: " + query);
     }
@@ -317,10 +306,10 @@ public class PdbModel implements Serializable, ResidueCollection {
   }
 
   public final String getIdCode() {
-    return headerLine.getIdCode();
+    return headerLine.idCode();
   }
 
-  public final PdbChain findChainContainingResidue(final PdbResidueIdentifier residueIdentifier) {
+  public final PdbChain findChainContainingResidue(final ChainNumberICode residueIdentifier) {
     return identifierToChain.get(residueIdentifier);
   }
 
@@ -341,7 +330,7 @@ public class PdbModel implements Serializable, ResidueCollection {
 
         if (!resolved.contains(pair)) {
 
-          builder.append(((ImmutablePdbAtomLine) atom).withAlternateLocation(" ")).append('\n');
+          builder.append(atom.withAlternateLocation(" ")).append('\n');
           resolved.add(pair);
         }
       }
@@ -403,7 +392,7 @@ public class PdbModel implements Serializable, ResidueCollection {
         final int residueNumber = residue.residueNumber();
         final String insertionCode = residue.insertionCode();
         filteredMissing.add(
-            new PdbRemark465Line(
+            ImmutablePdbRemark465Line.of(
                 modelNumber, residueName, chainIdentifier, residueNumber, insertionCode));
       }
     }
@@ -413,5 +402,9 @@ public class PdbModel implements Serializable, ResidueCollection {
 
   public final List<PdbResidueIdentifier> residueIdentifiers() {
     return residues.stream().map(PdbResidue::toResidueIdentifer).collect(Collectors.toList());
+  }
+
+  public final List<PdbNamedResidueIdentifier> namedResidueIdentifiers() {
+    return residues.stream().map(PdbResidue::toNamedResidueIdentifer).collect(Collectors.toList());
   }
 }

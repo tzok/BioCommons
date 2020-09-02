@@ -27,10 +27,10 @@ public class CifParserTest {
     assertThat(chains.size(), is(2));
 
     final List<ExperimentalTechnique> experimentalTechniques =
-        model.getExperimentalDataLine().getExperimentalTechniques();
+        model.getExperimentalDataLine().experimentalTechniques();
     assertThat(experimentalTechniques.size(), is(1));
     assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
-    assertThat(model.getResolutionLine().getResolution(), is(1.9));
+    assertThat(model.getResolutionLine().resolution(), is(1.9));
   }
 
   @Test
@@ -49,10 +49,10 @@ public class CifParserTest {
     assertThat(residueS169.getModifiedResidueName(), is("LYS"));
 
     final List<ExperimentalTechnique> experimentalTechniques =
-        model.getExperimentalDataLine().getExperimentalTechniques();
+        model.getExperimentalDataLine().experimentalTechniques();
     assertThat(experimentalTechniques.size(), is(1));
     assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
-    assertThat(model.getResolutionLine().getResolution(), is(1.9));
+    assertThat(model.getResolutionLine().resolution(), is(1.9));
   }
 
   @Test
@@ -67,10 +67,10 @@ public class CifParserTest {
     assertThat(chains.size(), is(1));
 
     final List<ExperimentalTechnique> experimentalTechniques =
-        model.getExperimentalDataLine().getExperimentalTechniques();
+        model.getExperimentalDataLine().experimentalTechniques();
     assertThat(experimentalTechniques.size(), is(2));
     assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
     assertThat(experimentalTechniques.get(1), is(ExperimentalTechnique.NEUTRON_DIFFRACTION));
-    assertThat(model.getResolutionLine().getResolution(), is(2.2));
+    assertThat(model.getResolutionLine().resolution(), is(2.2));
   }
 }

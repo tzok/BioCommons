@@ -7,7 +7,6 @@ import org.biojava.nbio.structure.io.PDBFileParser;
 import org.junit.Test;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
@@ -54,7 +53,7 @@ public class PdbModelTest {
     final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
-    final List<PdbResidue> residues = model.getResidues();
+    final List<PdbResidue> residues = model.residues();
     assertThat(residues.size(), is(76));
   }
 
@@ -74,7 +73,7 @@ public class PdbModelTest {
     final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
-    final PdbResidue residue = model.findResidue(new PdbResidueIdentifier("A", 10, " "));
+    final PdbResidue residue = model.findResidue("A", 10, " ");
     assertThat(residue.getOriginalResidueName(), is("2MG"));
     assertThat(residue.getModifiedResidueName(), is("G"));
     assertThat(residue.getDetectedResidueName(), is("G"));
@@ -98,7 +97,7 @@ public class PdbModelTest {
     final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
-    final List<PdbResidue> residues = model.getResidues();
+    final List<PdbResidue> residues = model.residues();
 
     // for first residue expect a mismatch in atom count because it has an
     // unusual O3P terminal atom
@@ -156,7 +155,7 @@ public class PdbModelTest {
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
 
-    for (final PdbResidue residue : model.getResidues()) {
+    for (final PdbResidue residue : model.residues()) {
       if (!residue.wasSuccessfullyDetected()) {
         continue;
       }
@@ -299,7 +298,7 @@ public class PdbModelTest {
     assertThat(models.size(), is(1));
     final PdbModel model = models.get(0);
     final List<PdbChain> chains = model.getChains();
-    final List<PdbResidue> residues = model.getResidues();
+    final List<PdbResidue> residues = model.residues();
     final List<PdbAtomLine> atoms = model.getAtoms();
 
     assertThat(chains.size(), is(1));
@@ -315,7 +314,7 @@ public class PdbModelTest {
     assertThat(models.size(), is(1));
     final PdbModel model = models.get(0);
     final List<PdbChain> chains = model.getChains();
-    final List<PdbResidue> residues = model.getResidues();
+    final List<PdbResidue> residues = model.residues();
     final List<PdbAtomLine> atoms = model.getAtoms();
 
     assertThat(chains.size(), is(3));
@@ -332,7 +331,7 @@ public class PdbModelTest {
 
     final PdbModel model = models.get(0);
     final List<PdbChain> chains = model.getChains();
-    final List<PdbResidue> residues = model.getResidues();
+    final List<PdbResidue> residues = model.residues();
     final List<PdbAtomLine> atoms = model.getAtoms();
     assertThat(chains.size(), is(1));
     assertThat(residues.size(), is(59));
@@ -366,7 +365,7 @@ public class PdbModelTest {
 
     final PdbModel model0 = models.get(0);
     final List<PdbChain> chains0 = model0.getChains();
-    final List<PdbResidue> residues0 = model0.getResidues();
+    final List<PdbResidue> residues0 = model0.residues();
     final List<PdbAtomLine> atoms0 = model0.getAtoms();
     assertThat(chains0.size(), is(1));
     assertThat(residues0.size(), is(7));
@@ -374,7 +373,7 @@ public class PdbModelTest {
 
     final PdbModel model1 = models.get(1);
     final List<PdbChain> chains1 = model1.getChains();
-    final List<PdbResidue> residues1 = model1.getResidues();
+    final List<PdbResidue> residues1 = model1.residues();
     final List<PdbAtomLine> atoms1 = model1.getAtoms();
     assertThat(chains1.size(), is(1));
     assertThat(residues1.size(), is(7));
@@ -426,8 +425,8 @@ public class PdbModelTest {
     assertThat(cifModels.size(), is(1));
     final PdbModel cifModel = cifModels.get(0);
 
-    final List<PdbResidue> pdbResidues = pdbModel.getResidues();
-    final List<PdbResidue> cifResidues = cifModel.getResidues();
+    final List<PdbResidue> pdbResidues = pdbModel.residues();
+    final List<PdbResidue> cifResidues = cifModel.residues();
     assertThat(pdbResidues.size(), is(cifResidues.size()));
 
     for (int i = 0; i < pdbResidues.size(); i++) {

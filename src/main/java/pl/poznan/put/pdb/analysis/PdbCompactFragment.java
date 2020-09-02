@@ -93,19 +93,8 @@ public class PdbCompactFragment implements ResidueCollection {
   }
 
   @Override
-  public final PdbResidue findResidue(
-      final String chainIdentifier, final int residueNumber, final String insertionCode) {
-    return findResidue(new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode));
-  }
-
-  @Override
-  public final PdbResidue findResidue(final PdbResidueIdentifier query) {
-    for (final PdbResidue residue : residues) {
-      if (Objects.equals(query, residue.toResidueIdentifer())) {
-        return residue;
-      }
-    }
-    throw new IllegalArgumentException("Failed to find residue: " + query);
+  public List<PdbResidue> residues() {
+    return getResidues();
   }
 
   @Override

@@ -21,6 +21,6 @@ public interface ChainNumberICode {
    * @return An object that can be used to address specific residue.
    */
   default PdbResidueIdentifier toResidueIdentifer() {
-    return new PdbResidueIdentifier(chainIdentifier(), residueNumber(), insertionCode());
+    return ImmutablePdbResidueIdentifier.of(chainIdentifier(), residueNumber(), insertionCode());
   }
 }

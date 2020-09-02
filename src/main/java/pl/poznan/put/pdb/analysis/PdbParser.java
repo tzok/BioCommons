@@ -5,6 +5,9 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.poznan.put.pdb.ImmutablePdbExpdtaLine;
+import pl.poznan.put.pdb.ImmutablePdbHeaderLine;
+import pl.poznan.put.pdb.ImmutablePdbRemark2Line;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbExpdtaLine;
 import pl.poznan.put.pdb.PdbHeaderLine;
@@ -16,10 +19,13 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbTitleLine;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -28,18 +34,18 @@ public class PdbParser implements StructureParser {
 
   private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
   private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
-  private final Set<PdbResidueIdentifier> processedIdentifiers = new HashSet<>();
+  private final Collection<PdbResidueIdentifier> processedIdentifiers = new HashSet<>();
   private final List<PdbAtomLine> chainTerminatedAfter = new ArrayList<>();
-  private final Set<Integer> endedModelNumbers = new HashSet<>();
+  private final Collection<Integer> endedModelNumbers = new HashSet<>();
   private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
-  private final List<PdbTitleLine> titleLines = new ArrayList<>();
+  private final Collection<PdbTitleLine> titleLines = new ArrayList<>();
 
   private final boolean strictMode;
 
-  private PdbHeaderLine headerLine;
-  private PdbExpdtaLine experimentalDataLine;
-  private PdbRemark2Line resolutionLine;
-  private PdbResidueIdentifier currentIdentifier = PdbResidueIdentifier.invalid();
+  private Optional<PdbHeaderLine> headerLine = Optional.empty();
+  private Optional<PdbExpdtaLine> experimentalDataLine = Optional.empty();
+  private Optional<PdbRemark2Line> resolutionLine = Optional.empty();
+  private Optional<PdbResidueIdentifier> currentIdentifier = Optional.empty();
   private int currentModelNumber;
 
   public PdbParser(final boolean strictMode) {
@@ -79,7 +85,7 @@ public class PdbParser implements StructureParser {
     }
 
     final String titleBuilder =
-        titleLines.stream().map(PdbTitleLine::getTitle).collect(Collectors.joining());
+        titleLines.stream().map(PdbTitleLine::title).collect(Collectors.joining());
 
     final List<PdbModel> result = new ArrayList<>();
 
@@ -88,9 +94,9 @@ public class PdbParser implements StructureParser {
       final List<PdbAtomLine> atoms = entry.getValue();
       final PdbModel pdbModel =
           new PdbModel(
-              headerLine,
-              experimentalDataLine,
-              resolutionLine,
+              headerLine.orElse(ImmutablePdbHeaderLine.of("", new Date(0L), "")),
+              experimentalDataLine.orElse(ImmutablePdbExpdtaLine.of(Collections.emptyList())),
+              resolutionLine.orElse(ImmutablePdbRemark2Line.of(Double.NaN)),
               modelNumber,
               atoms,
               modifiedResidues,
@@ -112,10 +118,10 @@ public class PdbParser implements StructureParser {
     modelAtoms.clear();
     titleLines.clear();
 
-    headerLine = PdbHeaderLine.emptyInstance();
-    experimentalDataLine = PdbExpdtaLine.emptyInstance();
+    headerLine = Optional.empty();
+    experimentalDataLine = Optional.empty();
     currentModelNumber = 0;
-    currentIdentifier = PdbResidueIdentifier.invalid();
+    currentIdentifier = Optional.empty();
   }
 
   private void handleModelLine(final String line) {
@@ -134,7 +140,7 @@ public class PdbParser implements StructureParser {
 
     processedIdentifiers.clear();
     chainTerminatedAfter.clear();
-    currentIdentifier = PdbResidueIdentifier.invalid();
+    currentIdentifier = Optional.empty();
   }
 
   private void handleAtomLine(final String line) {
@@ -147,10 +153,9 @@ public class PdbParser implements StructureParser {
         return;
       }
 
-      if (!currentIdentifier.equals(PdbResidueIdentifier.invalid())
-          && !identifier.equals(currentIdentifier)) {
-        processedIdentifiers.add(currentIdentifier);
-        currentIdentifier = identifier;
+      if (currentIdentifier.isPresent() && !identifier.equals(currentIdentifier.get())) {
+        processedIdentifiers.add(currentIdentifier.get());
+        currentIdentifier = Optional.of(identifier);
       }
 
       if (!modelAtoms.containsKey(currentModelNumber)) {
@@ -167,9 +172,8 @@ public class PdbParser implements StructureParser {
   private void handleTitleLine(final String line) {
     try {
       final PdbTitleLine titleLine = PdbTitleLine.parse(line);
-      if (((CollectionUtils.isEmpty(titleLines))
-              && (StringUtils.isBlank(titleLine.getContinuation())))
-          || (StringUtils.isNotBlank(titleLine.getContinuation()))) {
+      if (((CollectionUtils.isEmpty(titleLines)) && (StringUtils.isBlank(titleLine.continuation())))
+          || (StringUtils.isNotBlank(titleLine.continuation()))) {
         titleLines.add(titleLine);
       }
     } catch (final PdbParsingException e) {
@@ -206,7 +210,7 @@ public class PdbParser implements StructureParser {
 
   private void handleHeaderLine(final String line) {
     try {
-      headerLine = PdbHeaderLine.parse(line);
+      headerLine = Optional.of(PdbHeaderLine.parse(line));
     } catch (final PdbParsingException e) {
       PdbParser.LOGGER.warn("Invalid HEADER line: {}", line, e);
     }
@@ -214,7 +218,7 @@ public class PdbParser implements StructureParser {
 
   private void handleExperimentalDataLine(final String line) {
     try {
-      experimentalDataLine = PdbExpdtaLine.parse(line);
+      experimentalDataLine = Optional.of(PdbExpdtaLine.parse(line));
     } catch (final PdbParsingException e) {
       PdbParser.LOGGER.warn("Invalid EXPDTA line: {}", line, e);
     }
@@ -222,7 +226,7 @@ public class PdbParser implements StructureParser {
 
   private void handleResolutionLine(final String line) {
     try {
-      resolutionLine = PdbRemark2Line.parse(line);
+      resolutionLine = Optional.of(PdbRemark2Line.parse(line));
     } catch (final PdbParsingException e) {
       PdbParser.LOGGER.warn("Invalid REMARK   2 RESOLUTION. line: {}", line, e);
     }

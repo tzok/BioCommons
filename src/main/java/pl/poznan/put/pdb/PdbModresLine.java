@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb;
 
+import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,7 +8,9 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 
-public class PdbModresLine implements ChainNumberICode, Serializable {
+/** Representation of MODRES line in PDB format. */
+@Value.Immutable
+public abstract class PdbModresLine implements ChainNumberICode, Serializable {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbModresLine.class);
 
   // @formatter:off
@@ -26,32 +29,13 @@ public class PdbModresLine implements ChainNumberICode, Serializable {
   // @formatter:on
   private static final String FORMAT = "MODRES %4s %3s %c %4d%c %3s  %41s          ";
   private static final String RECORD_NAME = "MODRES";
-  private final String idCode;
-  private final String residueName;
-  private final String chainIdentifier;
-  private final int residueNumber;
-  private final String insertionCode;
-  private final String standardResidueName;
-  private final String comment;
 
-  public PdbModresLine(
-      final String idCode,
-      final String residueName,
-      final String chainIdentifier,
-      final int residueNumber,
-      final String insertionCode,
-      final String standardResidueName,
-      final String comment) {
-    super();
-    this.idCode = idCode;
-    this.residueName = residueName;
-    this.chainIdentifier = chainIdentifier;
-    this.residueNumber = residueNumber;
-    this.insertionCode = insertionCode;
-    this.standardResidueName = standardResidueName;
-    this.comment = comment;
-  }
-
+  /**
+   * Parse text with MODRES line in PDB format.
+   *
+   * @param line A text with MODRES line in PDB format.
+   * @return An instance of this class with fields set to parsed values.
+   */
   public static PdbModresLine parse(final String line) {
     if (line.length() < 70) {
       throw new PdbParsingException("PDB MODRES line is not at least 70 character long");
@@ -71,7 +55,7 @@ public class PdbModresLine implements ChainNumberICode, Serializable {
       final String insertionCode = Character.toString(line.charAt(22));
       final String standardResidueName = line.substring(24, 27).trim();
       final String comment = line.substring(29, 70);
-      return new PdbModresLine(
+      return ImmutablePdbModresLine.of(
           idCode,
           residueName,
           chainIdentifier,
@@ -84,60 +68,56 @@ public class PdbModresLine implements ChainNumberICode, Serializable {
     }
   }
 
-  public static String getRecordName() {
-    return PdbModresLine.RECORD_NAME;
-  }
+  /** @return The value of the {@code idCode} attribute */
+  @Value.Parameter
+  public abstract String idCode();
 
-  public final String getIdCode() {
-    return idCode;
-  }
+  /** @return The value of the {@code residueName} attribute */
+  @Value.Parameter
+  public abstract String residueName();
 
-  public final String getResidueName() {
-    return residueName;
-  }
-
+  /** @return The value of the {@code chainIdentifier} attribute */
   @Override
-  public final String chainIdentifier() {
-    return chainIdentifier;
-  }
+  @Value.Parameter
+  public abstract String chainIdentifier();
 
+  /** @return The value of the {@code residueNumber} attribute */
   @Override
-  public final int residueNumber() {
-    return residueNumber;
-  }
+  @Value.Parameter
+  public abstract int residueNumber();
 
+  /** @return The value of the {@code insertionCode} attribute */
   @Override
-  public final String insertionCode() {
-    return insertionCode;
-  }
+  @Value.Parameter
+  public abstract String insertionCode();
 
-  public final String getStandardResidueName() {
-    return standardResidueName;
-  }
+  /** @return The value of the {@code standardResidueName} attribute */
+  @Value.Parameter
+  public abstract String standardResidueName();
 
-  public final String getComment() {
-    return comment;
-  }
+  /** @return The value of the {@code comment} attribute */
+  @Value.Parameter
+  public abstract String comment();
 
   @Override
   public final String toString() {
-    if (chainIdentifier.length() != 1) {
+    if (chainIdentifier().length() != 1) {
       PdbModresLine.LOGGER.error(
-          "Field 'chainIdentifier' is longer than 1 char. " + "Only first letter will be taken");
+          "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
     }
-    if (insertionCode.length() != 1) {
+    if (insertionCode().length() != 1) {
       PdbModresLine.LOGGER.error(
-          "Field 'insertionCode' is longer than 1 char. Only" + " first letter will be taken");
+          "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
     }
     return String.format(
         Locale.US,
         PdbModresLine.FORMAT,
-        idCode,
-        residueName,
-        chainIdentifier.charAt(0),
-        residueNumber,
-        insertionCode.charAt(0),
-        standardResidueName,
-        comment);
+        idCode(),
+        residueName(),
+        chainIdentifier().charAt(0),
+        residueNumber(),
+        insertionCode().charAt(0),
+        standardResidueName(),
+        comment());
   }
 }

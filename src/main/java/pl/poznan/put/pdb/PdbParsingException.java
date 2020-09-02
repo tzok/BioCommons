@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb;
 
+/** Exception thrown when data in PDB files is inconsistent with the documented format. */
 public class PdbParsingException extends RuntimeException {
   public PdbParsingException() {
     super();

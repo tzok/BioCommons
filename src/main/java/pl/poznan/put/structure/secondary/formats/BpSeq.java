@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.structure.secondary.BasePair;
@@ -136,7 +136,7 @@ public class BpSeq implements Serializable {
       final Iterable<? extends BasePair> basePairs,
       final Map<BasePair, String> basePairToComment) {
     final Collection<Entry> entries = new ArrayList<>();
-    final List<PdbResidue> residues = residueCollection.getResidues();
+    final List<PdbResidue> residues = residueCollection.residues();
 
     for (final BasePair basePair : basePairs) {
       final PdbResidue left = residueCollection.findResidue(basePair.getLeft());
@@ -156,8 +156,8 @@ public class BpSeq implements Serializable {
 
   private static Collection<Entry> generateEntriesForUnpaired(
       final ResidueCollection residueCollection, final Iterable<? extends BasePair> allBasePairs) {
-    final List<PdbResidue> residues = residueCollection.getResidues();
-    final Collection<PdbResidueIdentifier> paired = new HashSet<>();
+    final List<PdbResidue> residues = residueCollection.residues();
+    final Collection<ChainNumberICode> paired = new HashSet<>();
 
     for (final BasePair basePair : allBasePairs) {
       paired.add(basePair.getLeft());

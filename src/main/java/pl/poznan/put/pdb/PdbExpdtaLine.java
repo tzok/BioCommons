@@ -1,13 +1,16 @@
 package pl.poznan.put.pdb;
 
+import org.immutables.value.Value;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class PdbExpdtaLine implements Serializable {
+/** Representation of EXPDTA line in PDB files. */
+@Value.Immutable
+public abstract class PdbExpdtaLine implements Serializable {
   // @formatter:off
   //  COLUMNS       DATA TYPE      FIELD         DEFINITION
   //  ------------------------------------------------------------------------------------
@@ -19,19 +22,13 @@ public class PdbExpdtaLine implements Serializable {
   // @formatter:on
   private static final String FORMAT = "EXPDTA    %-70s"; // NON-NLS
   private static final String RECORD_NAME = "EXPDTA";
-  private static final PdbExpdtaLine EMPTY_INSTANCE =
-      new PdbExpdtaLine(Collections.singletonList(ExperimentalTechnique.UNKNOWN));
-  private final List<ExperimentalTechnique> experimentalTechniques;
 
-  public PdbExpdtaLine(final List<ExperimentalTechnique> experimentalTechniques) {
-    super();
-    this.experimentalTechniques = new ArrayList<>(experimentalTechniques);
-  }
-
-  public static PdbExpdtaLine emptyInstance() {
-    return PdbExpdtaLine.EMPTY_INSTANCE;
-  }
-
+  /**
+   * Parse text and treat as an EXPDTA line in PDB format.
+   *
+   * @param line EXPDTA line in PDB format.
+   * @return An instance of this class.
+   */
   public static PdbExpdtaLine parse(final String line) {
     final String recordName = line.substring(0, 6).trim();
 
@@ -48,29 +45,24 @@ public class PdbExpdtaLine implements Serializable {
       }
       experimentalTechniques.add(technique);
     }
-    return new PdbExpdtaLine(experimentalTechniques);
+    return ImmutablePdbExpdtaLine.of(experimentalTechniques);
   }
 
-  public final List<ExperimentalTechnique> getExperimentalTechniques() {
-    return Collections.unmodifiableList(experimentalTechniques);
-  }
-
-  public final boolean isValid() {
-    return !experimentalTechniques.isEmpty()
-        && (experimentalTechniques.get(0) != ExperimentalTechnique.UNKNOWN);
-  }
+  /** @return The value of the {@code experimentalTechniques} attribute */
+  @Value.Parameter
+  public abstract List<ExperimentalTechnique> experimentalTechniques();
 
   @Override
   public final String toString() {
     final StringBuilder builder = new StringBuilder();
 
-    if (experimentalTechniques.isEmpty()) {
+    if (experimentalTechniques().isEmpty()) {
       builder.append(ExperimentalTechnique.UNKNOWN);
     } else {
-      builder.append(experimentalTechniques.get(0).getPdbName());
-      for (int i = 1; i < experimentalTechniques.size(); i++) {
+      builder.append(experimentalTechniques().get(0).getPdbName());
+      for (int i = 1; i < experimentalTechniques().size(); i++) {
         builder.append("; ");
-        builder.append(experimentalTechniques.get(i).getPdbName());
+        builder.append(experimentalTechniques().get(i).getPdbName());
       }
     }
     return String.format(Locale.US, PdbExpdtaLine.FORMAT, builder);

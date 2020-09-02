@@ -7,6 +7,9 @@ import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
+import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
@@ -130,8 +133,15 @@ public final class ExtendedSecondaryStructure {
           }
 
           final int openingIndex = stack.pop();
-          final PdbResidueIdentifier left = new PdbResidueIdentifier("A", openingIndex + 1, " ");
-          final PdbResidueIdentifier right = new PdbResidueIdentifier("A", i + 1, " ");
+          final PdbNamedResidueIdentifier left =
+              ImmutablePdbNamedResidueIdentifier.of(
+                  "A",
+                  openingIndex + 1,
+                  " ",
+                  sequence.length() > openingIndex ? sequence.charAt(openingIndex) : 'N');
+          final PdbNamedResidueIdentifier right =
+              ImmutablePdbNamedResidueIdentifier.of(
+                  "A", i + 1, " ", sequence.length() > i ? sequence.charAt(i) : 'N');
           final BasePair basePair = new BasePair(left, right);
           final ClassifiedBasePair classifiedBasePair =
               new ClassifiedBasePair(
@@ -161,7 +171,7 @@ public final class ExtendedSecondaryStructure {
     if (StringUtils.isBlank(sequence)) {
       int maxIndex = Integer.MIN_VALUE;
       for (final ClassifiedBasePair basePair : basePairs) {
-        maxIndex = Integer.max(maxIndex, basePair.getBasePair().getRight().getResidueNumber());
+        maxIndex = Integer.max(maxIndex, basePair.getBasePair().getRight().residueNumber());
       }
       sequence = StringUtils.repeat('N', maxIndex);
     }
@@ -205,8 +215,7 @@ public final class ExtendedSecondaryStructure {
           basePairs.stream()
               .filter(cbp -> RNAInteractionType.BASE_BASE.equals(cbp.getInteractionType()))
               .filter(cbp -> leontisWesthof == cbp.getLeontisWesthof())
-              .sorted(
-                  Comparator.comparingInt(cbp -> cbp.getBasePair().getLeft().getResidueNumber()))
+              .sorted(Comparator.comparingInt(cbp -> cbp.getBasePair().getLeft().residueNumber()))
               .collect(Collectors.toList());
 
       final List<DotBracket> result = new ArrayList<>();
@@ -217,8 +226,8 @@ public final class ExtendedSecondaryStructure {
 
         for (final ClassifiedBasePair classifiedBasePair : filteredBasePairs) {
           final BasePair basePair = classifiedBasePair.getBasePair();
-          final int left = basePair.getLeft().getResidueNumber();
-          final int right = basePair.getRight().getResidueNumber();
+          final int left = basePair.getLeft().residueNumber();
+          final int right = basePair.getRight().residueNumber();
 
           if (!usedIndices.contains(left) && !usedIndices.contains(right)) {
             layer.add(classifiedBasePair);
@@ -245,7 +254,7 @@ public final class ExtendedSecondaryStructure {
     final char[] array = sequence.toCharArray();
 
     for (int i = 0; i < array.length; i++) {
-      final PdbResidueIdentifier identifier = new PdbResidueIdentifier("A", i + 1, " ");
+      final PdbResidueIdentifier identifier = ImmutablePdbResidueIdentifier.of("A", i + 1, " ");
       final String residueName = String.valueOf(array[i]);
       final PdbResidue residue =
           new PdbResidue(identifier, residueName, Collections.emptyList(), true);

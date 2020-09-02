@@ -1,7 +1,8 @@
 package pl.poznan.put.notation;
 
 import org.junit.Test;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.structure.secondary.BasePair;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -15,14 +16,10 @@ public class SaengerTest {
 
   @Test
   public final void assumeCanonical() {
-    final PdbResidueIdentifier guanine = new PdbResidueIdentifier("A", 1, null);
-    guanine.setResidueOneLetterName('G');
-    final PdbResidueIdentifier adenine = new PdbResidueIdentifier("A", 2, null);
-    adenine.setResidueOneLetterName('A');
-    final PdbResidueIdentifier cytosine = new PdbResidueIdentifier("A", 3, null);
-    cytosine.setResidueOneLetterName('C');
-    final PdbResidueIdentifier uracil = new PdbResidueIdentifier("A", 4, null);
-    uracil.setResidueOneLetterName('U');
+    final PdbNamedResidueIdentifier guanine = ImmutablePdbNamedResidueIdentifier.of("A", 1, " ", 'G');
+    final PdbNamedResidueIdentifier adenine = ImmutablePdbNamedResidueIdentifier.of("A", 2, " ", 'A');
+    final PdbNamedResidueIdentifier cytosine = ImmutablePdbNamedResidueIdentifier.of("A", 3, " ", 'C');
+    final PdbNamedResidueIdentifier uracil = ImmutablePdbNamedResidueIdentifier.of("A", 4, " ", 'U');
 
     assertThat(Saenger.assumeCanonical(new BasePair(guanine, cytosine)), is(Saenger.XIX));
     assertThat(Saenger.assumeCanonical(new BasePair(adenine, uracil)), is(Saenger.XX));

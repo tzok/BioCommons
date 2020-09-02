@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 
+/** Representation of ATOM and HETATM lines in both PDB and mmCIF files. */
 @Value.Immutable
 public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbAtomLine.class);
@@ -49,6 +50,12 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
   // @formatter:on
   private static final String RECORD_NAME = "ATOM";
 
+  /**
+   * Create an instance of this class from {@link Atom} object.
+   *
+   * @param atom An instance of BioJava object.
+   * @return An instance of this class with fields values equal to those in {@code atom} object.
+   */
   public static PdbAtomLine fromBioJavaAtom(final Atom atom) {
     final Group group = atom.getGroup();
     final String residueName = group.getPDBName();
@@ -88,10 +95,24 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
         charge);
   }
 
+  /**
+   * Parse text as ATOM or HETATM line in strict mode (all 80 characters in the line are required).
+   *
+   * @param line A text in PDB format (ATOM or HETATM).
+   * @return An instance of this class with fields containing values parsed from the text.
+   */
   public static PdbAtomLine parse(final String line) {
     return PdbAtomLine.parse(line, true);
   }
 
+  /**
+   * Parse text as ATOM or HETATM line in a strict or non-strict mode.
+   *
+   * @param line A text in PDB format (ATOM or HETATM).
+   * @param strictMode If true, then all 80 characters are required, otherwise the "bare minimum" of
+   *     54 characters.
+   * @return An instance of this class with fields containing values parsed from the text.
+   */
   public static PdbAtomLine parse(final String line, final boolean strictMode) {
     // in non-strict mode, only up to X, Y, Z fields are required, rest is
     // optional
@@ -150,57 +171,67 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
     }
   }
 
-  public static String getRecordName() {
-    return PdbAtomLine.RECORD_NAME;
-  }
-
+  /** @return The value of the {@code serialNumber} attribute */
   @Value.Parameter
   @Value.Auxiliary
   public abstract int serialNumber();
 
+  /** @return The value of the {@code atomName} attribute */
   @Value.Parameter
   public abstract String atomName();
 
+  /** @return The value of the {@code alternateLocation} attribute */
   @Value.Parameter
   @Value.Auxiliary
   public abstract String alternateLocation();
 
+  /** @return The value of the {@code residueName} attribute */
   @Value.Parameter
   public abstract String residueName();
 
+  /** @return The value of the {@code chainIdentifier} attribute */
   @Override
   @Value.Parameter
   public abstract String chainIdentifier();
 
+  /** @return The value of the {@code residueNumber} attribute */
   @Override
   @Value.Parameter
   public abstract int residueNumber();
 
+  /** @return The value of the {@code insertionCode} attribute */
   @Override
   @Value.Parameter
   public abstract String insertionCode();
 
+  /** @return The value of the {@code x} attribute */
   @Value.Parameter
   public abstract double x();
 
+  /** @return The value of the {@code y} attribute */
   @Value.Parameter
   public abstract double y();
 
+  /** @return The value of the {@code z} attribute */
   @Value.Parameter
   public abstract double z();
 
+  /** @return The value of the {@code occupancy} attribute */
   @Value.Parameter
   @Value.Auxiliary
   public abstract double occupancy();
 
+  /** @return The value of the {@code temperatureFactor} attribute */
   @Value.Parameter
   @Value.Auxiliary
   public abstract double temperatureFactor();
 
+  /** @return The value of the {@code elementSymbol} attribute */
   @Value.Parameter
   @Value.Auxiliary
   public abstract String elementSymbol();
 
+  /** @return The value of the {@code charge} attribute */
   @Value.Parameter
   @Value.Auxiliary
   public abstract String charge();
@@ -241,24 +272,36 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
         charge());
   }
 
+  /** @return An instance of {@link AtomName} enum that matches this object. */
   public final AtomName detectAtomName() {
     return AtomName.fromString(atomName());
   }
 
+  /**
+   * Calculate euclidean distance to another atom.
+   *
+   * @param other Another instance of this class.
+   * @return Euclidean distance in 3D between two atoms.
+   */
   public final double distanceTo(final PdbAtomLine other) {
     final Vector<Euclidean3D> v1 = new Vector3D(x(), y(), z());
     final Vector<Euclidean3D> v2 = new Vector3D(other.x(), other.y(), other.z());
     return v1.distance(v2);
   }
 
+  /**
+   * Create an instance of BioJava {@link Atom} with fields having the same values as this object.
+   *
+   * @return An instance of {@link Atom} with the same values as this object.
+   */
   public final Atom toBioJavaAtom() {
     if (alternateLocation().length() != 1) {
       throw new CifPdbIncompatibilityException(
-          "Cannot convert to PDB. Field 'alternateLocation' is " + "longer than 1 char");
+          "Cannot convert to PDB. Field 'alternateLocation' is longer than 1 char");
     }
     if (insertionCode().length() != 1) {
       throw new CifPdbIncompatibilityException(
-          "Cannot convert to PDB. Field 'insertionCode' is longer " + "than 1 char");
+          "Cannot convert to PDB. Field 'insertionCode' is longer than 1 char");
     }
 
     final Group group = new HetatomImpl();
@@ -283,6 +326,11 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
     return atom;
   }
 
+  /**
+   * Create an ATOM line in mmCIF format (according to format: {@link CifConstants#CIF_LOOP}).
+   *
+   * @return A string representation of the ATOM line in mmCIF format.
+   */
   public final String toCif() {
     final StringBuilder builder = new StringBuilder();
     builder.append("ATOM ");
@@ -319,7 +367,18 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
     return builder.toString();
   }
 
+  /** @return An instance of {@link Vector3D} with (x, y, z) coordinates of this instance. */
   public final Vector3D toVector3D() {
     return new Vector3D(x(), y(), z());
   }
+
+  /**
+   * Copy the current immutable object by setting a value for the {@link
+   * PdbAtomLine#alternateLocation() alternateLocation} attribute. An equals check used to prevent
+   * copying of the same value by returning {@code this}.
+   *
+   * @param value A new value for alternateLocation
+   * @return A modified copy of the {@code this} object
+   */
+  public abstract PdbAtomLine withAlternateLocation(String value);
 }

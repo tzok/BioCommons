@@ -4,7 +4,7 @@ import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
@@ -26,7 +26,7 @@ public final class CanonicalStructureExtractor {
 
   public static BpSeq bpSeq(final ResidueCollection residueCollection) {
     final List<PdbResidue> residues =
-        residueCollection.getResidues().stream()
+        residueCollection.residues().stream()
             .filter(pdbResidue -> pdbResidue.getMoleculeType() == MoleculeType.RNA)
             .collect(Collectors.toList());
     final ResidueCollection collection = new SimpleResidueCollection(residues);
@@ -41,17 +41,17 @@ public final class CanonicalStructureExtractor {
    */
   private static Collection<ClassifiedBasePair> basePairs(
       final ResidueCollection residueCollection) {
-    final List<PdbResidue> residues = residueCollection.getResidues();
+    final List<PdbResidue> residues = residueCollection.residues();
     final Collection<ClassifiedBasePair> basePairs = new ArrayList<>();
-    final Collection<PdbResidueIdentifier> paired = new HashSet<>();
+    final Collection<PdbNamedResidueIdentifier> paired = new HashSet<>();
 
     for (int i = 0; i < residues.size(); i++) {
       final PdbResidue left = residues.get(i);
-      final PdbResidueIdentifier leftId = left.toResidueIdentifer();
+      final PdbNamedResidueIdentifier leftId = left.toNamedResidueIdentifer();
 
       for (int j = i + 2; j < residues.size(); j++) {
         final PdbResidue right = residues.get(j);
-        final PdbResidueIdentifier rightId = right.toResidueIdentifer();
+        final PdbNamedResidueIdentifier rightId = right.toNamedResidueIdentifer();
 
         if (BasePair.isCanonicalPair(left, right)) {
           final BasePair basePair = new BasePair(leftId, rightId);

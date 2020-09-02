@@ -1,6 +1,7 @@
 package pl.poznan.put.pdb;
 
 import org.apache.commons.lang3.StringUtils;
+import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +10,9 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
-public class PdbRemark465Line implements ChainNumberICode, Serializable {
+/** Representation of REMARK 465 in PDB format which describes missing residues. */
+@Value.Immutable
+public abstract class PdbRemark465Line implements ChainNumberICode, Serializable {
   // @formatter:off
   public static final String PROLOGUE =
       "REMARK 465                                                                      \n"
@@ -60,28 +63,15 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
 
   // @formatter:on
   private static final String REMARK_FORMAT =
-      "  %1s %3s %c %5d%c                                              " + "       ";
+      "  %1s %3s %c %5d%c                                                     ";
   private static final String FORMAT = "REMARK 465 " + PdbRemark465Line.REMARK_FORMAT;
-  private final int modelNumber;
-  private final String residueName;
-  private final String chainIdentifier;
-  private final int residueNumber;
-  private final String insertionCode;
 
-  public PdbRemark465Line(
-      final int modelNumber,
-      final String residueName,
-      final String chainIdentifier,
-      final int residueNumber,
-      final String insertionCode) {
-    super();
-    this.modelNumber = modelNumber;
-    this.residueName = residueName;
-    this.chainIdentifier = chainIdentifier;
-    this.residueNumber = residueNumber;
-    this.insertionCode = insertionCode;
-  }
-
+  /**
+   * Check if {@code line} is just a comment or a line with actual information.
+   *
+   * @param line A line of text.
+   * @return True if {@code line} contains a comment only.
+   */
   public static boolean isCommentLine(final String line) {
     final String lineTrimmed = StringUtils.normalizeSpace(line);
 
@@ -90,6 +80,12 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
         || lineTrimmed.startsWith("REMARK 465   MODELS");
   }
 
+  /**
+   * Parse a line of text to create an instance of this class.
+   *
+   * @param line A line of text starting with REMARK 465.
+   * @return An instance of this class
+   */
   public static PdbRemark465Line parse(final String line) {
     if (line.length() < 79) {
       throw new PdbParsingException("PDB REMARK line is not at least 79 character long");
@@ -114,63 +110,68 @@ public class PdbRemark465Line implements ChainNumberICode, Serializable {
       final int residueNumber = Integer.parseInt(remarkContent.substring(10, 15).trim());
       final String insertionCode =
           (remarkContent.length() == 15) ? " " : Character.toString(remarkContent.charAt(15));
-      return new PdbRemark465Line(
+      return ImmutablePdbRemark465Line.of(
           modelNumber, residueName, chainIdentifier, residueNumber, insertionCode);
     } catch (final NumberFormatException e) {
       throw new PdbParsingException("Failed to parse PDB REMARK 465 line", e);
     }
   }
 
-  public final int getModelNumber() {
-    return modelNumber;
-  }
+  /** @return The value of the {@code modelNumber} attribute */
+  @Value.Parameter
+  public abstract int modelNumber();
 
-  public final String getResidueName() {
-    return residueName;
-  }
+  /** @return The value of the {@code residueName} attribute */
+  @Value.Parameter
+  public abstract String residueName();
 
+  /** @return The value of the {@code chainIdentifier} attribute */
   @Override
-  public final String chainIdentifier() {
-    return chainIdentifier;
-  }
+  @Value.Parameter
+  public abstract String chainIdentifier();
 
+  /** @return The value of the {@code residueNumber} attribute */
   @Override
-  public final int residueNumber() {
-    return residueNumber;
-  }
+  @Value.Parameter
+  public abstract int residueNumber();
 
+  /** @return The value of the {@code insertionCode} attribute */
   @Override
-  public final String insertionCode() {
-    return insertionCode;
-  }
+  @Value.Parameter
+  public abstract String insertionCode();
 
   @Override
   public final String toString() {
-    if (chainIdentifier.length() != 1) {
+    if (chainIdentifier().length() != 1) {
       PdbRemark465Line.LOGGER.error(
-          "Field 'chainIdentifier' is longer than 1 char. " + "Only first letter will be taken");
+          "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
     }
-    if (insertionCode.length() != 1) {
+    if (insertionCode().length() != 1) {
       PdbRemark465Line.LOGGER.error(
-          "Field 'insertionCode' is longer than 1 char. Only" + " first letter will be taken");
+          "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
     }
 
-    final String modelNumberString = (modelNumber == 0) ? " " : String.valueOf(modelNumber);
-    final char chain = chainIdentifier.charAt(0);
-    final char icode = insertionCode.charAt(0);
+    final String modelNumberString = (modelNumber() == 0) ? " " : String.valueOf(modelNumber());
+    final char chain = chainIdentifier().charAt(0);
+    final char icode = insertionCode().charAt(0);
 
     return String.format(
         Locale.US,
         PdbRemark465Line.FORMAT,
         modelNumberString,
-        residueName,
+        residueName(),
         chain,
-        residueNumber,
+        residueNumber(),
         icode);
   }
 
-  public final PdbRemark465Line replaceChainIdentifier(final String chainIdentifierNew) {
-    return new PdbRemark465Line(
-        modelNumber, residueName, chainIdentifierNew, residueNumber, insertionCode);
-  }
+  /**
+   * Copy the current immutable object by setting a value for the {@link
+   * PdbRemark465Line#chainIdentifier() chainIdentifier} attribute. An equals check used to prevent
+   * copying of the same value by returning {@code this}.
+   *
+   * @param value A new value for chainIdentifier
+   * @return A modified copy of the {@code this} object
+   */
+  public abstract PdbRemark465Line withChainIdentifier(String value);
 }

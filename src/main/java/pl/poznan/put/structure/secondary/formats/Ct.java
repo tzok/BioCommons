@@ -124,7 +124,7 @@ public final class Ct implements Serializable {
     }
 
     final List<ExtendedEntry> ctEntries = new ArrayList<>();
-    final List<PdbResidue> residues = rna.getResidues();
+    final List<PdbResidue> residues = rna.residues();
     final SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
     int i = 0;
 

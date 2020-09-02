@@ -1,6 +1,6 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
@@ -23,8 +23,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbInterface {
-  private final Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue = new HashMap<>();
-  private final Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<>();
+  private final Map<DotBracketSymbol, PdbNamedResidueIdentifier> symbolToResidue = new HashMap<>();
+  private final Map<PdbNamedResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<>();
 
   public DotBracketFromPdb(
       final DotBracketInterface dotBracket,
@@ -43,7 +43,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
   private static String updateMissingIndices(
       final String structure, final ResidueCollection model) {
-    final List<PdbResidue> residues = model.getResidues();
+    final List<PdbResidue> residues = model.residues();
     final char[] dotBracket = structure.toCharArray();
     assert dotBracket.length == residues.size();
 
@@ -77,8 +77,8 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
     for (final DotBracketSymbol symbol : symbols) {
       if (symbol.isPairing()) {
-        final PdbResidueIdentifier left = getResidueIdentifier(symbol);
-        final PdbResidueIdentifier right = getResidueIdentifier(symbol.getPair());
+        final PdbNamedResidueIdentifier left = getResidueIdentifier(symbol);
+        final PdbNamedResidueIdentifier right = getResidueIdentifier(symbol.getPair());
         representedSet.add(new BasePair(left, right));
       }
     }
@@ -99,13 +99,13 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
   }
 
   private void mapSymbolsAndResidues(final ResidueCollection model) {
-    final List<PdbResidue> residues = model.getResidues();
+    final List<PdbResidue> residues = model.residues();
     assert residues.size() == symbols.size();
 
     for (int i = 0; i < residues.size(); i++) {
       final DotBracketSymbol symbol = symbols.get(i);
       final PdbResidue residue = residues.get(i);
-      final PdbResidueIdentifier residueIdentifier = residue.toResidueIdentifer();
+      final PdbNamedResidueIdentifier residueIdentifier = residue.toNamedResidueIdentifer();
       symbolToResidue.put(symbol, residueIdentifier);
       residueToSymbol.put(residueIdentifier, symbol);
     }
@@ -124,17 +124,17 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
   }
 
   @Override
-  public final PdbResidueIdentifier getResidueIdentifier(final DotBracketSymbol symbol) {
+  public final PdbNamedResidueIdentifier getResidueIdentifier(final DotBracketSymbol symbol) {
     return symbolToResidue.get(symbol);
   }
 
   @Override
-  public final DotBracketSymbol getSymbol(final PdbResidueIdentifier residueIdentifier) {
+  public final DotBracketSymbol getSymbol(final PdbNamedResidueIdentifier residueIdentifier) {
     return residueToSymbol.get(residueIdentifier);
   }
 
   @Override
-  public final boolean contains(final PdbResidueIdentifier residueIdentifier) {
+  public final boolean contains(final PdbNamedResidueIdentifier residueIdentifier) {
     return residueToSymbol.containsKey(residueIdentifier);
   }
 
@@ -223,14 +223,14 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
   @Override
   public final int getRealSymbolIndex(final DotBracketSymbol symbol) {
-    return symbolToResidue.get(symbol).getResidueNumber();
+    return symbolToResidue.get(symbol).residueNumber();
   }
 
-  public final Map<DotBracketSymbol, PdbResidueIdentifier> getSymbolToResidue() {
+  public final Map<DotBracketSymbol, PdbNamedResidueIdentifier> getSymbolToResidue() {
     return Collections.unmodifiableMap(symbolToResidue);
   }
 
-  public final Map<PdbResidueIdentifier, DotBracketSymbol> getResidueToSymbol() {
+  public final Map<PdbNamedResidueIdentifier, DotBracketSymbol> getResidueToSymbol() {
     return Collections.unmodifiableMap(residueToSymbol);
   }
 

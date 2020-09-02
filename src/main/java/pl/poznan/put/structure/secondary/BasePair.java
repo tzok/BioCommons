@@ -3,7 +3,7 @@ package pl.poznan.put.structure.secondary;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
 import java.io.Serializable;
@@ -18,9 +18,9 @@ public class BasePair implements Serializable, Comparable<BasePair> {
   private static final double CG_DISTANCE_N4_O6 = 2.96 + (0.17 * 3.0);
   private static final double CG_DISTANCE_O2_N2 = 2.77 + (0.15 * 3.0);
   private static final double CG_DISTANCE_N3_N1 = 2.89 + (0.11 * 3.0);
-  private final Pair<PdbResidueIdentifier, PdbResidueIdentifier> pair;
+  private final Pair<PdbNamedResidueIdentifier, PdbNamedResidueIdentifier> pair;
 
-  public BasePair(final PdbResidueIdentifier left, final PdbResidueIdentifier right) {
+  public BasePair(final PdbNamedResidueIdentifier left, final PdbNamedResidueIdentifier right) {
     super();
     pair = Pair.of(left, right);
   }
@@ -109,11 +109,11 @@ public class BasePair implements Serializable, Comparable<BasePair> {
         && (n4o6 <= BasePair.CG_DISTANCE_N4_O6);
   }
 
-  public final PdbResidueIdentifier getLeft() {
+  public final PdbNamedResidueIdentifier getLeft() {
     return pair.getLeft();
   }
 
-  public final PdbResidueIdentifier getRight() {
+  public final PdbNamedResidueIdentifier getRight() {
     return pair.getRight();
   }
 
@@ -122,7 +122,7 @@ public class BasePair implements Serializable, Comparable<BasePair> {
   }
 
   public final boolean is5to3() {
-    return pair.getLeft().getResidueNumber() < pair.getRight().getResidueNumber();
+    return pair.getLeft().residueNumber() < pair.getRight().residueNumber();
   }
 
   @Override

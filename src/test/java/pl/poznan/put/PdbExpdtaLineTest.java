@@ -28,7 +28,7 @@ public class PdbExpdtaLineTest {
   @Test
   public final void testParseXray() {
     final PdbExpdtaLine parsed = parse(PdbExpdtaLineTest.VALID_XRAY_LINE);
-    final List<ExperimentalTechnique> experimentalTechniques = parsed.getExperimentalTechniques();
+    final List<ExperimentalTechnique> experimentalTechniques = parsed.experimentalTechniques();
     assertThat(experimentalTechniques.size(), is(1));
     assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
 
@@ -39,7 +39,7 @@ public class PdbExpdtaLineTest {
   @Test
   public final void testParseNmr() {
     final PdbExpdtaLine parsed = parse(PdbExpdtaLineTest.VALID_NMR_LINE);
-    final List<ExperimentalTechnique> experimentalTechniques = parsed.getExperimentalTechniques();
+    final List<ExperimentalTechnique> experimentalTechniques = parsed.experimentalTechniques();
     assertThat(experimentalTechniques.size(), is(1));
     assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.SOLUTION_NMR));
 
@@ -50,7 +50,7 @@ public class PdbExpdtaLineTest {
   @Test
   public final void testParseThreeMethods() {
     final PdbExpdtaLine parsed = parse(PdbExpdtaLineTest.VALID_THREE_METHODS);
-    final List<ExperimentalTechnique> experimentalTechniques = parsed.getExperimentalTechniques();
+    final List<ExperimentalTechnique> experimentalTechniques = parsed.experimentalTechniques();
     assertThat(experimentalTechniques.size(), is(3));
     assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.SOLID_STATE_NMR));
     assertThat(experimentalTechniques.get(1), is(ExperimentalTechnique.SOLUTION_SCATTERING));
@@ -63,7 +63,7 @@ public class PdbExpdtaLineTest {
   @Test
   public final void testParseValidWithSpace() {
     final PdbExpdtaLine parsed = parse(PdbExpdtaLineTest.VALID_WITH_SPACE);
-    final List<ExperimentalTechnique> experimentalTechniques = parsed.getExperimentalTechniques();
+    final List<ExperimentalTechnique> experimentalTechniques = parsed.experimentalTechniques();
     assertThat(experimentalTechniques.size(), is(2));
     assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.SOLUTION_NMR));
     assertThat(experimentalTechniques.get(1), is(ExperimentalTechnique.THEORETICAL_MODEL));

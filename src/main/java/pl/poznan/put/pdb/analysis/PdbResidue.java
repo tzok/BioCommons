@@ -13,7 +13,10 @@ import org.biojava.nbio.structure.ResidueNumber;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.CifConstants;
+import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.rna.Base;
 import pl.poznan.put.rna.NucleicAcidResidueComponent;
@@ -45,6 +48,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
   @EqualsAndHashCode.Include private final boolean isModified;
   @EqualsAndHashCode.Include private final boolean isMissing;
 
+  private final PdbNamedResidueIdentifier namedIdentifer;
   private final ResidueInformationProvider residueInformationProvider;
 
   public PdbResidue(
@@ -81,8 +85,12 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
     }
 
     final char oneLetterName = residueInformationProvider.getOneLetterName();
-    this.identifier.setResidueOneLetterName(
-        this.isModified ? Character.toLowerCase(oneLetterName) : oneLetterName);
+    namedIdentifer =
+        ImmutablePdbNamedResidueIdentifier.of(
+            identifier.chainIdentifier(),
+            identifier.residueNumber(),
+            identifier.insertionCode(),
+            this.isModified ? Character.toLowerCase(oneLetterName) : oneLetterName);
   }
 
   public static PdbResidue fromBioJavaGroup(final Group group) {
@@ -94,7 +102,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
             ? " "
             : Character.toString(residueNumberObject.getInsCode());
     final PdbResidueIdentifier residueIdentifier =
-        new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
+        ImmutablePdbResidueIdentifier.of(chainIdentifier, residueNumber, insertionCode);
     final List<PdbAtomLine> atoms =
         group.getAtoms().stream().map(PdbAtomLine::fromBioJavaAtom).collect(Collectors.toList());
 
@@ -161,22 +169,26 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
 
   @Override
   public final String chainIdentifier() {
-    return identifier.getChainIdentifier();
+    return identifier.chainIdentifier();
   }
 
   @Override
   public final int residueNumber() {
-    return identifier.getResidueNumber();
+    return identifier.residueNumber();
   }
 
   @Override
   public final String insertionCode() {
-    return identifier.getInsertionCode();
+    return identifier.insertionCode();
   }
 
   @Override
   public final PdbResidueIdentifier toResidueIdentifer() {
     return identifier;
+  }
+
+  public final PdbNamedResidueIdentifier toNamedResidueIdentifer() {
+    return namedIdentifer;
   }
 
   public final String getOriginalResidueName() {
@@ -192,7 +204,7 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
   }
 
   public final char getOneLetterName() {
-    return identifier.getResidueOneLetterName();
+    return namedIdentifer.residueOneLetterName();
   }
 
   public final boolean isModified() {
@@ -209,9 +221,9 @@ public class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNu
 
   @Override
   public final String toString() {
-    final String chainIdentifier = identifier.getChainIdentifier();
-    final int residueNumber = identifier.getResidueNumber();
-    final String insertionCode = identifier.getInsertionCode();
+    final String chainIdentifier = identifier.chainIdentifier();
+    final int residueNumber = identifier.residueNumber();
+    final String insertionCode = identifier.insertionCode();
     return chainIdentifier
         + '.'
         + modifiedResidueName

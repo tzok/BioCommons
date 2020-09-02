@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.ImmutablePdbAtomLine;
 import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbExpdtaLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
@@ -253,8 +252,8 @@ public final class CifConverter {
 
     for (final QuantifiedBasePair quantifiedBasePair : model.getBasePairs()) {
       final BasePair basePair = quantifiedBasePair.getBasePair();
-      final String left = basePair.getLeft().getChainIdentifier();
-      final String right = basePair.getRight().getChainIdentifier();
+      final String left = basePair.getLeft().chainIdentifier();
+      final String right = basePair.getRight().chainIdentifier();
 
       if (!chainContacts.containsKey(left)) {
         chainContacts.put(left, new HashSet<>());
@@ -283,8 +282,7 @@ public final class CifConverter {
       if (allowedChains.contains(chain.getIdentifier())) {
         for (final PdbResidue residue : chain.getResidues()) {
           for (final PdbAtomLine atom : residue.getAtoms()) {
-            final String chainIdentifier =
-                CifConverter.mapChain(chainMap, atom.chainIdentifier());
+            final String chainIdentifier = CifConverter.mapChain(chainMap, atom.chainIdentifier());
             final ImmutablePdbAtomLine atomLine =
                 ((ImmutablePdbAtomLine) atom)
                     .withSerialNumber(serialNumber)
@@ -309,12 +307,9 @@ public final class CifConverter {
       final BidiMap<? super String, String> chainMap,
       final StringBuilder pdbBuilder) {
     pdbBuilder.append(firstModel.getHeaderLine()).append(System.lineSeparator());
-
-    final PdbExpdtaLine experimentalDataLine = firstModel.getExperimentalDataLine();
-    if (experimentalDataLine.isValid()) {
-      pdbBuilder.append(experimentalDataLine).append(System.lineSeparator());
+    if (!firstModel.getExperimentalDataLine().experimentalTechniques().isEmpty()) {
+      pdbBuilder.append(firstModel.getExperimentalDataLine()).append(System.lineSeparator());
     }
-
     pdbBuilder.append(PdbRemark2Line.PROLOGUE).append(System.lineSeparator());
     pdbBuilder.append(firstModel.getResolutionLine()).append(System.lineSeparator());
 
@@ -327,7 +322,7 @@ public final class CifConverter {
         final MoleculeType moleculeType = CifConverter.getChainType(firstModel, chainIdentifier);
         if (moleculeType == MoleculeType.RNA) {
           chainIdentifier = CifConverter.mapChain(chainMap, chainIdentifier);
-          missingResidue = missingResidue.replaceChainIdentifier(chainIdentifier);
+          missingResidue = missingResidue.withChainIdentifier(chainIdentifier);
           pdbBuilder.append(missingResidue).append(System.lineSeparator());
         }
       }

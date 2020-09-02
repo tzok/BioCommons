@@ -51,13 +51,19 @@ import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.ExperimentalTechnique;
 import pl.poznan.put.pdb.ImmutablePdbAtomLine;
+import pl.poznan.put.pdb.ImmutablePdbExpdtaLine;
+import pl.poznan.put.pdb.ImmutablePdbHeaderLine;
+import pl.poznan.put.pdb.ImmutablePdbModresLine;
+import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.ImmutablePdbRemark2Line;
+import pl.poznan.put.pdb.ImmutablePdbRemark465Line;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbExpdtaLine;
 import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbModresLine;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
@@ -452,7 +458,7 @@ class CifConsumer implements MMcifConsumer {
       }
 
       final PdbModresLine modresLine =
-          new PdbModresLine(
+          ImmutablePdbModresLine.of(
               idCode,
               residueName,
               chainIdentifier,
@@ -475,7 +481,7 @@ class CifConsumer implements MMcifConsumer {
       }
 
       final PdbRemark465Line remark465Line =
-          new PdbRemark465Line(
+          ImmutablePdbRemark465Line.of(
               modelNumber, residueName, chainIdentifier, residueNumber, insertionCode);
       missingResidues.add(remark465Line);
     } else if (Objects.equals(CifConsumer.NDB_STRUCT_NA_BASE_PAIR, s)) {
@@ -487,7 +493,11 @@ class CifConsumer implements MMcifConsumer {
       if (Objects.equals("?", icodeL)) {
         icodeL = " ";
       }
-      final PdbResidueIdentifier left = new PdbResidueIdentifier(chainL, resiL, icodeL);
+      final String resnL = map.get("i_label_comp_id");
+      final char oneLetterL =
+          ResidueTypeDetector.detectResidueTypeFromResidueName(resnL).getOneLetterName();
+      final PdbNamedResidueIdentifier left =
+          ImmutablePdbNamedResidueIdentifier.of(chainL, resiL, icodeL, oneLetterL);
 
       final String chainR = map.get("j_auth_asym_id");
       final int resiR = Integer.parseInt(map.get("j_auth_seq_id"));
@@ -495,7 +505,11 @@ class CifConsumer implements MMcifConsumer {
       if (Objects.equals("?", icodeR)) {
         icodeR = " ";
       }
-      final PdbResidueIdentifier right = new PdbResidueIdentifier(chainR, resiR, icodeR);
+      final String resnR = map.get("j_label_comp_id");
+      final char oneLetterR =
+          ResidueTypeDetector.detectResidueTypeFromResidueName(resnR).getOneLetterName();
+      final PdbNamedResidueIdentifier right =
+          ImmutablePdbNamedResidueIdentifier.of(chainR, resiR, icodeR, oneLetterR);
       final BasePair basePair = new BasePair(left, right);
 
       final String saengerString = map.get("hbond_type_28");
@@ -534,16 +548,19 @@ class CifConsumer implements MMcifConsumer {
   }
 
   public final List<PdbModel> getModels() {
-    final Date date = (depositionDate == null) ? new Date(0L) : depositionDate;
-    final PdbHeaderLine headerLine = new PdbHeaderLine(classification, date, idCode);
+    final PdbHeaderLine headerLine =
+        ImmutablePdbHeaderLine.of(
+            classification != null ? classification : "",
+            depositionDate != null ? depositionDate : new Date(0L),
+            idCode != null ? idCode : "");
 
     final List<ExperimentalTechnique> techniques =
         experimentalTechniques.isEmpty()
             ? Collections.singletonList(ExperimentalTechnique.UNKNOWN)
             : experimentalTechniques;
-    final PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(techniques);
+    final PdbExpdtaLine experimentalDataLine = ImmutablePdbExpdtaLine.of(techniques);
 
-    final PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
+    final PdbRemark2Line resolutionLine = ImmutablePdbRemark2Line.of(resolution);
     final List<PdbModel> result = new ArrayList<>();
 
     for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
