@@ -547,7 +547,7 @@ class CifConsumer implements MMcifConsumer {
     }
   }
 
-  public final List<PdbModel> getModels() {
+  public final List<CifModel> getModels() {
     final PdbHeaderLine headerLine =
         ImmutablePdbHeaderLine.of(
             classification != null ? classification : "",
@@ -561,7 +561,7 @@ class CifConsumer implements MMcifConsumer {
     final PdbExpdtaLine experimentalDataLine = ImmutablePdbExpdtaLine.of(techniques);
 
     final PdbRemark2Line resolutionLine = ImmutablePdbRemark2Line.of(resolution);
-    final List<PdbModel> result = new ArrayList<>();
+    final List<CifModel> result = new ArrayList<>();
 
     for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
       final int modelNumber = entry.getKey();

@@ -31,7 +31,7 @@ public class StructureManagerTest {
     assertThat(models1EHZ.size(), is(1));
     model1EHZ = models1EHZ.get(0);
 
-    final List<PdbModel> models1EVV = StructureManager.loadStructure("1EVV");
+    final List<? extends PdbModel> models1EVV = StructureManager.loadStructure("1EVV");
     assertThat(models1EVV.size(), is(1));
     model1EVV = models1EVV.get(0);
     file1EVV = StructureManager.getFile(model1EVV);

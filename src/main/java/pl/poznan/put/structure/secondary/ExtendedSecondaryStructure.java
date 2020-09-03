@@ -11,9 +11,9 @@ import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.analysis.ImmutableResidueCollection;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
-import pl.poznan.put.pdb.analysis.SimpleResidueCollection;
 import pl.poznan.put.rna.RNAInteractionType;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.Converter;
@@ -261,7 +261,7 @@ public final class ExtendedSecondaryStructure {
       residues.add(residue);
     }
 
-    final ResidueCollection residueCollection = new SimpleResidueCollection(residues);
+    final ResidueCollection residueCollection = ImmutableResidueCollection.of(residues);
     final BpSeq bpSeq = BpSeq.fromResidueCollection(residueCollection, filteredBasePairs);
     final Converter converter = new LevelByLevelConverter(new MinGain(), 1);
     return converter.convert(bpSeq);

@@ -186,7 +186,7 @@ public class PdbModel implements Serializable, ResidueCollection {
     addMissingResiduesAndSaveChain(chainResidues, lastChainIdentifier, missingResidues);
 
     for (final PdbChain chain : chains) {
-      for (final PdbResidue residue : chain.getResidues()) {
+      for (final PdbResidue residue : chain.residues()) {
         identifierToChain.put(residue.toResidueIdentifer(), chain);
       }
     }
@@ -200,7 +200,7 @@ public class PdbModel implements Serializable, ResidueCollection {
         .filter(pdbResidue -> chainIdentifier.equals(pdbResidue.chainIdentifier()))
         .forEach(pdbResidue -> putMissingResidueInRightPlace(chainResidues, pdbResidue));
     missingResidues.removeIf(pdbResidue -> chainIdentifier.equals(pdbResidue.chainIdentifier()));
-    chains.add(new PdbChain(chainIdentifier, chainResidues));
+    chains.add(ImmutablePdbChain.of(chainIdentifier, chainResidues));
   }
 
   private void putMissingResidueInRightPlace(
@@ -352,7 +352,7 @@ public class PdbModel implements Serializable, ResidueCollection {
   }
 
   public final boolean containsAny(final MoleculeType moleculeType) {
-    return chains.stream().anyMatch(chain -> chain.getMoleculeType() == moleculeType);
+    return chains.stream().anyMatch(chain -> chain.moleculeType() == moleculeType);
   }
 
   public PdbModel filteredNewInstance(final MoleculeType moleculeType) {

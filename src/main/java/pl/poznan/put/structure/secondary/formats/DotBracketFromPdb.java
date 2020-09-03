@@ -117,8 +117,8 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     int end = 0;
 
     for (final PdbChain chain : model.getChains()) {
-      end += chain.getResidues().size();
-      strands.add(new StrandView(chain.getIdentifier(), this, start, end));
+      end += chain.residues().size();
+      strands.add(new StrandView(chain.identifier(), this, start, end));
       start = end;
     }
   }

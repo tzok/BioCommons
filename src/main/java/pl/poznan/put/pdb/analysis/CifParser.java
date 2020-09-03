@@ -9,7 +9,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
 
-public class CifParser implements StructureParser {
+public class CifParser {
   private final MMcifParser parser = new SimpleMMcifParser();
   private final CifConsumer consumer = new CifConsumer();
 
@@ -18,8 +18,7 @@ public class CifParser implements StructureParser {
     parser.addMMcifConsumer(consumer);
   }
 
-  @Override
-  public final List<PdbModel> parse(final String structureContent) throws IOException {
+  public final List<CifModel> parse(final String structureContent) throws IOException {
     synchronized (parser) {
       try (final Reader reader = new StringReader(structureContent)) {
         parser.parse(IOUtils.toBufferedReader(reader));

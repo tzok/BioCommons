@@ -1,6 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
 import org.apache.commons.lang3.StringUtils;
+import org.immutables.value.Value;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.rna.torsion.Chi;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @FunctionalInterface
+@Value.Immutable
 public interface ResidueCollection {
   default List<String> findBondLengthViolations() {
     final Set<AtomBasedTorsionAngleType> angleTypes =
@@ -44,6 +46,7 @@ public interface ResidueCollection {
         .collect(Collectors.toList());
   }
 
+  @Value.Parameter
   List<PdbResidue> residues();
 
   default PdbResidue findResidue(

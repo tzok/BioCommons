@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-public class PdbParser implements StructureParser {
+public class PdbParser {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbParser.class);
 
   private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
@@ -58,7 +58,6 @@ public class PdbParser implements StructureParser {
     strictMode = true;
   }
 
-  @Override
   public final synchronized List<PdbModel> parse(final String structureContent) {
     resetState();
 

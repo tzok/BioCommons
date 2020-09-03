@@ -131,7 +131,7 @@ public final class Ct implements Serializable {
     for (final BpSeq.Entry entry : entries) {
       final PdbResidue residue = residues.get(i);
       final PdbChain chain = rna.findChainContainingResidue(residue.toResidueIdentifer());
-      final List<PdbResidue> chainResidues = chain.getResidues();
+      final List<PdbResidue> chainResidues = chain.residues();
 
       final int index = entry.getIndex();
       final int pair = entry.getPair();

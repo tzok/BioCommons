@@ -5,10 +5,10 @@ import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.analysis.ImmutableResidueCollection;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
-import pl.poznan.put.pdb.analysis.SimpleResidueCollection;
 import pl.poznan.put.rna.RNAInteractionType;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 
@@ -29,7 +29,7 @@ public final class CanonicalStructureExtractor {
         residueCollection.residues().stream()
             .filter(pdbResidue -> pdbResidue.getMoleculeType() == MoleculeType.RNA)
             .collect(Collectors.toList());
-    final ResidueCollection collection = new SimpleResidueCollection(residues);
+    final ResidueCollection collection = ImmutableResidueCollection.of(residues);
     final Collection<ClassifiedBasePair> basePairs =
         CanonicalStructureExtractor.basePairs(collection);
     return BpSeq.fromResidueCollection(collection, basePairs);

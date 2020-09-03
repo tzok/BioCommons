@@ -7,13 +7,13 @@ import org.biojava.nbio.structure.io.PDBFileParser;
 import org.junit.Test;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.StructureParser;
 import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.utility.ResourcesHelper;
@@ -226,8 +226,8 @@ public class PdbModelTest {
     assertThat(models.get(0).getChains().size(), is(1));
     assertThat(parsed.get(0).getChains().size(), is(1));
 
-    assertThat(models.get(0).getChains().get(0).getResidues().size(), is(76));
-    assertThat(parsed.get(0).getChains().get(0).getResidues().size(), is(76));
+    assertThat(models.get(0).getChains().get(0).residues().size(), is(76));
+    assertThat(parsed.get(0).getChains().get(0).residues().size(), is(76));
   }
 
   @Test
@@ -246,7 +246,7 @@ public class PdbModelTest {
     assertThat(model.getChains().size(), is(1));
 
     assertThat(structure.getChain("A").getAtomGroups().size(), is(76));
-    assertThat(model.getChains().get(0).getResidues().size(), is(76));
+    assertThat(model.getChains().get(0).residues().size(), is(76));
   }
 
   @Test
@@ -420,8 +420,8 @@ public class PdbModelTest {
 
     final String cif1EHZ = pdbModel.toCif();
 
-    final StructureParser cifParser = new CifParser();
-    final List<PdbModel> cifModels = cifParser.parse(cif1EHZ);
+    final CifParser cifParser = new CifParser();
+    final List<CifModel> cifModels = cifParser.parse(cif1EHZ);
     assertThat(cifModels.size(), is(1));
     final PdbModel cifModel = cifModels.get(0);
 
