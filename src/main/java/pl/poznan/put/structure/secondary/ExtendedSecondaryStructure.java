@@ -8,12 +8,7 @@ import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
-import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.pdb.analysis.ImmutableResidueCollection;
-import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.rna.RNAInteractionType;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.Converter;
@@ -250,19 +245,16 @@ public final class ExtendedSecondaryStructure {
 
   private DotBracket basePairsToDotBracket(
       final Iterable<? extends ClassifiedBasePair> filteredBasePairs) {
-    final List<PdbResidue> residues = new ArrayList<>();
+    final List<PdbNamedResidueIdentifier> identifiers = new ArrayList<>();
     final char[] array = sequence.toCharArray();
 
     for (int i = 0; i < array.length; i++) {
-      final PdbResidueIdentifier identifier = ImmutablePdbResidueIdentifier.of("A", i + 1, " ");
-      final String residueName = String.valueOf(array[i]);
-      final PdbResidue residue =
-          new PdbResidue(identifier, residueName, Collections.emptyList(), true);
-      residues.add(residue);
+      final PdbNamedResidueIdentifier identifier =
+          ImmutablePdbNamedResidueIdentifier.of("A", i + 1, " ", array[i]);
+      identifiers.add(identifier);
     }
 
-    final ResidueCollection residueCollection = ImmutableResidueCollection.of(residues);
-    final BpSeq bpSeq = BpSeq.fromResidueCollection(residueCollection, filteredBasePairs);
+    final BpSeq bpSeq = BpSeq.fromResidueCollection(identifiers, filteredBasePairs);
     final Converter converter = new LevelByLevelConverter(new MinGain(), 1);
     return converter.convert(bpSeq);
   }

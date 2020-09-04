@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.rna.torsion.Chi;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.PseudoTorsionAngleType;
@@ -22,7 +23,7 @@ public interface ResidueCollection {
   default List<String> findBondLengthViolations() {
     final Set<AtomBasedTorsionAngleType> angleTypes =
         residues().stream()
-            .map(PdbResidue::getTorsionAngleTypes)
+            .map(PdbResidue::torsionAngleTypes)
             .flatMap(Collection::stream)
             .filter(torsionAngleType -> torsionAngleType instanceof AtomBasedTorsionAngleType)
             .filter(torsionAngleType -> !(torsionAngleType instanceof PseudoTorsionAngleType))
@@ -62,5 +63,9 @@ public interface ResidueCollection {
       }
     }
     throw new IllegalArgumentException("Failed to find residue: " + query);
+  }
+
+  default List<PdbNamedResidueIdentifier> namedResidueIdentifers() {
+    return residues().stream().map(PdbResidue::namedResidueIdentifer).collect(Collectors.toList());
   }
 }

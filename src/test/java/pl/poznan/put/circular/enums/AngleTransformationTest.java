@@ -1,9 +1,10 @@
 package pl.poznan.put.circular.enums;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Assert;
+import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.ImmutableAngle;
 
 import java.util.stream.Stream;
 
@@ -11,10 +12,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AngleTransformationTest {
-  private static final Angle ZERO = new Angle(0.0, ValueType.DEGREES);
-  private static final Angle HALF = new Angle(90.0, ValueType.DEGREES);
-  private static final Angle ONE = new Angle(180.0, ValueType.DEGREES);
-  private static final Angle ONE_AND_HALF = new Angle(270.0, ValueType.DEGREES);
+  private static final Angle ZERO = ImmutableAngle.of(FastMath.toRadians(0.0));
+  private static final Angle HALF = ImmutableAngle.of(FastMath.toRadians(90.0));
+  private static final Angle ONE = ImmutableAngle.of(FastMath.toRadians(180.0));
+  private static final Angle ONE_AND_HALF = ImmutableAngle.of(FastMath.toRadians(270.0));
 
   @Test
   public final void transform() {
@@ -28,9 +29,7 @@ public class AngleTransformationTest {
             pair -> {
               final Angle expected = pair.getLeft();
               final Angle actual =
-                  new Angle(
-                      AngleTransformation.MATH.transform(pair.getRight().getRadians()),
-                      ValueType.RADIANS);
+                  ImmutableAngle.of(AngleTransformation.MATH.transform(pair.getRight().radians()));
               assertThat(actual, is(expected));
             });
 
@@ -44,9 +43,7 @@ public class AngleTransformationTest {
             pair -> {
               final Angle expected = pair.getLeft();
               final Angle actual =
-                  new Angle(
-                      AngleTransformation.CLOCK.transform(pair.getRight().getRadians()),
-                      ValueType.RADIANS);
+                  ImmutableAngle.of(AngleTransformation.CLOCK.transform(pair.getRight().radians()));
               assertThat(actual, is(expected));
             });
   }

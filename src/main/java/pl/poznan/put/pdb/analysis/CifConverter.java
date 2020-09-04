@@ -50,10 +50,13 @@ public final class CifConverter {
     super();
   }
 
-  public static void main(final String[] args) {
-    System.out.println("A");
-  }
-
+  /**
+   * Parse file in mmCIF format and convert it into a container of multiple PDB files.
+   *
+   * @param cifFile Path to mmCIF file.
+   * @return A container of (possibly) multiple PDB files with mapped chain names.
+   * @throws IOException When reading of mmCIF file or writing to output files fails.
+   */
   public static ModelContainer convert(final File cifFile) throws IOException {
     final CifParser cifParser = new CifParser();
     final String cifContents = FileUtils.readFileToString(cifFile, Charset.defaultCharset());
@@ -61,8 +64,8 @@ public final class CifConverter {
     return CifConverter.convert(cifFile, models);
   }
 
-  private static ModelContainer convert(final File mmCifFile, final List<CifModel> models)
-      throws IOException {
+  private static ModelContainer convert(
+      final File cifFile, final Iterable<? extends CifModel> models) throws IOException {
     final List<CifModel> rnaModels = new ArrayList<>();
 
     for (final CifModel model : models) {
@@ -74,12 +77,12 @@ public final class CifConverter {
 
     if (rnaModels.isEmpty()) {
       CifConverter.LOGGER.info("Neither model contain any RNA chain");
-      return CifContainer.emptyInstance(mmCifFile);
+      return CifContainer.emptyInstance(cifFile);
     }
 
     for (final PdbModel model : rnaModels) {
       if (!CifConverter.isConversionPossible(model)) {
-        return CifContainer.emptyInstance(mmCifFile);
+        return CifContainer.emptyInstance(cifFile);
       }
     }
 
@@ -104,7 +107,7 @@ public final class CifConverter {
       FileUtils.write(pdbFile, pdbData, Charset.defaultCharset());
     }
 
-    return ImmutableCifContainer.of(mmCifFile, fileChainMap);
+    return ImmutableCifContainer.of(cifFile, fileChainMap);
   }
 
   private static boolean isConversionPossible(final PdbModel model) {
@@ -120,6 +123,13 @@ public final class CifConverter {
     return true;
   }
 
+  /**
+   * Convert a parsed mmCIF model into a set of PDB files with mapped chain names.
+   *
+   * @param model A parse mmCIF model.
+   * @return A container of (possibly) multiple PDB files with mapped chain names.
+   * @throws IOException When writing to output files fails.
+   */
   public static ModelContainer convert(final CifModel model) throws IOException {
     final File cifFile = File.createTempFile("cif2pdb", ".cif");
     FileUtils.write(cifFile, model.toCif(), Charset.defaultCharset());
@@ -277,7 +287,7 @@ public final class CifConverter {
     for (final PdbChain chain : rnaModel.getChains()) {
       if (allowedChains.contains(chain.identifier())) {
         for (final PdbResidue residue : chain.residues()) {
-          for (final PdbAtomLine atom : residue.getAtoms()) {
+          for (final PdbAtomLine atom : residue.atoms()) {
             final String chainIdentifier = CifConverter.mapChain(chainMap, atom.chainIdentifier());
             final ImmutablePdbAtomLine atomLine =
                 ((ImmutablePdbAtomLine) atom)
@@ -288,9 +298,6 @@ public final class CifConverter {
             pdbBuilder.append(atomLine).append(System.lineSeparator());
           }
         }
-
-        // pdbBuilder.append("TER                        ");
-        // pdbBuilder.append(System.lineSeparator());
       }
     }
 

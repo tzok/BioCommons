@@ -1,5 +1,6 @@
 package pl.poznan.put.protein.aminoacid;
 
+import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
@@ -79,37 +80,37 @@ public enum AminoAcidType implements ResidueInformationProvider {
   }
 
   @Override
-  public MoleculeType getMoleculeType() {
-    return sidechain.getMoleculeType();
+  public MoleculeType moleculeType() {
+    return sidechain.moleculeType();
   }
 
   @Override
-  public List<ResidueComponent> getAllMoleculeComponents() {
-    return sidechain.getAllMoleculeComponents();
+  public List<ResidueComponent> moleculeComponents() {
+    return sidechain.moleculeComponents();
   }
 
   @Override
-  public String getDescription() {
-    return sidechain.getDescription();
+  public String description() {
+    return sidechain.description();
   }
 
   @Override
-  public char getOneLetterName() {
-    return sidechain.getOneLetterName();
+  public char oneLetterName() {
+    return sidechain.oneLetterName();
   }
 
   @Override
-  public String getDefaultPdbName() {
-    return sidechain.getDefaultPdbName();
+  public String defaultPdbName() {
+    return sidechain.defaultPdbName();
   }
 
   @Override
-  public List<String> getPdbNames() {
-    return sidechain.getPdbNames();
+  public List<String> allPdbNames() {
+    return sidechain.allPdbNames();
   }
 
   @Override
-  public List<TorsionAngleType> getTorsionAngleTypes() {
-    return sidechain.getTorsionAngleTypes();
+  public List<TorsionAngleType> torsionAngleTypes() {
+    return sidechain.torsionAngleTypes();
   }
 }

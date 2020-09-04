@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.Bond;
 import pl.poznan.put.atom.BondLength;
+import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -59,7 +61,7 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     final List<AtomPair> atomPairs = findAtomPairs(residues, currentIndex);
 
     if (atomPairs.isEmpty()) {
-      return TorsionAngleValue.invalidInstance(this);
+      return new TorsionAngleValue(this, ImmutableAngle.of(Double.NaN));
     }
 
     assert atomPairs.size() == 3;

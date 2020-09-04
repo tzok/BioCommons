@@ -45,8 +45,8 @@ public class CifParserTest {
     assertThat(residueE164.isMissing(), is(true));
 
     final PdbResidue residueS169 = model.findResidue("S", 169, " ");
-    assertThat(residueS169.getOriginalResidueName(), is("API"));
-    assertThat(residueS169.getModifiedResidueName(), is("LYS"));
+    assertThat(residueS169.residueName(), is("API"));
+    assertThat(residueS169.modifiedResidueName(), is("LYS"));
 
     final List<ExperimentalTechnique> experimentalTechniques =
         model.getExperimentalDataLine().experimentalTechniques();

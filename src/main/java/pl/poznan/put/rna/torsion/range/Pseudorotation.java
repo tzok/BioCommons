@@ -1,8 +1,9 @@
 package pl.poznan.put.rna.torsion.range;
 
 import lombok.Getter;
+import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.torsion.range.RangeProvider;
@@ -34,23 +35,20 @@ public enum Pseudorotation implements Range {
   INVALID("invalid", Double.NaN);
 
   private static final RangeProvider PROVIDER =
-      angle -> {
-        if (angle.isValid()) {
-          return Arrays.stream(Pseudorotation.values())
+      angle ->
+          Arrays.stream(Pseudorotation.values())
               .filter(candidate -> angle.isBetween(candidate.begin, candidate.end))
               .findFirst()
               .orElse(Pseudorotation.INVALID);
-        }
-        return Pseudorotation.INVALID;
-      };
+
   private final String displayName;
   private final Angle begin;
   private final Angle end;
 
   Pseudorotation(final String displayName, final double degrees) {
     this.displayName = displayName;
-    begin = new Angle(degrees - 9.0, ValueType.DEGREES);
-    end = new Angle(degrees + 9.0, ValueType.DEGREES);
+    begin = ImmutableAngle.of(FastMath.toRadians(degrees - 9.0));
+    end = ImmutableAngle.of(FastMath.toRadians(degrees + 9.0));
   }
 
   public static RangeProvider getProvider() {
@@ -72,7 +70,7 @@ public enum Pseudorotation implements Range {
       return RangeDifference.EQUAL;
     }
 
-    double difference = begin.subtract(other.getBegin()).getDegrees();
+    double difference = begin.subtract(other.getBegin()).degrees();
     if (difference > 90.0) {
       difference = 180.0 - difference;
     }

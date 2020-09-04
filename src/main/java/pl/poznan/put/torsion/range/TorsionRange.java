@@ -1,8 +1,9 @@
 package pl.poznan.put.torsion.range;
 
 import lombok.Getter;
+import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.ImmutableAngle;
 
 import java.util.Arrays;
 
@@ -18,23 +19,19 @@ public enum TorsionRange implements Range {
   INVALID("invalid", Double.NaN, Double.NaN);
 
   private static final RangeProvider PROVIDER =
-      angle -> {
-        if (angle.isValid()) {
-          return Arrays.stream(TorsionRange.values())
+      angle ->
+          Arrays.stream(TorsionRange.values())
               .filter(torsionRange -> angle.isBetween(torsionRange.begin, torsionRange.end))
               .findFirst()
               .orElse(TorsionRange.INVALID);
-        }
-        return TorsionRange.INVALID;
-      };
   private final String displayName;
   private final Angle begin;
   private final Angle end;
 
   TorsionRange(final String displayName, final double begin, final double end) {
     this.displayName = displayName;
-    this.begin = new Angle(begin, ValueType.DEGREES);
-    this.end = new Angle(end, ValueType.DEGREES);
+    this.begin = ImmutableAngle.of(FastMath.toRadians(begin));
+    this.end = ImmutableAngle.of(FastMath.toRadians(end));
   }
 
   public static RangeProvider getProvider() {
@@ -60,7 +57,7 @@ public enum TorsionRange implements Range {
       return RangeDifference.INVALID;
     }
 
-    final int delta = (int) Math.round(begin.subtract(other.getBegin()).getDegrees360());
+    final int delta = (int) Math.round(begin.subtract(other.getBegin()).degrees360());
     return RangeDifference.fromValue(delta / 60);
   }
 }

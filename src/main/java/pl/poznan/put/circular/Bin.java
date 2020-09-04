@@ -10,5 +10,5 @@ interface Bin {
   double radiansStart();
 
   @Value.Parameter
-  List<Circular> data();
+  List<Angle> data();
 }

@@ -16,10 +16,6 @@ public class TorsionAngleValue implements DisplayableExportable {
     this.value = value;
   }
 
-  public static TorsionAngleValue invalidInstance(final TorsionAngleType type) {
-    return new TorsionAngleValue(type, Angle.invalidInstance());
-  }
-
   @Override
   public final String toString() {
     return getLongDisplayName();
@@ -29,19 +25,17 @@ public class TorsionAngleValue implements DisplayableExportable {
   public final String getLongDisplayName() {
     return String.format(
         "%s %s",
-        angleType.getLongDisplayName(), AngleFormat.degreesRoundedToHundredth(value.getRadians()));
+        angleType.getLongDisplayName(), AngleFormat.degreesRoundedToHundredth(value.radians()));
   }
 
   @Override
   public final String getShortDisplayName() {
     return String.format(
-        "%s %s",
-        angleType.getShortDisplayName(), AngleFormat.degreesRoundedToOne(value.getRadians()));
+        "%s %s", angleType.getShortDisplayName(), AngleFormat.degreesRoundedToOne(value.radians()));
   }
 
   @Override
   public final String getExportName() {
-    return String.format(
-        "%s %s", angleType.getExportName(), AngleFormat.degrees(value.getRadians()));
+    return String.format("%s %s", angleType.getExportName(), AngleFormat.degrees(value.radians()));
   }
 }

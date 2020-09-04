@@ -3,6 +3,7 @@ package pl.poznan.put.torsion;
 import lombok.EqualsAndHashCode;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.samples.AngleSample;
+import pl.poznan.put.circular.samples.ImmutableAngleSample;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.torsion.range.Range;
@@ -118,7 +119,7 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     final PdbResidue residue = residues.get(currentIndex);
     final List<Angle> angles = new ArrayList<>();
 
-    for (final TorsionAngleType type : residue.getTorsionAngleTypes()) {
+    for (final TorsionAngleType type : residue.torsionAngleTypes()) {
       for (final MasterTorsionAngleType masterType : consideredAngles) {
         if (masterType.getAngleTypes().contains(type)) {
           final TorsionAngleValue angleValue = type.calculate(residues, currentIndex);
@@ -127,8 +128,8 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
       }
     }
 
-    final AngleSample angleSample = new AngleSample(angles);
-    return new TorsionAngleValue(this, angleSample.getMeanDirection());
+    final AngleSample angleSample = ImmutableAngleSample.of(angles);
+    return new TorsionAngleValue(this, angleSample.meanDirection());
   }
 
   public final TorsionAngleValue calculate(
@@ -145,8 +146,8 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
       }
     }
 
-    final AngleSample angleSample = new AngleSample(angles);
-    return new TorsionAngleValue(this, angleSample.getMeanDirection());
+    final AngleSample angleSample = ImmutableAngleSample.of(angles);
+    return new TorsionAngleValue(this, angleSample.meanDirection());
   }
 
   @Override

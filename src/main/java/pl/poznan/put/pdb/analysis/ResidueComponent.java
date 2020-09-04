@@ -6,8 +6,10 @@ import pl.poznan.put.atom.AtomName;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public abstract class ResidueComponent {
   private final String residueComponentName;
@@ -43,12 +45,12 @@ public abstract class ResidueComponent {
     return residueComponentName;
   }
 
-  public final MoleculeType getMoleculeType() {
+  public final MoleculeType moleculeType() {
     return moleculeType;
   }
 
-  public final List<AtomName> getAtoms() {
-    return Collections.unmodifiableList(atoms);
+  public final Set<AtomName> getAtoms() {
+    return Collections.unmodifiableSet(new HashSet<>(atoms));
   }
 
   public final Collection<AtomName> getAdditionalAtoms() {

@@ -22,7 +22,7 @@ public class Histogram {
    * @param data A collection of circular data.
    * @param binWidth Bin width in range [0, pi).
    */
-  public Histogram(final Collection<? extends Circular> data, final double binWidth) {
+  public Histogram(final Collection<Angle> data, final double binWidth) {
     super();
     this.binWidth = binWidth;
     dataSize = (double) data.size();
@@ -32,10 +32,10 @@ public class Histogram {
     }
 
     for (double radiansStart = 0.0; radiansStart < MathUtils.TWO_PI; radiansStart += binWidth) {
-      final List<Circular> binData = new ArrayList<>();
+      final List<Angle> binData = new ArrayList<>();
 
-      for (final Circular circular : data) {
-        final double radians = circular.getRadians2PI();
+      for (final Angle circular : data) {
+        final double radians = circular.radians2PI();
         if ((radians >= radiansStart) && (radians < (radiansStart + binWidth))) {
           binData.add(circular);
         }
@@ -51,7 +51,7 @@ public class Histogram {
    * @param radiansStart Value in radians which describes bin starting point (precision 1.0e-3).
    * @return A collection of circular values in the found bin.
    */
-  public final Collection<Circular> getBin(final double radiansStart) {
+  public final Collection<Angle> getBin(final double radiansStart) {
     return bins.stream()
         .filter(bin -> Precision.equals(bin.radiansStart(), radiansStart, 1.0e-3))
         .findFirst()

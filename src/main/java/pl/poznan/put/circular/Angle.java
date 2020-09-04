@@ -1,15 +1,16 @@
 package pl.poznan.put.circular;
 
-import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
-import pl.poznan.put.circular.enums.ValueType;
+import org.immutables.value.Value;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 
+import javax.annotation.Nullable;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -17,59 +18,10 @@ import java.util.regex.Pattern;
  *
  * @author tzok
  */
-public class Angle extends Circular {
-  private static final Angle INVALID = new Angle(Double.NaN, ValueType.RADIANS);
+@Value.Immutable
+public abstract class Angle implements Comparable<Angle> {
   private static final Pattern DOT = Pattern.compile("[.]");
   private static final int MINUTES_IN_DAY = 24 * 60;
-
-  public Angle(final double value, final ValueType valueType) {
-    super(value, valueType);
-  }
-
-  public static void main(final String[] args) {
-    for (int count = 100000; count < 1000000; count += 100000) {
-      final double xs[] = new double[count];
-      final double ys[] = new double[count];
-
-      for (int i = 0; i < count; i++) {
-        xs[i] = RandomUtils.nextDouble(0, 2 * FastMath.PI);
-        ys[i] = RandomUtils.nextDouble(0, 2 * FastMath.PI);
-      }
-
-      System.out.println("Count: " + count);
-
-      final StopWatch stopWatch = new StopWatch();
-      stopWatch.start();
-      for (int i = 0; i < count; i++) {
-        Angle.subtractByMinimum(xs[i], ys[i]);
-        Angle.subtractByMinimum(ys[i], xs[i]);
-      }
-      stopWatch.stop();
-      System.out.println("Angle.subtractByMinimum(x,y):   " + stopWatch);
-
-      stopWatch.reset();
-      stopWatch.start();
-      for (int i = 0; i < count; i++) {
-        Angle.subtractByAbsolutes(xs[i], ys[i]);
-        Angle.subtractByAbsolutes(ys[i], xs[i]);
-      }
-      stopWatch.stop();
-      System.out.println("Angle.subtractByAbsolutes(x,y): " + stopWatch);
-
-      stopWatch.reset();
-      stopWatch.start();
-      for (int i = 0; i < count; i++) {
-        Angle.subtractAsVectors(xs[i], ys[i]);
-        Angle.subtractAsVectors(ys[i], xs[i]);
-      }
-      stopWatch.stop();
-      System.out.println("Angle.subtractAsVectors(x,y):   " + stopWatch);
-    }
-  }
-
-  public static Angle invalidInstance() {
-    return Angle.INVALID;
-  }
 
   /**
    * Calculate angle ABC.
@@ -83,7 +35,7 @@ public class Angle extends Circular {
       final Vector3D coordA, final Vector3D coordB, final Vector3D coordC) {
     final Vector3D vectorAB = coordB.subtract(coordA);
     final Vector3D vectorCB = coordB.subtract(coordC);
-    return new Angle(Vector3D.angle(vectorAB, vectorCB), ValueType.RADIANS);
+    return ImmutableAngle.of(Vector3D.angle(vectorAB, vectorCB));
   }
 
   /**
@@ -104,8 +56,7 @@ public class Angle extends Circular {
     final Vector3D tmp1 = v1.crossProduct(v2);
     final Vector3D tmp2 = v2.crossProduct(v3);
     final Vector3D tmp3 = v1.scalarMultiply(v2.getNorm());
-    return new Angle(
-        FastMath.atan2(tmp3.dotProduct(tmp2), tmp1.dotProduct(tmp2)), ValueType.RADIANS);
+    return ImmutableAngle.of(FastMath.atan2(tmp3.dotProduct(tmp2), tmp1.dotProduct(tmp2)));
   }
 
   /**
@@ -130,8 +81,8 @@ public class Angle extends Circular {
       final int hours = Integer.parseInt(split[0]);
       int minutes = Integer.parseInt(split[1]);
       minutes += hours * 60;
-      return new Angle(
-          (MathUtils.TWO_PI * (double) minutes) / (double) Angle.MINUTES_IN_DAY, ValueType.RADIANS);
+      return ImmutableAngle.of(
+          (MathUtils.TWO_PI * (double) minutes) / (double) Angle.MINUTES_IN_DAY);
     } catch (final NumberFormatException e) {
       throw new InvalidVectorFormatException(
           "Required format is HH.MM eg. 02.40. The input given was: " + hourMinute, e);
@@ -176,6 +127,55 @@ public class Angle extends Circular {
     return FastMath.acos(v);
   }
 
+  /** @return Value in radians in range (-pi; pi]. */
+  @Value.Parameter
+  public abstract double radians();
+
+  @Value.Check
+  protected Angle normalize() {
+    double value = radians();
+
+    if (Double.isNaN(value)) {
+      return this;
+    }
+
+    Validate.finite(value);
+
+    if ((value > -FastMath.PI && value <= FastMath.PI)) {
+      return this;
+    }
+
+    while (value <= -FastMath.PI) {
+      value += MathUtils.TWO_PI;
+    }
+    while (value > FastMath.PI) {
+      value -= MathUtils.TWO_PI;
+    }
+    return ImmutableAngle.of(value);
+  }
+
+  /** @return Value in degrees in range (-180; 180]. */
+  @Value.Lazy
+  public double degrees() {
+    return FastMath.toDegrees(radians());
+  }
+
+  /** @return Value in degrees in range [0; 360). */
+  @Value.Lazy
+  public double degrees360() {
+    return FastMath.toDegrees(radians2PI());
+  }
+
+  /** @return Value in radians in range [0; 2pi). */
+  @Value.Lazy
+  public double radians2PI() {
+    return (radians() < 0.0) ? (radians() + MathUtils.TWO_PI) : radians();
+  }
+
+  @Value.Lazy
+  public boolean isValid() {
+    return !Double.isNaN(radians());
+  }
   /**
    * Return true if this instance is in range [begin; end). For example 45 degrees is between 30
    * degrees and 60 degrees. Also, 15 degrees is between -30 and 30 degrees.
@@ -185,9 +185,9 @@ public class Angle extends Circular {
    * @return true if object is between [begin; end)
    */
   public final boolean isBetween(final Angle begin, final Angle end) {
-    final double radians2PI = getRadians2PI();
-    final double begin2PI = begin.getRadians2PI();
-    final double end2PI = end.getRadians2PI();
+    final double radians2PI = radians2PI();
+    final double begin2PI = begin.radians2PI();
+    final double end2PI = end.radians2PI();
 
     return (begin2PI < end2PI)
         ? ((radians2PI >= begin2PI) && (radians2PI < end2PI))
@@ -201,7 +201,7 @@ public class Angle extends Circular {
    * @return Angular value multiplied.
    */
   public final Angle multiply(final double v) {
-    return new Angle((getRadians() * v), ValueType.RADIANS);
+    return ImmutableAngle.of((radians() * v));
   }
 
   /**
@@ -211,8 +211,7 @@ public class Angle extends Circular {
    * @return Result of this - other in angular space.
    */
   public final Angle subtract(final Angle other) {
-    return new Angle(
-        Angle.subtractByAbsolutes(getRadians(), other.getRadians()), ValueType.RADIANS);
+    return ImmutableAngle.of(Angle.subtractByAbsolutes(radians(), other.radians()));
   }
 
   /**
@@ -223,14 +222,14 @@ public class Angle extends Circular {
    * @return An ordered difference from first to second angle in range [-180; 180) degrees.
    */
   public final Angle orderedSubtract(final Angle other) {
-    double d = getRadians() - other.getRadians();
+    double d = radians() - other.radians();
     while (Precision.compareTo(d, -FastMath.PI, 1.0e-3) < 0) {
       d += MathUtils.TWO_PI;
     }
     while (Precision.compareTo(d, FastMath.PI, 1.0e-3) > 0) {
       d -= MathUtils.TWO_PI;
     }
-    return new Angle(d, ValueType.RADIANS);
+    return ImmutableAngle.of(d);
   }
 
   /**
@@ -240,6 +239,22 @@ public class Angle extends Circular {
    * @return Value in range [0; 2] denoting distance between two angles.
    */
   public final double distance(final Angle other) {
-    return 1 - FastMath.cos(getRadians() - other.getRadians());
+    return 1 - FastMath.cos(radians() - other.radians());
+  }
+
+  @Override
+  public final int compareTo(final Angle t) {
+    return Double.compare(radians(), t.radians());
+  }
+
+  @Override
+  public final boolean equals(@Nullable final Object obj) {
+    if (this == obj) return true;
+    return obj instanceof Angle && Precision.equals(radians(), ((Angle) obj).radians(), 1.0e-3);
+  }
+
+  @Override
+  public final String toString() {
+    return String.format(Locale.US, "Angle{degrees=%.2f}", degrees());
   }
 }

@@ -51,7 +51,7 @@ public abstract class PdbChain implements Comparable<PdbChain>, Serializable {
 
   public final String getSequence() {
     return residues().stream()
-        .map(residue -> String.valueOf(residue.getOneLetterName()))
+        .map(residue -> String.valueOf(residue.oneLetterName()))
         .collect(Collectors.joining());
   }
 }

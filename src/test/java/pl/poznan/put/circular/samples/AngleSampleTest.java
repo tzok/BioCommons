@@ -4,7 +4,7 @@ import org.apache.commons.math3.util.FastMath;
 import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.ImmutableAngle;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,27 +24,27 @@ public class AngleSampleTest {
 
     final List<Angle> data =
         Arrays.stream(degrees)
-            .mapToObj(v -> new Angle(v, ValueType.DEGREES))
+            .mapToObj(v -> ImmutableAngle.of(FastMath.toRadians(v)))
             .collect(Collectors.toList());
-    angleSample = new AngleSample(data);
+    angleSample = ImmutableAngleSample.of(data);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public final void testEmptySample() {
-    new AngleSample(Collections.emptyList());
+    ImmutableAngleSample.of(Collections.emptyList());
   }
 
   @Test
   public final void testMeanDirection() {
     /* Example 2.1 from Mardia & Jupp "Directional Statistics". */
-    assertThat(angleSample.getMeanDirection(), is(new Angle(51, ValueType.DEGREES)));
-    assertThat(FastMath.abs(angleSample.getMeanResultantLength() - 0.711) < 1.0e-3, is(true));
+    assertThat(angleSample.meanDirection(), is(ImmutableAngle.of(FastMath.toRadians(51.05))));
+    assertThat(FastMath.abs(angleSample.meanResultantLength() - 0.711) < 1.0e-3, is(true));
   }
 
   @Test
   public final void testMedian() {
     /* Example 2.2 from Mardia & Jupp "Directional Statistics". */
-    assertThat(angleSample.getMedianDirection(), is(new Angle(52, ValueType.DEGREES)));
+    assertThat(angleSample.medianDirection(), is(ImmutableAngle.of(FastMath.toRadians(52))));
   }
 
   @Test
@@ -52,10 +52,10 @@ public class AngleSampleTest {
     final double[] degrees = {0.0, 10.0, 20.0, 30.0};
     final List<Angle> data =
         Arrays.stream(degrees)
-            .mapToObj(v -> new Angle(v, ValueType.DEGREES))
+            .mapToObj(v -> ImmutableAngle.of(FastMath.toRadians(v)))
             .collect(Collectors.toList());
-    final AngleSample sample = new AngleSample(data);
-    assertThat(sample.getMedianDirection(), is(new Angle(15.0, ValueType.DEGREES)));
+    final AngleSample sample = ImmutableAngleSample.of(data);
+    assertThat(sample.medianDirection(), is(ImmutableAngle.of(FastMath.toRadians(15.0))));
   }
 
   @Test
@@ -63,10 +63,10 @@ public class AngleSampleTest {
     final double[] degrees = {0.0, -10.0, -20.0, -30.0};
     final List<Angle> data =
         Arrays.stream(degrees)
-            .mapToObj(v -> new Angle(v, ValueType.DEGREES))
+            .mapToObj(v -> ImmutableAngle.of(FastMath.toRadians(v)))
             .collect(Collectors.toList());
-    final AngleSample sample = new AngleSample(data);
-    assertThat(sample.getMedianDirection(), is(new Angle(-15.0, ValueType.DEGREES)));
+    final AngleSample sample = ImmutableAngleSample.of(data);
+    assertThat(sample.medianDirection(), is(ImmutableAngle.of(FastMath.toRadians(-15.0))));
   }
 
   @Test
@@ -74,9 +74,9 @@ public class AngleSampleTest {
     final double[] degrees = {-10.0, 0.0, 10.0, 20.0};
     final List<Angle> data =
         Arrays.stream(degrees)
-            .mapToObj(v -> new Angle(v, ValueType.DEGREES))
+            .mapToObj(v -> ImmutableAngle.of(FastMath.toRadians(v)))
             .collect(Collectors.toList());
-    final AngleSample sample = new AngleSample(data);
-    assertThat(sample.getMedianDirection(), is(new Angle(5.0, ValueType.DEGREES)));
+    final AngleSample sample = ImmutableAngleSample.of(data);
+    assertThat(sample.medianDirection(), is(ImmutableAngle.of(FastMath.toRadians(5.0))));
   }
 }

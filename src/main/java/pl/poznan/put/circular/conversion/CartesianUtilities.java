@@ -6,8 +6,9 @@ import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.RotationConvention;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.ImmutableAngle;
 
 /**
  * A class containg utility functions on the edge between cartesian and trigonometric
@@ -29,8 +30,8 @@ public final class CartesianUtilities {
             coordB,
             coordC,
             1.512413303300389,
-            new Angle(110.54, ValueType.DEGREES),
-            new Angle(-128.05, ValueType.DEGREES));
+            ImmutableAngle.of(FastMath.toRadians(110.54)),
+            ImmutableAngle.of(FastMath.toRadians(-128.05)));
 
     final Vector3D vectorBC = coordC.subtract(coordB);
     final Vector3D vectorCD = expectedCoordD.subtract(coordC).negate();
@@ -71,11 +72,9 @@ public final class CartesianUtilities {
 
     final Rotation rotationFirst =
         new Rotation(
-            plane.getNormal().normalize(),
-            angleBCD.getRadians(),
-            RotationConvention.VECTOR_OPERATOR);
+            plane.getNormal().normalize(), angleBCD.radians(), RotationConvention.VECTOR_OPERATOR);
     final Rotation rotationSecond =
-        new Rotation(unitBC, torsionABCD.getRadians(), RotationConvention.VECTOR_OPERATOR);
+        new Rotation(unitBC, torsionABCD.radians(), RotationConvention.VECTOR_OPERATOR);
 
     final Vector3D coordD0 = CartesianUtilities.coordD0(coordB, coordC, lengthCD);
     final Vector3D coordD1 = rotationFirst.applyTo(coordD0);

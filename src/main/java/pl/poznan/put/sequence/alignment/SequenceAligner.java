@@ -120,7 +120,7 @@ public final class SequenceAligner {
         final AbstractSequence sequence = (AbstractSequence) alignedSequence.getOriginalSequence();
 
         final PdbCompactFragment fragment = mapSequenceName.get(sequence);
-        String name = fragment.getName();
+        String name = fragment.name();
         name = name.substring(0, Math.min(name.length(), 11));
 
         builder.append(String.format("%-12s", name));

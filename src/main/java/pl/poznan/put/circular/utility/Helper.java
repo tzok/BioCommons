@@ -4,9 +4,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.svg.SVGDocument;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.Axis;
-import pl.poznan.put.circular.Circular;
-import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.utility.svg.Format;
 import pl.poznan.put.utility.svg.SVGHelper;
 
@@ -70,25 +67,6 @@ final class Helper {
         .flatMap(line -> Arrays.stream(StringUtils.split(line)))
         .filter(token -> !StringUtils.isBlank(token))
         .map(Angle::fromHourMinuteString)
-        .collect(Collectors.toCollection(() -> new ArrayList<>(lines.length)));
-  }
-
-  /**
-   * Parse input string in the following way: lines beginning with # are ignored, all other are
-   * tokenized. Each token is a value in degrees which is converted into an {@link Axis}.
-   *
-   * @param content Input string.
-   * @return A list of {@link Axis} values as parsed from the input.
-   */
-  public static List<Axis> loadAxisData(final String content) {
-    final String[] lines = StringUtils.split(content, '\n');
-
-    return Arrays.stream(lines)
-        .filter(line -> line.isEmpty() || (line.charAt(0) != '#'))
-        .flatMap(line -> Arrays.stream(StringUtils.split(line)))
-        .filter(token -> !StringUtils.isBlank(token))
-        .mapToDouble(Double::parseDouble)
-        .mapToObj(degrees -> new Axis(degrees, ValueType.DEGREES))
         .collect(Collectors.toCollection(() -> new ArrayList<>(lines.length)));
   }
 }

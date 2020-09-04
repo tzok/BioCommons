@@ -86,8 +86,8 @@ public enum Saenger {
    *     all others.
    */
   public static Saenger assumeCanonical(final BasePair basePair) {
-    final char l = Character.toUpperCase(basePair.getLeft().residueOneLetterName());
-    final char r = Character.toUpperCase(basePair.getRight().residueOneLetterName());
+    final char l = Character.toUpperCase(basePair.getLeft().oneLetterName());
+    final char r = Character.toUpperCase(basePair.getRight().oneLetterName());
     final String pair = String.format("%c%c", l, r);
 
     if ("CG".equals(pair) || "GC".equals(pair)) {

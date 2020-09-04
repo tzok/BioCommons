@@ -1,77 +1,140 @@
 package pl.poznan.put.circular.samples;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
+import org.immutables.value.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** A class to compute statistics from a sample of angular values. */
-public final class AngleSample {
-  private final List<Angle> data;
-  private final Angle meanDirection;
-  private final double meanResultantLength;
-  private final double circularVariance;
-  private final double circularStandardDeviation;
-  private final double circularDispersion;
-  private final double skewness;
-  private final double kurtosis;
-  private final Angle medianDirection;
-  private final double meanDeviation;
+@Value.Immutable
+public abstract class AngleSample {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AngleSample.class);
 
-  public AngleSample(final List<Angle> data) {
-    super();
+  @Value.Parameter
+  public abstract Collection<Angle> data();
 
-    if (data.isEmpty()) {
-      throw new IllegalArgumentException("The sample cannot be empty");
-    }
+  @Value.Lazy
+  protected List<Angle> sortedData() {
+    return data().stream().sorted().collect(Collectors.toList());
+  }
 
-    this.data = new ArrayList<>(data);
-    Collections.sort(this.data);
+  @Value.Check
+  protected void check() {
+    Validate.notEmpty(data());
+  }
 
-    final TrigonometricMoment um1 = TrigonometricMoment.computeUncentered(data, 1);
-    meanDirection = um1.getMeanDirection();
-    meanResultantLength = um1.getMeanResultantLength();
-    circularVariance = 1.0 - meanResultantLength;
-    circularStandardDeviation = FastMath.sqrt(-2.0 * FastMath.log(meanResultantLength));
+  @Value.Lazy
+  protected TrigonometricMoment um1() {
+    return TrigonometricMoment.computeUncentered(data(), 1);
+  }
 
-    final TrigonometricMoment cm2 = TrigonometricMoment.computeCentered(data, 2, meanDirection);
-    final TrigonometricMoment um2 = TrigonometricMoment.computeUncentered(data, 2);
-    circularDispersion =
-        (1.0 - cm2.getMeanResultantLength()) / (2.0 * FastMath.pow(meanResultantLength, 2));
-    skewness =
-        (cm2.getMeanResultantLength()
-                * FastMath.sin(
-                    cm2.getMeanDirection().subtract(meanDirection.multiply(2.0)).getRadians()))
-            / FastMath.sqrt(circularVariance);
-    kurtosis =
-        ((cm2.getMeanResultantLength()
-                    * FastMath.cos(
-                        um2.getMeanDirection().subtract(meanDirection.multiply(2.0)).getRadians()))
-                - FastMath.pow(meanResultantLength, 4))
-            / FastMath.pow(circularVariance, 2);
+  @Value.Lazy
+  protected TrigonometricMoment cm2() {
+    return TrigonometricMoment.computeCentered(data(), 2, meanDirection());
+  }
 
-    final Pair<Angle, Double> pair = findMedianAndMeanDeviation();
-    medianDirection = pair.getKey();
-    meanDeviation = pair.getValue();
+  @Value.Lazy
+  protected TrigonometricMoment um2() {
+    return TrigonometricMoment.computeUncentered(data(), 2);
+  }
+
+  /** @return A mean angular value of the sample. */
+  @Value.Lazy
+  public Angle meanDirection() {
+    return um1().getMeanDirection();
+  }
+
+  /**
+   * @return Length of the mean direction vector in range [0; 1]. The closer it is to 1, the less
+   *     diverse are the data in the sample.
+   */
+  @Value.Lazy
+  public double meanResultantLength() {
+    return um1().getMeanResultantLength();
+  }
+
+  /** @return A measure of variance of the data on the circle, taking values in range [0; 1]. */
+  @Value.Lazy
+  public double circularVariance() {
+    return 1.0 - meanResultantLength();
+  }
+
+  /**
+   * @return A measure of variance of the data on the circle, taking values in range [0; &infin;].
+   */
+  @Value.Lazy
+  public double circularStandardDeviation() {
+    return FastMath.sqrt(-2.0 * FastMath.log(meanResultantLength()));
+  }
+
+  /**
+   * @return Another measure of variance of the data depending on the first and second central
+   *     trigonometric moment.
+   */
+  @Value.Lazy
+  public double circularDispersion() {
+    return (1.0 - cm2().getMeanResultantLength()) / (2.0 * FastMath.pow(meanResultantLength(), 2));
+  }
+
+  /** @return Another measure of variance of the data. */
+  @Value.Lazy
+  public double skewness() {
+    return (cm2().getMeanResultantLength()
+            * FastMath.sin(
+                cm2().getMeanDirection().subtract(meanDirection().multiply(2.0)).radians()))
+        / FastMath.sqrt(circularVariance());
+  }
+
+  /** @return Another measure of variance of the data. */
+  @Value.Lazy
+  public double kurtosis() {
+    return ((cm2().getMeanResultantLength()
+                * FastMath.cos(
+                    um2().getMeanDirection().subtract(meanDirection().multiply(2.0)).radians()))
+            - FastMath.pow(meanResultantLength(), 4))
+        / FastMath.pow(circularVariance(), 2);
+  }
+
+  /**
+   * @return The median direction i.e. angular value to which all others have the minimum mean
+   *     distance.
+   */
+  @Value.Lazy
+  public Angle medianDirection() {
+    return medianAndMeanDeviation().getKey();
+  }
+
+  /** @return The mean of distances of the observations from the samples' median. */
+  @Value.Lazy
+  public double meanDeviation() {
+    return medianAndMeanDeviation().getValue();
   }
 
   private double computeMeanDeviation(final Angle alpha) {
-    return data.stream()
-            .mapToDouble(angle -> angle.subtract(alpha).getRadians())
-            .reduce(0.0, Double::sum)
-        / data.size();
+    return data().stream()
+            .mapToDouble(angle -> angle.subtract(alpha).radians())
+            .reduce(Double::sum)
+            .orElse(Double.NaN)
+        / data().size();
   }
 
-  private Pair<Angle, Double> findMedianAndMeanDeviation() {
+  @Value.Lazy
+  protected Pair<Angle, Double> medianAndMeanDeviation() {
     // for odd number of observations, one of them will be the median
     // for even number, a middle point will be the median
-    final List<? extends Angle> candidates = data.size() % 2 == 1 ? data : computeMiddlePoints();
+    final List<Angle> candidates =
+        sortedData().size() % 2 == 1 ? sortedData() : computeMiddlePoints();
 
     double minDeviation = Double.POSITIVE_INFINITY;
     Angle minCandidate = candidates.get(0);
@@ -83,8 +146,7 @@ public final class AngleSample {
         minCandidate = candidate;
       }
 
-      final Angle candidateAlternative =
-          new Angle(candidate.getRadians() + FastMath.PI, ValueType.RADIANS);
+      final Angle candidateAlternative = ImmutableAngle.of(candidate.radians() + FastMath.PI);
       final double deviationAlternative = computeMeanDeviation(candidateAlternative);
       if (deviationAlternative < minDeviation) {
         minDeviation = deviationAlternative;
@@ -97,28 +159,26 @@ public final class AngleSample {
 
   private List<Angle> computeMiddlePoints() {
     final List<Angle> middlePoints = new ArrayList<>();
-    for (int i = 1; i < data.size(); i++) {
-      final Angle begin = data.get(i - 1);
-      final Angle end = data.get(i);
-      final Angle middle =
-          new Angle((begin.getRadians() + end.getRadians()) / 2.0, ValueType.RADIANS);
+    for (int i = 1; i < sortedData().size(); i++) {
+      final Angle begin = sortedData().get(i - 1);
+      final Angle end = sortedData().get(i);
+      final Angle middle = ImmutableAngle.of((begin.radians() + end.radians()) / 2.0);
       middlePoints.add(middle);
     }
 
-    final Angle last = data.get(data.size() - 1);
-    final Angle first = data.get(0);
-    final Angle middle =
-        new Angle((last.getRadians() + first.getRadians()) / 2.0, ValueType.RADIANS);
+    final Angle last = sortedData().get(sortedData().size() - 1);
+    final Angle first = sortedData().get(0);
+    final Angle middle = ImmutableAngle.of((last.radians() + first.radians()) / 2.0);
     middlePoints.add(middle);
     return middlePoints;
   }
 
   private Angle selectBetterMedian(final Angle candidate) {
-    final Angle alternative = new Angle(candidate.getRadians() + Math.PI, ValueType.RADIANS);
+    final Angle alternative = ImmutableAngle.of(candidate.radians() + Math.PI);
 
     double s1 = 0.0;
     double s2 = 0.0;
-    for (final Angle angle : data) {
+    for (final Angle angle : data()) {
       s1 += angle.distance(candidate);
       s2 += angle.distance(alternative);
     }
@@ -126,97 +186,41 @@ public final class AngleSample {
     return s1 <= s2 ? candidate : alternative;
   }
 
-  /** @return A mean angular value of the sample. */
-  public Angle getMeanDirection() {
-    return meanDirection;
-  }
-
-  /**
-   * @return Length of the mean direction vector in range [0; 1]. The closer it is to 1, the less
-   *     diverse are the data in the sample.
-   */
-  public double getMeanResultantLength() {
-    return meanResultantLength;
-  }
-
-  /** @return A measure of variance of the data on the circle, taking values in range [0; 1]. */
-  public double getCircularVariance() {
-    return circularVariance;
-  }
-
-  /**
-   * @return A measure of variance of the data on the circle, taking values in range [0; &infin;].
-   */
-  public double getCircularStandardDeviation() {
-    return circularStandardDeviation;
-  }
-
-  /**
-   * @return Another measure of variance of the data depending on the first and second central
-   *     trigonometric moment.
-   */
-  public double getCircularDispersion() {
-    return circularDispersion;
-  }
-
-  /** @return Another measure of variance of the data. */
-  public double getSkewness() {
-    return skewness;
-  }
-
-  /** @return Another measure of variance of the data. */
-  public double getKurtosis() {
-    return kurtosis;
-  }
-
-  /**
-   * @return The median direction i.e. angular value to which all others have the minimum mean
-   *     distance.
-   */
-  public Angle getMedianDirection() {
-    return medianDirection;
-  }
-
-  /** @return The mean of distances of the observations from the samples' median. */
-  public double getMeanDeviation() {
-    return meanDeviation;
-  }
-
   /**
    * @param datapoint Value, must be one of those used to create this instance of AngleSample.
    * @return The rank (index) of the value in the sample, when treating 0 as the beginning of the
    *     circle.
    */
-  public double getCircularRank(final Angle datapoint) {
-    if (!data.contains(datapoint)) {
+  public double circularRank(final Angle datapoint) {
+    if (!sortedData().contains(datapoint)) {
       throw new InvalidCircularOperationException(
           "Cannot calculate circular rank for an observation outside the sample range");
     }
 
-    final int rank = data.indexOf(datapoint) + 1;
-    return (MathUtils.TWO_PI * (double) rank) / (double) data.size();
+    final int rank = sortedData().indexOf(datapoint) + 1;
+    return (MathUtils.TWO_PI * (double) rank) / (double) sortedData().size();
   }
 
   @Override
   public String toString() {
     return "AngleSample [meanDirection="
-        + meanDirection
+        + meanDirection()
         + ", meanResultantLength="
-        + meanResultantLength
+        + meanResultantLength()
         + ", circularVariance="
-        + circularVariance
+        + circularVariance()
         + ", circularStandardDeviation="
-        + circularStandardDeviation
+        + circularStandardDeviation()
         + ", circularDispersion="
-        + circularDispersion
+        + circularDispersion()
         + ", skewness="
-        + skewness
+        + skewness()
         + ", kurtosis="
-        + kurtosis
+        + kurtosis()
         + ", medianDirection="
-        + medianDirection
+        + medianDirection()
         + ", meanDeviation="
-        + meanDeviation
+        + meanDeviation()
         + ']';
   }
 }

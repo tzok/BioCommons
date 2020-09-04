@@ -3,7 +3,7 @@ package pl.poznan.put.torsion;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.types.Quadruplet;
 
@@ -53,7 +53,7 @@ public final class TorsionAnglesHelper {
   private static Angle calculateTorsionAtan(
       final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3, final PdbAtomLine a4) {
     if ((a1 == null) || (a2 == null) || (a3 == null) || (a4 == null)) {
-      return Angle.invalidInstance();
+      return ImmutableAngle.of(Double.NaN);
     }
 
     final Vector3D v1 = new Vector3D(a1.x(), a1.y(), a1.z());
@@ -82,7 +82,7 @@ public final class TorsionAnglesHelper {
   public static Angle calculateTorsionAcos(
       final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3, final PdbAtomLine a4) {
     if ((a1 == null) || (a2 == null) || (a3 == null) || (a4 == null)) {
-      return Angle.invalidInstance();
+      return ImmutableAngle.of(Double.NaN);
     }
 
     final Vector3D d1 = TorsionAnglesHelper.atomDistance(a1, a2);
@@ -98,7 +98,7 @@ public final class TorsionAnglesHelper {
     if (u1.dotProduct(u2.crossProduct(d2)) < 0) {
       torp = -torp;
     }
-    return new Angle(torp, ValueType.RADIANS);
+    return ImmutableAngle.of(torp);
   }
 
   public static double subtractTorsions(final double a1, final double a2) {

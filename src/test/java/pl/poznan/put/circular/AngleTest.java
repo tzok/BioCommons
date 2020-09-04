@@ -2,21 +2,20 @@ package pl.poznan.put.circular;
 
 import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
-import pl.poznan.put.circular.enums.ValueType;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AngleTest {
-  private static final Angle DEGREES_0 = new Angle(0, ValueType.DEGREES);
-  private static final Angle DEGREES_45 = new Angle(45.0, ValueType.DEGREES);
-  private static final Angle DEGREES_90 = new Angle(90.0, ValueType.DEGREES);
-  private static final Angle DEGREES_135 = new Angle(135.0, ValueType.DEGREES);
-  private static final Angle DEGREES_180 = new Angle(180.0, ValueType.DEGREES);
-  private static final Angle DEGREES_225 = new Angle(225.0, ValueType.DEGREES);
-  private static final Angle DEGREES_270 = new Angle(270.0, ValueType.DEGREES);
-  private static final Angle DEGREES_315 = new Angle(315.0, ValueType.DEGREES);
+  private static final Angle DEGREES_0 = ImmutableAngle.of(FastMath.toRadians(0));
+  private static final Angle DEGREES_45 = ImmutableAngle.of(FastMath.toRadians(45.0));
+  private static final Angle DEGREES_90 = ImmutableAngle.of(FastMath.toRadians(90.0));
+  private static final Angle DEGREES_135 = ImmutableAngle.of(FastMath.toRadians(135.0));
+  private static final Angle DEGREES_180 = ImmutableAngle.of(FastMath.toRadians(180.0));
+  private static final Angle DEGREES_225 = ImmutableAngle.of(FastMath.toRadians(225.0));
+  private static final Angle DEGREES_270 = ImmutableAngle.of(FastMath.toRadians(270.0));
+  private static final Angle DEGREES_315 = ImmutableAngle.of(FastMath.toRadians(315.0));
   private static final Angle[] ANGLES = {
     AngleTest.DEGREES_0, AngleTest.DEGREES_45, AngleTest.DEGREES_90,
     AngleTest.DEGREES_135, AngleTest.DEGREES_180, AngleTest.DEGREES_225,
@@ -72,7 +71,7 @@ public class AngleTest {
 
   @Test
   public final void invalidInstance() {
-    final Angle invalidInstance = Angle.invalidInstance();
+    final Angle invalidInstance = ImmutableAngle.of(Double.NaN);
     assertThat(invalidInstance.isValid(), is(false));
 
     // whatever operation you do, the result remains invalid
@@ -81,10 +80,10 @@ public class AngleTest {
     }
 
     // all values are NaN
-    assertThat(Double.isNaN(invalidInstance.getDegrees()), is(true));
-    assertThat(Double.isNaN(invalidInstance.getDegrees360()), is(true));
-    assertThat(Double.isNaN(invalidInstance.getRadians()), is(true));
-    assertThat(Double.isNaN(invalidInstance.getRadians2PI()), is(true));
+    assertThat(Double.isNaN(invalidInstance.degrees()), is(true));
+    assertThat(Double.isNaN(invalidInstance.degrees360()), is(true));
+    assertThat(Double.isNaN(invalidInstance.radians()), is(true));
+    assertThat(Double.isNaN(invalidInstance.radians2PI()), is(true));
   }
 
   @Test
@@ -129,9 +128,9 @@ public class AngleTest {
 
       for (int j = i + 1; j < length; j++) {
         final Angle aj = AngleTest.ANGLES[j];
-        final double dij = ai.orderedSubtract(aj).getRadians();
-        final double dji = aj.orderedSubtract(ai).getRadians();
-        assertThat(String.format("Test failed for: %s and %s", ai, aj), dij, is(-dji));
+        final Angle dij = ai.orderedSubtract(aj);
+        final Angle dji = ImmutableAngle.of(-aj.orderedSubtract(ai).radians());
+        assertThat(String.format("Test failed for: %s and %s", ai, aj), dij, is(dji));
       }
     }
   }

@@ -1,8 +1,9 @@
 package pl.poznan.put.torsion;
 
+import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
@@ -75,22 +76,22 @@ public class AverageTorsionAngleTypeTest {
     final TorsionAngleValue epsilon = Epsilon.getInstance().calculate(residues, 1);
     final TorsionAngleValue zeta = Zeta.getInstance().calculate(residues, 1);
 
-    assertThat(alpha.getValue(), is(new Angle(-67.45, ValueType.DEGREES)));
-    assertThat(beta.getValue(), is(new Angle(-178.39, ValueType.DEGREES)));
-    assertThat(gamma.getValue(), is(new Angle(53.83, ValueType.DEGREES)));
-    assertThat(delta.getValue(), is(new Angle(83.38, ValueType.DEGREES)));
-    assertThat(epsilon.getValue(), is(new Angle(-145.15, ValueType.DEGREES)));
-    assertThat(zeta.getValue(), is(new Angle(-76.79, ValueType.DEGREES)));
+    assertThat(alpha.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-67.45))));
+    assertThat(beta.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-178.39))));
+    assertThat(gamma.getValue(), is(ImmutableAngle.of(FastMath.toRadians(53.83))));
+    assertThat(delta.getValue(), is(ImmutableAngle.of(FastMath.toRadians(83.38))));
+    assertThat(epsilon.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-145.15))));
+    assertThat(zeta.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-76.79))));
 
     final PdbResidue residue = residues.get(1);
-    final ResidueInformationProvider provider = residue.getResidueInformationProvider();
+    final ResidueInformationProvider provider = residue.residueInformationProvider();
     assertThat(provider, is(NucleobaseType.CYTOSINE));
 
     final TorsionAngleValue chi = Chi.getPyrimidineInstance().calculate(residues, 1);
-    assertThat(chi.getValue(), is(new Angle(-163.82, ValueType.DEGREES)));
+    assertThat(chi.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-163.82))));
 
     final TorsionAngleValue result = averageTorsionAngleType.calculate(residues, 1);
-    final Angle expected = new Angle(-146.33115, ValueType.DEGREES);
+    final Angle expected = ImmutableAngle.of(FastMath.toRadians(-146.33115));
     assertThat(result.getValue(), is(expected));
   }
 
@@ -98,13 +99,15 @@ public class AverageTorsionAngleTypeTest {
   public final void calculateFromValues() {
     final List<TorsionAngleValue> values =
         Arrays.asList(
-            new TorsionAngleValue(Alpha.getInstance(), new Angle(60.0, ValueType.DEGREES)),
-            new TorsionAngleValue(Alpha.getInstance(), new Angle(25.0, ValueType.DEGREES)),
-            new TorsionAngleValue(Alpha.getInstance(), new Angle(-80.0, ValueType.DEGREES)),
-            new TorsionAngleValue(Alpha.getInstance(), new Angle(-150.0, ValueType.DEGREES)));
+            new TorsionAngleValue(Alpha.getInstance(), ImmutableAngle.of(FastMath.toRadians(60.0))),
+            new TorsionAngleValue(Alpha.getInstance(), ImmutableAngle.of(FastMath.toRadians(25.0))),
+            new TorsionAngleValue(
+                Alpha.getInstance(), ImmutableAngle.of(FastMath.toRadians(-80.0))),
+            new TorsionAngleValue(
+                Alpha.getInstance(), ImmutableAngle.of(FastMath.toRadians(-150.0))));
     final TorsionAngleValue result = averageTorsionAngleType.calculate(values);
 
-    assertThat(result.getValue(), is(new Angle(-15.363804, ValueType.DEGREES)));
+    assertThat(result.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-15.363804))));
   }
 
   @Test

@@ -3,6 +3,7 @@ package pl.poznan.put.sequence.alignment;
 import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
+import pl.poznan.put.pdb.analysis.ImmutablePdbCompactFragment;
 import pl.poznan.put.pdb.analysis.PdbCompactFragment;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
@@ -40,8 +41,8 @@ public class SequenceAlignerTest {
     assertThat(!models1EHZ.isEmpty(), is(true));
     assertThat(!models2MIY.isEmpty(), is(true));
 
-    fragment1EHZ = new PdbCompactFragment("1EHZ", models1EHZ.get(0).residues());
-    fragment2MIY = new PdbCompactFragment("2MIY", models2MIY.get(0).residues());
+    fragment1EHZ = ImmutablePdbCompactFragment.of("1EHZ", models1EHZ.get(0).residues());
+    fragment2MIY = ImmutablePdbCompactFragment.of("2MIY", models2MIY.get(0).residues());
   }
 
   @Test

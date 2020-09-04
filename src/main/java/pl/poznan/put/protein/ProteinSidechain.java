@@ -46,33 +46,33 @@ public abstract class ProteinSidechain extends ResidueComponent
   }
 
   @Override
-  public final List<ResidueComponent> getAllMoleculeComponents() {
+  public final List<ResidueComponent> moleculeComponents() {
     return Arrays.asList(ProteinBackbone.getInstance(), this);
   }
 
   @Override
-  public final String getDescription() {
+  public final String description() {
     return longName;
   }
 
   @Override
-  public final char getOneLetterName() {
+  public final char oneLetterName() {
     return oneLetterName;
   }
 
   @Override
-  public final String getDefaultPdbName() {
+  public final String defaultPdbName() {
     assert !pdbNames.isEmpty();
     return pdbNames.get(0);
   }
 
   @Override
-  public final List<String> getPdbNames() {
+  public final List<String> allPdbNames() {
     return Collections.unmodifiableList(pdbNames);
   }
 
   @Override
-  public final List<TorsionAngleType> getTorsionAngleTypes() {
+  public final List<TorsionAngleType> torsionAngleTypes() {
     return Collections.unmodifiableList(torsionAngleTypes);
   }
 

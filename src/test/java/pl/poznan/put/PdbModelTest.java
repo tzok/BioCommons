@@ -74,8 +74,8 @@ public class PdbModelTest {
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
     final PdbResidue residue = model.findResidue("A", 10, " ");
-    assertThat(residue.getOriginalResidueName(), is("2MG"));
-    assertThat(residue.getModifiedResidueName(), is("G"));
+    assertThat(residue.residueName(), is("2MG"));
+    assertThat(residue.modifiedResidueName(), is("G"));
     assertThat(residue.getDetectedResidueName(), is("G"));
   }
 
@@ -86,8 +86,8 @@ public class PdbModelTest {
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
     final PdbResidue residue = model.findResidue("A", 74, " ");
-    assertThat(residue.getOriginalResidueName(), is("C"));
-    assertThat(residue.getModifiedResidueName(), is("C"));
+    assertThat(residue.residueName(), is("C"));
+    assertThat(residue.modifiedResidueName(), is("C"));
     assertThat(residue.getDetectedResidueName(), is("C"));
   }
 
@@ -127,8 +127,8 @@ public class PdbModelTest {
 
     // the 5MU (methyluridine) is the RNA counterpart of thymine
     final PdbResidue residueA54 = model.findResidue("A", 54, " ");
-    assertThat(residueA54.getOriginalResidueName(), is("5MU"));
-    assertThat(residueA54.getModifiedResidueName(), is("U"));
+    assertThat(residueA54.residueName(), is("5MU"));
+    assertThat(residueA54.modifiedResidueName(), is("U"));
     assertThat(residueA54.getDetectedResidueName(), is("U"));
     assertThat(residueA54.isModified(), is(true));
     assertThat(residueA54.hasAllAtoms(), is(false));
@@ -163,13 +163,13 @@ public class PdbModelTest {
       if (residue.hasAtom(AtomName.O3P)) {
         assertThat(residue.isModified(), is(true));
         assertThat(residue.hasAllAtoms(), is(false));
-      } else if ("H2U".equals(residue.getOriginalResidueName())
-          || "PSU".equals(residue.getOriginalResidueName())) {
+      } else if ("H2U".equals(residue.residueName())
+          || "PSU".equals(residue.residueName())) {
         assertThat(residue.isModified(), is(true));
         assertThat(residue.hasAllAtoms(), is(true));
-      } else if ("5MU".equals(residue.getOriginalResidueName())) {
-        assertThat(residue.getOriginalResidueName(), is("5MU"));
-        assertThat(residue.getModifiedResidueName(), is("U"));
+      } else if ("5MU".equals(residue.residueName())) {
+        assertThat(residue.residueName(), is("5MU"));
+        assertThat(residue.modifiedResidueName(), is("U"));
         assertThat(residue.getDetectedResidueName(), is("U"));
         assertThat(residue.isModified(), is(true));
         assertThat(residue.hasAllAtoms(), is(false));
@@ -178,10 +178,10 @@ public class PdbModelTest {
             String.format(
                 "Detected %s for %s/%s",
                 residue.getDetectedResidueName(),
-                residue.getOriginalResidueName(),
-                residue.getModifiedResidueName()),
+                residue.residueName(),
+                residue.modifiedResidueName()),
             residue.getDetectedResidueName(),
-            is(residue.getModifiedResidueName()));
+            is(residue.modifiedResidueName()));
         assertThat(!residue.hasAllAtoms(), is(residue.isModified()));
       }
     }
@@ -406,8 +406,8 @@ public class PdbModelTest {
     assertThat(residueE164.isMissing(), is(true));
 
     final PdbResidue residueS169 = model.findResidue("S", 169, " ");
-    assertThat(residueS169.getOriginalResidueName(), is("API"));
-    assertThat(residueS169.getModifiedResidueName(), is("LYS"));
+    assertThat(residueS169.residueName(), is("API"));
+    assertThat(residueS169.modifiedResidueName(), is("LYS"));
   }
 
   @Test

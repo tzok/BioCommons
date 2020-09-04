@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
+import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.torsion.TorsionAngleType;
 
 import java.util.Collections;
@@ -16,38 +17,38 @@ public class InvalidResidueInformationProvider implements ResidueInformationProv
   }
 
   @Override
-  public final MoleculeType getMoleculeType() {
+  public final MoleculeType moleculeType() {
     return moleculeType;
   }
 
   @Override
-  public final List<ResidueComponent> getAllMoleculeComponents() {
+  public final List<ResidueComponent> moleculeComponents() {
     return Collections.emptyList();
   }
 
   @Override
-  public final String getDescription() {
+  public final String description() {
     return "";
   }
 
   @Override
-  public final char getOneLetterName() {
+  public final char oneLetterName() {
     assert (pdbName != null) && !pdbName.isEmpty();
     return pdbName.charAt(pdbName.length() - 1);
   }
 
   @Override
-  public final String getDefaultPdbName() {
+  public final String defaultPdbName() {
     return pdbName;
   }
 
   @Override
-  public final List<String> getPdbNames() {
+  public final List<String> allPdbNames() {
     return Collections.singletonList(pdbName);
   }
 
   @Override
-  public final List<TorsionAngleType> getTorsionAngleTypes() {
+  public final List<TorsionAngleType> torsionAngleTypes() {
     return Collections.emptyList();
   }
 }

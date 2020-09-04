@@ -41,7 +41,7 @@ public abstract class Base extends NucleicAcidResidueComponent
                 .build();
 
         @Override
-        public List<TorsionAngleType> getTorsionAngleTypes() {
+        public List<TorsionAngleType> torsionAngleTypes() {
           return Collections.emptyList();
         }
 
@@ -96,33 +96,33 @@ public abstract class Base extends NucleicAcidResidueComponent
   }
 
   @Override
-  public final List<ResidueComponent> getAllMoleculeComponents() {
+  public final List<ResidueComponent> moleculeComponents() {
     return Arrays.asList(Phosphate.getInstance(), getDefaultSugarInstance(), this);
   }
 
   @Override
-  public final String getDescription() {
+  public final String description() {
     return longName;
   }
 
   @Override
-  public final char getOneLetterName() {
+  public final char oneLetterName() {
     return oneLetterName;
   }
 
   @Override
-  public final String getDefaultPdbName() {
+  public final String defaultPdbName() {
     assert !pdbNames.isEmpty();
     return pdbNames.get(0);
   }
 
   @Override
-  public final List<String> getPdbNames() {
+  public final List<String> allPdbNames() {
     return Collections.unmodifiableList(pdbNames);
   }
 
   @Override
-  public List<TorsionAngleType> getTorsionAngleTypes() {
+  public List<TorsionAngleType> torsionAngleTypes() {
     return Collections.unmodifiableList(torsionAngleTypes);
   }
 

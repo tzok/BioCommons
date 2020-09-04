@@ -32,7 +32,7 @@ public final class CanonicalStructureExtractor {
     final ResidueCollection collection = ImmutableResidueCollection.of(residues);
     final Collection<ClassifiedBasePair> basePairs =
         CanonicalStructureExtractor.basePairs(collection);
-    return BpSeq.fromResidueCollection(collection, basePairs);
+    return BpSeq.fromResidueCollection(collection.namedResidueIdentifers(), basePairs);
   }
 
   /*
@@ -47,11 +47,11 @@ public final class CanonicalStructureExtractor {
 
     for (int i = 0; i < residues.size(); i++) {
       final PdbResidue left = residues.get(i);
-      final PdbNamedResidueIdentifier leftId = left.toNamedResidueIdentifer();
+      final PdbNamedResidueIdentifier leftId = left.namedResidueIdentifer();
 
       for (int j = i + 2; j < residues.size(); j++) {
         final PdbResidue right = residues.get(j);
-        final PdbNamedResidueIdentifier rightId = right.toNamedResidueIdentifer();
+        final PdbNamedResidueIdentifier rightId = right.namedResidueIdentifer();
 
         if (BasePair.isCanonicalPair(left, right)) {
           final BasePair basePair = new BasePair(leftId, rightId);

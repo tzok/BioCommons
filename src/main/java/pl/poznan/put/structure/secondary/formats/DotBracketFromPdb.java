@@ -105,7 +105,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     for (int i = 0; i < residues.size(); i++) {
       final DotBracketSymbol symbol = symbols.get(i);
       final PdbResidue residue = residues.get(i);
-      final PdbNamedResidueIdentifier residueIdentifier = residue.toNamedResidueIdentifer();
+      final PdbNamedResidueIdentifier residueIdentifier = residue.namedResidueIdentifer();
       symbolToResidue.put(symbol, residueIdentifier);
       residueToSymbol.put(residueIdentifier, symbol);
     }

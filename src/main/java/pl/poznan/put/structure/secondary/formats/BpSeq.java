@@ -4,9 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import pl.poznan.put.pdb.ChainNumberICode;
-import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.ResidueCollection;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
@@ -106,7 +104,7 @@ public class BpSeq implements Serializable {
   }
 
   public static BpSeq fromResidueCollection(
-      final ResidueCollection residueCollection,
+      final List<PdbNamedResidueIdentifier> residues,
       final Iterable<? extends ClassifiedBasePair> basePairs) {
     final Collection<BasePair> allBasePairs = new ArrayList<>();
     final Map<BasePair, String> basePairToComment = new HashMap<>();
@@ -125,29 +123,26 @@ public class BpSeq implements Serializable {
     }
 
     final List<Entry> entries = new ArrayList<>();
-    entries.addAll(
-        BpSeq.generateEntriesForPaired(residueCollection, allBasePairs, basePairToComment));
-    entries.addAll(BpSeq.generateEntriesForUnpaired(residueCollection, allBasePairs));
+    entries.addAll(BpSeq.generateEntriesForPaired(residues, allBasePairs, basePairToComment));
+    entries.addAll(BpSeq.generateEntriesForUnpaired(residues, allBasePairs));
     return new BpSeq(entries);
   }
 
   private static Collection<Entry> generateEntriesForPaired(
-      final ResidueCollection residueCollection,
+      final List<PdbNamedResidueIdentifier> residues,
       final Iterable<? extends BasePair> basePairs,
       final Map<BasePair, String> basePairToComment) {
     final Collection<Entry> entries = new ArrayList<>();
-    final List<PdbResidue> residues = residueCollection.residues();
 
     for (final BasePair basePair : basePairs) {
-      final PdbResidue left = residueCollection.findResidue(basePair.getLeft());
-      final PdbResidue right = residueCollection.findResidue(basePair.getRight());
+      final PdbNamedResidueIdentifier left = basePair.getLeft();
+      final PdbNamedResidueIdentifier right = basePair.getRight();
       final int indexL = 1 + residues.indexOf(left);
       final int indexR = 1 + residues.indexOf(right);
-      entries.add(
-          new Entry(indexL, indexR, left.getOneLetterName(), basePairToComment.get(basePair)));
+      entries.add(new Entry(indexL, indexR, left.oneLetterName(), basePairToComment.get(basePair)));
       entries.add(
           new Entry(
-              indexR, indexL, right.getOneLetterName(), basePairToComment.get(basePair.invert())));
+              indexR, indexL, right.oneLetterName(), basePairToComment.get(basePair.invert())));
       BpSeq.log.trace("Storing pair ({} -> {}) which is ({} -> {})", indexL, indexR, left, right);
     }
 
@@ -155,9 +150,9 @@ public class BpSeq implements Serializable {
   }
 
   private static Collection<Entry> generateEntriesForUnpaired(
-      final ResidueCollection residueCollection, final Iterable<? extends BasePair> allBasePairs) {
-    final List<PdbResidue> residues = residueCollection.residues();
-    final Collection<ChainNumberICode> paired = new HashSet<>();
+      final List<PdbNamedResidueIdentifier> residues,
+      final Iterable<? extends BasePair> allBasePairs) {
+    final Collection<PdbNamedResidueIdentifier> paired = new HashSet<>();
 
     for (final BasePair basePair : allBasePairs) {
       paired.add(basePair.getLeft());
@@ -166,9 +161,9 @@ public class BpSeq implements Serializable {
 
     final Collection<Entry> entries = new ArrayList<>();
     for (int i = 0; i < residues.size(); i++) {
-      final PdbResidue residue = residues.get(i);
-      if (!paired.contains(residue.toResidueIdentifer())) {
-        entries.add(new Entry(i + 1, 0, residue.getOneLetterName()));
+      final PdbNamedResidueIdentifier residue = residues.get(i);
+      if (!paired.contains(residue)) {
+        entries.add(new Entry(i + 1, 0, residue.oneLetterName()));
       }
     }
 

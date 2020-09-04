@@ -2,7 +2,7 @@ package pl.poznan.put.circular.samples;
 
 import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.ImmutableAngle;
 
 import java.util.Collection;
 
@@ -26,7 +26,7 @@ public final class TrigonometricMoment {
    */
   public static TrigonometricMoment computeUncentered(
       final Collection<? extends Angle> data, final int p) {
-    return TrigonometricMoment.compute(data, p, new Angle(0.0, ValueType.RADIANS));
+    return TrigonometricMoment.compute(data, p, ImmutableAngle.of(0.0));
   }
 
   /**
@@ -50,7 +50,7 @@ public final class TrigonometricMoment {
     double s = 0.0;
 
     for (final Angle vector : data) {
-      final double radians = vector.orderedSubtract(theta).getRadians();
+      final double radians = vector.orderedSubtract(theta).radians();
       c += FastMath.cos(p * radians);
       s += FastMath.sin(p * radians);
     }
@@ -60,7 +60,7 @@ public final class TrigonometricMoment {
 
     final double rho = FastMath.sqrt(FastMath.pow(c, 2) + FastMath.pow(s, 2));
     final double mi = FastMath.atan2(s, c);
-    return new TrigonometricMoment(new Angle(mi, ValueType.RADIANS), rho);
+    return new TrigonometricMoment(ImmutableAngle.of(mi), rho);
   }
 
   public Angle getMeanDirection() {

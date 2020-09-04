@@ -24,16 +24,16 @@ public abstract class PdbNamedResidueIdentifier
   @Value.Parameter
   public abstract String insertionCode();
 
-  /** @return The value of the {@code residueOneLetterName} attribute */
+  /** @return The value of the {@code oneLetterName} attribute */
   @Value.Parameter
-  public abstract char residueOneLetterName();
+  public abstract char oneLetterName();
 
   @Override
   public final String toString() {
     final String chain = StringUtils.isBlank(chainIdentifier()) ? "" : (chainIdentifier() + '.');
     final String icode = StringUtils.isBlank(insertionCode()) ? "" : insertionCode();
     final String name =
-        (residueOneLetterName() == ' ') ? "" : Character.toString(residueOneLetterName());
+        (oneLetterName() == ' ') ? "" : Character.toString(oneLetterName());
     return chain + name + residueNumber() + icode;
   }
 

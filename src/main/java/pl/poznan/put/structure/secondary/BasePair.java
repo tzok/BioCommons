@@ -35,8 +35,8 @@ public class BasePair implements Serializable, Comparable<BasePair> {
    *     form hydrogen bonds.
    */
   public static boolean isCanonicalPair(final PdbResidue left, final PdbResidue right) {
-    final char leftName = Character.toUpperCase(left.getOneLetterName());
-    final char rightName = Character.toUpperCase(right.getOneLetterName());
+    final char leftName = Character.toUpperCase(left.oneLetterName());
+    final char rightName = Character.toUpperCase(right.oneLetterName());
 
     if (leftName > rightName) {
       return BasePair.isCanonicalPair(right, left);

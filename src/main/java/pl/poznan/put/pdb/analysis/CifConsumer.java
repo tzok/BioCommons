@@ -495,7 +495,7 @@ class CifConsumer implements MMcifConsumer {
       }
       final String resnL = map.get("i_label_comp_id");
       final char oneLetterL =
-          ResidueTypeDetector.detectResidueTypeFromResidueName(resnL).getOneLetterName();
+          ResidueTypeDetector.detectResidueTypeFromResidueName(resnL).oneLetterName();
       final PdbNamedResidueIdentifier left =
           ImmutablePdbNamedResidueIdentifier.of(chainL, resiL, icodeL, oneLetterL);
 
@@ -507,7 +507,7 @@ class CifConsumer implements MMcifConsumer {
       }
       final String resnR = map.get("j_label_comp_id");
       final char oneLetterR =
-          ResidueTypeDetector.detectResidueTypeFromResidueName(resnR).getOneLetterName();
+          ResidueTypeDetector.detectResidueTypeFromResidueName(resnR).oneLetterName();
       final PdbNamedResidueIdentifier right =
           ImmutablePdbNamedResidueIdentifier.of(chainR, resiR, icodeR, oneLetterR);
       final BasePair basePair = new BasePair(left, right);

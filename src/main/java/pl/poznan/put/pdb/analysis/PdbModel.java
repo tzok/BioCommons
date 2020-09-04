@@ -3,6 +3,7 @@ package pl.poznan.put.pdb.analysis;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
+import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.CifConstants;
@@ -124,10 +125,12 @@ public class PdbModel implements Serializable, ResidueCollection {
     for (final PdbRemark465Line missingResidue : missingResidues) {
       final List<PdbAtomLine> emptyAtomList = Collections.emptyList();
       final PdbResidue residue =
-          new PdbResidue(
+          ImmutablePdbResidue.of(
               missingResidue.toResidueIdentifer(),
               missingResidue.residueName(),
+              missingResidue.residueName(),
               emptyAtomList,
+              false,
               true);
 
       final String chain = residue.chainIdentifier();
@@ -180,7 +183,7 @@ public class PdbModel implements Serializable, ResidueCollection {
       }
 
       chainResidues.add(residue);
-      chainTerminated = residue.getAtoms().stream().anyMatch(chainTerminatedAfter::contains);
+      chainTerminated = residue.atoms().stream().anyMatch(chainTerminatedAfter::contains);
     }
 
     addMissingResiduesAndSaveChain(chainResidues, lastChainIdentifier, missingResidues);
@@ -229,7 +232,7 @@ public class PdbModel implements Serializable, ResidueCollection {
     }
 
     final PdbResidue residue =
-        new PdbResidue(
+        ImmutablePdbResidue.of(
             residueIdentifier, residueName, modifiedResidueName, residueAtoms, isModified, false);
 
     if (residue.wasSuccessfullyDetected()) {
@@ -315,7 +318,7 @@ public class PdbModel implements Serializable, ResidueCollection {
 
   public final String getSequence() {
     return residues.stream()
-        .map(residue -> String.valueOf(residue.getOneLetterName()))
+        .map(residue -> String.valueOf(residue.oneLetterName()))
         .collect(Collectors.joining());
   }
 
@@ -324,7 +327,7 @@ public class PdbModel implements Serializable, ResidueCollection {
     final StringBuilder builder = new StringBuilder();
 
     for (final PdbResidue residue : residues) {
-      for (final PdbAtomLine atom : residue.getAtoms()) {
+      for (final PdbAtomLine atom : residue.atoms()) {
         final Pair<PdbResidueIdentifier, AtomName> pair =
             Pair.of(residue.toResidueIdentifer(), atom.detectAtomName());
 
@@ -346,6 +349,7 @@ public class PdbModel implements Serializable, ResidueCollection {
 
     for (final PdbResidue residue : residues) {
       builder.append(residue.toCif());
+      builder.append('\n');
     }
 
     return builder.toString();
@@ -356,55 +360,48 @@ public class PdbModel implements Serializable, ResidueCollection {
   }
 
   public PdbModel filteredNewInstance(final MoleculeType moleculeType) {
-    final List<PdbAtomLine> filteredAtoms = filterAtoms(moleculeType);
-    final List<PdbRemark465Line> filteredMissing = filterMissing(moleculeType);
     return new PdbModel(
         headerLine,
         experimentalDataLine,
         resolutionLine,
         modelNumber,
-        filteredAtoms,
+        filterAtoms(moleculeType),
         modifiedResidues,
-        filteredMissing,
+        filterMissing(moleculeType),
         title,
         chainTerminatedAfter);
   }
 
   final List<PdbAtomLine> filterAtoms(final MoleculeType moleculeType) {
-    final List<PdbAtomLine> filteredAtoms = new ArrayList<>();
-
-    for (final PdbResidue residue : residues) {
-      if ((residue.getMoleculeType() == moleculeType) && !residue.isMissing()) {
-        filteredAtoms.addAll(residue.getAtoms());
-      }
-    }
-
-    return filteredAtoms;
+    return residues.stream()
+        .filter(pdbResidue -> pdbResidue.getMoleculeType() == moleculeType)
+        .filter(pdbResidue -> !pdbResidue.isMissing())
+        .flatMap(pdbResidue -> pdbResidue.atoms().stream())
+        .collect(Collectors.toList());
   }
 
   final List<PdbRemark465Line> filterMissing(final MoleculeType moleculeType) {
-    final List<PdbRemark465Line> filteredMissing = new ArrayList<>();
-
-    for (final PdbResidue residue : residues) {
-      if ((residue.getMoleculeType() == moleculeType) && residue.isMissing()) {
-        final String residueName = residue.getOriginalResidueName();
-        final String chainIdentifier = residue.chainIdentifier();
-        final int residueNumber = residue.residueNumber();
-        final String insertionCode = residue.insertionCode();
-        filteredMissing.add(
-            ImmutablePdbRemark465Line.of(
-                modelNumber, residueName, chainIdentifier, residueNumber, insertionCode));
-      }
-    }
-
-    return filteredMissing;
+    return residues.stream()
+        .filter(pdbResidue -> pdbResidue.getMoleculeType() == moleculeType)
+        .filter(PdbResidue::isMissing)
+        .map(
+            pdbResidue ->
+                ImmutablePdbRemark465Line.of(
+                    modelNumber,
+                    pdbResidue.residueName(),
+                    pdbResidue.chainIdentifier(),
+                    pdbResidue.residueNumber(),
+                    pdbResidue.insertionCode()))
+        .collect(Collectors.toList());
   }
 
+  @Value.Lazy
   public final List<PdbResidueIdentifier> residueIdentifiers() {
     return residues.stream().map(PdbResidue::toResidueIdentifer).collect(Collectors.toList());
   }
 
+  @Value.Lazy
   public final List<PdbNamedResidueIdentifier> namedResidueIdentifiers() {
-    return residues.stream().map(PdbResidue::toNamedResidueIdentifer).collect(Collectors.toList());
+    return residues.stream().map(PdbResidue::namedResidueIdentifer).collect(Collectors.toList());
   }
 }

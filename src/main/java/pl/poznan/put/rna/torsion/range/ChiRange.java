@@ -2,8 +2,9 @@ package pl.poznan.put.rna.torsion.range;
 
 import lombok.Getter;
 import org.apache.commons.collections4.map.MultiKeyMap;
+import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.torsion.range.RangeProvider;
@@ -23,15 +24,11 @@ public enum ChiRange implements Range {
 
   private static final MultiKeyMap<ChiRange, RangeDifference> DIFFERENCE_MAP = new MultiKeyMap<>();
   private static final RangeProvider PROVIDER =
-      angle -> {
-        if (angle.isValid()) {
-          return Arrays.stream(ChiRange.values())
+      angle ->
+          Arrays.stream(ChiRange.values())
               .filter(range -> angle.isBetween(range.begin, range.end))
               .findFirst()
               .orElse(ChiRange.INVALID);
-        }
-        return ChiRange.INVALID;
-      };
 
   static {
     ChiRange.DIFFERENCE_MAP.put(ChiRange.ANTI, ChiRange.ANTI, RangeDifference.EQUAL);
@@ -51,8 +48,8 @@ public enum ChiRange implements Range {
 
   ChiRange(final String displayName, final double begin, final double end) {
     this.displayName = displayName;
-    this.begin = new Angle(begin, ValueType.DEGREES);
-    this.end = new Angle(end, ValueType.DEGREES);
+    this.begin = ImmutableAngle.of(FastMath.toRadians(begin));
+    this.end = ImmutableAngle.of(FastMath.toRadians(end));
   }
 
   public static RangeProvider getProvider() {

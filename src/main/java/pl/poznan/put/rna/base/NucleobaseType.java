@@ -1,5 +1,6 @@
 package pl.poznan.put.rna.base;
 
+import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
@@ -26,37 +27,37 @@ public enum NucleobaseType implements ResidueInformationProvider {
   }
 
   @Override
-  public MoleculeType getMoleculeType() {
-    return base.getMoleculeType();
+  public MoleculeType moleculeType() {
+    return base.moleculeType();
   }
 
   @Override
-  public List<ResidueComponent> getAllMoleculeComponents() {
-    return base.getAllMoleculeComponents();
+  public List<ResidueComponent> moleculeComponents() {
+    return base.moleculeComponents();
   }
 
   @Override
-  public String getDescription() {
-    return base.getDescription();
+  public String description() {
+    return base.description();
   }
 
   @Override
-  public char getOneLetterName() {
-    return base.getOneLetterName();
+  public char oneLetterName() {
+    return base.oneLetterName();
   }
 
   @Override
-  public String getDefaultPdbName() {
-    return base.getDefaultPdbName();
+  public String defaultPdbName() {
+    return base.defaultPdbName();
   }
 
   @Override
-  public List<String> getPdbNames() {
-    return base.getPdbNames();
+  public List<String> allPdbNames() {
+    return base.allPdbNames();
   }
 
   @Override
-  public List<TorsionAngleType> getTorsionAngleTypes() {
-    return base.getTorsionAngleTypes();
+  public List<TorsionAngleType> torsionAngleTypes() {
+    return base.torsionAngleTypes();
   }
 }

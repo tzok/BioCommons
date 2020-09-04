@@ -1,6 +1,7 @@
 package pl.poznan.put.torsion;
 
 import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.utility.AngleFormat;
@@ -33,9 +34,9 @@ public class TorsionAngleDelta {
     return new TorsionAngleDelta(
         masterType,
         State.BOTH_INVALID,
-        Angle.invalidInstance(),
-        Angle.invalidInstance(),
-        Angle.invalidInstance(),
+        ImmutableAngle.of(Double.NaN),
+        ImmutableAngle.of(Double.NaN),
+        ImmutableAngle.of(Double.NaN),
         RangeDifference.INVALID);
   }
 
@@ -43,7 +44,7 @@ public class TorsionAngleDelta {
       final MasterTorsionAngleType masterType,
       final TorsionAngleValue targetValue,
       final TorsionAngleValue modelValue) {
-    Angle delta = Angle.invalidInstance();
+    Angle delta = ImmutableAngle.of(Double.NaN);
     RangeDifference rangeDifference = RangeDifference.INVALID;
     final Angle target = targetValue.getValue();
     final Angle model = modelValue.getValue();
@@ -114,8 +115,8 @@ public class TorsionAngleDelta {
         return "Missing atoms both in target and model";
       case BOTH_VALID:
         return isDisplayable
-            ? AngleFormat.degreesRoundedToHundredth(delta.getRadians())
-            : AngleFormat.degrees(delta.getRadians());
+            ? AngleFormat.degreesRoundedToHundredth(delta.radians())
+            : AngleFormat.degrees(delta.radians());
       case TARGET_INVALID:
         return "Missing atoms in target";
       case MODEL_INVALID:

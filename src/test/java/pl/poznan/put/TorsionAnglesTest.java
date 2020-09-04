@@ -14,7 +14,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TorsionAnglesTest {
-  private static final double EPS = 1.0e-6;
   // @formatter:off
   private static final String ATOM_P =
       "ATOM      2  P     G A   1      50.626  49.730  50.573  1.00100.19           P  ";
@@ -36,7 +35,7 @@ public class TorsionAnglesTest {
   // @formatter:on
 
   private static boolean isBelowEpsilon(final double value) {
-    return FastMath.abs(value) < TorsionAnglesTest.EPS;
+    return FastMath.abs(value) < 1.0e-6;
   }
 
   @Test
@@ -78,11 +77,11 @@ public class TorsionAnglesTest {
     assertThat(angleValue.getValue().isValid(), is(true));
     assertThat(
         TorsionAnglesTest.isBelowEpsilon(
-            angleValue.getValue().getRadians() - TorsionAnglesTest.RADIANS),
+            angleValue.getValue().radians() - TorsionAnglesTest.RADIANS),
         is(true));
     assertThat(
         TorsionAnglesTest.isBelowEpsilon(
-            angleValue.getValue().getDegrees() - TorsionAnglesTest.DEGREES),
+            angleValue.getValue().degrees() - TorsionAnglesTest.DEGREES),
         is(true));
   }
 }
