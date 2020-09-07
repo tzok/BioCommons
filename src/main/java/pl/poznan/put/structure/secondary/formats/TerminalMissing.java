@@ -9,14 +9,6 @@ import java.util.List;
 public class TerminalMissing {
   private final List<DotBracketSymbol> symbols;
 
-  private boolean isEmpty() {
-    return symbols.isEmpty();
-  }
-
-  private int size() {
-    return symbols.size();
-  }
-
   public final boolean contains(final DotBracketSymbol symbol) {
     return symbols.contains(symbol);
   }
@@ -27,5 +19,13 @@ public class TerminalMissing {
       return "TerminalMissing, empty symbol list";
     }
     return "TerminalMissing, first " + symbols.get(0) + ", last " + symbols.get(size());
+  }
+
+  private boolean isEmpty() {
+    return symbols.isEmpty();
+  }
+
+  private int size() {
+    return symbols.size();
   }
 }

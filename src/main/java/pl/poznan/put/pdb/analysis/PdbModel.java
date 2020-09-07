@@ -160,6 +160,45 @@ public class PdbModel implements Serializable, ResidueCollection {
     }
   }
 
+  private void saveExistingResidueIfValid(
+      final List<PdbAtomLine> residueAtoms, final PdbResidueIdentifier residueIdentifier) {
+    assert !isMissing(residueIdentifier);
+    assert !residueAtoms.isEmpty();
+
+    final String residueName = residueAtoms.get(0).residueName();
+    String modifiedResidueName = residueName;
+    final boolean isModified = isModified(residueIdentifier);
+
+    if (isModified) {
+      modifiedResidueName = getModifiedResidueName(residueIdentifier);
+    }
+
+    final PdbResidue residue =
+        ImmutablePdbResidue.of(
+            residueIdentifier, residueName, modifiedResidueName, residueAtoms, isModified, false);
+
+    if (residue.wasSuccessfullyDetected()) {
+      residues.add(residue);
+    }
+  }
+
+  public boolean isMissing(final PdbResidueIdentifier residueIdentifier) {
+    return missingResiduesIdentifiers.contains(residueIdentifier);
+  }
+
+  public boolean isModified(final PdbResidueIdentifier residueIdentifier) {
+    return identifierToModification.containsKey(residueIdentifier);
+  }
+
+  public String getModifiedResidueName(final PdbResidueIdentifier residueIdentifier) {
+    if (!identifierToModification.containsKey(residueIdentifier)) {
+      throw new IllegalArgumentException(
+          "Failed to find information about modification of: " + residueIdentifier);
+    }
+
+    return identifierToModification.get(residueIdentifier).standardResidueName();
+  }
+
   private void analyzeChains() {
     assert !residues.isEmpty();
 
@@ -218,45 +257,6 @@ public class PdbModel implements Serializable, ResidueCollection {
     chainResidues.add(missingResidue);
   }
 
-  private void saveExistingResidueIfValid(
-      final List<PdbAtomLine> residueAtoms, final PdbResidueIdentifier residueIdentifier) {
-    assert !isMissing(residueIdentifier);
-    assert !residueAtoms.isEmpty();
-
-    final String residueName = residueAtoms.get(0).residueName();
-    String modifiedResidueName = residueName;
-    final boolean isModified = isModified(residueIdentifier);
-
-    if (isModified) {
-      modifiedResidueName = getModifiedResidueName(residueIdentifier);
-    }
-
-    final PdbResidue residue =
-        ImmutablePdbResidue.of(
-            residueIdentifier, residueName, modifiedResidueName, residueAtoms, isModified, false);
-
-    if (residue.wasSuccessfullyDetected()) {
-      residues.add(residue);
-    }
-  }
-
-  public boolean isMissing(final PdbResidueIdentifier residueIdentifier) {
-    return missingResiduesIdentifiers.contains(residueIdentifier);
-  }
-
-  public boolean isModified(final PdbResidueIdentifier residueIdentifier) {
-    return identifierToModification.containsKey(residueIdentifier);
-  }
-
-  public String getModifiedResidueName(final PdbResidueIdentifier residueIdentifier) {
-    if (!identifierToModification.containsKey(residueIdentifier)) {
-      throw new IllegalArgumentException(
-          "Failed to find information about modification of: " + residueIdentifier);
-    }
-
-    return identifierToModification.get(residueIdentifier).standardResidueName();
-  }
-
   public final PdbHeaderLine getHeaderLine() {
     return headerLine;
   }
@@ -308,10 +308,6 @@ public class PdbModel implements Serializable, ResidueCollection {
     return Collections.unmodifiableList(chains);
   }
 
-  public final String getIdCode() {
-    return headerLine.idCode();
-  }
-
   public final PdbChain findChainContainingResidue(final ChainNumberICode residueIdentifier) {
     return identifierToChain.get(residueIdentifier);
   }
@@ -353,6 +349,10 @@ public class PdbModel implements Serializable, ResidueCollection {
     }
 
     return builder.toString();
+  }
+
+  public final String getIdCode() {
+    return headerLine.idCode();
   }
 
   public final boolean containsAny(final MoleculeType moleculeType) {

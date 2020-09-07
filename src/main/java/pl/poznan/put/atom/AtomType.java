@@ -13,7 +13,7 @@ public enum AtomType {
   private final boolean heavy;
 
   AtomType(final boolean isHeavy) {
-    this.heavy = isHeavy;
+      heavy = isHeavy;
   }
 
   /**

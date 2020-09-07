@@ -60,22 +60,8 @@ public class CombinedStrand implements DotBracketInterface {
     super();
   }
 
-  public final List<Strand> getStrands() {
-    return Collections.unmodifiableList(strands);
-  }
-
   public final int getLength() {
     return strands.stream().mapToInt(Strand::getLength).sum();
-  }
-
-  @Override
-  public final List<DotBracketSymbol> getSymbols() {
-    return Collections.unmodifiableList(symbols);
-  }
-
-  @Override
-  public final DotBracketSymbol getSymbol(final int index) {
-    return getSymbols().get(index);
   }
 
   public final Iterable<TerminalMissing> getTerminalMissing() {
@@ -124,23 +110,6 @@ public class CombinedStrand implements DotBracketInterface {
     return ">strand_" + builder + '\n' + getSequence(false) + '\n' + getStructure(false);
   }
 
-  @Override
-  public final String toStringWithStrands() {
-    return strands.stream()
-        .map(strand -> String.valueOf(strand) + '\n')
-        .collect(Collectors.joining());
-  }
-
-  @Override
-  public final List<? extends CombinedStrand> combineStrands() {
-    return Collections.singletonList(this);
-  }
-
-  @Override
-  public int getRealSymbolIndex(final DotBracketSymbol symbol) {
-    return symbol.getIndex() + 1;
-  }
-
   public String getSequence(final boolean separateStrands) {
     final StringBuilder builder = new StringBuilder();
     for (final Strand strand : strands) {
@@ -171,6 +140,37 @@ public class CombinedStrand implements DotBracketInterface {
   @Override
   public final String getStructure() {
     return getStructure(false);
+  }
+
+  @Override
+  public final List<DotBracketSymbol> getSymbols() {
+    return Collections.unmodifiableList(symbols);
+  }
+
+  @Override
+  public final DotBracketSymbol getSymbol(final int index) {
+    return getSymbols().get(index);
+  }
+
+  @Override
+  public final String toStringWithStrands() {
+    return strands.stream()
+        .map(strand -> String.valueOf(strand) + '\n')
+        .collect(Collectors.joining());
+  }
+
+  public final List<Strand> getStrands() {
+    return Collections.unmodifiableList(strands);
+  }
+
+  @Override
+  public final List<? extends CombinedStrand> combineStrands() {
+    return Collections.singletonList(this);
+  }
+
+  @Override
+  public int getRealSymbolIndex(final DotBracketSymbol symbol) {
+    return symbol.getIndex() + 1;
   }
 
   /**

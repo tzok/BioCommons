@@ -63,12 +63,6 @@ public final class TorsionAnglesHelper {
     return Angle.torsionAngle(v1, v2, v3, v4);
   }
 
-  public static Vector3D atomDistance(final PdbAtomLine a, final PdbAtomLine b) {
-    final Vector3D va = new Vector3D(a.x(), a.y(), a.z());
-    final Vector3D vb = new Vector3D(b.x(), b.y(), b.z());
-    return vb.subtract(va);
-  }
-
   /**
    * Calculate one dihedral angle value for given four atoms. Use cos^-1 and a check for
    * pseudovector
@@ -99,6 +93,12 @@ public final class TorsionAnglesHelper {
       torp = -torp;
     }
     return ImmutableAngle.of(torp);
+  }
+
+  public static Vector3D atomDistance(final PdbAtomLine a, final PdbAtomLine b) {
+    final Vector3D va = new Vector3D(a.x(), a.y(), a.z());
+    final Vector3D vb = new Vector3D(b.x(), b.y(), b.z());
+    return vb.subtract(va);
   }
 
   public static double subtractTorsions(final double a1, final double a2) {

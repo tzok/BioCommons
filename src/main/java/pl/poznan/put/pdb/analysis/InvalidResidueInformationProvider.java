@@ -1,6 +1,5 @@
 package pl.poznan.put.pdb.analysis;
 
-import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.torsion.TorsionAngleType;
 
 import java.util.Collections;

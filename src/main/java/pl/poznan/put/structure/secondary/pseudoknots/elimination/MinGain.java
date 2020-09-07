@@ -16,25 +16,6 @@ import java.util.TreeMap;
  * 14, pp.410–416.
  */
 public class MinGain extends AbstractRegionRemover {
-  public static List<Region> minGainRegions(
-      final ConflictMap conflictMap, final Iterable<Region> regions) {
-    final SortedMap<Integer, List<Region>> mapGainRegions = new TreeMap<>();
-
-    for (final Region region : regions) {
-      final int conflictLength =
-          conflictMap.conflictsWith(region).stream().mapToInt(Region::getLength).sum();
-
-      final int gain = region.getLength() - conflictLength;
-      if (!mapGainRegions.containsKey(gain)) {
-        mapGainRegions.put(gain, new ArrayList<>());
-      }
-
-      mapGainRegions.get(gain).add(region);
-    }
-
-    return mapGainRegions.get(mapGainRegions.firstKey());
-  }
-
   @Override
   public final Region selectRegionToRemove(final ConflictMap conflictMap) {
     final Set<Region> regions = conflictMap.getRegionsWithConflicts();
@@ -52,5 +33,24 @@ public class MinGain extends AbstractRegionRemover {
 
     maxConflictsRegions.sort(Comparator.comparingInt(Region::getBegin));
     return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
+  }
+
+  public static List<Region> minGainRegions(
+      final ConflictMap conflictMap, final Iterable<Region> regions) {
+    final SortedMap<Integer, List<Region>> mapGainRegions = new TreeMap<>();
+
+    for (final Region region : regions) {
+      final int conflictLength =
+          conflictMap.conflictsWith(region).stream().mapToInt(Region::getLength).sum();
+
+      final int gain = region.getLength() - conflictLength;
+      if (!mapGainRegions.containsKey(gain)) {
+        mapGainRegions.put(gain, new ArrayList<>());
+      }
+
+      mapGainRegions.get(gain).add(region);
+    }
+
+    return mapGainRegions.get(mapGainRegions.firstKey());
   }
 }

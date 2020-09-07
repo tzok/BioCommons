@@ -48,6 +48,11 @@ public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
   }
 
   @Override
+  public Range getRange(final Angle angle) {
+    return TorsionRange.getProvider().fromAngle(angle);
+  }
+
+  @Override
   public String getLongDisplayName() {
     assert !angleTypes.isEmpty();
     return angleTypes.get(0).getLongDisplayName();
@@ -63,10 +68,5 @@ public enum ProteinTorsionAngleType implements MasterTorsionAngleType {
   public String getExportName() {
     assert !angleTypes.isEmpty();
     return angleTypes.get(0).getExportName();
-  }
-
-  @Override
-  public Range getRange(final Angle angle) {
-    return TorsionRange.getProvider().fromAngle(angle);
   }
 }

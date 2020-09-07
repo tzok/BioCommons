@@ -120,17 +120,6 @@ class CifConsumer implements MMcifConsumer {
     super();
   }
 
-  private static Map<String, String> convertToMap(
-      final List<String> loopFields, final List<String> lineData) {
-    return IntStream.range(0, loopFields.size())
-        .boxed()
-        .collect(Collectors.toMap(loopFields::get, lineData::get, (a, b) -> b));
-  }
-
-  private static double getDoubleWithDefaultNaN(final Map<String, String> map, final String key) {
-    return map.containsKey(key) ? Double.parseDouble(map.get(key)) : Double.NaN;
-  }
-
   @Override
   public final void documentStart() {
     modelAtoms.clear();
@@ -545,6 +534,17 @@ class CifConsumer implements MMcifConsumer {
               opening);
       basePairs.add(quantifiedBasePair);
     }
+  }
+
+  private static Map<String, String> convertToMap(
+      final List<String> loopFields, final List<String> lineData) {
+    return IntStream.range(0, loopFields.size())
+        .boxed()
+        .collect(Collectors.toMap(loopFields::get, lineData::get, (a, b) -> b));
+  }
+
+  private static double getDoubleWithDefaultNaN(final Map<String, String> map, final String key) {
+    return map.containsKey(key) ? Double.parseDouble(map.get(key)) : Double.NaN;
   }
 
   public final List<CifModel> getModels() {

@@ -26,7 +26,7 @@ public class Histogram {
   public Histogram(final Collection<Angle> data, final double binWidth) {
     super();
     this.binWidth = binWidth;
-    dataSize = (double) data.size();
+    dataSize = data.size();
 
     if ((binWidth < 0.0) || (binWidth >= FastMath.PI)) {
       throw new InvalidCircularValueException("A bin size must be in range [0..180)");
@@ -47,20 +47,6 @@ public class Histogram {
   }
 
   /**
-   * Find bin which starts at a given point.
-   *
-   * @param radiansStart Value in radians which describes bin starting point (precision 1.0e-3).
-   * @return A collection of circular values in the found bin.
-   */
-  public final Collection<Angle> getBin(final double radiansStart) {
-    return bins.stream()
-        .filter(bin -> Precision.equals(bin.radiansStart(), radiansStart, 1.0e-3))
-        .findFirst()
-        .map(Bin::data)
-        .orElse(Collections.emptyList());
-  }
-
-  /**
    * Find the largest bin and calculate its relative size.
    *
    * @return Value in range [0; 1] describing relative size of the largest bin.
@@ -72,6 +58,20 @@ public class Histogram {
       maxFrequency = FastMath.max(frequency, maxFrequency);
     }
     return maxFrequency;
+  }
+
+  /**
+   * Find bin which starts at a given point.
+   *
+   * @param radiansStart Value in radians which describes bin starting point (precision 1.0e-3).
+   * @return A collection of circular values in the found bin.
+   */
+  public final Collection<Angle> getBin(final double radiansStart) {
+    return bins.stream()
+        .filter(bin -> Precision.equals(bin.radiansStart(), radiansStart, 1.0e-3))
+        .findFirst()
+        .map(Bin::data)
+        .orElse(Collections.emptyList());
   }
 
   @Value.Immutable

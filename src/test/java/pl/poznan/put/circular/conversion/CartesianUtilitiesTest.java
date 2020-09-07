@@ -1,7 +1,6 @@
 package pl.poznan.put.circular.conversion;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
 

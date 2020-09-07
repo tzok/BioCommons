@@ -56,14 +56,14 @@ public final class SVGHelper {
     super();
   }
 
+  public static SVGDocument fromFile(final File file) throws IOException {
+    return SVGHelper.fromUri(file.toURI());
+  }
+
   public static SVGDocument fromUri(final URI uri) throws IOException {
     final SAXSVGDocumentFactory factory =
         new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
     return (SVGDocument) factory.createDocument(uri.toString());
-  }
-
-  public static SVGDocument fromFile(final File file) throws IOException {
-    return SVGHelper.fromUri(file.toURI());
   }
 
   public static FontMetrics getFontMetrics(final SVGGraphics2D svg) {

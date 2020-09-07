@@ -35,6 +35,99 @@ public final class Ct implements Serializable {
     validate();
   }
 
+  /*
+   * Check if all pairs match.
+   */
+  private void validate() {
+    if (Ct.LOGGER.isTraceEnabled()) {
+      Ct.LOGGER.trace("CT to be validated:\n{}", this);
+    }
+
+    final Map<Integer, Integer> map = new HashMap<>();
+
+    for (final ExtendedEntry e : entries) {
+      map.put(e.getIndex(), e.getPair());
+    }
+
+    int previous = 0;
+
+    for (final ExtendedEntry e : entries) {
+      if ((e.getIndex() - previous) != 1) {
+        throw new InvalidStructureException(
+            "Inconsistent numbering in CT format: previous="
+                + previous
+                + ", current="
+                + e.getIndex());
+      }
+
+      previous = e.getIndex();
+      final int pair = map.get(e.getIndex());
+
+      if (pair != 0) {
+        if (!map.containsKey(pair)) {
+          throw new InvalidStructureException(
+              "Inconsistency in CT format: (" + e.getIndex() + " -> " + pair + ')');
+        }
+
+        if (map.get(pair) != e.getIndex()) {
+          throw new InvalidStructureException(
+              String.format(
+                  "Inconsistency in CT format: (%d -> %d) and (%d -> %d)",
+                  e.getIndex(), pair, pair, map.get(pair)));
+        }
+      }
+    }
+
+    // previous == maximum index
+
+    for (final ExtendedEntry e : entries) {
+      if ((e.getBefore() < 0) || (e.getBefore() >= previous)) {
+        throw new InvalidStructureException(
+            "Inconsistency in CT format. Third column has invalid" + " value in entry: " + e);
+      }
+
+      if ((e.getAfter() == 1) || (e.getAfter() < 0) || (e.getAfter() > (previous + 1))) {
+        throw new InvalidStructureException(
+            "Inconsistency in CT format. Fourth column has " + "invalid value in entry: " + e);
+      }
+    }
+
+    /*
+     * Check if strands' ends are correct
+     */
+    boolean expectNewStrand = true;
+
+    for (final ExtendedEntry e : entries) {
+      if ((e.getBefore() != 0) == expectNewStrand) {
+        throw new InvalidStructureException(
+            "Inconsistency in CT format. The field 'before' is "
+                + "non-zero for the first entry in a strand: "
+                + e);
+      }
+
+      expectNewStrand = e.getAfter() == 0;
+    }
+
+    final ExtendedEntry lastEntry = entries.last();
+
+    if (lastEntry.getAfter() != 0) {
+      if (Ct.FIX_LAST_ENTRY) {
+        entries.remove(lastEntry);
+        entries.add(
+            new ExtendedEntry(
+                lastEntry.getIndex(),
+                lastEntry.getPair(),
+                lastEntry.getBefore(),
+                0,
+                lastEntry.getOriginal(),
+                lastEntry.getSeq()));
+      } else {
+        throw new InvalidStructureException(
+            "The field 'after' in the last entry is non-zero: " + lastEntry);
+      }
+    }
+  }
+
   public static Ct fromString(final String data) {
     final List<ExtendedEntry> entries = new ArrayList<>();
     boolean firstLine = true;
@@ -175,99 +268,6 @@ public final class Ct implements Serializable {
     Ct.printComments = printComments;
   }
 
-  /*
-   * Check if all pairs match.
-   */
-  private void validate() {
-    if (Ct.LOGGER.isTraceEnabled()) {
-      Ct.LOGGER.trace("CT to be validated:\n{}", this);
-    }
-
-    final Map<Integer, Integer> map = new HashMap<>();
-
-    for (final ExtendedEntry e : entries) {
-      map.put(e.getIndex(), e.getPair());
-    }
-
-    int previous = 0;
-
-    for (final ExtendedEntry e : entries) {
-      if ((e.getIndex() - previous) != 1) {
-        throw new InvalidStructureException(
-            "Inconsistent numbering in CT format: previous="
-                + previous
-                + ", current="
-                + e.getIndex());
-      }
-
-      previous = e.getIndex();
-      final int pair = map.get(e.getIndex());
-
-      if (pair != 0) {
-        if (!map.containsKey(pair)) {
-          throw new InvalidStructureException(
-              "Inconsistency in CT format: (" + e.getIndex() + " -> " + pair + ')');
-        }
-
-        if (map.get(pair) != e.getIndex()) {
-          throw new InvalidStructureException(
-              String.format(
-                  "Inconsistency in CT format: (%d -> %d) and (%d -> %d)",
-                  e.getIndex(), pair, pair, map.get(pair)));
-        }
-      }
-    }
-
-    // previous == maximum index
-
-    for (final ExtendedEntry e : entries) {
-      if ((e.getBefore() < 0) || (e.getBefore() >= previous)) {
-        throw new InvalidStructureException(
-            "Inconsistency in CT format. Third column has invalid" + " value in entry: " + e);
-      }
-
-      if ((e.getAfter() == 1) || (e.getAfter() < 0) || (e.getAfter() > (previous + 1))) {
-        throw new InvalidStructureException(
-            "Inconsistency in CT format. Fourth column has " + "invalid value in entry: " + e);
-      }
-    }
-
-    /*
-     * Check if strands' ends are correct
-     */
-    boolean expectNewStrand = true;
-
-    for (final ExtendedEntry e : entries) {
-      if ((e.getBefore() != 0) == expectNewStrand) {
-        throw new InvalidStructureException(
-            "Inconsistency in CT format. The field 'before' is "
-                + "non-zero for the first entry in a strand: "
-                + e);
-      }
-
-      expectNewStrand = e.getAfter() == 0;
-    }
-
-    final ExtendedEntry lastEntry = entries.last();
-
-    if (lastEntry.getAfter() != 0) {
-      if (Ct.FIX_LAST_ENTRY) {
-        entries.remove(lastEntry);
-        entries.add(
-            new ExtendedEntry(
-                lastEntry.getIndex(),
-                lastEntry.getPair(),
-                lastEntry.getBefore(),
-                0,
-                lastEntry.getOriginal(),
-                lastEntry.getSeq()));
-      } else {
-        throw new InvalidStructureException(
-            "The field 'after' in the last entry is non-zero: " + lastEntry);
-      }
-    }
-  }
-
   public int getStrandCount() {
     return (int) entries.stream().filter(entry -> entry.getAfter() == 0).count();
   }
@@ -347,12 +347,8 @@ public final class Ct implements Serializable {
         final int before,
         final int after,
         final int original,
-        final char seq,
-        final String comment) {
-      super(index, pair, seq, comment);
-      this.before = before;
-      this.after = after;
-      this.original = original;
+        final char seq) {
+      this(index, pair, before, after, original, seq, "");
     }
 
     private ExtendedEntry(
@@ -361,8 +357,12 @@ public final class Ct implements Serializable {
         final int before,
         final int after,
         final int original,
-        final char seq) {
-      this(index, pair, before, after, original, seq, "");
+        final char seq,
+        final String comment) {
+      super(index, pair, seq, comment);
+      this.before = before;
+      this.after = after;
+      this.original = original;
     }
 
     private int getBefore() {

@@ -18,12 +18,6 @@ public abstract class PdbChain implements Comparable<PdbChain>, Serializable {
     return ImmutablePdbChain.of(chain.getId(), residues);
   }
 
-  @Value.Parameter(order = 1)
-  public abstract String identifier();
-
-  @Value.Parameter(order = 2)
-  public abstract List<PdbResidue> residues();
-
   public MoleculeType moleculeType() {
     int rnaCounter = 0;
     int proteinCounter = 0;
@@ -44,10 +38,16 @@ public abstract class PdbChain implements Comparable<PdbChain>, Serializable {
     return (rnaCounter > proteinCounter) ? MoleculeType.RNA : MoleculeType.PROTEIN;
   }
 
+  @Value.Parameter(order = 2)
+  public abstract List<PdbResidue> residues();
+
   @Override
   public final int compareTo(@Nonnull final PdbChain t) {
     return identifier().compareTo(t.identifier());
   }
+
+  @Value.Parameter(order = 1)
+  public abstract String identifier();
 
   public final String getSequence() {
     return residues().stream()

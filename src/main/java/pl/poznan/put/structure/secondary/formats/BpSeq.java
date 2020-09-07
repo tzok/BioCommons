@@ -37,6 +37,50 @@ public class BpSeq implements Serializable {
     validate();
   }
 
+  /*
+   * Check if all pairs match.
+   */
+  private void validate() {
+    final Map<Integer, Integer> map = new HashMap<>();
+
+    for (final Entry e : entries) {
+      if (e.getIndex() == e.getPair()) {
+        throw new InvalidStructureException(
+            String.format(
+                "Invalid line in BPSEQ data, a residue cannot be " + "paired with itself! Line: %s",
+                e));
+      }
+
+      map.put(e.getIndex(), e.getPair());
+    }
+
+    int previous = 0;
+
+    for (final Entry e : entries) {
+      if ((e.getIndex() - previous) != 1) {
+        throw new InvalidStructureException(
+            String.format(
+                "Inconsistent numbering in BPSEQ format: previous=%d," + " current=%d",
+                previous, e.getIndex()));
+      }
+      previous = e.getIndex();
+
+      final int pair = map.get(e.getIndex());
+      if (pair != 0) {
+        if (!map.containsKey(pair)) {
+          throw new InvalidStructureException(
+              String.format("Inconsistency in BPSEQ format: (%d -> %d)", e.getIndex(), pair));
+        }
+        if (map.get(pair) != e.getIndex()) {
+          throw new InvalidStructureException(
+              String.format(
+                  "Inconsistency in BPSEQ format: (%d -> %d) and " + "(%d -> %d)",
+                  e.getIndex(), pair, pair, map.get(pair)));
+        }
+      }
+    }
+  }
+
   public static BpSeq fromString(final String data) {
     final List<Entry> entries = new ArrayList<>();
 
@@ -170,50 +214,6 @@ public class BpSeq implements Serializable {
     return entries;
   }
 
-  /*
-   * Check if all pairs match.
-   */
-  private void validate() {
-    final Map<Integer, Integer> map = new HashMap<>();
-
-    for (final Entry e : entries) {
-      if (e.getIndex() == e.getPair()) {
-        throw new InvalidStructureException(
-            String.format(
-                "Invalid line in BPSEQ data, a residue cannot be " + "paired with itself! Line: %s",
-                e));
-      }
-
-      map.put(e.getIndex(), e.getPair());
-    }
-
-    int previous = 0;
-
-    for (final Entry e : entries) {
-      if ((e.getIndex() - previous) != 1) {
-        throw new InvalidStructureException(
-            String.format(
-                "Inconsistent numbering in BPSEQ format: previous=%d," + " current=%d",
-                previous, e.getIndex()));
-      }
-      previous = e.getIndex();
-
-      final int pair = map.get(e.getIndex());
-      if (pair != 0) {
-        if (!map.containsKey(pair)) {
-          throw new InvalidStructureException(
-              String.format("Inconsistency in BPSEQ format: (%d -> %d)", e.getIndex(), pair));
-        }
-        if (map.get(pair) != e.getIndex()) {
-          throw new InvalidStructureException(
-              String.format(
-                  "Inconsistency in BPSEQ format: (%d -> %d) and " + "(%d -> %d)",
-                  e.getIndex(), pair, pair, map.get(pair)));
-        }
-      }
-    }
-  }
-
   public final SortedSet<Entry> getEntries() {
     return Collections.unmodifiableSortedSet(entries);
   }
@@ -226,23 +226,6 @@ public class BpSeq implements Serializable {
     return entries.stream()
         .filter(entry -> entry.getIndex() < entry.getPair())
         .collect(Collectors.toCollection(TreeSet::new));
-  }
-
-  public final boolean removePair(final Entry toRemove) {
-    if (!toRemove.isPaired()) {
-      return false;
-    }
-
-    for (final Entry entry : entries) {
-      if (entry.getIndex() == toRemove.getPair()) {
-        entries.remove(toRemove);
-        entries.remove(entry);
-        entries.add(new Entry(toRemove.getIndex(), 0, toRemove.getSeq()));
-        entries.add(new Entry(entry.getIndex(), 0, entry.getSeq()));
-        return true;
-      }
-    }
-    return false;
   }
 
   public final int size() {
@@ -262,6 +245,23 @@ public class BpSeq implements Serializable {
     return flag[0];
   }
 
+  public final boolean removePair(final Entry toRemove) {
+    if (!toRemove.isPaired()) {
+      return false;
+    }
+
+    for (final Entry entry : entries) {
+      if (entry.getIndex() == toRemove.getPair()) {
+        entries.remove(toRemove);
+        entries.remove(entry);
+        entries.add(new Entry(toRemove.getIndex(), 0, toRemove.getSeq()));
+        entries.add(new Entry(entry.getIndex(), 0, entry.getSeq()));
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Override
   public final String toString() {
     return entries.stream().map(e -> e + System.lineSeparator()).collect(Collectors.joining());
@@ -274,16 +274,16 @@ public class BpSeq implements Serializable {
     protected final char seq;
     protected final String comment;
 
+    public Entry(final int index, final int pair, final char seq) {
+      this(index, pair, seq, "");
+    }
+
     public Entry(final int index, final int pair, final char seq, final String comment) {
       super();
       this.index = index;
       this.pair = pair;
       this.seq = seq;
       this.comment = comment;
-    }
-
-    public Entry(final int index, final int pair, final char seq) {
-      this(index, pair, seq, "");
     }
 
     public boolean isPaired() {

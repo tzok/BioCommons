@@ -10,11 +10,22 @@ import java.util.stream.IntStream;
 public interface Strand {
   String getName();
 
-  List<DotBracketSymbol> getSymbols();
-
   TerminalMissing getMissingBegin();
 
   TerminalMissing getMissingEnd();
+
+  default String getStructure() {
+    final List<DotBracketSymbol> symbols = getSymbols();
+    return symbols.stream()
+        .map(symbol -> String.valueOf(symbol.getStructure()))
+        .collect(Collectors.joining());
+  }
+
+  List<DotBracketSymbol> getSymbols();
+
+  default int getLength() {
+    return getTo() - getFrom();
+  }
 
   default int getFrom() {
     final List<DotBracketSymbol> symbols = getSymbols();
@@ -24,24 +35,6 @@ public interface Strand {
   default int getTo() {
     final List<DotBracketSymbol> symbols = getSymbols();
     return symbols.isEmpty() ? 1 : symbols.get(symbols.size() - 1).getIndex();
-  }
-
-  default String getSequence() {
-    final List<DotBracketSymbol> symbols = getSymbols();
-    return symbols.stream()
-        .map(symbol -> String.valueOf(symbol.getSequence()))
-        .collect(Collectors.joining());
-  }
-
-  default String getStructure() {
-    final List<DotBracketSymbol> symbols = getSymbols();
-    return symbols.stream()
-        .map(symbol -> String.valueOf(symbol.getStructure()))
-        .collect(Collectors.joining());
-  }
-
-  default int getLength() {
-    return getTo() - getFrom();
   }
 
   default int getPseudoknotOrder() {
@@ -79,6 +72,13 @@ public interface Strand {
       cs[i] = ((cs[i] == 'A') || (cs[i] == 'G')) ? 'R' : 'Y';
     }
     return new String(cs);
+  }
+
+  default String getSequence() {
+    final List<DotBracketSymbol> symbols = getSymbols();
+    return symbols.stream()
+        .map(symbol -> String.valueOf(symbol.getSequence()))
+        .collect(Collectors.joining());
   }
 
   default boolean containsMissing() {

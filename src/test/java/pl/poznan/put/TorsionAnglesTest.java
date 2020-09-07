@@ -34,10 +34,6 @@ public class TorsionAnglesTest {
   private static final double DEGREES = -128.0531458665;
   // @formatter:on
 
-  private static boolean isBelowEpsilon(final double value) {
-    return FastMath.abs(value) < 1.0e-6;
-  }
-
   @Test
   public final void testAngle() {
     final PdbAtomLine a1 = PdbAtomLine.parse(TorsionAnglesTest.ATOM_P);
@@ -83,5 +79,9 @@ public class TorsionAnglesTest {
         TorsionAnglesTest.isBelowEpsilon(
             angleValue.getValue().degrees() - TorsionAnglesTest.DEGREES),
         is(true));
+  }
+
+  private static boolean isBelowEpsilon(final double value) {
+    return FastMath.abs(value) < 1.0e-6;
   }
 }

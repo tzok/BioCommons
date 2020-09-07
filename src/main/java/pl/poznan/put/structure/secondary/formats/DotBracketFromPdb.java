@@ -56,18 +56,28 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     return String.valueOf(dotBracket);
   }
 
-  private static void depthFirstSearch(
-      final Strand u,
-      final Map<Strand, Set<Strand>> graph,
-      final Set<Strand> visited,
-      final Set<Strand> component) {
-    visited.add(u);
-    component.add(u);
+  private void mapSymbolsAndResidues(final ResidueCollection model) {
+    final List<PdbResidue> residues = model.residues();
+    assert residues.size() == symbols.size();
 
-    for (final Strand v : graph.getOrDefault(u, Collections.emptySet())) {
-      if (!visited.contains(v)) {
-        DotBracketFromPdb.depthFirstSearch(v, graph, visited, component);
-      }
+    for (int i = 0; i < residues.size(); i++) {
+      final DotBracketSymbol symbol = symbols.get(i);
+      final PdbResidue residue = residues.get(i);
+      final PdbNamedResidueIdentifier residueIdentifier = residue.namedResidueIdentifer();
+      symbolToResidue.put(symbol, residueIdentifier);
+      residueToSymbol.put(residueIdentifier, symbol);
+    }
+  }
+
+  private void splitStrands(final PdbModel model) {
+    strands.clear();
+    int start = 0;
+    int end = 0;
+
+    for (final PdbChain chain : model.getChains()) {
+      end += chain.residues().size();
+      strands.add(new StrandView(chain.identifier(), this, start, end));
+      start = end;
     }
   }
 
@@ -95,31 +105,6 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
           right.setNonCanonical(true);
         }
       }
-    }
-  }
-
-  private void mapSymbolsAndResidues(final ResidueCollection model) {
-    final List<PdbResidue> residues = model.residues();
-    assert residues.size() == symbols.size();
-
-    for (int i = 0; i < residues.size(); i++) {
-      final DotBracketSymbol symbol = symbols.get(i);
-      final PdbResidue residue = residues.get(i);
-      final PdbNamedResidueIdentifier residueIdentifier = residue.namedResidueIdentifer();
-      symbolToResidue.put(symbol, residueIdentifier);
-      residueToSymbol.put(residueIdentifier, symbol);
-    }
-  }
-
-  private void splitStrands(final PdbModel model) {
-    strands.clear();
-    int start = 0;
-    int end = 0;
-
-    for (final PdbChain chain : model.getChains()) {
-      end += chain.residues().size();
-      strands.add(new StrandView(chain.identifier(), this, start, end));
-      start = end;
     }
   }
 
@@ -190,6 +175,21 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     }
 
     return result;
+  }
+
+  private static void depthFirstSearch(
+      final Strand u,
+      final Map<Strand, Set<Strand>> graph,
+      final Set<Strand> visited,
+      final Set<Strand> component) {
+    visited.add(u);
+    component.add(u);
+
+    for (final Strand v : graph.getOrDefault(u, Collections.emptySet())) {
+      if (!visited.contains(v)) {
+        DotBracketFromPdb.depthFirstSearch(v, graph, visited, component);
+      }
+    }
   }
 
   private void linkStrands(

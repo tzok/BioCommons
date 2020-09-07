@@ -45,13 +45,13 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
   private final RangeProvider rangeProvider;
   private final List<TorsionAngleType> angleTypes;
 
+  RNATorsionAngleType(final TorsionAngleType... angleTypes) {
+    this(TorsionRange.getProvider(), angleTypes);
+  }
+
   RNATorsionAngleType(final RangeProvider rangeProvider, final TorsionAngleType... angleTypes) {
     this.rangeProvider = rangeProvider;
     this.angleTypes = Arrays.asList(angleTypes);
-  }
-
-  RNATorsionAngleType(final TorsionAngleType... angleTypes) {
-    this(TorsionRange.getProvider(), angleTypes);
   }
 
   public static MasterTorsionAngleType[] mainAngles() {
@@ -65,6 +65,11 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
   @Override
   public List<TorsionAngleType> getAngleTypes() {
     return Collections.unmodifiableList(angleTypes);
+  }
+
+  @Override
+  public Range getRange(final Angle angle) {
+    return rangeProvider.fromAngle(angle);
   }
 
   @Override
@@ -83,10 +88,5 @@ public enum RNATorsionAngleType implements MasterTorsionAngleType {
   public String getExportName() {
     assert !angleTypes.isEmpty();
     return angleTypes.get(0).getExportName();
-  }
-
-  @Override
-  public Range getRange(final Angle angle) {
-    return rangeProvider.fromAngle(angle);
   }
 }

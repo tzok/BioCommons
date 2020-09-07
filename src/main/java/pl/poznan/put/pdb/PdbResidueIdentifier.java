@@ -14,6 +14,13 @@ import java.util.Objects;
 @Value.Immutable
 public abstract class PdbResidueIdentifier
     implements ChainNumberICode, Comparable<PdbResidueIdentifier>, Serializable {
+  @Override
+  public final String toString() {
+    final String chain = StringUtils.isBlank(chainIdentifier()) ? "" : (chainIdentifier() + '.');
+    final String icode = StringUtils.isBlank(insertionCode()) ? "" : insertionCode();
+    return chain + residueNumber() + icode;
+  }
+
   /** @return The value of the {@code chainIdentifier} attribute */
   @Value.Parameter(order = 1)
   public abstract String chainIdentifier();
@@ -25,13 +32,6 @@ public abstract class PdbResidueIdentifier
   /** @return The value of the {@code insertionCode} attribute */
   @Value.Parameter(order = 3)
   public abstract String insertionCode();
-
-  @Override
-  public final String toString() {
-    final String chain = StringUtils.isBlank(chainIdentifier()) ? "" : (chainIdentifier() + '.');
-    final String icode = StringUtils.isBlank(insertionCode()) ? "" : insertionCode();
-    return chain + residueNumber() + icode;
-  }
 
   @Override
   public final int compareTo(@Nonnull final PdbResidueIdentifier t) {

@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -139,6 +138,14 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
     }
 
     @Override
+    public int hashCode() {
+      return leftResidue.hashCode()
+          + rightResidue.hashCode()
+          + leftAtom.hashCode()
+          + rightAtom.hashCode();
+    }
+
+    @Override
     public boolean equals(final Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
@@ -151,34 +158,6 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
               && rightResidue.equals(atomPair.leftResidue)
               && leftAtom.equals(atomPair.rightAtom)
               && rightAtom.equals(atomPair.leftAtom));
-    }
-
-    @Override
-    public int hashCode() {
-      return leftResidue.hashCode()
-          + rightResidue.hashCode()
-          + leftAtom.hashCode()
-          + rightAtom.hashCode();
-    }
-
-    private boolean isValid() {
-      // skip check if any of the residues has icode
-      if (StringUtils.isNotBlank(leftResidue.insertionCode())
-          || StringUtils.isNotBlank(rightResidue.insertionCode())) {
-        return true;
-      }
-
-      // skip check if residues are in different chains
-      if (!leftResidue.chainIdentifier().equals(rightResidue.chainIdentifier())) {
-        return true;
-      }
-
-      // skip check if residues are not consecutive
-      if (Math.abs(leftResidue.residueNumber() - rightResidue.residueNumber()) > 1) {
-        return true;
-      }
-
-      return distance <= bondLength.max() * 1.5;
     }
 
     public String generateValidationMessage() {
@@ -208,6 +187,26 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
           distance,
           bondLength.min(),
           bondLength.max());
+    }
+
+    private boolean isValid() {
+      // skip check if any of the residues has icode
+      if (StringUtils.isNotBlank(leftResidue.insertionCode())
+          || StringUtils.isNotBlank(rightResidue.insertionCode())) {
+        return true;
+      }
+
+      // skip check if residues are in different chains
+      if (!leftResidue.chainIdentifier().equals(rightResidue.chainIdentifier())) {
+        return true;
+      }
+
+      // skip check if residues are not consecutive
+      if (Math.abs(leftResidue.residueNumber() - rightResidue.residueNumber()) > 1) {
+        return true;
+      }
+
+      return distance <= bondLength.max() * 1.5;
     }
 
     @Override

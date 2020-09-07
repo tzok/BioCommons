@@ -102,17 +102,6 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /**
-   * Calculate angles' difference using formula: pi - |pi - |left - right||.
-   *
-   * @param left Minuend in radians.
-   * @param right Subtrahend in radians.
-   * @return The result of minuend - subtrahend in angular space.
-   */
-  public static double subtractByAbsolutes(final double left, final double right) {
-    return FastMath.PI - FastMath.abs(FastMath.PI - FastMath.abs(left - right));
-  }
-
-  /**
    * Calculate angles' difference using formula acos(dot(left, right)).
    *
    * @param left Minuend in radians.
@@ -126,10 +115,6 @@ public abstract class Angle implements Comparable<Angle> {
     v = FastMath.max(-1.0, v);
     return FastMath.acos(v);
   }
-
-  /** @return Value in radians in range (-pi; pi]. */
-  @Value.Parameter(order = 1)
-  public abstract double radians();
 
   @Value.Check
   protected Angle normalize() {
@@ -154,11 +139,9 @@ public abstract class Angle implements Comparable<Angle> {
     return ImmutableAngle.of(value);
   }
 
-  /** @return Value in degrees in range (-180; 180]. */
-  @Value.Lazy
-  public double degrees() {
-    return FastMath.toDegrees(radians());
-  }
+  /** @return Value in radians in range (-pi; pi]. */
+  @Value.Parameter(order = 1)
+  public abstract double radians();
 
   /** @return Value in degrees in range [0; 360). */
   @Value.Lazy
@@ -176,6 +159,7 @@ public abstract class Angle implements Comparable<Angle> {
   public boolean isValid() {
     return !Double.isNaN(radians());
   }
+
   /**
    * Return true if this instance is in range [begin; end). For example 45 degrees is between 30
    * degrees and 60 degrees. Also, 15 degrees is between -30 and 30 degrees.
@@ -212,6 +196,17 @@ public abstract class Angle implements Comparable<Angle> {
    */
   public final Angle subtract(final Angle other) {
     return ImmutableAngle.of(Angle.subtractByAbsolutes(radians(), other.radians()));
+  }
+
+  /**
+   * Calculate angles' difference using formula: pi - |pi - |left - right||.
+   *
+   * @param left Minuend in radians.
+   * @param right Subtrahend in radians.
+   * @return The result of minuend - subtrahend in angular space.
+   */
+  public static double subtractByAbsolutes(final double left, final double right) {
+    return FastMath.PI - FastMath.abs(FastMath.PI - FastMath.abs(left - right));
   }
 
   /**
@@ -256,5 +251,11 @@ public abstract class Angle implements Comparable<Angle> {
   @Override
   public final String toString() {
     return String.format(Locale.US, "Angle{degrees=%.2f}", degrees());
+  }
+
+  /** @return Value in degrees in range (-180; 180]. */
+  @Value.Lazy
+  public double degrees() {
+    return FastMath.toDegrees(radians());
   }
 }

@@ -32,6 +32,10 @@ public final class ResourcesHelper {
     }
   }
 
+  public static File loadResourceFile(final String resource) throws URISyntaxException {
+    return new File(ResourcesHelper.loadResourceUri(resource));
+  }
+
   /**
    * Translate resource address to a URI.
    *
@@ -46,9 +50,5 @@ public final class ResourcesHelper {
       throw new IllegalArgumentException(String.format("Missing resource: %s", resource));
     }
     return url.toURI();
-  }
-
-  public static File loadResourceFile(final String resource) throws URISyntaxException {
-    return new File(ResourcesHelper.loadResourceUri(resource));
   }
 }

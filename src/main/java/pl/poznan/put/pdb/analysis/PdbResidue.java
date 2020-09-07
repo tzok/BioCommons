@@ -57,28 +57,8 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
     return ImmutablePdbResidue.of(residueIdentifier, residueName, residueName, atoms, false, false);
   }
 
-  @Value.Parameter(order = 1)
-  public abstract PdbResidueIdentifier identifier();
-
-  @Value.Parameter(order = 2)
-  public abstract String residueName();
-
-  @Value.Parameter(order = 3)
-  public abstract String modifiedResidueName();
-
-  @Value.Parameter(order = 4)
-  public abstract List<PdbAtomLine> atoms();
-
   @Value.Parameter(order = 5)
   public abstract boolean isModifiedInPDB();
-
-  @Value.Parameter(order = 6)
-  public abstract boolean isMissing();
-
-  @Value.Lazy
-  public Set<AtomName> atomNames() {
-    return atoms().stream().map(PdbAtomLine::detectAtomName).collect(Collectors.toSet());
-  }
 
   public final boolean wasSuccessfullyDetected() {
     return residueInformationProvider().moleculeType() != MoleculeType.UNKNOWN;
@@ -135,6 +115,9 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
     return identifier().chainIdentifier();
   }
 
+  @Value.Parameter(order = 1)
+  public abstract PdbResidueIdentifier identifier();
+
   @Override
   public final int residueNumber() {
     return identifier().residueNumber();
@@ -158,6 +141,31 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
   public final List<TorsionAngleType> torsionAngleTypes() {
     return residueInformationProvider().torsionAngleTypes();
   }
+
+  @Value.Lazy
+  public ResidueInformationProvider residueInformationProvider() {
+    if (isMissing()) {
+      return ResidueTypeDetector.detectResidueTypeFromResidueName(residueName());
+    }
+    return ResidueTypeDetector.detectResidueType(modifiedResidueName(), atomNames());
+  }
+
+  @Value.Parameter(order = 2)
+  public abstract String residueName();
+
+  @Value.Parameter(order = 3)
+  public abstract String modifiedResidueName();
+
+  @Value.Parameter(order = 6)
+  public abstract boolean isMissing();
+
+  @Value.Lazy
+  public Set<AtomName> atomNames() {
+    return atoms().stream().map(PdbAtomLine::detectAtomName).collect(Collectors.toSet());
+  }
+
+  @Value.Parameter(order = 4)
+  public abstract List<PdbAtomLine> atoms();
 
   public final char oneLetterName() {
     return namedResidueIdentifer().oneLetterName();
@@ -201,16 +209,6 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
     return atomNames().stream().anyMatch(atomName -> !atomName.isHeavy());
   }
 
-  public final PdbAtomLine findAtom(final AtomName atomName) {
-    for (final PdbAtomLine atom : atoms()) {
-      if (atom.detectAtomName() == atomName) {
-        return atom;
-      }
-    }
-
-    throw new IllegalArgumentException("Failed to find: " + atomName);
-  }
-
   public final boolean isConnectedTo(final PdbResidue other) {
     final MoleculeType moleculeType = residueInformationProvider().moleculeType();
     return moleculeType.areConnected(this, other);
@@ -233,14 +231,6 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
 
   public final String toCif() {
     return atoms().stream().map(PdbAtomLine::toCif).collect(Collectors.joining("\n"));
-  }
-
-  @Value.Lazy
-  public ResidueInformationProvider residueInformationProvider() {
-    if (isMissing()) {
-      return ResidueTypeDetector.detectResidueTypeFromResidueName(residueName());
-    }
-    return ResidueTypeDetector.detectResidueType(modifiedResidueName(), atomNames());
   }
 
   public final List<PdbAtomLine> getComponentAtoms(final RNAResidueComponentType type) {
@@ -279,5 +269,15 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
 
     throw new IllegalArgumentException(
         "Cannot compute base plane for not a nucleotide: " + identifier());
+  }
+
+  public final PdbAtomLine findAtom(final AtomName atomName) {
+    for (final PdbAtomLine atom : atoms()) {
+      if (atom.detectAtomName() == atomName) {
+        return atom;
+      }
+    }
+
+    throw new IllegalArgumentException("Failed to find: " + atomName);
   }
 }

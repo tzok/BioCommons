@@ -1,6 +1,5 @@
-
 <svg x="241.51301193237305" contentScriptType="text/ecmascript"
-     width="483.0260238647461" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="483.0260238647461"
      zoomAndPan="magnify" contentStyleType="text/css"
      viewBox="0 0 483.0260238647461 303.39398193359375"
      height="303.39398193359375" preserveAspectRatio="xMidYMid"
@@ -15,7 +14,7 @@
     <path class="cls-2"
           d="M157.32 166.32s6.465-15.614-9.3-34.223c-15.764-18.608 5.5-52.324 49.59-62.222 0 0-52.903 23.227-40.61 51.125 4.55 10.325 11.537 19.297 8 30-4.915 14.873-7.68 15.32-7.68 15.32z"/>
     <svg x="241.51301193237305" contentScriptType="text/ecmascript" width="300"
-         xmlns:xlink="http://www.w3.org/1999/xlink" zoomAndPan="magnify"
+         zoomAndPan="magnify"
          contentStyleType="text/css" height="300" viewBox="0 0 300 300"
          preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg"
          version="1.0">

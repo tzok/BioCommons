@@ -48,21 +48,6 @@ public final class ResidueTypeDetector {
         .orElse(new InvalidResidueInformationProvider(residueName));
   }
 
-  private static boolean isNucleotide(final Set<AtomName> actual) {
-    return ResidueTypeDetector.intersectionRatio(actual, ResidueTypeDetector.RIBOSE_HEAVY_ATOMS)
-        >= 0.5;
-  }
-
-  private static boolean isAminoAcid(final Set<AtomName> actual) {
-    return ResidueTypeDetector.intersectionRatio(actual, ResidueTypeDetector.BACKBONE_HEAVY_ATOMS)
-        >= 0.5;
-  }
-
-  private static double intersectionRatio(
-      final Set<AtomName> actual, final Set<AtomName> expected) {
-    return (double) SetUtils.intersection(actual, expected).size() / expected.size();
-  }
-
   private static ResidueInformationProvider detectResidueTypeFromAtoms(
       final Set<AtomName> actual, final String residueName) {
     if (actual.size() > 1) {
@@ -92,5 +77,20 @@ public final class ResidueTypeDetector {
       }
     }
     return new InvalidResidueInformationProvider(residueName);
+  }
+
+  private static boolean isNucleotide(final Set<AtomName> actual) {
+    return ResidueTypeDetector.intersectionRatio(actual, ResidueTypeDetector.RIBOSE_HEAVY_ATOMS)
+        >= 0.5;
+  }
+
+  private static double intersectionRatio(
+      final Set<AtomName> actual, final Set<AtomName> expected) {
+    return (double) SetUtils.intersection(actual, expected).size() / expected.size();
+  }
+
+  private static boolean isAminoAcid(final Set<AtomName> actual) {
+    return ResidueTypeDetector.intersectionRatio(actual, ResidueTypeDetector.BACKBONE_HEAVY_ATOMS)
+        >= 0.5;
   }
 }

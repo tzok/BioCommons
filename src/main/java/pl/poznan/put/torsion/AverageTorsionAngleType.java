@@ -31,25 +31,6 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     exportName = AverageTorsionAngleType.toExportName(consideredAngles);
   }
 
-  public AverageTorsionAngleType(
-      final MoleculeType moleculeType, final List<MasterTorsionAngleType> consideredAngles) {
-    super(moleculeType);
-    this.consideredAngles = new ArrayList<>(consideredAngles);
-    displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
-    exportName = AverageTorsionAngleType.toExportName(consideredAngles);
-  }
-
-  private AverageTorsionAngleType(
-      final MoleculeType moleculeType,
-      final List<? extends MasterTorsionAngleType> consideredAngles,
-      final String displayName,
-      final String exportName) {
-    super(moleculeType);
-    this.consideredAngles = consideredAngles;
-    this.displayName = displayName;
-    this.exportName = exportName;
-  }
-
   private static String toDisplayName(
       final Iterable<? extends MasterTorsionAngleType> consideredAngles) {
     final Collection<String> angleNames = new LinkedHashSet<>();
@@ -89,6 +70,25 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     return builder.toString();
   }
 
+  public AverageTorsionAngleType(
+      final MoleculeType moleculeType, final List<MasterTorsionAngleType> consideredAngles) {
+    super(moleculeType);
+    this.consideredAngles = new ArrayList<>(consideredAngles);
+    displayName = AverageTorsionAngleType.toDisplayName(consideredAngles);
+    exportName = AverageTorsionAngleType.toExportName(consideredAngles);
+  }
+
+  private AverageTorsionAngleType(
+      final MoleculeType moleculeType,
+      final List<? extends MasterTorsionAngleType> consideredAngles,
+      final String displayName,
+      final String exportName) {
+    super(moleculeType);
+    this.consideredAngles = consideredAngles;
+    this.displayName = displayName;
+    this.exportName = exportName;
+  }
+
   @Override
   public final String getLongDisplayName() {
     return displayName;
@@ -107,10 +107,6 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
   @Override
   public final String toString() {
     return displayName;
-  }
-
-  public final List<MasterTorsionAngleType> getConsideredAngles() {
-    return Collections.unmodifiableList(consideredAngles);
   }
 
   @Override
@@ -132,8 +128,11 @@ public class AverageTorsionAngleType extends TorsionAngleType implements MasterT
     return new TorsionAngleValue(this, angleSample.meanDirection());
   }
 
-  public final TorsionAngleValue calculate(
-      final Iterable<? extends TorsionAngleValue> values) {
+  public final List<MasterTorsionAngleType> getConsideredAngles() {
+    return Collections.unmodifiableList(consideredAngles);
+  }
+
+  public final TorsionAngleValue calculate(final Iterable<? extends TorsionAngleValue> values) {
     final List<Angle> angles = new ArrayList<>();
 
     for (final MasterTorsionAngleType masterType : consideredAngles) {

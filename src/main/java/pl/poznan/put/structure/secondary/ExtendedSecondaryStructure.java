@@ -44,6 +44,13 @@ public final class ExtendedSecondaryStructure {
         basePairs.stream().filter(ClassifiedBasePair::is5to3).collect(Collectors.toSet());
   }
 
+  public static void main(final String[] args) {
+    final String input = "seq ACGUACGUACGU\ncWH (([[..))]]..\ncWW ....((..))..";
+    final ExtendedSecondaryStructure secondaryStructure =
+        ExtendedSecondaryStructure.fromMultilineDotBracket(input);
+    System.out.println(secondaryStructure);
+  }
+
   /**
    * Creates instance of by reading a set of lines in dot-bracket notation. Each line begins with a
    * Leontis-Westhof notation shortand (e.g. cWW, tSH, etc.), a whitespace, and a dot-bracket. One
@@ -172,13 +179,6 @@ public final class ExtendedSecondaryStructure {
     }
 
     return new ExtendedSecondaryStructure(sequence, basePairs);
-  }
-
-  public static void main(final String[] args) {
-    final String input = "seq ACGUACGUACGU\ncWH (([[..))]]..\ncWW ....((..))..";
-    final ExtendedSecondaryStructure secondaryStructure =
-        ExtendedSecondaryStructure.fromMultilineDotBracket(input);
-    System.out.println(secondaryStructure);
   }
 
   @Override

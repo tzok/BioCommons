@@ -27,18 +27,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PdbModelTest {
-  private static void assertBpSeqEquals(final String pdbString, final String bpSeqString) {
-    final PdbParser parser = new PdbParser(false);
-    final List<PdbModel> models = parser.parse(pdbString);
-    final PdbModel model = models.get(0);
-
-    final BpSeq bpSeqFromModel = CanonicalStructureExtractor.bpSeq(model);
-    assertThat(bpSeqFromModel.toString(), is(bpSeqString));
-
-    final BpSeq bpSeqFromString = BpSeq.fromString(bpSeqString);
-    assertThat(bpSeqFromModel, is(bpSeqFromString));
-  }
-
   @Test
   public final void testParsing() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
@@ -163,8 +151,7 @@ public class PdbModelTest {
       if (residue.hasAtom(AtomName.O3P)) {
         assertThat(residue.isModified(), is(true));
         assertThat(residue.hasAllAtoms(), is(false));
-      } else if ("H2U".equals(residue.residueName())
-          || "PSU".equals(residue.residueName())) {
+      } else if ("H2U".equals(residue.residueName()) || "PSU".equals(residue.residueName())) {
         assertThat(residue.isModified(), is(true));
         assertThat(residue.hasAllAtoms(), is(true));
       } else if ("5MU".equals(residue.residueName())) {
@@ -354,6 +341,18 @@ public class PdbModelTest {
     PdbModelTest.assertBpSeqEquals(pdb1EHZ, bpseq1EHZ);
     PdbModelTest.assertBpSeqEquals(pdb2Z74, bpseq2Z74);
     PdbModelTest.assertBpSeqEquals(pdb2MIY, bpseq2MIY);
+  }
+
+  private static void assertBpSeqEquals(final String pdbString, final String bpSeqString) {
+    final PdbParser parser = new PdbParser(false);
+    final List<PdbModel> models = parser.parse(pdbString);
+    final PdbModel model = models.get(0);
+
+    final BpSeq bpSeqFromModel = CanonicalStructureExtractor.bpSeq(model);
+    assertThat(bpSeqFromModel.toString(), is(bpSeqString));
+
+    final BpSeq bpSeqFromString = BpSeq.fromString(bpSeqString);
+    assertThat(bpSeqFromModel, is(bpSeqFromString));
   }
 
   @Test

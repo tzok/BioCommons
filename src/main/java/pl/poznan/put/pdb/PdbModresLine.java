@@ -68,6 +68,28 @@ public abstract class PdbModresLine implements ChainNumberICode, Serializable {
     }
   }
 
+  @Override
+  public final String toString() {
+    if (chainIdentifier().length() != 1) {
+      PdbModresLine.LOGGER.error(
+          "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
+    }
+    if (insertionCode().length() != 1) {
+      PdbModresLine.LOGGER.error(
+          "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
+    }
+    return String.format(
+        Locale.US,
+        PdbModresLine.FORMAT,
+        idCode(),
+        residueName(),
+        chainIdentifier().charAt(0),
+        residueNumber(),
+        insertionCode().charAt(0),
+        standardResidueName(),
+        comment());
+  }
+
   /** @return The value of the {@code idCode} attribute */
   @Value.Parameter(order = 1)
   public abstract String idCode();
@@ -98,26 +120,4 @@ public abstract class PdbModresLine implements ChainNumberICode, Serializable {
   /** @return The value of the {@code comment} attribute */
   @Value.Parameter(order = 7)
   public abstract String comment();
-
-  @Override
-  public final String toString() {
-    if (chainIdentifier().length() != 1) {
-      PdbModresLine.LOGGER.error(
-          "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
-    }
-    if (insertionCode().length() != 1) {
-      PdbModresLine.LOGGER.error(
-          "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
-    }
-    return String.format(
-        Locale.US,
-        PdbModresLine.FORMAT,
-        idCode(),
-        residueName(),
-        chainIdentifier().charAt(0),
-        residueNumber(),
-        insertionCode().charAt(0),
-        standardResidueName(),
-        comment());
-  }
 }

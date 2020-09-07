@@ -29,19 +29,6 @@ public final class TrigonometricMoment {
     return TrigonometricMoment.compute(data, p, ImmutableAngle.of(0.0));
   }
 
-  /**
-   * Compute centered moment i.e. relative to the mean value in the sample.
-   *
-   * @param data A collection of angular values.
-   * @param p A p-th moment to be calculated.
-   * @param theta The mean value in the sample
-   * @return The p-th centered trigonometric moment of the sample.
-   */
-  public static TrigonometricMoment computeCentered(
-      final Collection<? extends Angle> data, final int p, final Angle theta) {
-    return TrigonometricMoment.compute(data, p, theta);
-  }
-
   private static TrigonometricMoment compute(
       final Collection<? extends Angle> data, final int p, final Angle theta) {
     assert !data.isEmpty();
@@ -61,6 +48,19 @@ public final class TrigonometricMoment {
     final double rho = FastMath.sqrt(FastMath.pow(c, 2) + FastMath.pow(s, 2));
     final double mi = FastMath.atan2(s, c);
     return new TrigonometricMoment(ImmutableAngle.of(mi), rho);
+  }
+
+  /**
+   * Compute centered moment i.e. relative to the mean value in the sample.
+   *
+   * @param data A collection of angular values.
+   * @param p A p-th moment to be calculated.
+   * @param theta The mean value in the sample
+   * @return The p-th centered trigonometric moment of the sample.
+   */
+  public static TrigonometricMoment computeCentered(
+      final Collection<? extends Angle> data, final int p, final Angle theta) {
+    return TrigonometricMoment.compute(data, p, theta);
   }
 
   public Angle getMeanDirection() {

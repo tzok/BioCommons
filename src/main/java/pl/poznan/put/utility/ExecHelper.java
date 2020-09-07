@@ -31,17 +31,6 @@ public final class ExecHelper {
     return ExecHelper.execute(workingDirectory, Collections.emptyMap(), command, arguments);
   }
 
-  public static ExecutionResult execute(final String command, final String... arguments)
-      throws IOException {
-    return ExecHelper.execute(null, Collections.emptyMap(), command, arguments);
-  }
-
-  public static ExecutionResult execute(
-      final Map<String, String> environment, final String command, final String... arguments)
-      throws IOException {
-    return ExecHelper.execute(null, environment, command, arguments);
-  }
-
   public static ExecutionResult execute(
       final File workingDirectory,
       final Map<String, String> environment,
@@ -100,19 +89,30 @@ public final class ExecHelper {
     }
   }
 
+  private static void makeExecutable(final String path) {
+    final File file = new File(path);
+    if (!file.canExecute()) {
+      file.setExecutable(true);
+    }
+  }
+
+  public static ExecutionResult execute(final String command, final String... arguments)
+      throws IOException {
+    return ExecHelper.execute(null, Collections.emptyMap(), command, arguments);
+  }
+
+  public static ExecutionResult execute(
+      final Map<String, String> environment, final String command, final String... arguments)
+      throws IOException {
+    return ExecHelper.execute(null, environment, command, arguments);
+  }
+
   public static File createRandomDirectory() throws IOException {
     final File tempDirectory = FileUtils.getTempDirectory();
     final String randomComponent = UUID.randomUUID().toString();
     final File randomDirectory = new File(tempDirectory, randomComponent);
     FileUtils.forceMkdir(randomDirectory);
     return randomDirectory;
-  }
-
-  private static void makeExecutable(final String path) {
-    final File file = new File(path);
-    if (!file.canExecute()) {
-      file.setExecutable(true);
-    }
   }
 
   public static final class ExecutionResult {

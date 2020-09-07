@@ -21,18 +21,13 @@ import java.util.stream.Collectors;
 public abstract class AngleSample {
   private static final Logger LOGGER = LoggerFactory.getLogger(AngleSample.class);
 
-  @Value.Parameter(order = 1)
-  public abstract Collection<Angle> data();
-
-  @Value.Lazy
-  protected List<Angle> sortedData() {
-    return data().stream().sorted().collect(Collectors.toList());
-  }
-
   @Value.Check
   protected void check() {
     Validate.notEmpty(data());
   }
+
+  @Value.Parameter(order = 1)
+  public abstract Collection<Angle> data();
 
   @Value.Lazy
   protected TrigonometricMoment um1() {
@@ -199,6 +194,11 @@ public abstract class AngleSample {
 
     final int rank = sortedData().indexOf(datapoint) + 1;
     return (MathUtils.TWO_PI * (double) rank) / (double) sortedData().size();
+  }
+
+  @Value.Lazy
+  protected List<Angle> sortedData() {
+    return data().stream().sorted().collect(Collectors.toList());
   }
 
   @Override

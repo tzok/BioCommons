@@ -52,6 +52,14 @@ public enum Saenger {
         .orElse(Saenger.UNKNOWN);
   }
 
+  @Override
+  public String toString() {
+    if (this == Saenger.UNKNOWN) {
+      return "n/a";
+    }
+    return name();
+  }
+
   /**
    * This is not a "real" ordinal, but an integer in range [1; 28] that matches one of the Sanger
    * roman numerals.
@@ -64,16 +72,6 @@ public enum Saenger {
       return Saenger.values()[ordinal - 1];
     }
     return Saenger.UNKNOWN;
-  }
-
-  /**
-   * Check if instance of {@link Saenger} represents a canonical base pair (XIX, XX and XXVIII).
-   *
-   * @param saenger An instance to be checked.
-   * @return True if {@code saenger} is either XIX, XX or XXVIII.
-   */
-  public static boolean isCanonical(final Saenger saenger) {
-    return (saenger == Saenger.XIX) || (saenger == Saenger.XX) || (saenger == Saenger.XXVIII);
   }
 
   /**
@@ -102,16 +100,18 @@ public enum Saenger {
     return Saenger.UNKNOWN;
   }
 
-  @Override
-  public String toString() {
-    if (this == Saenger.UNKNOWN) {
-      return "n/a";
-    }
-    return name();
-  }
-
   /** @return True if this instance is either XIX, XX or XXVIII. */
   public boolean isCanonical() {
     return Saenger.isCanonical(this);
+  }
+
+  /**
+   * Check if instance of {@link Saenger} represents a canonical base pair (XIX, XX and XXVIII).
+   *
+   * @param saenger An instance to be checked.
+   * @return True if {@code saenger} is either XIX, XX or XXVIII.
+   */
+  public static boolean isCanonical(final Saenger saenger) {
+    return (saenger == Saenger.XIX) || (saenger == Saenger.XX) || (saenger == Saenger.XXVIII);
   }
 }

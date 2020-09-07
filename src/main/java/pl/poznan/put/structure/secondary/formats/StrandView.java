@@ -28,21 +28,6 @@ public class StrandView extends AbstractStrand {
   }
 
   @Override
-  public final int getFrom() {
-    return from;
-  }
-
-  @Override
-  public final int getTo() {
-    return to;
-  }
-
-  @Override
-  public final List<DotBracketSymbol> getSymbols() {
-    return parent.getSymbols().subList(from, to);
-  }
-
-  @Override
   public final TerminalMissing getMissingBegin() {
     int i = from;
     for (; i < to; i++) {
@@ -64,6 +49,21 @@ public class StrandView extends AbstractStrand {
       }
     }
     return new TerminalMissing(parent.getSymbols().subList(i + 1, to));
+  }
+
+  @Override
+  public final List<DotBracketSymbol> getSymbols() {
+    return parent.getSymbols().subList(from, to);
+  }
+
+  @Override
+  public final int getFrom() {
+    return from;
+  }
+
+  @Override
+  public final int getTo() {
+    return to;
   }
 
   @Override

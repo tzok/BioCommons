@@ -57,6 +57,15 @@ public final class StructureManager {
     return result;
   }
 
+  public static String getName(final PdbModel structure) {
+    for (final StructureInfo si : StructureManager.STRUCTURES) {
+      if (Objects.equals(si.getStructure(), structure)) {
+        return si.getName();
+      }
+    }
+    throw new IllegalArgumentException("Failed to find PdbModel");
+  }
+
   public static File getFile(final PdbModel structure) {
     for (final StructureInfo si : StructureManager.STRUCTURES) {
       if (Objects.equals(si.getStructure(), structure)) {
@@ -73,15 +82,6 @@ public final class StructureManager {
       }
     }
     throw new IllegalArgumentException("Failed to find structure");
-  }
-
-  public static String getName(final PdbModel structure) {
-    for (final StructureInfo si : StructureManager.STRUCTURES) {
-      if (Objects.equals(si.getStructure(), structure)) {
-        return si.getName();
-      }
-    }
-    throw new IllegalArgumentException("Failed to find PdbModel");
   }
 
   /**
@@ -133,6 +133,21 @@ public final class StructureManager {
     return new String(bytes, Charset.defaultCharset());
   }
 
+  private static boolean isGzip(final byte[] bytes) {
+    if (bytes.length < 2) {
+      return false;
+    }
+
+    final int head = (bytes[0] & 0xff) | ((bytes[1] << 8) & 0xff00);
+    return head == GZIPInputStream.GZIP_MAGIC;
+  }
+
+  private static String unzipContent(final byte[] bytes) throws IOException {
+    try (final InputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(bytes))) {
+      return IOUtils.toString(gzipInputStream, Charset.defaultCharset());
+    }
+  }
+
   private static boolean isCif(final String fileContent) {
     return fileContent.startsWith("data_");
   }
@@ -175,21 +190,6 @@ public final class StructureManager {
 
       StructureManager.STRUCTURES.add(
           new StructureInfo(model, file, String.format(format, name, i + 1)));
-    }
-  }
-
-  private static boolean isGzip(final byte[] bytes) {
-    if (bytes.length < 2) {
-      return false;
-    }
-
-    final int head = (bytes[0] & 0xff) | ((bytes[1] << 8) & 0xff00);
-    return head == GZIPInputStream.GZIP_MAGIC;
-  }
-
-  private static String unzipContent(final byte[] bytes) throws IOException {
-    try (final InputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(bytes))) {
-      return IOUtils.toString(gzipInputStream, Charset.defaultCharset());
     }
   }
 

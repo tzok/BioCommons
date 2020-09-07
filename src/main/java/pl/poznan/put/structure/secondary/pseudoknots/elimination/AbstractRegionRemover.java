@@ -15,27 +15,6 @@ import java.util.List;
  * 14, pp.410–416.
  */
 public abstract class AbstractRegionRemover implements RegionRemover {
-  // Unremove all Regions that were removed but are no longer in conflict
-  private static void restoreNonConflicting(final Iterable<Region> regions) {
-    for (final Region ri : regions) {
-      if (!ri.isRemoved()) {
-        continue;
-      }
-
-      boolean nonConflicting = true;
-      for (final Region rj : regions) {
-        if (!rj.isRemoved() && ConflictMap.isConflicting(ri, rj)) {
-          nonConflicting = false;
-          break;
-        }
-      }
-
-      if (nonConflicting) {
-        ri.setRemoved(false);
-      }
-    }
-  }
-
   @Override
   public final List<BpSeq> findPseudoknots(final BpSeq bpSeq) {
     final List<Region> regions = Region.createRegions(bpSeq);
@@ -61,5 +40,26 @@ public abstract class AbstractRegionRemover implements RegionRemover {
       result.removePair(validPair);
     }
     return Collections.singletonList(result);
+  }
+
+  // Unremove all Regions that were removed but are no longer in conflict
+  private static void restoreNonConflicting(final Iterable<Region> regions) {
+    for (final Region ri : regions) {
+      if (!ri.isRemoved()) {
+        continue;
+      }
+
+      boolean nonConflicting = true;
+      for (final Region rj : regions) {
+        if (!rj.isRemoved() && ConflictMap.isConflicting(ri, rj)) {
+          nonConflicting = false;
+          break;
+        }
+      }
+
+      if (nonConflicting) {
+        ri.setRemoved(false);
+      }
+    }
   }
 }

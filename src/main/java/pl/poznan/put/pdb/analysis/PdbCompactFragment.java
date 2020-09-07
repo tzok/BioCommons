@@ -24,11 +24,34 @@ import java.util.stream.Collectors;
 public abstract class PdbCompactFragment implements ResidueCollection {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbCompactFragment.class);
 
-  @Value.Parameter(order = 1)
-  public abstract String name();
+  public final String toPdb() {
+    return residues().stream().map(PdbResidue::toPdb).collect(Collectors.joining());
+  }
 
   @Value.Parameter(order = 2)
   public abstract List<PdbResidue> residues();
+
+  public final String toSequence() {
+    return residues().stream()
+        .map(residue -> String.valueOf(residue.oneLetterName()))
+        .collect(Collectors.joining());
+  }
+
+  public final PdbCompactFragment shift(final int shift, final int size) {
+    return ImmutablePdbCompactFragment.of(name(), residues().subList(shift, shift + size));
+  }
+
+  @Value.Parameter(order = 1)
+  public abstract String name();
+
+  public final Set<TorsionAngleType> commonTorsionAngleTypes() {
+    final Set<TorsionAngleType> set = new LinkedHashSet<>();
+    mapResidueAngleValue().values().stream()
+        .flatMap(Collection::stream)
+        .map(TorsionAngleValue::getAngleType)
+        .forEach(set::add);
+    return set;
+  }
 
   @Value.Lazy
   public Map<PdbResidueIdentifier, List<TorsionAngleValue>> mapResidueAngleValue() {
@@ -48,29 +71,6 @@ public abstract class PdbCompactFragment implements ResidueCollection {
     }
 
     return mapResidueAngleValue;
-  }
-
-  public final String toPdb() {
-    return residues().stream().map(PdbResidue::toPdb).collect(Collectors.joining());
-  }
-
-  public final String toSequence() {
-    return residues().stream()
-        .map(residue -> String.valueOf(residue.oneLetterName()))
-        .collect(Collectors.joining());
-  }
-
-  public final PdbCompactFragment shift(final int shift, final int size) {
-    return ImmutablePdbCompactFragment.of(name(), residues().subList(shift, shift + size));
-  }
-
-  public final Set<TorsionAngleType> commonTorsionAngleTypes() {
-    final Set<TorsionAngleType> set = new LinkedHashSet<>();
-    mapResidueAngleValue().values().stream()
-        .flatMap(Collection::stream)
-        .map(TorsionAngleValue::getAngleType)
-        .forEach(set::add);
-    return set;
   }
 
   public final TorsionAngleValue getTorsionAngleValue(

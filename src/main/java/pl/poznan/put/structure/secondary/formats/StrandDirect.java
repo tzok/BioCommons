@@ -17,16 +17,6 @@ public class StrandDirect extends AbstractStrand {
   }
 
   @Override
-  public final int getLength() {
-    return symbols.size();
-  }
-
-  @Override
-  public final List<DotBracketSymbol> getSymbols() {
-    return Collections.unmodifiableList(symbols);
-  }
-
-  @Override
   public final TerminalMissing getMissingBegin() {
     final List<DotBracketSymbol> missing = new ArrayList<>();
     for (final DotBracketSymbol symbol : symbols) {
@@ -49,6 +39,16 @@ public class StrandDirect extends AbstractStrand {
       missing.add(symbol);
     }
     return new TerminalMissing(missing);
+  }
+
+  @Override
+  public final List<DotBracketSymbol> getSymbols() {
+    return Collections.unmodifiableList(symbols);
+  }
+
+  @Override
+  public final int getLength() {
+    return symbols.size();
   }
 
   @Override

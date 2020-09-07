@@ -23,10 +23,6 @@ public class AngleTest {
   };
   private static final double EPS = 1.0e-6;
 
-  private static boolean isBelowEpsilon(final double value) {
-    return FastMath.abs(value) < AngleTest.EPS;
-  }
-
   @Test
   public final void fromHourMinuteString() {
     assertThat(Angle.fromHourMinuteString("00.00"), is(AngleTest.DEGREES_0));
@@ -67,6 +63,10 @@ public class AngleTest {
             is(true));
       }
     }
+  }
+
+  private static boolean isBelowEpsilon(final double value) {
+    return FastMath.abs(value) < AngleTest.EPS;
   }
 
   @Test

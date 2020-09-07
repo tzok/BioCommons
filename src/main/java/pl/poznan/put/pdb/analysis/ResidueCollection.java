@@ -1,7 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
 import org.apache.commons.lang3.StringUtils;
-import org.immutables.value.Value;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;

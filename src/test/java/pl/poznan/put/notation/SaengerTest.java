@@ -16,10 +16,14 @@ public class SaengerTest {
 
   @Test
   public final void assumeCanonical() {
-    final PdbNamedResidueIdentifier guanine = ImmutablePdbNamedResidueIdentifier.of("A", 1, " ", 'G');
-    final PdbNamedResidueIdentifier adenine = ImmutablePdbNamedResidueIdentifier.of("A", 2, " ", 'A');
-    final PdbNamedResidueIdentifier cytosine = ImmutablePdbNamedResidueIdentifier.of("A", 3, " ", 'C');
-    final PdbNamedResidueIdentifier uracil = ImmutablePdbNamedResidueIdentifier.of("A", 4, " ", 'U');
+    final PdbNamedResidueIdentifier guanine =
+        ImmutablePdbNamedResidueIdentifier.of("A", 1, " ", 'G');
+    final PdbNamedResidueIdentifier adenine =
+        ImmutablePdbNamedResidueIdentifier.of("A", 2, " ", 'A');
+    final PdbNamedResidueIdentifier cytosine =
+        ImmutablePdbNamedResidueIdentifier.of("A", 3, " ", 'C');
+    final PdbNamedResidueIdentifier uracil =
+        ImmutablePdbNamedResidueIdentifier.of("A", 4, " ", 'U');
 
     assertThat(Saenger.assumeCanonical(new BasePair(guanine, cytosine)), is(Saenger.XIX));
     assertThat(Saenger.assumeCanonical(new BasePair(adenine, uracil)), is(Saenger.XX));

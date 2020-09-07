@@ -164,6 +164,47 @@ public final class CifConverter {
   }
 
   /**
+   * For each chain, create a set which contains only this chain.
+   *
+   * @param model A parsed coordinates of a mmCIF file.
+   * @return A list of sets, each containing one chain.
+   */
+  private static List<Set<String>> initializeChainGroups(final PdbModel model) {
+    return model.getChains().stream()
+        .map(chain -> new HashSet<>(Collections.singleton(chain.identifier())))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Basing on the information in the mmCIF file itself, analyze which chains are in contact. Return
+   * a mapping of chain name to a set of its contacts.
+   *
+   * @param model A parsed mmCIF model.
+   * @return A map, where chain name is a key and set of this chain's contacts is the value.
+   */
+  private static Map<String, Set<String>> initializeChainContactMap(final CifModel model) {
+    final Map<String, Set<String>> chainContacts = new HashMap<>();
+
+    for (final QuantifiedBasePair quantifiedBasePair : model.getBasePairs()) {
+      final BasePair basePair = quantifiedBasePair.getBasePair();
+      final String left = basePair.getLeft().chainIdentifier();
+      final String right = basePair.getRight().chainIdentifier();
+
+      if (!chainContacts.containsKey(left)) {
+        chainContacts.put(left, new HashSet<>());
+      }
+      chainContacts.get(left).add(right);
+
+      if (!chainContacts.containsKey(right)) {
+        chainContacts.put(right, new HashSet<>());
+      }
+      chainContacts.get(right).add(left);
+    }
+
+    return chainContacts;
+  }
+
+  /**
    * Solve bin packing problem using first-fit decreasing heuristic. In other words, put as many
    * chains into as few separate files as possible.
    *
@@ -229,77 +270,6 @@ public final class CifConverter {
     }
   }
 
-  private static void writeModel(
-      final PdbModel rnaModel,
-      final Collection<String> allowedChains,
-      final BidiMap<? super String, String> chainMap,
-      final StringBuilder pdbBuilder) {
-    pdbBuilder.append("MODEL ").append(rnaModel.getModelNumber()).append(System.lineSeparator());
-
-    int serialNumber = 1;
-
-    for (final PdbChain chain : rnaModel.getChains()) {
-      if (allowedChains.contains(chain.identifier())) {
-        for (final PdbResidue residue : chain.residues()) {
-          for (final PdbAtomLine atom : residue.atoms()) {
-            final String chainIdentifier = CifConverter.mapChain(chainMap, atom.chainIdentifier());
-            final ImmutablePdbAtomLine atomLine =
-                ((ImmutablePdbAtomLine) atom)
-                    .withSerialNumber(serialNumber)
-                    .withChainIdentifier(chainIdentifier);
-            serialNumber =
-                (serialNumber < CifConverter.MAX_ATOM_SERIAL_NUMBER) ? (serialNumber + 1) : 1;
-            pdbBuilder.append(atomLine).append(System.lineSeparator());
-          }
-        }
-      }
-    }
-
-    pdbBuilder.append("ENDMDL");
-    pdbBuilder.append(System.lineSeparator());
-  }
-
-  /**
-   * For each chain, create a set which contains only this chain.
-   *
-   * @param model A parsed coordinates of a mmCIF file.
-   * @return A list of sets, each containing one chain.
-   */
-  private static List<Set<String>> initializeChainGroups(final PdbModel model) {
-    return model.getChains().stream()
-        .map(chain -> new HashSet<>(Collections.singleton(chain.identifier())))
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Basing on the information in the mmCIF file itself, analyze which chains are in contact. Return
-   * a mapping of chain name to a set of its contacts.
-   *
-   * @param model A parsed mmCIF model.
-   * @return A map, where chain name is a key and set of this chain's contacts is the value.
-   */
-  private static Map<String, Set<String>> initializeChainContactMap(final CifModel model) {
-    final Map<String, Set<String>> chainContacts = new HashMap<>();
-
-    for (final QuantifiedBasePair quantifiedBasePair : model.getBasePairs()) {
-      final BasePair basePair = quantifiedBasePair.getBasePair();
-      final String left = basePair.getLeft().chainIdentifier();
-      final String right = basePair.getRight().chainIdentifier();
-
-      if (!chainContacts.containsKey(left)) {
-        chainContacts.put(left, new HashSet<>());
-      }
-      chainContacts.get(left).add(right);
-
-      if (!chainContacts.containsKey(right)) {
-        chainContacts.put(right, new HashSet<>());
-      }
-      chainContacts.get(right).add(left);
-    }
-
-    return chainContacts;
-  }
-
   /**
    * Return type of the named chain.
    *
@@ -331,6 +301,36 @@ public final class CifConverter {
       chainMap.put(chainIdentifier, CifConverter.PRINTABLE_CHARS.get(chainMap.size()));
     }
     return chainMap.get(chainIdentifier);
+  }
+
+  private static void writeModel(
+      final PdbModel rnaModel,
+      final Collection<String> allowedChains,
+      final BidiMap<? super String, String> chainMap,
+      final StringBuilder pdbBuilder) {
+    pdbBuilder.append("MODEL ").append(rnaModel.getModelNumber()).append(System.lineSeparator());
+
+    int serialNumber = 1;
+
+    for (final PdbChain chain : rnaModel.getChains()) {
+      if (allowedChains.contains(chain.identifier())) {
+        for (final PdbResidue residue : chain.residues()) {
+          for (final PdbAtomLine atom : residue.atoms()) {
+            final String chainIdentifier = CifConverter.mapChain(chainMap, atom.chainIdentifier());
+            final ImmutablePdbAtomLine atomLine =
+                ((ImmutablePdbAtomLine) atom)
+                    .withSerialNumber(serialNumber)
+                    .withChainIdentifier(chainIdentifier);
+            serialNumber =
+                (serialNumber < CifConverter.MAX_ATOM_SERIAL_NUMBER) ? (serialNumber + 1) : 1;
+            pdbBuilder.append(atomLine).append(System.lineSeparator());
+          }
+        }
+      }
+    }
+
+    pdbBuilder.append("ENDMDL");
+    pdbBuilder.append(System.lineSeparator());
   }
 
   /**

@@ -30,6 +30,20 @@ public class LevelByLevelConverter implements Converter {
     this.maxSolutions = maxSolutions;
   }
 
+  @Override
+  public final DotBracket convert(final BpSeq bpSeq) {
+    List<State> states = new ArrayList<>();
+    states.add(new State(null, bpSeq, 0));
+
+    while (LevelByLevelConverter.isProcessingNeeded(states)) {
+      states = processStates(states);
+    }
+
+    Collections.sort(states);
+    final String structure = LevelByLevelConverter.traceback(states.get(0));
+    return new DotBracket(bpSeq.getSequence(), structure);
+  }
+
   private static boolean isProcessingNeeded(final Iterable<State> states) {
     for (final State state : states) {
       if (!state.isFinal()) {
@@ -59,20 +73,6 @@ public class LevelByLevelConverter implements Converter {
     }
 
     return new String(structure);
-  }
-
-  @Override
-  public final DotBracket convert(final BpSeq bpSeq) {
-    List<State> states = new ArrayList<>();
-    states.add(new State(null, bpSeq, 0));
-
-    while (LevelByLevelConverter.isProcessingNeeded(states)) {
-      states = processStates(states);
-    }
-
-    Collections.sort(states);
-    final String structure = LevelByLevelConverter.traceback(states.get(0));
-    return new DotBracket(bpSeq.getSequence(), structure);
   }
 
   private List<State> processStates(final Collection<State> states) {
