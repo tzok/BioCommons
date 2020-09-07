@@ -18,10 +18,10 @@ public abstract class PdbChain implements Comparable<PdbChain>, Serializable {
     return ImmutablePdbChain.of(chain.getId(), residues);
   }
 
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   public abstract String identifier();
 
-  @Value.Parameter
+  @Value.Parameter(order = 2)
   public abstract List<PdbResidue> residues();
 
   public MoleculeType moleculeType() {

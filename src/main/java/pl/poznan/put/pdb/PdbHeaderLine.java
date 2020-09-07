@@ -56,15 +56,15 @@ public abstract class PdbHeaderLine implements Serializable {
   }
 
   /** @return The value of the {@code classification} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   public abstract String classification();
 
   /** @return The value of the {@code depositionDate} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 2)
   public abstract Date depositionDate();
 
   /** @return The value of the {@code idCode} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 3)
   public abstract String idCode();
 
   @Override

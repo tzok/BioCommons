@@ -6,14 +6,14 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface BondLength {
   /** @return The minimum length. */
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   double min();
 
   /** @return The naximum length. */
-  @Value.Parameter
+  @Value.Parameter(order = 2)
   double max();
 
   /** @return The average length. */
-  @Value.Parameter
+  @Value.Parameter(order = 3)
   double avg();
 }

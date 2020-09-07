@@ -13,19 +13,19 @@ import javax.annotation.Nonnull;
 public abstract class PdbNamedResidueIdentifier
     implements ChainNumberICode, Comparable<PdbNamedResidueIdentifier> {
   /** @return The value of the {@code chainIdentifier} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   public abstract String chainIdentifier();
 
   /** @return The value of the {@code residueNumber} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 2)
   public abstract int residueNumber();
 
   /** @return The value of the {@code insertionCode} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 3)
   public abstract String insertionCode();
 
   /** @return The value of the {@code oneLetterName} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 4)
   public abstract char oneLetterName();
 
   @Override

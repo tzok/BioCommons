@@ -172,67 +172,67 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
   }
 
   /** @return The value of the {@code serialNumber} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   @Value.Auxiliary
   public abstract int serialNumber();
 
   /** @return The value of the {@code atomName} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 2)
   public abstract String atomName();
 
   /** @return The value of the {@code alternateLocation} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 3)
   @Value.Auxiliary
   public abstract String alternateLocation();
 
   /** @return The value of the {@code residueName} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 4)
   public abstract String residueName();
 
   /** @return The value of the {@code chainIdentifier} attribute */
   @Override
-  @Value.Parameter
+  @Value.Parameter(order = 5)
   public abstract String chainIdentifier();
 
   /** @return The value of the {@code residueNumber} attribute */
   @Override
-  @Value.Parameter
+  @Value.Parameter(order = 6)
   public abstract int residueNumber();
 
   /** @return The value of the {@code insertionCode} attribute */
   @Override
-  @Value.Parameter
+  @Value.Parameter(order = 7)
   public abstract String insertionCode();
 
   /** @return The value of the {@code x} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 8)
   public abstract double x();
 
   /** @return The value of the {@code y} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 9)
   public abstract double y();
 
   /** @return The value of the {@code z} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 10)
   public abstract double z();
 
   /** @return The value of the {@code occupancy} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 11)
   @Value.Auxiliary
   public abstract double occupancy();
 
   /** @return The value of the {@code temperatureFactor} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 12)
   @Value.Auxiliary
   public abstract double temperatureFactor();
 
   /** @return The value of the {@code elementSymbol} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 13)
   @Value.Auxiliary
   public abstract String elementSymbol();
 
   /** @return The value of the {@code charge} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 14)
   @Value.Auxiliary
   public abstract String charge();
 

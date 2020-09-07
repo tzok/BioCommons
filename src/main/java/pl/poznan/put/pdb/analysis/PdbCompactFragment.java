@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 public abstract class PdbCompactFragment implements ResidueCollection {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbCompactFragment.class);
 
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   public abstract String name();
 
-  @Value.Parameter
+  @Value.Parameter(order = 2)
   public abstract List<PdbResidue> residues();
 
   @Value.Lazy

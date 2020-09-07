@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @FunctionalInterface
-@Value.Immutable
 public interface ResidueCollection {
   default List<String> findBondLengthViolations() {
     final Set<AtomBasedTorsionAngleType> angleTypes =
@@ -47,7 +46,6 @@ public interface ResidueCollection {
         .collect(Collectors.toList());
   }
 
-  @Value.Parameter
   List<PdbResidue> residues();
 
   default PdbResidue findResidue(

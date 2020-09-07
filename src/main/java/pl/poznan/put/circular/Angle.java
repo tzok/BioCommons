@@ -128,7 +128,7 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /** @return Value in radians in range (-pi; pi]. */
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   public abstract double radians();
 
   @Value.Check

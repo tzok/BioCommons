@@ -76,10 +76,10 @@ public class Histogram {
 
   @Value.Immutable
   interface Bin {
-    @Value.Parameter
+    @Value.Parameter(order = 1)
     double radiansStart();
 
-    @Value.Parameter
+    @Value.Parameter(order = 2)
     List<Angle> data();
   }
 }

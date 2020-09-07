@@ -57,22 +57,22 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
     return ImmutablePdbResidue.of(residueIdentifier, residueName, residueName, atoms, false, false);
   }
 
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   public abstract PdbResidueIdentifier identifier();
 
-  @Value.Parameter
+  @Value.Parameter(order = 2)
   public abstract String residueName();
 
-  @Value.Parameter
+  @Value.Parameter(order = 3)
   public abstract String modifiedResidueName();
 
-  @Value.Parameter
+  @Value.Parameter(order = 4)
   public abstract List<PdbAtomLine> atoms();
 
-  @Value.Parameter
+  @Value.Parameter(order = 5)
   public abstract boolean isModifiedInPDB();
 
-  @Value.Parameter
+  @Value.Parameter(order = 6)
   public abstract boolean isMissing();
 
   @Value.Lazy

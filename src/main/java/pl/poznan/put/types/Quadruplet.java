@@ -4,16 +4,16 @@ import org.immutables.value.Value;
 
 @Value.Immutable
 public interface Quadruplet<T> {
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   T a();
 
-  @Value.Parameter
+  @Value.Parameter(order = 2)
   T b();
 
-  @Value.Parameter
+  @Value.Parameter(order = 3)
   T c();
 
-  @Value.Parameter
+  @Value.Parameter(order = 4)
   T d();
 
   default T get(final int index) {

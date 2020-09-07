@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public abstract class AngleSample {
   private static final Logger LOGGER = LoggerFactory.getLogger(AngleSample.class);
 
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   public abstract Collection<Angle> data();
 
   @Value.Lazy

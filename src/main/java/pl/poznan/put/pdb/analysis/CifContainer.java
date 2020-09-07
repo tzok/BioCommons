@@ -27,11 +27,11 @@ public abstract class CifContainer implements ModelContainer {
   }
 
   /** @return The value of the {@code cifFile} attribute, */
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   public abstract File cifFile();
 
   /** @return The value of the {@code fileChainMap} attribute, */
-  @Value.Parameter
+  @Value.Parameter(order = 2)
   public abstract Map<File, BidiMap<String, String>> fileChainMap();
 
   @Override

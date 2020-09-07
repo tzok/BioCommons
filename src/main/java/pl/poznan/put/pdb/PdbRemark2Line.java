@@ -60,7 +60,7 @@ public abstract class PdbRemark2Line implements Serializable {
   }
 
   /** @return The value of the {@code resolution} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   public abstract double resolution();
 
   @Override

@@ -69,34 +69,34 @@ public abstract class PdbModresLine implements ChainNumberICode, Serializable {
   }
 
   /** @return The value of the {@code idCode} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 1)
   public abstract String idCode();
 
   /** @return The value of the {@code residueName} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 2)
   public abstract String residueName();
 
   /** @return The value of the {@code chainIdentifier} attribute */
   @Override
-  @Value.Parameter
+  @Value.Parameter(order = 3)
   public abstract String chainIdentifier();
 
   /** @return The value of the {@code residueNumber} attribute */
   @Override
-  @Value.Parameter
+  @Value.Parameter(order = 4)
   public abstract int residueNumber();
 
   /** @return The value of the {@code insertionCode} attribute */
   @Override
-  @Value.Parameter
+  @Value.Parameter(order = 5)
   public abstract String insertionCode();
 
   /** @return The value of the {@code standardResidueName} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 6)
   public abstract String standardResidueName();
 
   /** @return The value of the {@code comment} attribute */
-  @Value.Parameter
+  @Value.Parameter(order = 7)
   public abstract String comment();
 
   @Override
