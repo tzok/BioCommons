@@ -1,6 +1,6 @@
 package pl.poznan.put.pdb;
 
-/** Usefule constants when working with mmCIF files. */
+/** Useful constants when working with mmCIF files. */
 public final class CifConstants {
   public static final String CIF_LOOP =
       "loop_\n"

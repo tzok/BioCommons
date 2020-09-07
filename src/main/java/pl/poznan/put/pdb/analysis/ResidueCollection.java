@@ -57,12 +57,10 @@ public interface ResidueCollection {
   }
 
   default PdbResidue findResidue(final ChainNumberICode query) {
-    for (final PdbResidue residue : residues()) {
-      if (Objects.equals(query.toResidueIdentifer(), residue.toResidueIdentifer())) {
-        return residue;
-      }
-    }
-    throw new IllegalArgumentException("Failed to find residue: " + query);
+    return residues().stream()
+        .filter(residue -> Objects.equals(residue.toResidueIdentifer(), query.toResidueIdentifer()))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Failed to find residue: " + query));
   }
 
   default List<PdbNamedResidueIdentifier> namedResidueIdentifers() {

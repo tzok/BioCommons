@@ -124,77 +124,6 @@ public final class CifConverter {
   }
 
   /**
-   * Convert a parsed mmCIF model into a set of PDB files with mapped chain names.
-   *
-   * @param model A parse mmCIF model.
-   * @return A container of (possibly) multiple PDB files with mapped chain names.
-   * @throws IOException When writing to output files fails.
-   */
-  public static ModelContainer convert(final CifModel model) throws IOException {
-    final File cifFile = File.createTempFile("cif2pdb", ".cif");
-    FileUtils.write(cifFile, model.toCif(), Charset.defaultCharset());
-
-    if (!CifConverter.isConversionPossible(model)) {
-      return CifContainer.emptyInstance(cifFile);
-    }
-
-    List<Set<String>> chainGroups = CifConverter.groupContactingChains(model);
-    chainGroups = CifConverter.packGroups(chainGroups);
-    final Map<File, BidiMap<String, String>> fileChainMap = new HashMap<>();
-
-    for (final Set<String> chainGroup : chainGroups) {
-      final File pdbFile = File.createTempFile("cif2pdb", ".pdb");
-      final BidiMap<String, String> chainMap = new TreeBidiMap<>();
-
-      fileChainMap.put(pdbFile, chainMap);
-
-      final StringBuilder pdbBuilder = new StringBuilder();
-      CifConverter.writeHeader(model, chainMap, pdbBuilder);
-      CifConverter.writeModel(model, chainGroup, chainMap, pdbBuilder);
-
-      final String pdbData = pdbBuilder.toString();
-      FileUtils.write(pdbFile, pdbData, Charset.defaultCharset());
-    }
-
-    return ImmutableCifContainer.of(cifFile, fileChainMap);
-  }
-
-  /**
-   * Solve bin packing problem using first-fit decreasing heuristic. In other words, put as many
-   * chains into as few separate files as possible.
-   *
-   * @param chainGroups List of chain groups. A chain group contains identifiers of chains which are
-   *     in contact.
-   * @return List of packed chain groups. A packed chain group contains one or more regular chain
-   *     groups such that they can be fitted into a single PDB file.
-   */
-  private static List<Set<String>> packGroups(final List<? extends Set<String>> chainGroups) {
-    // sort chain groups in descending size order
-    chainGroups.sort((t, t1) -> -Integer.compare(t.size(), t1.size()));
-
-    final List<Set<String>> packed = new ArrayList<>();
-
-    for (final Set<String> group : chainGroups) {
-      boolean flag = true;
-
-      for (final Set<String> bin : packed) {
-        if ((bin.size() + group.size()) <= CifConverter.PRINTABLE_CHARS.size()) {
-          bin.addAll(group);
-          flag = false;
-          break;
-        }
-      }
-
-      if (flag) {
-        final Set<String> bin = new HashSet<>(group);
-        packed.add(bin);
-      }
-    }
-
-    return packed;
-  }
-
-  /**
    * Starting with a one-element set for each chain, merge them basing on the contact information.
    *
    * @param model A parsed mmCIF model.
@@ -232,6 +161,102 @@ public final class CifConverter {
     }
 
     return chainGroups;
+  }
+
+  /**
+   * Solve bin packing problem using first-fit decreasing heuristic. In other words, put as many
+   * chains into as few separate files as possible.
+   *
+   * @param chainGroups List of chain groups. A chain group contains identifiers of chains which are
+   *     in contact.
+   * @return List of packed chain groups. A packed chain group contains one or more regular chain
+   *     groups such that they can be fitted into a single PDB file.
+   */
+  private static List<Set<String>> packGroups(final List<? extends Set<String>> chainGroups) {
+    // sort chain groups in descending size order
+    chainGroups.sort((t, t1) -> -Integer.compare(t.size(), t1.size()));
+
+    final List<Set<String>> packed = new ArrayList<>();
+
+    for (final Set<String> group : chainGroups) {
+      boolean flag = true;
+
+      for (final Set<String> bin : packed) {
+        if ((bin.size() + group.size()) <= CifConverter.PRINTABLE_CHARS.size()) {
+          bin.addAll(group);
+          flag = false;
+          break;
+        }
+      }
+
+      if (flag) {
+        final Set<String> bin = new HashSet<>(group);
+        packed.add(bin);
+      }
+    }
+
+    return packed;
+  }
+
+  private static void writeHeader(
+      final PdbModel firstModel,
+      final BidiMap<? super String, String> chainMap,
+      final StringBuilder pdbBuilder) {
+    pdbBuilder.append(firstModel.getHeaderLine()).append(System.lineSeparator());
+    if (!firstModel.getExperimentalDataLine().experimentalTechniques().isEmpty()) {
+      pdbBuilder.append(firstModel.getExperimentalDataLine()).append(System.lineSeparator());
+    }
+    pdbBuilder.append(PdbRemark2Line.PROLOGUE).append(System.lineSeparator());
+    pdbBuilder.append(firstModel.getResolutionLine()).append(System.lineSeparator());
+
+    final List<PdbRemark465Line> missingResidues = firstModel.getMissingResidues();
+    if (!missingResidues.isEmpty()) {
+      pdbBuilder.append(PdbRemark465Line.PROLOGUE).append(System.lineSeparator());
+
+      for (PdbRemark465Line missingResidue : missingResidues) {
+        String chainIdentifier = missingResidue.chainIdentifier();
+        final MoleculeType moleculeType = CifConverter.getChainType(firstModel, chainIdentifier);
+        if (moleculeType == MoleculeType.RNA) {
+          chainIdentifier = CifConverter.mapChain(chainMap, chainIdentifier);
+          missingResidue = missingResidue.withChainIdentifier(chainIdentifier);
+          pdbBuilder.append(missingResidue).append(System.lineSeparator());
+        }
+      }
+    }
+
+    for (final PdbModresLine modifiedResidue : firstModel.getModifiedResidues()) {
+      pdbBuilder.append(modifiedResidue).append(System.lineSeparator());
+    }
+  }
+
+  private static void writeModel(
+      final PdbModel rnaModel,
+      final Collection<String> allowedChains,
+      final BidiMap<? super String, String> chainMap,
+      final StringBuilder pdbBuilder) {
+    pdbBuilder.append("MODEL ").append(rnaModel.getModelNumber()).append(System.lineSeparator());
+
+    int serialNumber = 1;
+
+    for (final PdbChain chain : rnaModel.getChains()) {
+      if (allowedChains.contains(chain.identifier())) {
+        for (final PdbResidue residue : chain.residues()) {
+          for (final PdbAtomLine atom : residue.atoms()) {
+            final String chainIdentifier = CifConverter.mapChain(chainMap, atom.chainIdentifier());
+            final ImmutablePdbAtomLine atomLine =
+                ((ImmutablePdbAtomLine) atom)
+                    .withSerialNumber(serialNumber)
+                    .withChainIdentifier(chainIdentifier);
+            serialNumber =
+                (serialNumber < CifConverter.MAX_ATOM_SERIAL_NUMBER) ? (serialNumber + 1) : 1;
+            pdbBuilder.append(atomLine).append(System.lineSeparator());
+          }
+        }
+      }
+    }
+
+    pdbBuilder.append("ENDMDL");
+    pdbBuilder.append(System.lineSeparator());
   }
 
   /**
@@ -275,67 +300,6 @@ public final class CifConverter {
     return chainContacts;
   }
 
-  private static void writeModel(
-      final PdbModel rnaModel,
-      final Collection<String> allowedChains,
-      final BidiMap<? super String, String> chainMap,
-      final StringBuilder pdbBuilder) {
-    pdbBuilder.append("MODEL ").append(rnaModel.getModelNumber()).append(System.lineSeparator());
-
-    int serialNumber = 1;
-
-    for (final PdbChain chain : rnaModel.getChains()) {
-      if (allowedChains.contains(chain.identifier())) {
-        for (final PdbResidue residue : chain.residues()) {
-          for (final PdbAtomLine atom : residue.atoms()) {
-            final String chainIdentifier = CifConverter.mapChain(chainMap, atom.chainIdentifier());
-            final ImmutablePdbAtomLine atomLine =
-                ((ImmutablePdbAtomLine) atom)
-                    .withSerialNumber(serialNumber)
-                    .withChainIdentifier(chainIdentifier);
-            serialNumber =
-                (serialNumber < CifConverter.MAX_ATOM_SERIAL_NUMBER) ? (serialNumber + 1) : 1;
-            pdbBuilder.append(atomLine).append(System.lineSeparator());
-          }
-        }
-      }
-    }
-
-    pdbBuilder.append("ENDMDL");
-    pdbBuilder.append(System.lineSeparator());
-  }
-
-  private static void writeHeader(
-      final PdbModel firstModel,
-      final BidiMap<? super String, String> chainMap,
-      final StringBuilder pdbBuilder) {
-    pdbBuilder.append(firstModel.getHeaderLine()).append(System.lineSeparator());
-    if (!firstModel.getExperimentalDataLine().experimentalTechniques().isEmpty()) {
-      pdbBuilder.append(firstModel.getExperimentalDataLine()).append(System.lineSeparator());
-    }
-    pdbBuilder.append(PdbRemark2Line.PROLOGUE).append(System.lineSeparator());
-    pdbBuilder.append(firstModel.getResolutionLine()).append(System.lineSeparator());
-
-    final List<PdbRemark465Line> missingResidues = firstModel.getMissingResidues();
-    if (!missingResidues.isEmpty()) {
-      pdbBuilder.append(PdbRemark465Line.PROLOGUE).append(System.lineSeparator());
-
-      for (PdbRemark465Line missingResidue : missingResidues) {
-        String chainIdentifier = missingResidue.chainIdentifier();
-        final MoleculeType moleculeType = CifConverter.getChainType(firstModel, chainIdentifier);
-        if (moleculeType == MoleculeType.RNA) {
-          chainIdentifier = CifConverter.mapChain(chainMap, chainIdentifier);
-          missingResidue = missingResidue.withChainIdentifier(chainIdentifier);
-          pdbBuilder.append(missingResidue).append(System.lineSeparator());
-        }
-      }
-    }
-
-    for (final PdbModresLine modifiedResidue : firstModel.getModifiedResidues()) {
-      pdbBuilder.append(modifiedResidue).append(System.lineSeparator());
-    }
-  }
-
   /**
    * Return type of the named chain.
    *
@@ -367,5 +331,41 @@ public final class CifConverter {
       chainMap.put(chainIdentifier, CifConverter.PRINTABLE_CHARS.get(chainMap.size()));
     }
     return chainMap.get(chainIdentifier);
+  }
+
+  /**
+   * Convert a parsed mmCIF model into a set of PDB files with mapped chain names.
+   *
+   * @param model A parse mmCIF model.
+   * @return A container of (possibly) multiple PDB files with mapped chain names.
+   * @throws IOException When writing to output files fails.
+   */
+  public static ModelContainer convert(final CifModel model) throws IOException {
+    final File cifFile = File.createTempFile("cif2pdb", ".cif");
+    FileUtils.write(cifFile, model.toCif(), Charset.defaultCharset());
+
+    if (!CifConverter.isConversionPossible(model)) {
+      return CifContainer.emptyInstance(cifFile);
+    }
+
+    List<Set<String>> chainGroups = CifConverter.groupContactingChains(model);
+    chainGroups = CifConverter.packGroups(chainGroups);
+    final Map<File, BidiMap<String, String>> fileChainMap = new HashMap<>();
+
+    for (final Set<String> chainGroup : chainGroups) {
+      final File pdbFile = File.createTempFile("cif2pdb", ".pdb");
+      final BidiMap<String, String> chainMap = new TreeBidiMap<>();
+
+      fileChainMap.put(pdbFile, chainMap);
+
+      final StringBuilder pdbBuilder = new StringBuilder();
+      CifConverter.writeHeader(model, chainMap, pdbBuilder);
+      CifConverter.writeModel(model, chainGroup, chainMap, pdbBuilder);
+
+      final String pdbData = pdbBuilder.toString();
+      FileUtils.write(pdbFile, pdbData, Charset.defaultCharset());
+    }
+
+    return ImmutableCifContainer.of(cifFile, fileChainMap);
   }
 }

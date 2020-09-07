@@ -8,16 +8,20 @@ import pl.poznan.put.rna.Ribose;
 import pl.poznan.put.rna.base.NucleobaseType;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class ResidueTypeDetector {
-  private static final Collection<ResidueInformationProvider> PROVIDERS =
-      Stream.concat(Arrays.stream(NucleobaseType.values()), Arrays.stream(AminoAcidType.values()))
-          .collect(Collectors.toList());
+  private static final Set<AtomName> RIBOSE_HEAVY_ATOMS =
+      Ribose.getInstance().getAtoms().stream()
+          .filter(AtomName::isHeavy)
+          .collect(Collectors.toSet());
+  private static final Set<AtomName> BACKBONE_HEAVY_ATOMS =
+      ProteinBackbone.getInstance().getAtoms().stream()
+          .filter(AtomName::isHeavy)
+          .collect(Collectors.toSet());
 
   private ResidueTypeDetector() {
     super();
@@ -35,20 +39,22 @@ public final class ResidueTypeDetector {
 
   public static ResidueInformationProvider detectResidueTypeFromResidueName(
       final String residueName) {
-    for (final ResidueInformationProvider provider : ResidueTypeDetector.PROVIDERS) {
-      if (provider.allPdbNames().contains(residueName)) {
-        return provider;
-      }
-    }
-    return new InvalidResidueInformationProvider(residueName);
+    final Stream<ResidueInformationProvider> stream =
+        Stream.concat(
+            Arrays.stream(NucleobaseType.values()), Arrays.stream(AminoAcidType.values()));
+    return stream
+        .filter(provider -> provider.allPdbNames().contains(residueName))
+        .findFirst()
+        .orElse(new InvalidResidueInformationProvider(residueName));
   }
 
   private static boolean isNucleotide(final Set<AtomName> actual) {
-    return ResidueTypeDetector.intersectionRatio(actual, Ribose.getInstance().getAtoms()) >= 0.5;
+    return ResidueTypeDetector.intersectionRatio(actual, ResidueTypeDetector.RIBOSE_HEAVY_ATOMS)
+        >= 0.5;
   }
 
   private static boolean isAminoAcid(final Set<AtomName> actual) {
-    return ResidueTypeDetector.intersectionRatio(actual, ProteinBackbone.getInstance().getAtoms())
+    return ResidueTypeDetector.intersectionRatio(actual, ResidueTypeDetector.BACKBONE_HEAVY_ATOMS)
         >= 0.5;
   }
 
@@ -86,9 +92,5 @@ public final class ResidueTypeDetector {
       }
     }
     return new InvalidResidueInformationProvider(residueName);
-  }
-
-  private static boolean hasHydrogen(final Collection<AtomName> atomNames) {
-    return atomNames.stream().anyMatch(atomName -> !atomName.isHeavy());
   }
 }

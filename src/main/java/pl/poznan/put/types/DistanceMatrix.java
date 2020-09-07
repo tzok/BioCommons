@@ -1,24 +1,14 @@
 package pl.poznan.put.types;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import org.immutables.value.Value;
+
 import java.util.List;
 
-public class DistanceMatrix {
-  private final List<String> names;
-  private final double[][] matrix;
+@Value.Immutable
+public interface DistanceMatrix {
+  @Value.Parameter
+  List<String> names();
 
-  public DistanceMatrix(final List<String> names, final double[][] matrix) {
-    super();
-    this.names = new ArrayList<>(names);
-    this.matrix = matrix.clone();
-  }
-
-  public final List<String> getNames() {
-    return Collections.unmodifiableList(names);
-  }
-
-  public final double[][] getMatrix() {
-    return matrix.clone();
-  }
+  @Value.Parameter
+  double[][] matrix();
 }

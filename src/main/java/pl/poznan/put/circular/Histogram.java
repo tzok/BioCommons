@@ -3,6 +3,7 @@ package pl.poznan.put.circular;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
+import org.immutables.value.Value;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 
 import java.util.ArrayList;
@@ -71,5 +72,14 @@ public class Histogram {
       maxFrequency = FastMath.max(frequency, maxFrequency);
     }
     return maxFrequency;
+  }
+
+  @Value.Immutable
+  interface Bin {
+    @Value.Parameter
+    double radiansStart();
+
+    @Value.Parameter
+    List<Angle> data();
   }
 }
