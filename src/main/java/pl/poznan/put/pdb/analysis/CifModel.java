@@ -7,9 +7,11 @@ import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
 import java.util.List;
+import java.util.Set;
 
 @Value.Immutable
 public abstract class CifModel implements StructureModel {
@@ -22,7 +24,7 @@ public abstract class CifModel implements StructureModel {
       final Iterable<? extends PdbModresLine> modifiedResidues,
       final Iterable<? extends PdbRemark465Line> missingResidues,
       final String title,
-      final Iterable<? extends PdbAtomLine> chainTerminatedAfter,
+      final Iterable<? extends PdbResidueIdentifier> chainTerminatedAfter,
       final Iterable<? extends QuantifiedBasePair> basePairs) {
     return ImmutableCifModel.of(
         ImmutablePdbModel.of(
@@ -95,7 +97,7 @@ public abstract class CifModel implements StructureModel {
   }
 
   @Override
-  public final List<PdbAtomLine> chainTerminatedAfter() {
+  public final Set<PdbResidueIdentifier> chainTerminatedAfter() {
     return pdbModel().chainTerminatedAfter();
   }
 

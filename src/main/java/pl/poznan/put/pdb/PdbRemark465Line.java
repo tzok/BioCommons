@@ -4,9 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.poznan.put.pdb.analysis.ImmutablePdbResidue;
+import pl.poznan.put.pdb.analysis.PdbResidue;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -164,4 +167,9 @@ public abstract class PdbRemark465Line implements ChainNumberICode, Serializable
   @Override
   @Value.Parameter(order = 5)
   public abstract String insertionCode();
+
+  public final PdbResidue toResidue() {
+    return ImmutablePdbResidue.of(
+        toResidueIdentifer(), residueName(), residueName(), Collections.emptyList(), false, true);
+  }
 }

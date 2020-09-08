@@ -9,24 +9,25 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbExpdtaLine;
 import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbModresLine;
-import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Value.Immutable
 public abstract class PdbModel implements Serializable, StructureModel {
-  public static PdbModel of(final List<PdbAtomLine> atoms) {
+  public static PdbModel of(final Iterable<? extends PdbAtomLine> atoms) {
     return ImmutablePdbModel.of(
         ImmutablePdbHeaderLine.of("", new Date(0L), ""),
         ImmutablePdbExpdtaLine.of(Collections.emptyList()),
@@ -46,79 +47,40 @@ public abstract class PdbModel implements Serializable, StructureModel {
 
   @Value.Lazy
   public List<PdbResidue> residues() {
-    final List<PdbResidue> residues = new ArrayList<>();
-    List<PdbAtomLine> residueAtoms = new ArrayList<>();
-    PdbResidueIdentifier lastResidueIdentifier = atoms().get(0).toResidueIdentifer();
+    // group atoms by common (chain, number, icode)
+    final Map<PdbResidueIdentifier, List<PdbAtomLine>> atomGroups = new LinkedHashMap<>();
+    atoms()
+        .forEach(
+            atom -> {
+              atomGroups.putIfAbsent(atom.toResidueIdentifer(), new ArrayList<>());
+              atomGroups.get(atom.toResidueIdentifer()).add(atom);
+            });
 
-    for (final PdbAtomLine atom : atoms()) {
-      final PdbResidueIdentifier residueIdentifier = atom.toResidueIdentifer();
+    // create residues out of atom groups and leave only those detected as nucleotides or amino
+    // acids
+    final Stream<PdbResidue> existingResidueStream =
+        atomGroups.values().stream()
+            .map(this::atomGroupToResidue)
+            .filter(PdbResidue::wasSuccessfullyDetected);
 
-      if (!Objects.equals(residueIdentifier, lastResidueIdentifier)) {
-        addResidueIfValid(residues, residueAtoms);
-        residueAtoms = new ArrayList<>();
-        lastResidueIdentifier = residueIdentifier;
-      }
+    // create residues out of information about missing residues in the headers
+    final Stream<PdbResidue> missingResidueStream =
+        missingResidues().stream().map(PdbRemark465Line::toResidue);
 
-      residueAtoms.add(atom);
-    }
-
-    addResidueIfValid(residues, residueAtoms);
-
-    for (final PdbRemark465Line missingResidue : missingResidues()) {
-      final PdbResidue residue =
-          ImmutablePdbResidue.of(
-              missingResidue.toResidueIdentifer(),
-              missingResidue.residueName(),
-              missingResidue.residueName(),
-              Collections.emptyList(),
-              false,
-              true);
-
-      final String chain = residue.chainIdentifier();
-      boolean isChainFound = false;
-      int i = 0;
-
-      while (i < residues.size()) {
-        final PdbResidue existing = residues.get(i);
-        final String existingChain = existing.chainIdentifier();
-
-        if (!isChainFound && Objects.equals(chain, existingChain)) {
-          isChainFound = true;
-        }
-
-        if (isChainFound
-            && ((existing.compareTo(residue) > 0) || !Objects.equals(chain, existingChain))) {
-          residues.add(i, residue);
-          break;
-        }
-
-        i += 1;
-      }
-    }
-
-    if (residues.isEmpty()) {
-      throw new PdbParsingException("Invalid PDB file. Failed to analyze any residue");
-    }
-
-    return residues;
+    // create a list of residues
+    return Stream.concat(existingResidueStream, missingResidueStream)
+        .sorted()
+        .collect(Collectors.toList());
   }
 
-  private void addResidueIfValid(
-      final Collection<? super PdbResidue> residues,
-      final List<? extends PdbAtomLine> residueAtoms) {
+  private PdbResidue atomGroupToResidue(final List<? extends PdbAtomLine> residueAtoms) {
     final PdbResidueIdentifier residueIdentifier = residueAtoms.get(0).toResidueIdentifer();
     final boolean isModified = isModified(residueIdentifier);
     final String residueName = residueAtoms.get(0).residueName();
     final String modifiedResidueName =
         isModified ? modificationDetails(residueIdentifier).standardResidueName() : residueName;
-
-    final PdbResidue residue =
-        ImmutablePdbResidue.of(
-            residueIdentifier, residueName, modifiedResidueName, residueAtoms, isModified, false);
-
-    if (residue.wasSuccessfullyDetected()) {
-      residues.add(residue);
-    }
+    return ImmutablePdbResidue.of(
+        residueIdentifier, residueName, modifiedResidueName, residueAtoms, isModified, false);
   }
 
   protected final boolean isMissing(final PdbResidueIdentifier residueIdentifier) {
@@ -144,74 +106,66 @@ public abstract class PdbModel implements Serializable, StructureModel {
 
   @Value.Lazy
   public List<PdbChain> chains() {
-    final Predicate<PdbResidue> isMissing = PdbResidue::isMissing;
-    final List<PdbResidue> missingResidues =
-        residues().stream().filter(isMissing).collect(Collectors.toList());
-    final List<PdbResidue> notMissingResidues =
-        residues().stream().filter(isMissing.negate()).collect(Collectors.toList());
+    final Map<String, List<PdbResidue>> chainResidues = new LinkedHashMap<>();
+    residues()
+        .forEach(
+            residue -> {
+              chainResidues.putIfAbsent(residue.chainIdentifier(), new ArrayList<>());
+              chainResidues.get(residue.chainIdentifier()).add(residue);
+            });
+    return chainResidues.values().stream()
+        .flatMap(residueGroup -> residueGroupToChains(residueGroup).stream())
+        .collect(Collectors.toList());
+  }
 
-    List<PdbResidue> chainResidues = new ArrayList<>();
-    String lastChainIdentifier = residues().get(0).chainIdentifier();
-    boolean chainTerminated = false;
-
+  private List<PdbChain> residueGroupToChains(final List<? extends PdbResidue> residueGroup) {
     final List<PdbChain> chains = new ArrayList<>();
+    final List<Integer> branchingPoints =
+        IntStream.range(0, residueGroup.size())
+            .filter(i -> chainTerminatedAfter().contains(residueGroup.get(i).toResidueIdentifer()))
+            .mapToObj(i -> (int) i)
+            .collect(Collectors.toList());
 
-    for (final PdbResidue residue : notMissingResidues) {
-      final String chainIdentifier = residue.chainIdentifier();
-
-      if (!chainIdentifier.equals(lastChainIdentifier) || chainTerminated) {
-        addMissingResiduesAndSaveChain(chains, chainResidues, lastChainIdentifier, missingResidues);
-        chainResidues = new ArrayList<>();
-        lastChainIdentifier = chainIdentifier;
-      }
-
-      chainResidues.add(residue);
-      chainTerminated = residue.atoms().stream().anyMatch(chainTerminatedAfter()::contains);
+    int begin = 0;
+    for (final int branchingPoint : branchingPoints) {
+      // move `end` past all missing residues after TER line
+      int end = branchingPoint + 1;
+      for (; end < residueGroup.size() && residueGroup.get(end).isMissing(); end++)
+        ;
+      chains.add(
+          ImmutablePdbChain.of(
+              residueGroup.get(0).chainIdentifier(), residueGroup.subList(begin, end)));
+      begin = end;
     }
 
-    addMissingResiduesAndSaveChain(chains, chainResidues, lastChainIdentifier, missingResidues);
+    if (begin < residueGroup.size()) {
+      chains.add(
+          ImmutablePdbChain.of(
+              residueGroup.get(0).chainIdentifier(),
+              residueGroup.subList(begin, residueGroup.size())));
+    }
 
     return chains;
   }
 
-  private void addMissingResiduesAndSaveChain(
-      final Collection<? super PdbChain> chains,
-      final List<PdbResidue> chainResidues,
-      final String chainIdentifier,
-      final Collection<? extends PdbResidue> missingResidues) {
-    missingResidues.stream()
-        .filter(pdbResidue -> chainIdentifier.equals(pdbResidue.chainIdentifier()))
-        .forEach(pdbResidue -> putMissingResidueInRightPlace(chainResidues, pdbResidue));
-    missingResidues.removeIf(pdbResidue -> chainIdentifier.equals(pdbResidue.chainIdentifier()));
-    chains.add(ImmutablePdbChain.of(chainIdentifier, chainResidues));
-  }
-
-  private void putMissingResidueInRightPlace(
-      final List<PdbResidue> chainResidues, final PdbResidue missingResidue) {
-    for (int i = 0; i < chainResidues.size(); i++) {
-      final PdbResidue chainResidue = chainResidues.get(i);
-      if (chainResidue.compareTo(missingResidue) > 0) {
-        chainResidues.add(i, missingResidue);
-        return;
-      }
-    }
-    chainResidues.add(missingResidue);
-  }
-
   @Override
   @Value.Parameter(order = 1)
+  @Value.Auxiliary
   public abstract PdbHeaderLine header();
 
   @Override
   @Value.Parameter(order = 2)
+  @Value.Auxiliary
   public abstract PdbExpdtaLine experimentalData();
 
   @Override
   @Value.Parameter(order = 3)
+  @Value.Auxiliary
   public abstract PdbRemark2Line resolution();
 
   @Override
   @Value.Parameter(order = 4)
+  @Value.Auxiliary
   public abstract int modelNumber();
 
   @Override
@@ -220,19 +174,23 @@ public abstract class PdbModel implements Serializable, StructureModel {
 
   @Override
   @Value.Parameter(order = 6)
+  @Value.Auxiliary
   public abstract List<PdbModresLine> modifiedResidues();
 
   @Override
   @Value.Parameter(order = 7)
+  @Value.Auxiliary
   public abstract List<PdbRemark465Line> missingResidues();
 
   @Override
   @Value.Parameter(order = 8)
+  @Value.Auxiliary
   public abstract String title();
 
   @Override
   @Value.Parameter(order = 9)
-  public abstract List<PdbAtomLine> chainTerminatedAfter();
+  @Value.Auxiliary
+  public abstract Set<PdbResidueIdentifier> chainTerminatedAfter();
 
   @Override
   public PdbModel filteredNewInstance(final MoleculeType moleculeType) {

@@ -19,13 +19,13 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbTitleLine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -34,11 +34,11 @@ public class PdbParser {
 
   private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
   private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
-  private final Collection<PdbResidueIdentifier> processedIdentifiers = new HashSet<>();
-  private final List<PdbAtomLine> chainTerminatedAfter = new ArrayList<>();
-  private final Collection<Integer> endedModelNumbers = new HashSet<>();
+  private final Set<PdbResidueIdentifier> processedIdentifiers = new HashSet<>();
+  private final Set<PdbResidueIdentifier> chainTerminatedAfter = new HashSet<>();
+  private final Set<Integer> endedModelNumbers = new HashSet<>();
   private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
-  private final Collection<PdbTitleLine> titleLines = new ArrayList<>();
+  private final List<PdbTitleLine> titleLines = new ArrayList<>();
 
   private final boolean strictMode;
 
@@ -182,7 +182,7 @@ public class PdbParser {
 
   private void handleTerLine() {
     final List<PdbAtomLine> atomLines = modelAtoms.get(currentModelNumber);
-    chainTerminatedAfter.add(atomLines.get(atomLines.size() - 1));
+    chainTerminatedAfter.add(atomLines.get(atomLines.size() - 1).toResidueIdentifer());
   }
 
   private void handleMissingResidueLine(final String line) {

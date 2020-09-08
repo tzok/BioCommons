@@ -8,8 +8,10 @@ import pl.poznan.put.pdb.PdbHeaderLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public interface StructureModel extends ResidueCollection {
@@ -31,7 +33,7 @@ public interface StructureModel extends ResidueCollection {
 
   String title();
 
-  List<PdbAtomLine> chainTerminatedAfter();
+  Set<PdbResidueIdentifier> chainTerminatedAfter();
 
   default String idCode() {
     return header().idCode();
