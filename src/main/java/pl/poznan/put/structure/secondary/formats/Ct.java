@@ -152,7 +152,7 @@ public final class Ct implements Serializable {
     final List<ExtendedEntry> entries = new ArrayList<>();
 
     for (final Strand strand : dotBracket.getStrands()) {
-      final List<DotBracketSymbol> symbols = strand.getSymbols();
+      final List<DotBracketSymbol> symbols = strand.symbols();
 
       for (int i = 0, symbolsSize = symbols.size(); i < symbolsSize; i++) {
         final DotBracketSymbol symbol = symbols.get(i);

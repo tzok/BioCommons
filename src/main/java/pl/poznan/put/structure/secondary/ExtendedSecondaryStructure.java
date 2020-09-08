@@ -1,8 +1,9 @@
 package pl.poznan.put.structure.secondary;
 
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.immutables.value.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
@@ -30,19 +31,9 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-@Data
-@Slf4j
-public final class ExtendedSecondaryStructure {
-  private final String sequence;
-  private final Collection<ClassifiedBasePair> basePairs;
-
-  public ExtendedSecondaryStructure(
-      final String sequence, final Collection<ClassifiedBasePair> basePairs) {
-    super();
-    this.sequence = sequence;
-    this.basePairs =
-        basePairs.stream().filter(ClassifiedBasePair::is5to3).collect(Collectors.toSet());
-  }
+@Value.Immutable
+public abstract class ExtendedSecondaryStructure {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExtendedSecondaryStructure.class);
 
   public static void main(final String[] args) {
     final String input = "seq ACGUACGUACGU\ncWH (([[..))]]..\ncWW ....((..))..";
@@ -178,16 +169,22 @@ public final class ExtendedSecondaryStructure {
       sequence = StringUtils.repeat('N', maxIndex);
     }
 
-    return new ExtendedSecondaryStructure(sequence, basePairs);
+    return ImmutableExtendedSecondaryStructure.of(sequence, basePairs);
   }
+
+  @Value.Parameter(order = 1)
+  public abstract String sequence();
+
+  @Value.Parameter(order = 2)
+  protected abstract Collection<ClassifiedBasePair> inputBasePairs();
 
   @Override
   public String toString() {
     final StringBuilder builder = new StringBuilder();
-    builder.append("seq ").append(sequence).append('\n');
+    builder.append("seq ").append(sequence()).append('\n');
 
     final Set<LeontisWesthof> set =
-        basePairs.stream().map(ClassifiedBasePair::getLeontisWesthof).collect(Collectors.toSet());
+        basePairs().stream().map(ClassifiedBasePair::getLeontisWesthof).collect(Collectors.toSet());
 
     for (final LeontisWesthof leontisWesthof : LeontisWesthof.values()) {
       if ((leontisWesthof != LeontisWesthof.UNKNOWN) && set.contains(leontisWesthof)) {
@@ -204,10 +201,15 @@ public final class ExtendedSecondaryStructure {
     return builder.toString();
   }
 
+  @Value.Lazy
+  protected Collection<ClassifiedBasePair> basePairs() {
+    return inputBasePairs().stream().filter(ClassifiedBasePair::is5to3).collect(Collectors.toSet());
+  }
+
   private List<DotBracket> dotBracketFromBasePairs(final LeontisWesthof leontisWesthof) {
     try {
       final List<ClassifiedBasePair> filteredBasePairs =
-          basePairs.stream()
+          basePairs().stream()
               .filter(cbp -> RNAInteractionType.BASE_BASE.equals(cbp.getInteractionType()))
               .filter(cbp -> leontisWesthof == cbp.getLeontisWesthof())
               .sorted(Comparator.comparingInt(cbp -> cbp.getBasePair().getLeft().residueNumber()))
@@ -237,7 +239,7 @@ public final class ExtendedSecondaryStructure {
 
       return result;
     } catch (final InvalidStructureException e) {
-      ExtendedSecondaryStructure.log.error(
+      ExtendedSecondaryStructure.LOGGER.error(
           "Failed to generate dot-bracket from list of base pairs", e);
       return Collections.emptyList();
     }
@@ -246,7 +248,7 @@ public final class ExtendedSecondaryStructure {
   private DotBracket basePairsToDotBracket(
       final Iterable<? extends ClassifiedBasePair> filteredBasePairs) {
     final List<PdbNamedResidueIdentifier> identifiers = new ArrayList<>();
-    final char[] array = sequence.toCharArray();
+    final char[] array = sequence().toCharArray();
 
     for (int i = 0; i < array.length; i++) {
       final PdbNamedResidueIdentifier identifier =

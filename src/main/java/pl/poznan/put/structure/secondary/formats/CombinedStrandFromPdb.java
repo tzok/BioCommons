@@ -26,7 +26,7 @@ public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketF
     final Map<DotBracketSymbol, Integer> symbolToIndex = new HashMap<>();
     int i = 0;
     for (final Strand strand : strands) {
-      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+      for (final DotBracketSymbol symbol : strand.symbols()) {
         symbolToIndex.put(symbol, i);
         i += 1;
       }
@@ -34,7 +34,7 @@ public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketF
 
     for (final Strand strand : strands) {
       final List<DotBracketSymbol> strandSymbols = new ArrayList<>();
-      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+      for (final DotBracketSymbol symbol : strand.symbols()) {
         final char sequence = symbol.sequence();
         final char structure = symbol.structure();
         final int index = symbolToIndex.get(symbol);
@@ -46,11 +46,11 @@ public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketF
         final PdbNamedResidueIdentifier identifier = symbolToResidue.get(symbol);
         this.symbolToResidue.put(renumbered, identifier);
       }
-      this.strands.add(new StrandDirect(strand.getName(), strandSymbols));
+      this.strands.add(ImmutableStrandDirect.of(strand.name(), strandSymbols));
     }
 
     for (final Strand strand : strands) {
-      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+      for (final DotBracketSymbol symbol : strand.symbols()) {
         if (symbol.isPairing()) {
           final ModifiableDotBracketSymbol u = symbols.get(symbolToIndex.get(symbol));
           final ModifiableDotBracketSymbol v =

@@ -98,7 +98,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
     // link strands connected by canonical base pairs
     for (final Strand strand : strands) {
-      final List<DotBracketSymbol> strandSymbols = strand.getSymbols();
+      final List<DotBracketSymbol> strandSymbols = strand.symbols();
       for (final DotBracketSymbol symbol : strandSymbols) {
         if (symbol.isPairing() && !strandSymbols.contains(symbol.pair())) {
           linkStrands(
@@ -123,7 +123,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
           residueToSymbol.get(nonCanonicalPair.getBasePair().getRight());
 
       for (final Strand strand : strands) {
-        final List<DotBracketSymbol> strandSymbols = strand.getSymbols();
+        final List<DotBracketSymbol> strandSymbols = strand.symbols();
         if (strandSymbols.contains(leftSymbol) && !strandSymbols.contains(rightSymbol)) {
           linkStrands(strand, rightSymbol, strandMap);
         }
@@ -212,7 +212,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
     for (final PdbChain chain : model.chains()) {
       end += chain.residues().size();
-      strands.add(new StrandView(chain.identifier(), this, start, end));
+      strands.add(ImmutableStrandView.of(chain.identifier(), this, start, end));
       start = end;
     }
   }
@@ -258,7 +258,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
       final Map<? super Strand, Set<Strand>> strandMap) {
     for (final Strand secondStrand : strands) {
       if (!secondStrand.equals(firstStrand)
-          && secondStrand.getSymbols().contains(symbolInSecondStrand)) {
+          && secondStrand.symbols().contains(symbolInSecondStrand)) {
         if (!strandMap.containsKey(firstStrand)) {
           strandMap.put(firstStrand, new LinkedHashSet<>());
         }

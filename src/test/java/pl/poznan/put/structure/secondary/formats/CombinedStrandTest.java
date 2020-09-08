@@ -17,7 +17,8 @@ public class CombinedStrandTest {
     final DotBracket dotBracket = DotBracket.fromString(">strand_A\nACGUACGUACGU\n.((------)).");
     final CombinedStrand combinedStrand =
         new CombinedStrand(
-            Collections.singletonList(new StrandView("", dotBracket, 0, dotBracket.getLength())));
+            Collections.singletonList(
+                ImmutableStrandView.of("", dotBracket, 0, dotBracket.getLength())));
     final List<DotBracketSymbol> internalMissing = combinedStrand.getInternalMissing();
     assertThat(internalMissing.size(), is(6));
   }
@@ -25,13 +26,13 @@ public class CombinedStrandTest {
   @Test
   public final void getInternalMissingTwoStrands() {
     final Strand strandFirst =
-        new StrandDirect(
+        ImmutableStrandDirect.of(
             "A",
             Arrays.asList(
                 ImmutableDotBracketSymbol.of('A', '.', 1),
                 ImmutableDotBracketSymbol.of('A', '-', 2)));
     final Strand strandSecond =
-        new StrandDirect(
+        ImmutableStrandDirect.of(
             "B",
             Arrays.asList(
                 ImmutableDotBracketSymbol.of('A', '-', 1),

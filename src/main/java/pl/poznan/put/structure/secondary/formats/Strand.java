@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public interface Strand {
-  String getName();
+  String name();
 
-  TerminalMissing getMissingBegin();
+  TerminalMissing missingBegin();
 
-  TerminalMissing getMissingEnd();
+  TerminalMissing missingEnd();
 
-  List<DotBracketSymbol> getSymbols();
+  List<DotBracketSymbol> symbols();
 
   /**
    * Prepare description of strand in RNAComposer format i.e. 5 elements: index-from, index-to,
@@ -22,31 +22,31 @@ public interface Strand {
    *
    * @return A description of strand in RNAComposer format.
    */
-  String getDescription();
+  String description();
 
-  default String getStructure() {
-    final List<DotBracketSymbol> symbols = getSymbols();
+  default String structure() {
+    final List<DotBracketSymbol> symbols = symbols();
     return symbols.stream()
         .map(symbol -> String.valueOf(symbol.structure()))
         .collect(Collectors.joining());
   }
 
-  default int getLength() {
-    return getTo() - getFrom();
+  default int length() {
+    return end() - begin();
   }
 
-  default int getFrom() {
-    final List<DotBracketSymbol> symbols = getSymbols();
+  default int begin() {
+    final List<DotBracketSymbol> symbols = symbols();
     return symbols.isEmpty() ? 1 : symbols.get(0).index();
   }
 
-  default int getTo() {
-    final List<DotBracketSymbol> symbols = getSymbols();
+  default int end() {
+    final List<DotBracketSymbol> symbols = symbols();
     return symbols.isEmpty() ? 1 : symbols.get(symbols.size() - 1).index();
   }
 
-  default int getPseudoknotOrder() {
-    return getSymbols().stream()
+  default int pseudoknotOrder() {
+    return symbols().stream()
         .map(DotBracketSymbol::getOrder)
         .max(Comparator.naturalOrder())
         .orElse(0);
@@ -60,28 +60,31 @@ public interface Strand {
    *     allowed as long as it points somewhere outside this strand.
    */
   default boolean isSingleStrand() {
-    final List<DotBracketSymbol> symbols = getSymbols();
+    final List<DotBracketSymbol> symbols = symbols();
     return IntStream.range(1, (symbols.size() - 1))
         .mapToObj(symbols::get)
-        .noneMatch(symbol -> symbol.isPairing() && symbols.contains(symbol.pair()));
+        .noneMatch(
+            symbol ->
+                symbol.isPairing()
+                    && symbols.contains(symbol.pair().orElseThrow(InvalidStructureException::new)));
   }
 
-  default String getRSequence() {
-    final char[] cs = getSequence().toCharArray();
+  default String sequenceRY() {
+    final char[] cs = sequence().toCharArray();
     for (int i = 0; i < cs.length; i++) {
       cs[i] = ((cs[i] == 'A') || (cs[i] == 'G')) ? 'R' : 'Y';
     }
     return new String(cs);
   }
 
-  default String getSequence() {
-    final List<DotBracketSymbol> symbols = getSymbols();
+  default String sequence() {
+    final List<DotBracketSymbol> symbols = symbols();
     return symbols.stream()
         .map(symbol -> String.valueOf(symbol.sequence()))
         .collect(Collectors.joining());
   }
 
   default boolean containsMissing() {
-    return getSymbols().stream().anyMatch(DotBracketSymbol::isMissing);
+    return symbols().stream().anyMatch(DotBracketSymbol::isMissing);
   }
 }

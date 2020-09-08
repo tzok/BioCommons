@@ -1,64 +1,62 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import lombok.EqualsAndHashCode;
+import org.immutables.value.Value;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = false)
-public class StrandDirect extends AbstractStrand {
-  private final List<DotBracketSymbol> symbols;
-
-  public StrandDirect(final String name, final List<DotBracketSymbol> symbols) {
-    super(name);
-    this.symbols = new ArrayList<>(symbols);
-  }
+@Value.Immutable
+public abstract class StrandDirect implements Strand {
+  @Value.Parameter(order = 1)
+  public abstract String name();
 
   @Override
-  public final TerminalMissing getMissingBegin() {
+  public final TerminalMissing missingBegin() {
     final List<DotBracketSymbol> missing = new ArrayList<>();
-    for (final DotBracketSymbol symbol : symbols) {
+    for (final DotBracketSymbol symbol : symbols()) {
       if (!symbol.isMissing()) {
         break;
       }
       missing.add(symbol);
     }
-    return new TerminalMissing(missing);
+    return ImmutableTerminalMissing.of(missing);
   }
 
   @Override
-  public final TerminalMissing getMissingEnd() {
+  public final TerminalMissing missingEnd() {
     final List<DotBracketSymbol> missing = new ArrayList<>();
-    for (int i = symbols.size() - 1; i >= 0; i--) {
-      final DotBracketSymbol symbol = symbols.get(i);
+    for (int i = symbols().size() - 1; i >= 0; i--) {
+      final DotBracketSymbol symbol = symbols().get(i);
       if (!symbol.isMissing()) {
         break;
       }
       missing.add(symbol);
     }
-    return new TerminalMissing(missing);
+    return ImmutableTerminalMissing.of(missing);
   }
 
-  @Override
-  public final List<DotBracketSymbol> getSymbols() {
-    return Collections.unmodifiableList(symbols);
-  }
+  @Value.Parameter(order = 2)
+  public abstract List<DotBracketSymbol> symbols();
 
   @Override
-  public final String getDescription() {
+  public final String description() {
     return String.format(
         "%d %d %s %s %s",
-        symbols.get(0).index(),
-        symbols.get(symbols.size() - 1).index(),
-        getSequence(),
-        getStructure(),
-        getRSequence());
+        symbols().get(0).index(),
+        symbols().get(symbols().size() - 1).index(),
+        sequence(),
+        structure(),
+        sequenceRY());
   }
 
   @Override
-  public final int getLength() {
-    return symbols.size();
+  public final int length() {
+    return symbols().size();
+  }
+
+  @Override
+  public final String toString() {
+    return String.format(">strand_%s\n%s\n%s", name(), sequence(), structure());
   }
 }

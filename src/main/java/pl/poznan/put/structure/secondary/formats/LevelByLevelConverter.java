@@ -1,7 +1,6 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import org.immutables.value.Value;
 import pl.poznan.put.structure.secondary.pseudoknots.PseudoknotFinder;
 
 import java.util.ArrayList;
@@ -9,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class LevelByLevelConverter implements Converter {
   private static final char[] BRACKETS_OPENING = "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
@@ -42,20 +42,20 @@ public class LevelByLevelConverter implements Converter {
   private static String traceback(final State state) {
     final char[] structure = new char[state.size()];
     Arrays.fill(structure, '.');
-    State current = state.getParent();
+    Optional<State> current = state.parent();
 
-    while (current != null) {
-      for (final BpSeq.Entry pairs : current.getBpSeq().getPaired()) {
+    while (current.isPresent()) {
+      for (final BpSeq.Entry pairs : current.get().bpSeq().getPaired()) {
         final int i = pairs.getIndex();
         final int j = pairs.getPair();
 
         if (structure[i - 1] == '.') {
-          structure[i - 1] = LevelByLevelConverter.BRACKETS_OPENING[current.getLevel()];
-          structure[j - 1] = LevelByLevelConverter.BRACKETS_CLOSING[current.getLevel()];
+          structure[i - 1] = LevelByLevelConverter.BRACKETS_OPENING[current.get().level()];
+          structure[j - 1] = LevelByLevelConverter.BRACKETS_CLOSING[current.get().level()];
         }
       }
 
-      current = current.getParent();
+      current = current.get().parent();
     }
 
     return new String(structure);
@@ -64,7 +64,7 @@ public class LevelByLevelConverter implements Converter {
   @Override
   public final DotBracket convert(final BpSeq bpSeq) {
     List<State> states = new ArrayList<>();
-    states.add(new State(null, bpSeq, 0));
+    states.add(ImmutableState.of(Optional.empty(), bpSeq, 0));
 
     while (LevelByLevelConverter.isProcessingNeeded(states)) {
       states = processStates(states);
@@ -78,8 +78,8 @@ public class LevelByLevelConverter implements Converter {
   private List<State> processStates(final Collection<State> states) {
     final List<State> nextStates = new ArrayList<>(states.size());
     for (final State state : states) {
-      for (final BpSeq bpSeq : pkRemover.findPseudoknots(state.getBpSeq())) {
-        final State nextState = new State(state, bpSeq, state.getLevel() + 1);
+      for (final BpSeq bpSeq : pkRemover.findPseudoknots(state.bpSeq())) {
+        final State nextState = ImmutableState.of(Optional.of(state), bpSeq, state.level() + 1);
         nextStates.add(nextState);
 
         if (nextStates.size() > maxSolutions) {
@@ -90,53 +90,50 @@ public class LevelByLevelConverter implements Converter {
     return nextStates;
   }
 
-  @EqualsAndHashCode
-  @Getter
-  private static final class State implements Comparable<State> {
-    private final State parent;
-    private final BpSeq bpSeq;
-    private final int level;
-    private final int score;
+  @Value.Immutable
+  abstract static class State implements Comparable<State> {
+    @Value.Parameter(order = 1)
+    public abstract Optional<State> parent();
 
-    private State(final State parent, final BpSeq bpSeq, final int level) {
-      super();
-      this.parent = parent;
-      this.bpSeq = bpSeq;
-      this.level = level;
-      score = bpSeq.getPaired().size();
+    @Value.Parameter(order = 2)
+    public abstract BpSeq bpSeq();
+
+    @Value.Parameter(order = 3)
+    public abstract int level();
+
+    @Value.Lazy
+    public int score() {
+      return bpSeq().getPaired().size();
     }
 
     @Override
     public int compareTo(final State t) {
-      if (level < t.level) {
+      if (level() < t.level()) {
         return -1;
       }
-      if (level > t.level) {
+      if (level() > t.level()) {
         return 1;
       }
-      if (score < t.score) {
+      if (score() < t.score()) {
         return -1;
       }
-      if (score > t.score) {
+      if (score() > t.score()) {
         return 1;
       }
-      if (level != 0) {
-        return parent.compareTo(t.parent);
+      if (level() != 0) {
+        if (parent().isPresent() && t.parent().isPresent()) {
+          return parent().get().compareTo(t.parent().get());
+        }
       }
       return 0;
     }
 
-    @Override
-    public String toString() {
-      return String.format("State{level=%d, score=%d}", level, score);
-    }
-
     private boolean isFinal() {
-      return score == 0;
+      return score() == 0;
     }
 
     private int size() {
-      return bpSeq.size();
+      return bpSeq().size();
     }
   }
 }

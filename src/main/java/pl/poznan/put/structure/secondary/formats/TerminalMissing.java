@@ -1,31 +1,16 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import lombok.Data;
+import org.immutables.value.Value;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 
 import java.util.List;
 
-@Data
-public class TerminalMissing {
-  private final List<DotBracketSymbol> symbols;
+@Value.Immutable
+public abstract class TerminalMissing {
+  @Value.Parameter(order = 1)
+  public abstract List<DotBracketSymbol> symbols();
 
   public final boolean contains(final DotBracketSymbol symbol) {
-    return symbols.contains(symbol);
-  }
-
-  @Override
-  public final String toString() {
-    if (isEmpty()) {
-      return "TerminalMissing, empty symbol list";
-    }
-    return "TerminalMissing, first " + symbols.get(0) + ", last " + symbols.get(size());
-  }
-
-  private boolean isEmpty() {
-    return symbols.isEmpty();
-  }
-
-  private int size() {
-    return symbols.size();
+    return symbols().contains(symbol);
   }
 }

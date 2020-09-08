@@ -56,7 +56,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
     buildSymbolList();
     analyzePairing();
 
-    strands.add(new StrandView("", this, 0, structure.length()));
+    strands.add(ImmutableStrandView.of("", this, 0, structure.length()));
   }
 
   public static DotBracket fromString(final String data) {
@@ -99,7 +99,8 @@ public class DotBracket implements DotBracketInterface, Serializable {
     int index = 0;
     for (final Pair<Integer, Integer> pair : pairBeginEnd) {
       dotBracket.strands.add(
-          new StrandView(strandNames.get(index), dotBracket, pair.getLeft(), pair.getRight()));
+          ImmutableStrandView.of(
+              strandNames.get(index), dotBracket, pair.getLeft(), pair.getRight()));
       index += 1;
     }
 
@@ -114,7 +115,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
     for (final Strand strand : strands) {
       toCombine.add(strand);
 
-      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+      for (final DotBracketSymbol symbol : strand.symbols()) {
         level += symbol.isOpening() ? 1 : 0;
         level -= symbol.isClosing() ? 1 : 0;
       }
@@ -194,7 +195,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
 
     for (final Ct.ExtendedEntry e : ct.getEntries()) {
       if (e.getAfter() == 0) {
-        final Strand strand = new StrandView("", this, start, i + 1);
+        final Strand strand = ImmutableStrandView.of("", this, start, i + 1);
         strands.add(strand);
         start = i + 1;
       }

@@ -59,7 +59,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     // the bottom left
     final Region region = clique.findRegion(clique.getEndpoint(i), clique.getEndpoint(j));
     if (region != null) {
-      final SubSolution current = new SubSolution(region);
+      final SubSolution current = ImmutableSubSolution.of(Collections.singleton(region));
 
       if (matrix[i + 1][j - 1].length > 0) {
         for (final SubSolution subSolution : matrix[i + 1][j - 1]) {
@@ -91,10 +91,10 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     final Collection<SubSolution> result = new ArrayList<>();
 
     for (final SubSolution leftSub : left) {
-      final int highestEndpoint = leftSub.getHighestEndpoint();
+      final int highestEndpoint = leftSub.highestEndpoint();
 
       for (final SubSolution belowSub : below) {
-        final int lowestEndpoint = belowSub.getLowestEndpoint();
+        final int lowestEndpoint = belowSub.lowestEndpoint();
 
         if (highestEndpoint < lowestEndpoint) {
           result.add(SubSolution.merge(leftSub, belowSub));
@@ -126,7 +126,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     final SortedMap<Integer, List<SubSolution>> map = new TreeMap<>();
 
     for (final SubSolution candidate : candidates) {
-      final int score = candidate.getScore();
+      final int score = candidate.score();
 
       if (!map.containsKey(score)) {
         map.put(score, new ArrayList<>());
@@ -222,7 +222,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
       for (final SubSolution solution : solutions) {
         for (final List<BpSeq.Entry> previousResult : results) {
           final List<BpSeq.Entry> nextResult = new ArrayList<>(previousResult);
-          for (final Region region : solution.getRegions()) {
+          for (final Region region : solution.regions()) {
             nextResult.addAll(region.getEntries());
           }
           nextResults.add(nextResult);

@@ -17,10 +17,10 @@ public class ExtendedSecondaryStructureTest {
         ExtendedSecondaryStructure.fromMultilineDotBracket(simple);
     assertThat(secondaryStructure.toString(), is(simple));
 
-    final String sequence = secondaryStructure.getSequence();
+    final String sequence = secondaryStructure.sequence();
     assertThat(sequence, is("ACGUACGUACGU"));
 
-    final Collection<ClassifiedBasePair> basePairs = secondaryStructure.getBasePairs();
+    final Collection<ClassifiedBasePair> basePairs = secondaryStructure.basePairs();
     assertThat(basePairs.size(), is(6));
   }
 
@@ -36,10 +36,10 @@ public class ExtendedSecondaryStructureTest {
         ExtendedSecondaryStructure.fromMultilineDotBracket(quadruplex);
     assertThat(secondaryStructure.toString(), is(quadruplex));
 
-    final String sequence = secondaryStructure.getSequence();
+    final String sequence = secondaryStructure.sequence();
     assertThat(sequence, is("uAGGGUUAGGGUuAGGGUUAGGGU"));
 
-    final Collection<ClassifiedBasePair> basePairs = secondaryStructure.getBasePairs();
+    final Collection<ClassifiedBasePair> basePairs = secondaryStructure.basePairs();
     assertThat(basePairs.size(), is(12));
   }
 }
