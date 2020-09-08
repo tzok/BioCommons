@@ -5,6 +5,7 @@ import org.immutables.value.Value;
 import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.torsion.ImmutableTorsionAngleValue;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 
@@ -48,17 +49,17 @@ public abstract class PseudophasePuckerType implements TorsionAngleType {
         RNATorsionAngleType.NU4.angleTypes().get(0).calculate(residues, currentIndex);
 
     if (Stream.of(nu0, nu1, nu2, nu3, nu4)
-        .anyMatch(torsionAngleValue -> !Double.isNaN(torsionAngleValue.getValue().radians()))) {
-      return new TorsionAngleValue(this, ImmutableAngle.of(Double.NaN));
+        .anyMatch(torsionAngleValue -> !Double.isNaN(torsionAngleValue.value().radians()))) {
+      return ImmutableTorsionAngleValue.of(this, ImmutableAngle.of(Double.NaN));
     }
 
     final double scale =
         2.0 * (FastMath.sin(Math.toRadians(36.0)) + FastMath.sin(Math.toRadians(72.0)));
     final double y =
-        (nu1.getValue().radians() + nu4.getValue().radians())
-            - nu0.getValue().radians()
-            - nu3.getValue().radians();
-    final double x = nu2.getValue().radians() * scale;
-    return new TorsionAngleValue(this, ImmutableAngle.of(FastMath.atan2(y, x)));
+        (nu1.value().radians() + nu4.value().radians())
+            - nu0.value().radians()
+            - nu3.value().radians();
+    final double x = nu2.value().radians() * scale;
+    return ImmutableTorsionAngleValue.of(this, ImmutableAngle.of(FastMath.atan2(y, x)));
   }
 }

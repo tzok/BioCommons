@@ -8,6 +8,7 @@ import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
+import pl.poznan.put.structure.secondary.ModifiableDotBracketSymbol;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +25,8 @@ import java.util.stream.Collectors;
 
 public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbInterface {
   private final Map<DotBracketSymbol, PdbNamedResidueIdentifier> symbolToResidue = new HashMap<>();
-  private final Map<PdbNamedResidueIdentifier, DotBracketSymbol> residueToSymbol = new HashMap<>();
+  private final Map<PdbNamedResidueIdentifier, ModifiableDotBracketSymbol> residueToSymbol =
+      new HashMap<>();
 
   public DotBracketFromPdb(
       final DotBracketInterface dotBracket,
@@ -78,7 +80,8 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
   }
 
   @Override
-  public final DotBracketSymbol getSymbol(final PdbNamedResidueIdentifier residueIdentifier) {
+  public final ModifiableDotBracketSymbol getSymbol(
+      final PdbNamedResidueIdentifier residueIdentifier) {
     return residueToSymbol.get(residueIdentifier);
   }
 
@@ -97,8 +100,17 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     for (final Strand strand : strands) {
       final List<DotBracketSymbol> strandSymbols = strand.getSymbols();
       for (final DotBracketSymbol symbol : strandSymbols) {
-        if (symbol.isPairing() && !strandSymbols.contains(symbol.getPair())) {
-          linkStrands(strand, symbol.getPair(), strandMap);
+        if (symbol.isPairing() && !strandSymbols.contains(symbol.pair())) {
+          linkStrands(
+              strand,
+              symbol
+                  .pair()
+                  .orElseThrow(
+                      () ->
+                          new IllegalArgumentException(
+                              "Failed to find a pair for seemingly pairing dot-bracket symbol: "
+                                  + symbol)),
+              strandMap);
         }
       }
     }
@@ -165,7 +177,16 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
   public final BasePair basePair(final DotBracketSymbol symbol) {
     if (symbol.isPairing()) {
-      return new BasePair(symbolToResidue.get(symbol), symbolToResidue.get(symbol.getPair()));
+      return new BasePair(
+          symbolToResidue.get(symbol),
+          symbolToResidue.get(
+              symbol
+                  .pair()
+                  .orElseThrow(
+                      () ->
+                          new IllegalArgumentException(
+                              "Failed to find a pair for seemingly pairing dot-bracket symbol: "
+                                  + symbol))));
     }
     throw new IllegalArgumentException(
         "Cannot create base pair from unpaired nucleotide: " + symbol);
@@ -176,7 +197,7 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     assert residues.size() == symbols.size();
 
     for (int i = 0; i < residues.size(); i++) {
-      final DotBracketSymbol symbol = symbols.get(i);
+      final ModifiableDotBracketSymbol symbol = symbols.get(i);
       final PdbResidue residue = residues.get(i);
       final PdbNamedResidueIdentifier residueIdentifier = residue.namedResidueIdentifer();
       symbolToResidue.put(symbol, residueIdentifier);
@@ -203,7 +224,15 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     for (final DotBracketSymbol symbol : symbols) {
       if (symbol.isPairing()) {
         final PdbNamedResidueIdentifier left = getResidueIdentifier(symbol);
-        final PdbNamedResidueIdentifier right = getResidueIdentifier(symbol.getPair());
+        final PdbNamedResidueIdentifier right =
+            getResidueIdentifier(
+                symbol
+                    .pair()
+                    .orElseThrow(
+                        () ->
+                            new IllegalArgumentException(
+                                "Failed to find a pair for seemingly pairing dot-bracket symbol: "
+                                    + symbol)));
         representedSet.add(new BasePair(left, right));
       }
     }
@@ -214,10 +243,10 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
         cbp.setRepresented(true);
 
         if (!cbp.isCanonical()) {
-          final DotBracketSymbol left = getSymbol(basePair.getLeft());
-          final DotBracketSymbol right = getSymbol(basePair.getRight());
-          left.setNonCanonical(true);
-          right.setNonCanonical(true);
+          final ModifiableDotBracketSymbol left = getSymbol(basePair.getLeft());
+          final ModifiableDotBracketSymbol right = getSymbol(basePair.getRight());
+          left.setIsNonCanonical(true);
+          right.setIsNonCanonical(true);
         }
       }
     }

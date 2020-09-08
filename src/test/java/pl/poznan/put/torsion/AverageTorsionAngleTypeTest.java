@@ -77,12 +77,12 @@ public class AverageTorsionAngleTypeTest {
     final TorsionAngleValue zeta =
         RNATorsionAngleType.ZETA.angleTypes().get(0).calculate(residues, 1);
 
-    assertThat(alpha.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-67.45))));
-    assertThat(beta.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-178.39))));
-    assertThat(gamma.getValue(), is(ImmutableAngle.of(FastMath.toRadians(53.83))));
-    assertThat(delta.getValue(), is(ImmutableAngle.of(FastMath.toRadians(83.38))));
-    assertThat(epsilon.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-145.15))));
-    assertThat(zeta.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-76.79))));
+    assertThat(alpha.value(), is(ImmutableAngle.of(FastMath.toRadians(-67.45))));
+    assertThat(beta.value(), is(ImmutableAngle.of(FastMath.toRadians(-178.39))));
+    assertThat(gamma.value(), is(ImmutableAngle.of(FastMath.toRadians(53.83))));
+    assertThat(delta.value(), is(ImmutableAngle.of(FastMath.toRadians(83.38))));
+    assertThat(epsilon.value(), is(ImmutableAngle.of(FastMath.toRadians(-145.15))));
+    assertThat(zeta.value(), is(ImmutableAngle.of(FastMath.toRadians(-76.79))));
 
     final PdbResidue residue = residues.get(1);
     final ResidueInformationProvider provider = residue.residueInformationProvider();
@@ -101,32 +101,32 @@ public class AverageTorsionAngleTypeTest {
 
     assertThat(chiType, is(Chi.PYRIMIDINE_CHI));
     final TorsionAngleValue chi = chiType.calculate(residues, 1);
-    assertThat(chi.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-163.82))));
+    assertThat(chi.value(), is(ImmutableAngle.of(FastMath.toRadians(-163.82))));
 
     final TorsionAngleValue result = averageTorsionAngleType.calculate(residues, 1);
     final Angle expected = ImmutableAngle.of(FastMath.toRadians(-146.33115));
-    assertThat(result.getValue(), is(expected));
+    assertThat(result.value(), is(expected));
   }
 
   @Test
   public final void calculateFromValues() {
     final List<TorsionAngleValue> values =
         Arrays.asList(
-            new TorsionAngleValue(
+            ImmutableTorsionAngleValue.of(
                 RNATorsionAngleType.ALPHA.angleTypes().get(0),
                 ImmutableAngle.of(FastMath.toRadians(60.0))),
-            new TorsionAngleValue(
+            ImmutableTorsionAngleValue.of(
                 RNATorsionAngleType.ALPHA.angleTypes().get(0),
                 ImmutableAngle.of(FastMath.toRadians(25.0))),
-            new TorsionAngleValue(
+            ImmutableTorsionAngleValue.of(
                 RNATorsionAngleType.ALPHA.angleTypes().get(0),
                 ImmutableAngle.of(FastMath.toRadians(-80.0))),
-            new TorsionAngleValue(
+            ImmutableTorsionAngleValue.of(
                 RNATorsionAngleType.ALPHA.angleTypes().get(0),
                 ImmutableAngle.of(FastMath.toRadians(-150.0))));
     final TorsionAngleValue result = averageTorsionAngleType.calculate(values);
 
-    assertThat(result.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-15.363804))));
+    assertThat(result.value(), is(ImmutableAngle.of(FastMath.toRadians(-15.363804))));
   }
 
   @Test

@@ -1,40 +1,19 @@
 package pl.poznan.put.structure.secondary;
 
-import lombok.EqualsAndHashCode;
+import org.immutables.value.Value;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializable {
-  private static final List<Character> OPENING = new ArrayList<>();
-  private static final List<Character> CLOSING = new ArrayList<>();
-
-  static {
-    for (final char c : "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
-      DotBracketSymbol.OPENING.add(c);
-    }
-    for (final char c : ")]}>abcdefghijklmnopqrstuvwxyz".toCharArray()) {
-      DotBracketSymbol.CLOSING.add(c);
-    }
-  }
-
-  @EqualsAndHashCode.Include private final char sequence;
-  @EqualsAndHashCode.Include private final char structure;
-  @EqualsAndHashCode.Include private final int index;
-
-  private DotBracketSymbol previous;
-  private DotBracketSymbol next;
-  private DotBracketSymbol pair;
-  private boolean isNonCanonical;
-
-  public DotBracketSymbol(final char sequence, final char structure, final int index) {
-    super();
-    this.sequence = sequence;
-    this.structure = structure;
-    this.index = index;
-  }
+@Value.Immutable
+@Value.Modifiable
+public abstract class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializable {
+  private static final List<Character> OPENING =
+      "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars().mapToObj(c -> (char) c).collect(Collectors.toList());
+  private static final List<Character> CLOSING =
+      ")]}>abcdefghijklmnopqrstuvwxyz".chars().mapToObj(c -> (char) c).collect(Collectors.toList());
 
   public static boolean isPairing(final char c) {
     return DotBracketSymbol.isOpening(c) || DotBracketSymbol.isClosing(c);
@@ -68,61 +47,29 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
     return 0;
   }
 
-  public final char getSequence() {
-    return sequence;
-  }
+  @Value.Parameter(order = 1)
+  public abstract char sequence();
 
-  public final char getStructure() {
-    return structure;
-  }
+  @Value.Parameter(order = 2)
+  public abstract char structure();
 
-  public final int getIndex() {
-    return index;
-  }
+  @Value.Parameter(order = 3)
+  public abstract int index();
 
-  public final DotBracketSymbol getPrevious() {
-    return previous;
-  }
+  @Value.Auxiliary
+  public abstract Optional<DotBracketSymbol> previous();
 
-  public final void setPrevious(final DotBracketSymbol previous) {
-    this.previous = previous;
-  }
+  @Value.Auxiliary
+  public abstract Optional<DotBracketSymbol> next();
 
-  public final DotBracketSymbol getNext(final int count) {
-    DotBracketSymbol symbol = this;
-    for (int i = 1; (i < count) && (symbol != null); i++) {
-      symbol = symbol.next;
-    }
-    return symbol;
-  }
+  @Value.Auxiliary
+  public abstract Optional<DotBracketSymbol> pair();
 
-  public final DotBracketSymbol getNext() {
-    return next;
-  }
-
-  public final void setNext(final DotBracketSymbol next) {
-    this.next = next;
-  }
-
-  public final DotBracketSymbol getPair() {
-    return pair;
-  }
-
-  public final void setPair(final DotBracketSymbol pair) {
-    this.pair = pair;
-  }
-
-  // required to be named like this by Spring
-  public final Boolean getIsNonCanonical() {
-    return isNonCanonical;
-  }
-
-  public final void setNonCanonical(final boolean isNonCanonical) {
-    this.isNonCanonical = isNonCanonical;
-  }
+  @Value.Auxiliary
+  public abstract Optional<Boolean> isNonCanonical();
 
   public final boolean isMissing() {
-    return structure == '-';
+    return structure() == '-';
   }
 
   public final boolean isPairing() {
@@ -130,28 +77,28 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
   }
 
   public final boolean isOpening() {
-    return DotBracketSymbol.isOpening(structure);
+    return DotBracketSymbol.isOpening(structure());
   }
 
   public final boolean isClosing() {
-    return DotBracketSymbol.isClosing(structure);
+    return DotBracketSymbol.isClosing(structure());
   }
 
   public final int getOrder() {
-    return DotBracketSymbol.getOrder(structure);
+    return DotBracketSymbol.getOrder(structure());
   }
 
   public final char getMatchingBracket() {
-    return DotBracketSymbol.getMatchingBracket(structure);
+    return DotBracketSymbol.getMatchingBracket(structure());
   }
 
   @Override
   public final String toString() {
-    return index + " " + sequence + ' ' + structure;
+    return index() + " " + sequence() + ' ' + structure();
   }
 
   @Override
   public final int compareTo(final DotBracketSymbol t) {
-    return Integer.compare(index, t.index);
+    return Integer.compare(index(), t.index());
   }
 }

@@ -76,14 +76,12 @@ public class TorsionAnglesTest {
         (AtomBasedTorsionAngleType) RNATorsionAngleType.BETA.angleTypes().get(0);
     final TorsionAngleValue angleValue = beta.calculate(a1, a2, a3, a4);
 
-    assertThat(angleValue.getValue().isValid(), is(true));
+    assertThat(angleValue.value().isValid(), is(true));
     assertThat(
-        TorsionAnglesTest.isBelowEpsilon(
-            angleValue.getValue().radians() - TorsionAnglesTest.RADIANS),
+        TorsionAnglesTest.isBelowEpsilon(angleValue.value().radians() - TorsionAnglesTest.RADIANS),
         is(true));
     assertThat(
-        TorsionAnglesTest.isBelowEpsilon(
-            angleValue.getValue().degrees() - TorsionAnglesTest.DEGREES),
+        TorsionAnglesTest.isBelowEpsilon(angleValue.value().degrees() - TorsionAnglesTest.DEGREES),
         is(true));
   }
 }

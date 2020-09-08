@@ -27,7 +27,7 @@ public interface Strand {
   default String getStructure() {
     final List<DotBracketSymbol> symbols = getSymbols();
     return symbols.stream()
-        .map(symbol -> String.valueOf(symbol.getStructure()))
+        .map(symbol -> String.valueOf(symbol.structure()))
         .collect(Collectors.joining());
   }
 
@@ -37,12 +37,12 @@ public interface Strand {
 
   default int getFrom() {
     final List<DotBracketSymbol> symbols = getSymbols();
-    return symbols.isEmpty() ? 1 : symbols.get(0).getIndex();
+    return symbols.isEmpty() ? 1 : symbols.get(0).index();
   }
 
   default int getTo() {
     final List<DotBracketSymbol> symbols = getSymbols();
-    return symbols.isEmpty() ? 1 : symbols.get(symbols.size() - 1).getIndex();
+    return symbols.isEmpty() ? 1 : symbols.get(symbols.size() - 1).index();
   }
 
   default int getPseudoknotOrder() {
@@ -63,7 +63,7 @@ public interface Strand {
     final List<DotBracketSymbol> symbols = getSymbols();
     return IntStream.range(1, (symbols.size() - 1))
         .mapToObj(symbols::get)
-        .noneMatch(symbol -> symbol.isPairing() && symbols.contains(symbol.getPair()));
+        .noneMatch(symbol -> symbol.isPairing() && symbols.contains(symbol.pair()));
   }
 
   default String getRSequence() {
@@ -77,7 +77,7 @@ public interface Strand {
   default String getSequence() {
     final List<DotBracketSymbol> symbols = getSymbols();
     return symbols.stream()
-        .map(symbol -> String.valueOf(symbol.getSequence()))
+        .map(symbol -> String.valueOf(symbol.sequence()))
         .collect(Collectors.joining());
   }
 

@@ -6,6 +6,7 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.TreeBidiMap;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
+import pl.poznan.put.structure.secondary.ModifiableDotBracketSymbol;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +38,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
   private static final Pattern SEQUENCE_PATTERN = Pattern.compile("[ACGUTRYNacgutryn]+");
   private static final Pattern STRUCTURE_PATTERN = Pattern.compile("[-.()\\[\\]{}<>A-Za-z]+");
   final List<Strand> strands = new ArrayList<>();
-  final List<DotBracketSymbol> symbols = new ArrayList<>();
+  final List<ModifiableDotBracketSymbol> symbols = new ArrayList<>();
 
   @EqualsAndHashCode.Include private final String sequence;
   @EqualsAndHashCode.Include private final String structure;
@@ -173,7 +175,7 @@ public class DotBracket implements DotBracketInterface, Serializable {
 
   @Override
   public int getRealSymbolIndex(final DotBracketSymbol symbol) {
-    return symbol.getIndex() + 1;
+    return symbol.index() + 1;
   }
 
   public final int getLength() {
@@ -206,10 +208,10 @@ public class DotBracket implements DotBracketInterface, Serializable {
     final char[] str = structure.toCharArray();
     assert seq.length == str.length;
 
-    DotBracketSymbol current = new DotBracketSymbol(seq[0], str[0], 0);
+    ModifiableDotBracketSymbol current = ModifiableDotBracketSymbol.create(seq[0], str[0], 0);
 
     for (int i = 1; i < seq.length; i++) {
-      final DotBracketSymbol next = new DotBracketSymbol(seq[i], str[i], i);
+      final ModifiableDotBracketSymbol next = ModifiableDotBracketSymbol.create(seq[i], str[i], i);
       current.setNext(next);
       next.setPrevious(current);
       symbols.add(current);
@@ -231,23 +233,23 @@ public class DotBracket implements DotBracketInterface, Serializable {
       parentheses.put(c, Character.toLowerCase(c));
     }
 
-    final Map<Character, Stack<DotBracketSymbol>> parenthesesStacks = new HashMap<>();
+    final Map<Character, Stack<ModifiableDotBracketSymbol>> parenthesesStacks = new HashMap<>();
     for (final char c : parentheses.keySet()) {
       parenthesesStacks.put(c, new Stack<>());
     }
 
-    for (final DotBracketSymbol symbol : symbols) {
-      final char str = symbol.getStructure();
+    for (final ModifiableDotBracketSymbol symbol : symbols) {
+      final char str = symbol.structure();
 
       // catch dot '.'
       if ((str == '.') || (str == '-')) {
-        symbol.setPair(null);
+        symbol.setPair(Optional.empty());
         continue;
       }
 
       // catch opening '(', '[', etc.
       if (parentheses.containsKey(str)) {
-        final Stack<DotBracketSymbol> stack = parenthesesStacks.get(str);
+        final Stack<ModifiableDotBracketSymbol> stack = parenthesesStacks.get(str);
         stack.push(symbol);
         continue;
       }
@@ -255,14 +257,14 @@ public class DotBracket implements DotBracketInterface, Serializable {
       // catch closing ')', ']', etc.
       if (parentheses.containsValue(str)) {
         final char opening = parentheses.getKey(str);
-        final Stack<DotBracketSymbol> stack = parenthesesStacks.get(opening);
+        final Stack<ModifiableDotBracketSymbol> stack = parenthesesStacks.get(opening);
 
         if (stack.empty()) {
           throw new InvalidStructureException(
               "Invalid dot-bracket input:\n" + sequence + '\n' + structure);
         }
 
-        final DotBracketSymbol pair = stack.pop();
+        final ModifiableDotBracketSymbol pair = stack.pop();
         symbol.setPair(pair);
         pair.setPair(symbol);
         continue;

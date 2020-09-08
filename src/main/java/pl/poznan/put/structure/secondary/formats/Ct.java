@@ -156,13 +156,14 @@ public final class Ct implements Serializable {
 
       for (int i = 0, symbolsSize = symbols.size(); i < symbolsSize; i++) {
         final DotBracketSymbol symbol = symbols.get(i);
-        final DotBracketSymbol pair = symbol.getPair();
+        final Optional<DotBracketSymbol> pair = symbol.pair();
 
-        final int index = symbol.getIndex() + 1;
-        final int pairIndex = (pair != null) ? (pair.getIndex() + 1) : 0;
+        final int index = symbol.index() + 1;
+        final int pairIndex =
+            pair.map(dotBracketSymbol -> (dotBracketSymbol.index() + 1)).orElse(0);
         final int after = (i == (symbolsSize - 1)) ? 0 : (i + 2);
         final int original = dotBracket.getRealSymbolIndex(symbol);
-        final char seq = symbol.getSequence();
+        final char seq = symbol.sequence();
 
         entries.add(new ExtendedEntry(index, pairIndex, i, after, original, seq));
       }

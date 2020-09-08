@@ -46,8 +46,8 @@ public class TorsionAngleDelta {
       final TorsionAngleValue modelValue) {
     Angle delta = ImmutableAngle.of(Double.NaN);
     RangeDifference rangeDifference = RangeDifference.INVALID;
-    final Angle target = targetValue.getValue();
-    final Angle model = modelValue.getValue();
+    final Angle target = targetValue.value();
+    final Angle model = modelValue.value();
     final State state;
 
     if (!target.isValid() && !model.isValid()) {

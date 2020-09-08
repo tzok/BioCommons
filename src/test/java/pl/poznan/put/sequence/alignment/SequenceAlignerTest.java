@@ -51,7 +51,7 @@ public class SequenceAlignerTest {
         new SequenceAligner(Arrays.asList(fragment1EHZ, fragment2MIY), true);
     final SequenceAlignment actual = aligner.align();
     final SequenceAlignment expected =
-        new SequenceAlignment(true, SequenceAlignerTest.GLOBAL_ALIGNMENT);
+        ImmutableSequenceAlignment.of(SequenceAlignerTest.GLOBAL_ALIGNMENT, true);
     assertThat(actual, is(expected));
   }
 }

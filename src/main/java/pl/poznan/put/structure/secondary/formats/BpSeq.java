@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
@@ -92,10 +93,10 @@ public class BpSeq implements Serializable {
     final List<Entry> entries = new ArrayList<>();
 
     for (final DotBracketSymbol symbol : db.getSymbols()) {
-      final DotBracketSymbol pair = symbol.getPair();
-      final int index = symbol.getIndex() + 1;
-      final int pairIndex = (pair != null) ? (pair.getIndex() + 1) : 0;
-      final char sequence = symbol.getSequence();
+      final Optional<DotBracketSymbol> pair = symbol.pair();
+      final int index = symbol.index() + 1;
+      final int pairIndex = pair.map(dotBracketSymbol -> (dotBracketSymbol.index() + 1)).orElse(0);
+      final char sequence = symbol.sequence();
 
       entries.add(new Entry(index, pairIndex, sequence));
     }

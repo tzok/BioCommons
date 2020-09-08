@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
+import pl.poznan.put.structure.secondary.ModifiableDotBracketSymbol;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,10 +35,11 @@ public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketF
     for (final Strand strand : strands) {
       final List<DotBracketSymbol> strandSymbols = new ArrayList<>();
       for (final DotBracketSymbol symbol : strand.getSymbols()) {
-        final char sequence = symbol.getSequence();
-        final char structure = symbol.getStructure();
+        final char sequence = symbol.sequence();
+        final char structure = symbol.structure();
         final int index = symbolToIndex.get(symbol);
-        final DotBracketSymbol renumbered = new DotBracketSymbol(sequence, structure, index);
+        final ModifiableDotBracketSymbol renumbered =
+            ModifiableDotBracketSymbol.create(sequence, structure, index);
         strandSymbols.add(renumbered);
         symbols.add(renumbered);
 
@@ -50,8 +52,17 @@ public class CombinedStrandFromPdb extends CombinedStrand implements DotBracketF
     for (final Strand strand : strands) {
       for (final DotBracketSymbol symbol : strand.getSymbols()) {
         if (symbol.isPairing()) {
-          final DotBracketSymbol u = symbols.get(symbolToIndex.get(symbol));
-          final DotBracketSymbol v = symbols.get(symbolToIndex.get(symbol.getPair()));
+          final ModifiableDotBracketSymbol u = symbols.get(symbolToIndex.get(symbol));
+          final ModifiableDotBracketSymbol v =
+              symbols.get(
+                  symbolToIndex.get(
+                      symbol
+                          .pair()
+                          .orElseThrow(
+                              () ->
+                                  new IllegalArgumentException(
+                                      "Paired dot-bracket symbol without `pair` field set: "
+                                          + symbol))));
           u.setPair(v);
           v.setPair(u);
         }

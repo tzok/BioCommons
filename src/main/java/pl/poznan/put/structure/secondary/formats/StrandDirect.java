@@ -50,8 +50,8 @@ public class StrandDirect extends AbstractStrand {
   public final String getDescription() {
     return String.format(
         "%d %d %s %s %s",
-        symbols.get(0).getIndex(),
-        symbols.get(symbols.size() - 1).getIndex(),
+        symbols.get(0).index(),
+        symbols.get(symbols.size() - 1).index(),
         getSequence(),
         getStructure(),
         getRSequence());

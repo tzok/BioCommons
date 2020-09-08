@@ -25,17 +25,17 @@ public interface AtomBasedTorsionAngleType extends TorsionAngleType {
     final List<AtomPair> atomPairs = findAtomPairs(residues, currentIndex);
 
     if (atomPairs.isEmpty()) {
-      return new TorsionAngleValue(this, ImmutableAngle.of(Double.NaN));
+      return ImmutableTorsionAngleValue.of(this, ImmutableAngle.of(Double.NaN));
     }
 
     assert atomPairs.size() == 3;
-    return new TorsionAngleValue(
+    return ImmutableTorsionAngleValue.of(
         this,
         TorsionAnglesHelper.calculateTorsionAngle(
-            atomPairs.get(0).getLeftAtom(),
-            atomPairs.get(1).getLeftAtom(),
-            atomPairs.get(2).getLeftAtom(),
-            atomPairs.get(2).getRightAtom()));
+            atomPairs.get(0).leftAtom(),
+            atomPairs.get(1).leftAtom(),
+            atomPairs.get(2).leftAtom(),
+            atomPairs.get(2).rightAtom()));
   }
 
   @Override
@@ -65,7 +65,8 @@ public interface AtomBasedTorsionAngleType extends TorsionAngleType {
 
   default TorsionAngleValue calculate(
       final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3, final PdbAtomLine a4) {
-    return new TorsionAngleValue(this, TorsionAnglesHelper.calculateTorsionAngle(a1, a2, a3, a4));
+    return ImmutableTorsionAngleValue.of(
+        this, TorsionAnglesHelper.calculateTorsionAngle(a1, a2, a3, a4));
   }
 
   default List<AtomPair> findAtomPairs(
@@ -91,7 +92,7 @@ public interface AtomBasedTorsionAngleType extends TorsionAngleType {
     return IntStream.range(1, 4)
         .mapToObj(
             i ->
-                new AtomPair(
+                ImmutableAtomPair.of(
                     foundResidues.get(i - 1),
                     foundResidues.get(i),
                     foundAtoms.get(i - 1),

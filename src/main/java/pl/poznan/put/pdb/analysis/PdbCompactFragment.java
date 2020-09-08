@@ -4,6 +4,7 @@ import org.immutables.value.Value;
 import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.torsion.ImmutableTorsionAngleValue;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
@@ -33,7 +34,7 @@ public abstract class PdbCompactFragment implements ResidueCollection {
   public Set<TorsionAngleType> commonTorsionAngleTypes() {
     return mapResidueAngleValue().values().stream()
         .flatMap(Collection::stream)
-        .map(TorsionAngleValue::getAngleType)
+        .map(TorsionAngleValue::angleType)
         .collect(Collectors.toSet());
   }
 
@@ -64,14 +65,14 @@ public abstract class PdbCompactFragment implements ResidueCollection {
     for (final TorsionAngleValue angleValue :
         mapResidueAngleValue().get(chainNumberICode.toResidueIdentifer())) {
       for (final TorsionAngleType angleType : angleTypes) {
-        if (Objects.equals(angleType, angleValue.getAngleType())) {
+        if (Objects.equals(angleType, angleValue.angleType())) {
           return angleValue;
         }
       }
     }
 
     final TorsionAngleType first = angleTypes.iterator().next();
-    return new TorsionAngleValue(first, ImmutableAngle.of(Double.NaN));
+    return ImmutableTorsionAngleValue.of(first, ImmutableAngle.of(Double.NaN));
   }
 
   public final MoleculeType moleculeType() {

@@ -1,6 +1,5 @@
 package pl.poznan.put.sequence.alignment;
 
-import lombok.extern.slf4j.Slf4j;
 import org.biojava.nbio.alignment.Alignments;
 import org.biojava.nbio.core.alignment.matrices.SimpleSubstitutionMatrix;
 import org.biojava.nbio.core.alignment.matrices.SubstitutionMatrixHelper;
@@ -15,6 +14,8 @@ import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
 import org.biojava.nbio.core.sequence.compound.RNACompoundSet;
 import org.biojava.nbio.core.sequence.template.AbstractCompound;
 import org.biojava.nbio.core.sequence.template.AbstractSequence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbCompactFragment;
 import pl.poznan.put.utility.ResourcesHelper;
@@ -26,8 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 public final class SequenceAligner {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SequenceAligner.class);
+
   private final List<PdbCompactFragment> fragments;
   private final boolean isGlobal;
   private final MoleculeType moleculeType;
@@ -56,7 +58,7 @@ public final class SequenceAligner {
       return new SimpleSubstitutionMatrix<>(
           RNACompoundSet.getRNACompoundSet(), matrixInput, "NUC44");
     } catch (final IOException e) {
-      SequenceAligner.log.error("Failed to load substitution matrix for RNA", e);
+      SequenceAligner.LOGGER.error("Failed to load substitution matrix for RNA", e);
     }
 
     // warning, the default will not work with MSA for RNAs!
@@ -70,7 +72,7 @@ public final class SequenceAligner {
   @SuppressWarnings("rawtypes")
   public SequenceAlignment align() throws CompoundNotFoundException {
     if (fragments.isEmpty()) {
-      return new SequenceAlignment(isGlobal, "");
+      return ImmutableSequenceAlignment.of("", isGlobal);
     }
 
     final List<AbstractSequence> sequences = new ArrayList<>();
@@ -144,6 +146,6 @@ public final class SequenceAligner {
     }
 
     final String alignment = builder.toString();
-    return new SequenceAlignment(isGlobal, alignment);
+    return ImmutableSequenceAlignment.of(alignment, isGlobal);
   }
 }

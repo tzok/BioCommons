@@ -31,13 +31,13 @@ public abstract class AverageTorsionAngleType implements TorsionAngleType, Maste
       for (final MasterTorsionAngleType masterType : consideredAngles()) {
         if (masterType.angleTypes().contains(type)) {
           final TorsionAngleValue angleValue = type.calculate(residues, currentIndex);
-          angles.add(angleValue.getValue());
+          angles.add(angleValue.value());
         }
       }
     }
 
     final AngleSample angleSample = ImmutableAngleSample.of(angles);
-    return new TorsionAngleValue(this, angleSample.meanDirection());
+    return ImmutableTorsionAngleValue.of(this, angleSample.meanDirection());
   }
 
   @Value.Parameter(order = 2)
@@ -94,16 +94,16 @@ public abstract class AverageTorsionAngleType implements TorsionAngleType, Maste
 
     for (final MasterTorsionAngleType masterType : consideredAngles()) {
       for (final TorsionAngleValue angleValue : values) {
-        if (masterType.angleTypes().contains(angleValue.getAngleType())) {
-          if (angleValue.getValue().isValid()) {
-            angles.add(angleValue.getValue());
+        if (masterType.angleTypes().contains(angleValue.angleType())) {
+          if (angleValue.value().isValid()) {
+            angles.add(angleValue.value());
           }
         }
       }
     }
 
     final AngleSample angleSample = ImmutableAngleSample.of(angles);
-    return new TorsionAngleValue(this, angleSample.meanDirection());
+    return ImmutableTorsionAngleValue.of(this, angleSample.meanDirection());
   }
 
   @Override

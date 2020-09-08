@@ -2,6 +2,7 @@ package pl.poznan.put.structure.secondary.formats;
 
 import org.junit.Test;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
+import pl.poznan.put.structure.secondary.ImmutableDotBracketSymbol;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,11 +27,15 @@ public class CombinedStrandTest {
     final Strand strandFirst =
         new StrandDirect(
             "A",
-            Arrays.asList(new DotBracketSymbol('A', '.', 1), new DotBracketSymbol('A', '-', 2)));
+            Arrays.asList(
+                ImmutableDotBracketSymbol.of('A', '.', 1),
+                ImmutableDotBracketSymbol.of('A', '-', 2)));
     final Strand strandSecond =
         new StrandDirect(
             "B",
-            Arrays.asList(new DotBracketSymbol('A', '-', 1), new DotBracketSymbol('B', '.', 2)));
+            Arrays.asList(
+                ImmutableDotBracketSymbol.of('A', '-', 1),
+                ImmutableDotBracketSymbol.of('B', '.', 2)));
 
     // each strand has 0 internal missing residues
     final CombinedStrand combinedFirst = new CombinedStrand(Collections.singletonList(strandFirst));
