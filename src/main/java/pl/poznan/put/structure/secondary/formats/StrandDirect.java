@@ -47,11 +47,6 @@ public class StrandDirect extends AbstractStrand {
   }
 
   @Override
-  public final int getLength() {
-    return symbols.size();
-  }
-
-  @Override
   public final String getDescription() {
     return String.format(
         "%d %d %s %s %s",
@@ -60,5 +55,10 @@ public class StrandDirect extends AbstractStrand {
         getSequence(),
         getStructure(),
         getRSequence());
+  }
+
+  @Override
+  public final int getLength() {
+    return symbols.size();
   }
 }

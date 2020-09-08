@@ -39,7 +39,7 @@ public final class SequenceAligner {
     this.fragments = new ArrayList<>(fragments);
     this.isGlobal = isGlobal;
 
-    moleculeType = fragments.get(0).getMoleculeType();
+    moleculeType = fragments.get(0).moleculeType();
     type =
         isGlobal
             ? Alignments.PairwiseSequenceScorerType.GLOBAL
@@ -77,7 +77,7 @@ public final class SequenceAligner {
     final Map<AbstractSequence, PdbCompactFragment> mapSequenceName = new HashMap<>();
 
     for (final PdbCompactFragment fragment : fragments) {
-      final String fragmentSequence = fragment.toSequence();
+      final String fragmentSequence = fragment.asSequence();
       final AbstractSequence sequence;
 
       sequence =

@@ -54,6 +54,20 @@ public final class RNAInteractionType implements Serializable, Comparable<RNAInt
     this.description = description;
   }
 
+  private static int getNucleotideFragmentInternalValue(final RNAResidueComponentType type) {
+    switch (type) {
+      case BASE:
+        return 1;
+      case RIBOSE:
+        return 10;
+      case PHOSPHATE:
+        return 100;
+      case UNKNOWN:
+      default:
+        return 1000;
+    }
+  }
+
   public RNAResidueComponentType getLeft() {
     return left;
   }
@@ -78,6 +92,10 @@ public final class RNAInteractionType implements Serializable, Comparable<RNAInt
     return Integer.compare(mine, theirs);
   }
 
+  public RNAInteractionType invert() {
+    return new RNAInteractionType(right, left, isPairing);
+  }
+
   /*
    * The internal value ranks fragments like this: base, sugar, phosphate and
    * rest. This allows to sort interactions in ascending order. The top will
@@ -96,23 +114,5 @@ public final class RNAInteractionType implements Serializable, Comparable<RNAInt
       value = -value;
     }
     return value;
-  }
-
-  private static int getNucleotideFragmentInternalValue(final RNAResidueComponentType type) {
-    switch (type) {
-      case BASE:
-        return 1;
-      case RIBOSE:
-        return 10;
-      case PHOSPHATE:
-        return 100;
-      case UNKNOWN:
-      default:
-        return 1000;
-    }
-  }
-
-  public RNAInteractionType invert() {
-    return new RNAInteractionType(right, left, isPairing);
   }
 }

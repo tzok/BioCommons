@@ -1,8 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
 import org.immutables.value.Value;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
@@ -13,7 +11,6 @@ import pl.poznan.put.torsion.TorsionAngleValue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,35 +19,27 @@ import java.util.stream.Collectors;
 
 @Value.Immutable
 public abstract class PdbCompactFragment implements ResidueCollection {
-  private static final Logger LOGGER = LoggerFactory.getLogger(PdbCompactFragment.class);
-
-  public final String toPdb() {
-    return residues().stream().map(PdbResidue::toPdb).collect(Collectors.joining());
-  }
+  @Value.Parameter(order = 1)
+  public abstract String name();
 
   @Value.Parameter(order = 2)
   public abstract List<PdbResidue> residues();
 
-  public final String toSequence() {
+  public final String asSequence() {
     return residues().stream()
         .map(residue -> String.valueOf(residue.oneLetterName()))
         .collect(Collectors.joining());
   }
 
-  public final PdbCompactFragment shift(final int shift, final int size) {
+  public final PdbCompactFragment shifted(final int shift, final int size) {
     return ImmutablePdbCompactFragment.of(name(), residues().subList(shift, shift + size));
   }
 
-  @Value.Parameter(order = 1)
-  public abstract String name();
-
   public final Set<TorsionAngleType> commonTorsionAngleTypes() {
-    final Set<TorsionAngleType> set = new LinkedHashSet<>();
-    mapResidueAngleValue().values().stream()
+    return mapResidueAngleValue().values().stream()
         .flatMap(Collection::stream)
         .map(TorsionAngleValue::getAngleType)
-        .forEach(set::add);
-    return set;
+        .collect(Collectors.toSet());
   }
 
   @Value.Lazy
@@ -73,7 +62,7 @@ public abstract class PdbCompactFragment implements ResidueCollection {
     return mapResidueAngleValue;
   }
 
-  public final TorsionAngleValue getTorsionAngleValue(
+  public final TorsionAngleValue torsionAngleValue(
       final ChainNumberICode chainNumberICode, final MasterTorsionAngleType masterType) {
     final Collection<? extends TorsionAngleType> angleTypes = masterType.getAngleTypes();
 
@@ -90,7 +79,7 @@ public abstract class PdbCompactFragment implements ResidueCollection {
     return new TorsionAngleValue(first, ImmutableAngle.of(Double.NaN));
   }
 
-  public final MoleculeType getMoleculeType() {
+  public final MoleculeType moleculeType() {
     // in compact fragment, all residues have the same molecule type
     return residues().get(0).getMoleculeType();
   }

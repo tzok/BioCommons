@@ -57,16 +57,6 @@ public class StrandView extends AbstractStrand {
   }
 
   @Override
-  public final int getFrom() {
-    return from;
-  }
-
-  @Override
-  public final int getTo() {
-    return to;
-  }
-
-  @Override
   public final String getDescription() {
     if (parent instanceof DotBracketFromPdb) {
       final DotBracketFromPdb fromPdb = (DotBracketFromPdb) parent;
@@ -82,5 +72,15 @@ public class StrandView extends AbstractStrand {
 
     return String.format(
         "%d %d %s %s %s", from + 1, to, getSequence(), getStructure(), getRSequence());
+  }
+
+  @Override
+  public final int getFrom() {
+    return from;
+  }
+
+  @Override
+  public final int getTo() {
+    return to;
   }
 }

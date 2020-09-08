@@ -171,42 +171,6 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
     }
   }
 
-  @Override
-  public final String toString() {
-    if (alternateLocation().length() != 1) {
-      PdbAtomLine.LOGGER.error(
-          "Field 'alternateLocation' is longer than 1 char. Only first letter will be taken");
-    }
-    if (chainIdentifier().length() != 1) {
-      PdbAtomLine.LOGGER.error(
-          "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
-    }
-    if (insertionCode().length() != 1) {
-      PdbAtomLine.LOGGER.error(
-          "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
-    }
-
-    final String format =
-        (atomName().length() == 4) ? PdbAtomLine.FORMAT_ATOM_4_CHARACTER : PdbAtomLine.FORMAT;
-    return String.format(
-        Locale.US,
-        format,
-        serialNumber(),
-        atomName(),
-        alternateLocation().charAt(0),
-        residueName(),
-        chainIdentifier().charAt(0),
-        residueNumber(),
-        insertionCode().charAt(0),
-        x(),
-        y(),
-        z(),
-        occupancy(),
-        temperatureFactor(),
-        elementSymbol(),
-        charge());
-  }
-
   /** @return The value of the {@code serialNumber} attribute */
   @Value.Parameter(order = 1)
   @Value.Auxiliary
@@ -271,6 +235,42 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
   @Value.Parameter(order = 14)
   @Value.Auxiliary
   public abstract String charge();
+
+  @Override
+  public final String toString() {
+    if (alternateLocation().length() != 1) {
+      PdbAtomLine.LOGGER.error(
+          "Field 'alternateLocation' is longer than 1 char. Only first letter will be taken");
+    }
+    if (chainIdentifier().length() != 1) {
+      PdbAtomLine.LOGGER.error(
+          "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
+    }
+    if (insertionCode().length() != 1) {
+      PdbAtomLine.LOGGER.error(
+          "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
+    }
+
+    final String format =
+        (atomName().length() == 4) ? PdbAtomLine.FORMAT_ATOM_4_CHARACTER : PdbAtomLine.FORMAT;
+    return String.format(
+        Locale.US,
+        format,
+        serialNumber(),
+        atomName(),
+        alternateLocation().charAt(0),
+        residueName(),
+        chainIdentifier().charAt(0),
+        residueNumber(),
+        insertionCode().charAt(0),
+        x(),
+        y(),
+        z(),
+        occupancy(),
+        temperatureFactor(),
+        elementSymbol(),
+        charge());
+  }
 
   /** @return An instance of {@link AtomName} enum that matches this object. */
   public final AtomName detectAtomName() {

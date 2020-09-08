@@ -10,18 +10,6 @@ public enum MoleculeType {
   PROTEIN,
   UNKNOWN;
 
-  public boolean areConnected(final PdbResidue r1, final PdbResidue r2) {
-    switch (this) {
-      case RNA:
-        return MoleculeType.areNucleotidesConnected(r1, r2);
-      case PROTEIN:
-        return MoleculeType.areAminoAcidsConnected(r1, r2);
-      case UNKNOWN:
-      default:
-        return false;
-    }
-  }
-
   private static boolean areNucleotidesConnected(final PdbResidue r1, final PdbResidue r2) {
     if (!r1.hasAtom(AtomName.O3p) || !r2.hasAtom(AtomName.P)) {
       return false;
@@ -40,5 +28,17 @@ public enum MoleculeType {
     final PdbAtomLine c = r1.findAtom(AtomName.C);
     final PdbAtomLine n = r2.findAtom(AtomName.N);
     return c.distanceTo(n) <= (Bond.length(AtomType.C, AtomType.N).max() * 1.5);
+  }
+
+  public boolean areConnected(final PdbResidue r1, final PdbResidue r2) {
+    switch (this) {
+      case RNA:
+        return MoleculeType.areNucleotidesConnected(r1, r2);
+      case PROTEIN:
+        return MoleculeType.areAminoAcidsConnected(r1, r2);
+      case UNKNOWN:
+      default:
+        return false;
+    }
   }
 }

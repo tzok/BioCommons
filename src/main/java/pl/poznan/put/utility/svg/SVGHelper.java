@@ -113,35 +113,6 @@ public final class SVGHelper {
     }
   }
 
-  private static byte[] exportInternal(final SVGDocument svgDocument, final Format format)
-      throws IOException {
-    return SVGHelper.exportInternal(svgDocument, format, Collections.emptyMap());
-  }
-
-  private static byte[] exportInternal(
-      final SVGDocument svgDocument,
-      final Format format,
-      final Map<TranscodingHints.Key, Object> transcodingHints)
-      throws IOException {
-    try (final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        final Writer writer = new OutputStreamWriter(stream, Charset.defaultCharset())) {
-
-      final Transcoder transcoder = format.getTranscoder();
-      for (final Map.Entry<TranscodingHints.Key, Object> entry : transcodingHints.entrySet()) {
-        transcoder.addTranscodingHint(entry.getKey(), entry.getValue());
-      }
-
-      final TranscoderInput input = new TranscoderInput(svgDocument);
-      final TranscoderOutput output =
-          (format == Format.SVG) ? new TranscoderOutput(writer) : new TranscoderOutput(stream);
-
-      transcoder.transcode(input, output);
-      return stream.toByteArray();
-    } catch (final TranscoderException e) {
-      throw new IOException("Failed to save SVG as image", e);
-    }
-  }
-
   public static SVGDocument merge(final SVGDocument... svgs) {
     return SVGHelper.merge(Arrays.asList(svgs));
   }
@@ -228,6 +199,35 @@ public final class SVGHelper {
     final SVGSVGElement rootElement = document.getRootElement();
     final String attribute = rootElement.getAttribute(SVGConstants.SVG_HEIGHT_ATTRIBUTE);
     return Double.parseDouble(attribute);
+  }
+
+  private static byte[] exportInternal(final SVGDocument svgDocument, final Format format)
+      throws IOException {
+    return SVGHelper.exportInternal(svgDocument, format, Collections.emptyMap());
+  }
+
+  private static byte[] exportInternal(
+      final SVGDocument svgDocument,
+      final Format format,
+      final Map<TranscodingHints.Key, Object> transcodingHints)
+      throws IOException {
+    try (final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        final Writer writer = new OutputStreamWriter(stream, Charset.defaultCharset())) {
+
+      final Transcoder transcoder = format.getTranscoder();
+      for (final Map.Entry<TranscodingHints.Key, Object> entry : transcodingHints.entrySet()) {
+        transcoder.addTranscodingHint(entry.getKey(), entry.getValue());
+      }
+
+      final TranscoderInput input = new TranscoderInput(svgDocument);
+      final TranscoderOutput output =
+          (format == Format.SVG) ? new TranscoderOutput(writer) : new TranscoderOutput(stream);
+
+      transcoder.transcode(input, output);
+      return stream.toByteArray();
+    } catch (final TranscoderException e) {
+      throw new IOException("Failed to save SVG as image", e);
+    }
   }
 
   private static class SVGNamespace implements NamespaceContext {

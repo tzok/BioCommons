@@ -120,6 +120,29 @@ public abstract class PdbRemark465Line implements ChainNumberICode, Serializable
     }
   }
 
+  /** @return The value of the {@code modelNumber} attribute */
+  @Value.Parameter(order = 1)
+  public abstract int modelNumber();
+
+  /** @return The value of the {@code residueName} attribute */
+  @Value.Parameter(order = 2)
+  public abstract String residueName();
+
+  /** @return The value of the {@code chainIdentifier} attribute */
+  @Override
+  @Value.Parameter(order = 3)
+  public abstract String chainIdentifier();
+
+  /** @return The value of the {@code residueNumber} attribute */
+  @Override
+  @Value.Parameter(order = 4)
+  public abstract int residueNumber();
+
+  /** @return The value of the {@code insertionCode} attribute */
+  @Override
+  @Value.Parameter(order = 5)
+  public abstract String insertionCode();
+
   @Override
   public final String toString() {
     if (chainIdentifier().length() != 1) {
@@ -144,29 +167,6 @@ public abstract class PdbRemark465Line implements ChainNumberICode, Serializable
         residueNumber(),
         icode);
   }
-
-  /** @return The value of the {@code modelNumber} attribute */
-  @Value.Parameter(order = 1)
-  public abstract int modelNumber();
-
-  /** @return The value of the {@code residueName} attribute */
-  @Value.Parameter(order = 2)
-  public abstract String residueName();
-
-  /** @return The value of the {@code chainIdentifier} attribute */
-  @Override
-  @Value.Parameter(order = 3)
-  public abstract String chainIdentifier();
-
-  /** @return The value of the {@code residueNumber} attribute */
-  @Override
-  @Value.Parameter(order = 4)
-  public abstract int residueNumber();
-
-  /** @return The value of the {@code insertionCode} attribute */
-  @Override
-  @Value.Parameter(order = 5)
-  public abstract String insertionCode();
 
   public final PdbResidue toResidue() {
     return ImmutablePdbResidue.of(

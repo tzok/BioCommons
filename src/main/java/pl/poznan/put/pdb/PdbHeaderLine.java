@@ -55,16 +55,6 @@ public abstract class PdbHeaderLine implements Serializable {
     }
   }
 
-  @Override
-  public final String toString() {
-    return String.format(
-        Locale.US,
-        PdbHeaderLine.FORMAT,
-        classification(),
-        PdbHeaderLine.DATE_FORMAT.format(depositionDate()).toUpperCase(Locale.US),
-        idCode());
-  }
-
   /** @return The value of the {@code classification} attribute */
   @Value.Parameter(order = 1)
   public abstract String classification();
@@ -76,4 +66,14 @@ public abstract class PdbHeaderLine implements Serializable {
   /** @return The value of the {@code idCode} attribute */
   @Value.Parameter(order = 3)
   public abstract String idCode();
+
+  @Override
+  public final String toString() {
+    return String.format(
+        Locale.US,
+        PdbHeaderLine.FORMAT,
+        classification(),
+        PdbHeaderLine.DATE_FORMAT.format(depositionDate()).toUpperCase(Locale.US),
+        idCode());
+  }
 }

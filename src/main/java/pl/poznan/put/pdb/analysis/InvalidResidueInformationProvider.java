@@ -5,11 +5,11 @@ import pl.poznan.put.torsion.TorsionAngleType;
 import java.util.Collections;
 import java.util.List;
 
-public class InvalidResidueInformationProvider implements ResidueInformationProvider {
+class InvalidResidueInformationProvider implements ResidueInformationProvider {
   private final MoleculeType moleculeType;
   private final String pdbName;
 
-  public InvalidResidueInformationProvider(final String pdbName) {
+  InvalidResidueInformationProvider(final String pdbName) {
     super();
     moleculeType = MoleculeType.UNKNOWN;
     this.pdbName = pdbName;

@@ -37,50 +37,6 @@ public class BpSeq implements Serializable {
     validate();
   }
 
-  /*
-   * Check if all pairs match.
-   */
-  private void validate() {
-    final Map<Integer, Integer> map = new HashMap<>();
-
-    for (final Entry e : entries) {
-      if (e.getIndex() == e.getPair()) {
-        throw new InvalidStructureException(
-            String.format(
-                "Invalid line in BPSEQ data, a residue cannot be " + "paired with itself! Line: %s",
-                e));
-      }
-
-      map.put(e.getIndex(), e.getPair());
-    }
-
-    int previous = 0;
-
-    for (final Entry e : entries) {
-      if ((e.getIndex() - previous) != 1) {
-        throw new InvalidStructureException(
-            String.format(
-                "Inconsistent numbering in BPSEQ format: previous=%d," + " current=%d",
-                previous, e.getIndex()));
-      }
-      previous = e.getIndex();
-
-      final int pair = map.get(e.getIndex());
-      if (pair != 0) {
-        if (!map.containsKey(pair)) {
-          throw new InvalidStructureException(
-              String.format("Inconsistency in BPSEQ format: (%d -> %d)", e.getIndex(), pair));
-        }
-        if (map.get(pair) != e.getIndex()) {
-          throw new InvalidStructureException(
-              String.format(
-                  "Inconsistency in BPSEQ format: (%d -> %d) and " + "(%d -> %d)",
-                  e.getIndex(), pair, pair, map.get(pair)));
-        }
-      }
-    }
-  }
-
   public static BpSeq fromString(final String data) {
     final List<Entry> entries = new ArrayList<>();
 
@@ -265,6 +221,50 @@ public class BpSeq implements Serializable {
   @Override
   public final String toString() {
     return entries.stream().map(e -> e + System.lineSeparator()).collect(Collectors.joining());
+  }
+
+  /*
+   * Check if all pairs match.
+   */
+  private void validate() {
+    final Map<Integer, Integer> map = new HashMap<>();
+
+    for (final Entry e : entries) {
+      if (e.getIndex() == e.getPair()) {
+        throw new InvalidStructureException(
+            String.format(
+                "Invalid line in BPSEQ data, a residue cannot be " + "paired with itself! Line: %s",
+                e));
+      }
+
+      map.put(e.getIndex(), e.getPair());
+    }
+
+    int previous = 0;
+
+    for (final Entry e : entries) {
+      if ((e.getIndex() - previous) != 1) {
+        throw new InvalidStructureException(
+            String.format(
+                "Inconsistent numbering in BPSEQ format: previous=%d," + " current=%d",
+                previous, e.getIndex()));
+      }
+      previous = e.getIndex();
+
+      final int pair = map.get(e.getIndex());
+      if (pair != 0) {
+        if (!map.containsKey(pair)) {
+          throw new InvalidStructureException(
+              String.format("Inconsistency in BPSEQ format: (%d -> %d)", e.getIndex(), pair));
+        }
+        if (map.get(pair) != e.getIndex()) {
+          throw new InvalidStructureException(
+              String.format(
+                  "Inconsistency in BPSEQ format: (%d -> %d) and " + "(%d -> %d)",
+                  e.getIndex(), pair, pair, map.get(pair)));
+        }
+      }
+    }
   }
 
   @Data

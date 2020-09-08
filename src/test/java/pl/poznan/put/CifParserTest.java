@@ -5,7 +5,6 @@ import pl.poznan.put.pdb.ExperimentalTechnique;
 import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbChain;
-import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.utility.ResourcesHelper;
@@ -19,8 +18,7 @@ public class CifParserTest {
   @Test
   public final void test100D() throws Exception {
     final String cif100D = ResourcesHelper.loadResource("100D.cif");
-    final CifParser parser = new CifParser();
-    final List<CifModel> models = parser.parse(cif100D);
+    final List<CifModel> models = CifParser.parse(cif100D);
     assertThat(models.size(), is(1));
 
     final StructureModel model = models.get(0);
@@ -37,8 +35,7 @@ public class CifParserTest {
   @Test
   public final void test148L() throws Exception {
     final String cif148L = ResourcesHelper.loadResource("148L.cif");
-    final CifParser parser = new CifParser();
-    final List<CifModel> models = parser.parse(cif148L);
+    final List<CifModel> models = CifParser.parse(cif148L);
     assertThat(models.size(), is(1));
     final StructureModel model = models.get(0);
 
@@ -59,8 +56,7 @@ public class CifParserTest {
   @Test
   public final void test5A93() throws Exception {
     final String cif5A93 = ResourcesHelper.loadResource("5A93.cif");
-    final CifParser parser = new CifParser();
-    final List<CifModel> models = parser.parse(cif5A93);
+    final List<CifModel> models = CifParser.parse(cif5A93);
     assertThat(models.size(), is(1));
 
     final StructureModel model = models.get(0);

@@ -48,6 +48,26 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
     return DotBracketSymbol.CLOSING.contains(c);
   }
 
+  public static char getMatchingBracket(final char c) {
+    if (DotBracketSymbol.isOpening(c)) {
+      return DotBracketSymbol.CLOSING.get(DotBracketSymbol.getOrder(c));
+    }
+    if (DotBracketSymbol.isClosing(c)) {
+      return DotBracketSymbol.OPENING.get(DotBracketSymbol.getOrder(c));
+    }
+    return '.';
+  }
+
+  private static int getOrder(final char c) {
+    if (DotBracketSymbol.isOpening(c)) {
+      return DotBracketSymbol.OPENING.indexOf(c);
+    }
+    if (DotBracketSymbol.isClosing(c)) {
+      return DotBracketSymbol.CLOSING.indexOf(c);
+    }
+    return 0;
+  }
+
   public final char getSequence() {
     return sequence;
   }
@@ -121,28 +141,8 @@ public class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializa
     return DotBracketSymbol.getOrder(structure);
   }
 
-  private static int getOrder(final char c) {
-    if (DotBracketSymbol.isOpening(c)) {
-      return DotBracketSymbol.OPENING.indexOf(c);
-    }
-    if (DotBracketSymbol.isClosing(c)) {
-      return DotBracketSymbol.CLOSING.indexOf(c);
-    }
-    return 0;
-  }
-
   public final char getMatchingBracket() {
     return DotBracketSymbol.getMatchingBracket(structure);
-  }
-
-  public static char getMatchingBracket(final char c) {
-    if (DotBracketSymbol.isOpening(c)) {
-      return DotBracketSymbol.CLOSING.get(DotBracketSymbol.getOrder(c));
-    }
-    if (DotBracketSymbol.isClosing(c)) {
-      return DotBracketSymbol.OPENING.get(DotBracketSymbol.getOrder(c));
-    }
-    return '.';
   }
 
   @Override

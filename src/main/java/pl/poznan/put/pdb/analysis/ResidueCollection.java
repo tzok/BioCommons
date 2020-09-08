@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public interface ResidueCollection {
+  List<PdbResidue> residues();
+
   default List<String> findBondLengthViolations() {
     final Set<AtomBasedTorsionAngleType> angleTypes =
         residues().stream()
@@ -50,8 +52,6 @@ public interface ResidueCollection {
         .filter(StringUtils::isNotBlank)
         .collect(Collectors.toList());
   }
-
-  List<PdbResidue> residues();
 
   default PdbResidue findResidue(
       final String chainIdentifier, final int residueNumber, final String insertionCode) {

@@ -46,11 +46,6 @@ public abstract class PdbTitleLine implements Serializable {
     return ImmutablePdbTitleLine.of(continuation, title);
   }
 
-  @Override
-  public String toString() {
-    return String.format(Locale.US, PdbTitleLine.FORMAT, continuation(), title());
-  }
-
   /** @return The value of the {@code continuation} attribute */
   @Value.Parameter(order = 1)
   public abstract String continuation();
@@ -58,4 +53,9 @@ public abstract class PdbTitleLine implements Serializable {
   /** @return The value of the {@code title} attribute */
   @Value.Parameter(order = 2)
   public abstract String title();
+
+  @Override
+  public String toString() {
+    return String.format(Locale.US, PdbTitleLine.FORMAT, continuation(), title());
+  }
 }

@@ -35,6 +35,8 @@ public interface StructureModel extends ResidueCollection {
 
   Set<PdbResidueIdentifier> chainTerminatedAfter();
 
+  StructureModel filteredNewInstance(MoleculeType moleculeType);
+
   default String idCode() {
     return header().idCode();
   }
@@ -51,8 +53,6 @@ public interface StructureModel extends ResidueCollection {
             () ->
                 new IllegalArgumentException("Failed to find chain containing residue: " + query));
   }
-
-  StructureModel filteredNewInstance(MoleculeType moleculeType);
 
   default List<PdbRemark465Line> filteredMissing(final MoleculeType moleculeType) {
     return residues().stream()

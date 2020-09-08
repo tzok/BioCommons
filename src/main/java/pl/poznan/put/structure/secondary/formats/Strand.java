@@ -14,14 +14,22 @@ public interface Strand {
 
   TerminalMissing getMissingEnd();
 
+  List<DotBracketSymbol> getSymbols();
+
+  /**
+   * Prepare description of strand in RNAComposer format i.e. 5 elements: index-from, index-to,
+   * sequence, structure, RY-sequence.
+   *
+   * @return A description of strand in RNAComposer format.
+   */
+  String getDescription();
+
   default String getStructure() {
     final List<DotBracketSymbol> symbols = getSymbols();
     return symbols.stream()
         .map(symbol -> String.valueOf(symbol.getStructure()))
         .collect(Collectors.joining());
   }
-
-  List<DotBracketSymbol> getSymbols();
 
   default int getLength() {
     return getTo() - getFrom();
@@ -57,14 +65,6 @@ public interface Strand {
         .mapToObj(symbols::get)
         .noneMatch(symbol -> symbol.isPairing() && symbols.contains(symbol.getPair()));
   }
-
-  /**
-   * Prepare description of strand in RNAComposer format i.e. 5 elements: index-from, index-to,
-   * sequence, structure, RY-sequence.
-   *
-   * @return A description of strand in RNAComposer format.
-   */
-  String getDescription();
 
   default String getRSequence() {
     final char[] cs = getSequence().toCharArray();

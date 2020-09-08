@@ -138,6 +138,53 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     return map.get(map.lastKey());
   }
 
+  private static ConflictMap simplify(final List<Region> regions, final ConflictMap conflictMap) {
+    ConflictMap result = conflictMap;
+    final Collection<Region> toRemove = new ArrayList<>();
+    final Collection<Region> toAdd = new ArrayList<>();
+
+    do {
+      final List<Region> conflicted = new ArrayList<>(result.getRegionsWithConflicts());
+      toRemove.clear();
+      toAdd.clear();
+
+      for (int i = 0; i < conflicted.size(); i++) {
+        final Region ri = conflicted.get(i);
+        final int riBegin = ri.getBegin();
+        final int riEnd = ri.getEnd();
+
+        for (int j = i + 1; j < conflicted.size(); j++) {
+          final Region rj = conflicted.get(j);
+          final int rjBegin = rj.getBegin();
+          final int rjEnd = rj.getEnd();
+
+          final boolean b1 = (riBegin <= rjBegin) && (riEnd >= rjEnd);
+          final boolean b2 = (rjBegin <= riBegin) && (rjEnd >= riEnd);
+          if ((b1 || b2)
+              && CollectionUtils.isEqualCollection(
+                  result.conflictsWith(ri), result.conflictsWith(rj))) {
+            toRemove.add(ri);
+            toRemove.add(rj);
+            toAdd.add(Region.merge(ri, rj));
+            break;
+          }
+        }
+
+        if (!toRemove.isEmpty()) {
+          break;
+        }
+      }
+
+      if (!toRemove.isEmpty()) {
+        regions.removeAll(toRemove);
+        regions.addAll(toAdd);
+        result = new ConflictMap(regions);
+      }
+    } while (!toRemove.isEmpty());
+
+    return result;
+  }
+
   @Override
   public final List<BpSeq> findPseudoknots(final BpSeq bpSeq) {
     final List<Region> regions = Region.createRegions(bpSeq);
@@ -196,52 +243,5 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     }
 
     return bpSeqs;
-  }
-
-  private static ConflictMap simplify(final List<Region> regions, final ConflictMap conflictMap) {
-    ConflictMap result = conflictMap;
-    final Collection<Region> toRemove = new ArrayList<>();
-    final Collection<Region> toAdd = new ArrayList<>();
-
-    do {
-      final List<Region> conflicted = new ArrayList<>(result.getRegionsWithConflicts());
-      toRemove.clear();
-      toAdd.clear();
-
-      for (int i = 0; i < conflicted.size(); i++) {
-        final Region ri = conflicted.get(i);
-        final int riBegin = ri.getBegin();
-        final int riEnd = ri.getEnd();
-
-        for (int j = i + 1; j < conflicted.size(); j++) {
-          final Region rj = conflicted.get(j);
-          final int rjBegin = rj.getBegin();
-          final int rjEnd = rj.getEnd();
-
-          final boolean b1 = (riBegin <= rjBegin) && (riEnd >= rjEnd);
-          final boolean b2 = (rjBegin <= riBegin) && (rjEnd >= riEnd);
-          if ((b1 || b2)
-              && CollectionUtils.isEqualCollection(
-                  result.conflictsWith(ri), result.conflictsWith(rj))) {
-            toRemove.add(ri);
-            toRemove.add(rj);
-            toAdd.add(Region.merge(ri, rj));
-            break;
-          }
-        }
-
-        if (!toRemove.isEmpty()) {
-          break;
-        }
-      }
-
-      if (!toRemove.isEmpty()) {
-        regions.removeAll(toRemove);
-        regions.addAll(toAdd);
-        result = new ConflictMap(regions);
-      }
-    } while (!toRemove.isEmpty());
-
-    return result;
   }
 }

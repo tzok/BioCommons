@@ -79,6 +79,38 @@ public enum LeontisWesthof {
   }
 
   /**
+   * Find a constant that matches a given name in case-insensitive manner or return UNKNOWN
+   * otherwise. For example, cww is the same as cWW.
+   *
+   * @param input A string representing LW notation.
+   * @return An instance of this class that matches the given name or UNKNONW if none does.
+   */
+  public static LeontisWesthof fromString(final CharSequence input) {
+    return Arrays.stream(LeontisWesthof.values())
+        .filter(leontisWesthof -> StringUtils.equalsIgnoreCase(leontisWesthof.name(), input))
+        .findFirst()
+        .orElse(LeontisWesthof.UNKNOWN);
+  }
+
+  private static String edgeName(final char c) {
+    switch (Character.toLowerCase(c)) {
+      case 'c':
+        return "cis";
+      case 't':
+        return "trans";
+      case 'w':
+        return "Watson-Crick";
+      case 'h':
+        return "Hoogsteen";
+      case 's':
+        return "Sugar";
+      default:
+        throw new IllegalArgumentException(
+            String.format("Letter %s is not recognized in Leontis-Westhof notation", c));
+    }
+  }
+
+  /**
    * This is not a "real" enum's ordinal, but a numeric index of Leontis-Westhof pair as used by
    * other tools.
    *
@@ -155,24 +187,6 @@ public enum LeontisWesthof {
         LeontisWesthof.edgeName(cs[2]));
   }
 
-  private static String edgeName(final char c) {
-    switch (Character.toLowerCase(c)) {
-      case 'c':
-        return "cis";
-      case 't':
-        return "trans";
-      case 'w':
-        return "Watson-Crick";
-      case 'h':
-        return "Hoogsteen";
-      case 's':
-        return "Sugar";
-      default:
-        throw new IllegalArgumentException(
-            String.format("Letter %s is not recognized in Leontis-Westhof notation", c));
-    }
-  }
-
   /**
    * Inverts the base edges e.g. cHS becomes cSH. Stericity (i.e. cis or trans) stays as it was.
    *
@@ -188,20 +202,6 @@ public enum LeontisWesthof {
     chars[1] = chars[2];
     chars[2] = tmp;
     return LeontisWesthof.fromString(new String(chars));
-  }
-
-  /**
-   * Find a constant that matches a given name in case-insensitive manner or return UNKNOWN
-   * otherwise. For example, cww is the same as cWW.
-   *
-   * @param input A string representing LW notation.
-   * @return An instance of this class that matches the given name or UNKNONW if none does.
-   */
-  public static LeontisWesthof fromString(final CharSequence input) {
-    return Arrays.stream(LeontisWesthof.values())
-        .filter(leontisWesthof -> StringUtils.equalsIgnoreCase(leontisWesthof.name(), input))
-        .findFirst()
-        .orElse(LeontisWesthof.UNKNOWN);
   }
 
   /** @return Stericity i.e. cis, trans or unknown. */

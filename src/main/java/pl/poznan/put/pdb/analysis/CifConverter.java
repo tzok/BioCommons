@@ -59,10 +59,45 @@ public final class CifConverter {
    * @throws IOException When reading of mmCIF file or writing to output files fails.
    */
   public static ModelContainer convert(final File cifFile) throws IOException {
-    final CifParser cifParser = new CifParser();
     final String cifContents = FileUtils.readFileToString(cifFile, Charset.defaultCharset());
-    final List<CifModel> models = cifParser.parse(cifContents);
+    final List<CifModel> models = CifParser.parse(cifContents);
     return CifConverter.convert(cifFile, models);
+  }
+
+  /**
+   * Convert a parsed mmCIF model into a set of PDB files with mapped chain names.
+   *
+   * @param model A parse mmCIF model.
+   * @return A container of (possibly) multiple PDB files with mapped chain names.
+   * @throws IOException When writing to output files fails.
+   */
+  public static ModelContainer convert(final CifModel model) throws IOException {
+    final File cifFile = File.createTempFile("cif2pdb", ".cif");
+    FileUtils.write(cifFile, model.toCif(), Charset.defaultCharset());
+
+    if (!CifConverter.isConversionPossible(model)) {
+      return CifContainer.emptyInstance(cifFile);
+    }
+
+    List<Set<String>> chainGroups = CifConverter.groupContactingChains(model);
+    chainGroups = CifConverter.packGroups(chainGroups);
+    final Map<File, BidiMap<String, String>> fileChainMap = new HashMap<>();
+
+    for (final Set<String> chainGroup : chainGroups) {
+      final File pdbFile = File.createTempFile("cif2pdb", ".pdb");
+      final BidiMap<String, String> chainMap = new TreeBidiMap<>();
+
+      fileChainMap.put(pdbFile, chainMap);
+
+      final StringBuilder pdbBuilder = new StringBuilder();
+      CifConverter.writeHeader(model, chainMap, pdbBuilder);
+      CifConverter.writeModel(model, chainGroup, chainMap, pdbBuilder);
+
+      final String pdbData = pdbBuilder.toString();
+      FileUtils.write(pdbFile, pdbData, Charset.defaultCharset());
+    }
+
+    return ImmutableCifContainer.of(cifFile, fileChainMap);
   }
 
   private static ModelContainer convert(
@@ -333,41 +368,5 @@ public final class CifConverter {
 
     pdbBuilder.append("ENDMDL");
     pdbBuilder.append(System.lineSeparator());
-  }
-
-  /**
-   * Convert a parsed mmCIF model into a set of PDB files with mapped chain names.
-   *
-   * @param model A parse mmCIF model.
-   * @return A container of (possibly) multiple PDB files with mapped chain names.
-   * @throws IOException When writing to output files fails.
-   */
-  public static ModelContainer convert(final CifModel model) throws IOException {
-    final File cifFile = File.createTempFile("cif2pdb", ".cif");
-    FileUtils.write(cifFile, model.toCif(), Charset.defaultCharset());
-
-    if (!CifConverter.isConversionPossible(model)) {
-      return CifContainer.emptyInstance(cifFile);
-    }
-
-    List<Set<String>> chainGroups = CifConverter.groupContactingChains(model);
-    chainGroups = CifConverter.packGroups(chainGroups);
-    final Map<File, BidiMap<String, String>> fileChainMap = new HashMap<>();
-
-    for (final Set<String> chainGroup : chainGroups) {
-      final File pdbFile = File.createTempFile("cif2pdb", ".pdb");
-      final BidiMap<String, String> chainMap = new TreeBidiMap<>();
-
-      fileChainMap.put(pdbFile, chainMap);
-
-      final StringBuilder pdbBuilder = new StringBuilder();
-      CifConverter.writeHeader(model, chainMap, pdbBuilder);
-      CifConverter.writeModel(model, chainGroup, chainMap, pdbBuilder);
-
-      final String pdbData = pdbBuilder.toString();
-      FileUtils.write(pdbFile, pdbData, Charset.defaultCharset());
-    }
-
-    return ImmutableCifContainer.of(cifFile, fileChainMap);
   }
 }

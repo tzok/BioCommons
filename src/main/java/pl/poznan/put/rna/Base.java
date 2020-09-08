@@ -95,6 +95,10 @@ public abstract class Base extends NucleicAcidResidueComponent
     return Base.INVALID;
   }
 
+  public abstract Quadruplet<AtomName> getChiAtoms();
+
+  protected abstract Sugar getDefaultSugarInstance();
+
   @Override
   public final List<ResidueComponent> moleculeComponents() {
     return Arrays.asList(Phosphate.getInstance(), getDefaultSugarInstance(), this);
@@ -125,8 +129,4 @@ public abstract class Base extends NucleicAcidResidueComponent
   public List<TorsionAngleType> torsionAngleTypes() {
     return Collections.unmodifiableList(torsionAngleTypes);
   }
-
-  protected abstract Sugar getDefaultSugarInstance();
-
-  public abstract Quadruplet<AtomName> getChiAtoms();
 }

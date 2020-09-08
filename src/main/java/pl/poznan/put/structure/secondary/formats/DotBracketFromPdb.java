@@ -34,7 +34,8 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     markRepresentedNonCanonicals(nonCanonical);
   }
 
-  public DotBracketFromPdb(final String sequence, final String structure, final StructureModel model) {
+  public DotBracketFromPdb(
+      final String sequence, final String structure, final StructureModel model) {
     super(sequence, DotBracketFromPdb.updateMissingIndices(structure, model));
 
     mapSymbolsAndResidues(model);
@@ -56,54 +57,17 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     return String.valueOf(dotBracket);
   }
 
-  private void mapSymbolsAndResidues(final ResidueCollection model) {
-    final List<PdbResidue> residues = model.residues();
-    assert residues.size() == symbols.size();
+  private static void depthFirstSearch(
+      final Strand u,
+      final Map<Strand, Set<Strand>> graph,
+      final Set<Strand> visited,
+      final Set<Strand> component) {
+    visited.add(u);
+    component.add(u);
 
-    for (int i = 0; i < residues.size(); i++) {
-      final DotBracketSymbol symbol = symbols.get(i);
-      final PdbResidue residue = residues.get(i);
-      final PdbNamedResidueIdentifier residueIdentifier = residue.namedResidueIdentifer();
-      symbolToResidue.put(symbol, residueIdentifier);
-      residueToSymbol.put(residueIdentifier, symbol);
-    }
-  }
-
-  private void splitStrands(final StructureModel model) {
-    strands.clear();
-    int start = 0;
-    int end = 0;
-
-    for (final PdbChain chain : model.chains()) {
-      end += chain.residues().size();
-      strands.add(new StrandView(chain.identifier(), this, start, end));
-      start = end;
-    }
-  }
-
-  private void markRepresentedNonCanonicals(
-      final Iterable<? extends ClassifiedBasePair> nonCanonical) {
-    final Collection<BasePair> representedSet = new HashSet<>();
-
-    for (final DotBracketSymbol symbol : symbols) {
-      if (symbol.isPairing()) {
-        final PdbNamedResidueIdentifier left = getResidueIdentifier(symbol);
-        final PdbNamedResidueIdentifier right = getResidueIdentifier(symbol.getPair());
-        representedSet.add(new BasePair(left, right));
-      }
-    }
-
-    for (final ClassifiedBasePair cbp : nonCanonical) {
-      final BasePair basePair = cbp.getBasePair();
-      if (representedSet.contains(basePair)) {
-        cbp.setRepresented(true);
-
-        if (!cbp.isCanonical()) {
-          final DotBracketSymbol left = getSymbol(basePair.getLeft());
-          final DotBracketSymbol right = getSymbol(basePair.getRight());
-          left.setNonCanonical(true);
-          right.setNonCanonical(true);
-        }
+    for (final Strand v : graph.getOrDefault(u, Collections.emptySet())) {
+      if (!visited.contains(v)) {
+        DotBracketFromPdb.depthFirstSearch(v, graph, visited, component);
       }
     }
   }
@@ -177,41 +141,6 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     return result;
   }
 
-  private static void depthFirstSearch(
-      final Strand u,
-      final Map<Strand, Set<Strand>> graph,
-      final Set<Strand> visited,
-      final Set<Strand> component) {
-    visited.add(u);
-    component.add(u);
-
-    for (final Strand v : graph.getOrDefault(u, Collections.emptySet())) {
-      if (!visited.contains(v)) {
-        DotBracketFromPdb.depthFirstSearch(v, graph, visited, component);
-      }
-    }
-  }
-
-  private void linkStrands(
-      final Strand firstStrand,
-      final DotBracketSymbol symbolInSecondStrand,
-      final Map<? super Strand, Set<Strand>> strandMap) {
-    for (final Strand secondStrand : strands) {
-      if (!secondStrand.equals(firstStrand)
-          && secondStrand.getSymbols().contains(symbolInSecondStrand)) {
-        if (!strandMap.containsKey(firstStrand)) {
-          strandMap.put(firstStrand, new LinkedHashSet<>());
-        }
-        strandMap.get(firstStrand).add(secondStrand);
-        if (!strandMap.containsKey(secondStrand)) {
-          strandMap.put(secondStrand, new LinkedHashSet<>());
-        }
-        strandMap.get(secondStrand).add(firstStrand);
-        return;
-      }
-    }
-  }
-
   @Override
   public final List<? extends CombinedStrand> combineStrands() {
     return super.combineStrands().stream()
@@ -240,5 +169,77 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     }
     throw new IllegalArgumentException(
         "Cannot create base pair from unpaired nucleotide: " + symbol);
+  }
+
+  private void mapSymbolsAndResidues(final ResidueCollection model) {
+    final List<PdbResidue> residues = model.residues();
+    assert residues.size() == symbols.size();
+
+    for (int i = 0; i < residues.size(); i++) {
+      final DotBracketSymbol symbol = symbols.get(i);
+      final PdbResidue residue = residues.get(i);
+      final PdbNamedResidueIdentifier residueIdentifier = residue.namedResidueIdentifer();
+      symbolToResidue.put(symbol, residueIdentifier);
+      residueToSymbol.put(residueIdentifier, symbol);
+    }
+  }
+
+  private void splitStrands(final StructureModel model) {
+    strands.clear();
+    int start = 0;
+    int end = 0;
+
+    for (final PdbChain chain : model.chains()) {
+      end += chain.residues().size();
+      strands.add(new StrandView(chain.identifier(), this, start, end));
+      start = end;
+    }
+  }
+
+  private void markRepresentedNonCanonicals(
+      final Iterable<? extends ClassifiedBasePair> nonCanonical) {
+    final Collection<BasePair> representedSet = new HashSet<>();
+
+    for (final DotBracketSymbol symbol : symbols) {
+      if (symbol.isPairing()) {
+        final PdbNamedResidueIdentifier left = getResidueIdentifier(symbol);
+        final PdbNamedResidueIdentifier right = getResidueIdentifier(symbol.getPair());
+        representedSet.add(new BasePair(left, right));
+      }
+    }
+
+    for (final ClassifiedBasePair cbp : nonCanonical) {
+      final BasePair basePair = cbp.getBasePair();
+      if (representedSet.contains(basePair)) {
+        cbp.setRepresented(true);
+
+        if (!cbp.isCanonical()) {
+          final DotBracketSymbol left = getSymbol(basePair.getLeft());
+          final DotBracketSymbol right = getSymbol(basePair.getRight());
+          left.setNonCanonical(true);
+          right.setNonCanonical(true);
+        }
+      }
+    }
+  }
+
+  private void linkStrands(
+      final Strand firstStrand,
+      final DotBracketSymbol symbolInSecondStrand,
+      final Map<? super Strand, Set<Strand>> strandMap) {
+    for (final Strand secondStrand : strands) {
+      if (!secondStrand.equals(firstStrand)
+          && secondStrand.getSymbols().contains(symbolInSecondStrand)) {
+        if (!strandMap.containsKey(firstStrand)) {
+          strandMap.put(firstStrand, new LinkedHashSet<>());
+        }
+        strandMap.get(firstStrand).add(secondStrand);
+        if (!strandMap.containsKey(secondStrand)) {
+          strandMap.put(secondStrand, new LinkedHashSet<>());
+        }
+        strandMap.get(secondStrand).add(firstStrand);
+        return;
+      }
+    }
   }
 }

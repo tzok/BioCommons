@@ -40,11 +40,11 @@ public abstract class CifModel implements StructureModel {
         basePairs);
   }
 
-  @Value.Parameter(order = 1)
-  protected abstract PdbModel pdbModel();
-
   @Value.Parameter(order = 2)
   public abstract List<QuantifiedBasePair> basePairs();
+
+  @Value.Parameter(order = 1)
+  protected abstract PdbModel pdbModel();
 
   @Override
   public final PdbHeaderLine header() {
@@ -87,11 +87,6 @@ public abstract class CifModel implements StructureModel {
   }
 
   @Override
-  public final List<PdbResidue> residues() {
-    return pdbModel().residues();
-  }
-
-  @Override
   public final String title() {
     return pdbModel().title();
   }
@@ -103,16 +98,21 @@ public abstract class CifModel implements StructureModel {
 
   @Override
   public final CifModel filteredNewInstance(final MoleculeType moleculeType) {
-    return ImmutableCifModel.of(
-        header(),
-        experimentalData(),
-        resolution(),
-        modelNumber(),
-        filteredAtoms(moleculeType),
-        modifiedResidues(),
-        filteredMissing(moleculeType),
-        title(),
-        chainTerminatedAfter(),
-        basePairs());
+    return CifModel.of(
+            header(),
+            experimentalData(),
+            resolution(),
+            modelNumber(),
+            filteredAtoms(moleculeType),
+            modifiedResidues(),
+            filteredMissing(moleculeType),
+            title(),
+            chainTerminatedAfter(),
+            basePairs());
+  }
+
+  @Override
+  public final List<PdbResidue> residues() {
+    return pdbModel().residues();
   }
 }

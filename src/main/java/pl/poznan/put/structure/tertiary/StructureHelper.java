@@ -23,16 +23,6 @@ final class StructureHelper {
         .toArray(Atom[]::new);
   }
 
-  private static Atom findAtom(final Group residue, final AtomName atomName) {
-    return residue.getAtoms().stream()
-        .filter(atom -> atomName.matchesName(atom.getName()))
-        .findFirst()
-        .orElseThrow(
-            () ->
-                new IllegalArgumentException(
-                    String.format("Failed to find %s in residue %s", atomName, residue)));
-  }
-
   public static Atom[] findAllAtoms(final Structure structure, final AtomName atomName) {
     final List<Atom> result = new ArrayList<>();
     structure.getChains().stream()
@@ -40,13 +30,6 @@ final class StructureHelper {
         .map(Arrays::asList)
         .forEach(result::addAll);
     return result.toArray(new Atom[0]);
-  }
-
-  private static Atom[] findAllAtoms(final Chain chain, final AtomName atomName) {
-    return chain.getAtomGroups().stream()
-        .map(group -> StructureHelper.findAtom(group, atomName))
-        .filter(Objects::nonNull)
-        .toArray(Atom[]::new);
   }
 
   public static void mergeAltLocs(final Group group) {
@@ -65,5 +48,22 @@ final class StructureHelper {
             atomName ->
                 atomName.getType().isHeavy()
                     && (StructureHelper.findAtom(group, atomName) == null));
+  }
+
+  private static Atom findAtom(final Group residue, final AtomName atomName) {
+    return residue.getAtoms().stream()
+        .filter(atom -> atomName.matchesName(atom.getName()))
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new IllegalArgumentException(
+                    String.format("Failed to find %s in residue %s", atomName, residue)));
+  }
+
+  private static Atom[] findAllAtoms(final Chain chain, final AtomName atomName) {
+    return chain.getAtomGroups().stream()
+        .map(group -> StructureHelper.findAtom(group, atomName))
+        .filter(Objects::nonNull)
+        .toArray(Atom[]::new);
   }
 }

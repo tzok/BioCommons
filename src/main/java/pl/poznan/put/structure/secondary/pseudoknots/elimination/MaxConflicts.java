@@ -16,6 +16,21 @@ import java.util.TreeMap;
  * RNA, 14, pp.410–416.
  */
 public class MaxConflicts extends AbstractRegionRemover {
+  public static List<Region> maxConflictRegions(
+      final ConflictMap conflictMap, final Iterable<Region> regions) {
+    final SortedMap<Integer, List<Region>> mapConflicsRegions = new TreeMap<>();
+
+    for (final Region region : regions) {
+      final int conflictCount = conflictMap.conflictsWith(region).size();
+      if (!mapConflicsRegions.containsKey(conflictCount)) {
+        mapConflicsRegions.put(conflictCount, new ArrayList<>());
+      }
+      mapConflicsRegions.get(conflictCount).add(region);
+    }
+
+    return mapConflicsRegions.get(mapConflicsRegions.lastKey());
+  }
+
   @Override
   public final Region selectRegionToRemove(final ConflictMap conflictMap) {
     final Set<Region> regions = conflictMap.getRegionsWithConflicts();
@@ -32,20 +47,5 @@ public class MaxConflicts extends AbstractRegionRemover {
 
     maxConflictsRegions.sort(Comparator.comparingInt(Region::getBegin));
     return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
-  }
-
-  public static List<Region> maxConflictRegions(
-      final ConflictMap conflictMap, final Iterable<Region> regions) {
-    final SortedMap<Integer, List<Region>> mapConflicsRegions = new TreeMap<>();
-
-    for (final Region region : regions) {
-      final int conflictCount = conflictMap.conflictsWith(region).size();
-      if (!mapConflicsRegions.containsKey(conflictCount)) {
-        mapConflicsRegions.put(conflictCount, new ArrayList<>());
-      }
-      mapConflicsRegions.get(conflictCount).add(region);
-    }
-
-    return mapConflicsRegions.get(mapConflicsRegions.lastKey());
   }
 }

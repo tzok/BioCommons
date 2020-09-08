@@ -48,6 +48,10 @@ public abstract class PdbExpdtaLine implements Serializable {
     return ImmutablePdbExpdtaLine.of(experimentalTechniques);
   }
 
+  /** @return The value of the {@code experimentalTechniques} attribute */
+  @Value.Parameter(order = 1)
+  public abstract List<ExperimentalTechnique> experimentalTechniques();
+
   @Override
   public final String toString() {
     final StringBuilder builder = new StringBuilder();
@@ -63,8 +67,4 @@ public abstract class PdbExpdtaLine implements Serializable {
     }
     return String.format(Locale.US, PdbExpdtaLine.FORMAT, builder);
   }
-
-  /** @return The value of the {@code experimentalTechniques} attribute */
-  @Value.Parameter(order = 1)
-  public abstract List<ExperimentalTechnique> experimentalTechniques();
 }

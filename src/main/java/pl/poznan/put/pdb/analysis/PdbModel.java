@@ -40,9 +40,76 @@ public abstract class PdbModel implements Serializable, StructureModel {
         Collections.emptyList());
   }
 
-  @Value.Check
-  protected void check() {
-    Validate.notEmpty(atoms());
+  @Override
+  @Value.Parameter(order = 1)
+  @Value.Auxiliary
+  public abstract PdbHeaderLine header();
+
+  @Override
+  @Value.Parameter(order = 2)
+  @Value.Auxiliary
+  public abstract PdbExpdtaLine experimentalData();
+
+  @Override
+  @Value.Parameter(order = 3)
+  @Value.Auxiliary
+  public abstract PdbRemark2Line resolution();
+
+  @Override
+  @Value.Parameter(order = 4)
+  @Value.Auxiliary
+  public abstract int modelNumber();
+
+  @Override
+  @Value.Parameter(order = 6)
+  @Value.Auxiliary
+  public abstract List<PdbModresLine> modifiedResidues();
+
+  @Override
+  @Value.Parameter(order = 7)
+  @Value.Auxiliary
+  public abstract List<PdbRemark465Line> missingResidues();
+
+  @Override
+  @Value.Parameter(order = 5)
+  public abstract List<PdbAtomLine> atoms();
+
+  @Value.Lazy
+  public List<PdbChain> chains() {
+    final Map<String, List<PdbResidue>> chainResidues = new LinkedHashMap<>();
+    residues()
+        .forEach(
+            residue -> {
+              chainResidues.putIfAbsent(residue.chainIdentifier(), new ArrayList<>());
+              chainResidues.get(residue.chainIdentifier()).add(residue);
+            });
+    return chainResidues.values().stream()
+        .flatMap(residueGroup -> residueGroupToChains(residueGroup).stream())
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  @Value.Parameter(order = 8)
+  @Value.Auxiliary
+  public abstract String title();
+
+  @Override
+  @Value.Parameter(order = 9)
+  @Value.Auxiliary
+  public abstract Set<PdbResidueIdentifier> chainTerminatedAfter();
+
+  @Override
+  public PdbModel filteredNewInstance(final MoleculeType moleculeType) {
+    return ImmutablePdbModel.of(
+        header(),
+        experimentalData(),
+        resolution(),
+        modelNumber(),
+        filteredAtoms(moleculeType),
+        modifiedResidues(),
+        filteredMissing(moleculeType),
+        title(),
+        chainTerminatedAfter());
   }
 
   @Value.Lazy
@@ -73,14 +140,9 @@ public abstract class PdbModel implements Serializable, StructureModel {
         .collect(Collectors.toList());
   }
 
-  private PdbResidue atomGroupToResidue(final List<? extends PdbAtomLine> residueAtoms) {
-    final PdbResidueIdentifier residueIdentifier = residueAtoms.get(0).toResidueIdentifer();
-    final boolean isModified = isModified(residueIdentifier);
-    final String residueName = residueAtoms.get(0).residueName();
-    final String modifiedResidueName =
-        isModified ? modificationDetails(residueIdentifier).standardResidueName() : residueName;
-    return ImmutablePdbResidue.of(
-        residueIdentifier, residueName, modifiedResidueName, residueAtoms, isModified, false);
+  @Value.Check
+  protected void check() {
+    Validate.notEmpty(atoms());
   }
 
   protected final boolean isMissing(final PdbResidueIdentifier residueIdentifier) {
@@ -104,18 +166,14 @@ public abstract class PdbModel implements Serializable, StructureModel {
                     "Failed to find information about modification of: " + residueIdentifier));
   }
 
-  @Value.Lazy
-  public List<PdbChain> chains() {
-    final Map<String, List<PdbResidue>> chainResidues = new LinkedHashMap<>();
-    residues()
-        .forEach(
-            residue -> {
-              chainResidues.putIfAbsent(residue.chainIdentifier(), new ArrayList<>());
-              chainResidues.get(residue.chainIdentifier()).add(residue);
-            });
-    return chainResidues.values().stream()
-        .flatMap(residueGroup -> residueGroupToChains(residueGroup).stream())
-        .collect(Collectors.toList());
+  private PdbResidue atomGroupToResidue(final List<? extends PdbAtomLine> residueAtoms) {
+    final PdbResidueIdentifier residueIdentifier = residueAtoms.get(0).toResidueIdentifer();
+    final boolean isModified = isModified(residueIdentifier);
+    final String residueName = residueAtoms.get(0).residueName();
+    final String modifiedResidueName =
+        isModified ? modificationDetails(residueIdentifier).standardResidueName() : residueName;
+    return ImmutablePdbResidue.of(
+        residueIdentifier, residueName, modifiedResidueName, residueAtoms, isModified, false);
   }
 
   private List<PdbChain> residueGroupToChains(final List<? extends PdbResidue> residueGroup) {
@@ -123,7 +181,7 @@ public abstract class PdbModel implements Serializable, StructureModel {
     final List<Integer> branchingPoints =
         IntStream.range(0, residueGroup.size())
             .filter(i -> chainTerminatedAfter().contains(residueGroup.get(i).toResidueIdentifer()))
-            .mapToObj(i -> (int) i)
+            .mapToObj(i -> i)
             .collect(Collectors.toList());
 
     int begin = 0;
@@ -146,63 +204,5 @@ public abstract class PdbModel implements Serializable, StructureModel {
     }
 
     return chains;
-  }
-
-  @Override
-  @Value.Parameter(order = 1)
-  @Value.Auxiliary
-  public abstract PdbHeaderLine header();
-
-  @Override
-  @Value.Parameter(order = 2)
-  @Value.Auxiliary
-  public abstract PdbExpdtaLine experimentalData();
-
-  @Override
-  @Value.Parameter(order = 3)
-  @Value.Auxiliary
-  public abstract PdbRemark2Line resolution();
-
-  @Override
-  @Value.Parameter(order = 4)
-  @Value.Auxiliary
-  public abstract int modelNumber();
-
-  @Override
-  @Value.Parameter(order = 5)
-  public abstract List<PdbAtomLine> atoms();
-
-  @Override
-  @Value.Parameter(order = 6)
-  @Value.Auxiliary
-  public abstract List<PdbModresLine> modifiedResidues();
-
-  @Override
-  @Value.Parameter(order = 7)
-  @Value.Auxiliary
-  public abstract List<PdbRemark465Line> missingResidues();
-
-  @Override
-  @Value.Parameter(order = 8)
-  @Value.Auxiliary
-  public abstract String title();
-
-  @Override
-  @Value.Parameter(order = 9)
-  @Value.Auxiliary
-  public abstract Set<PdbResidueIdentifier> chainTerminatedAfter();
-
-  @Override
-  public PdbModel filteredNewInstance(final MoleculeType moleculeType) {
-    return ImmutablePdbModel.of(
-        header(),
-        experimentalData(),
-        resolution(),
-        modelNumber(),
-        filteredAtoms(moleculeType),
-        modifiedResidues(),
-        filteredMissing(moleculeType),
-        title(),
-        chainTerminatedAfter());
   }
 }

@@ -116,47 +116,37 @@ public abstract class Angle implements Comparable<Angle> {
     return FastMath.acos(v);
   }
 
-  @Value.Check
-  protected Angle normalize() {
-    double value = radians();
-
-    if (Double.isNaN(value)) {
-      return this;
-    }
-
-    Validate.finite(value);
-
-    if ((value > -FastMath.PI && value <= FastMath.PI)) {
-      return this;
-    }
-
-    while (value <= -FastMath.PI) {
-      value += MathUtils.TWO_PI;
-    }
-    while (value > FastMath.PI) {
-      value -= MathUtils.TWO_PI;
-    }
-    return ImmutableAngle.of(value);
+  /**
+   * Calculate angles' difference using formula: pi - |pi - |left - right||.
+   *
+   * @param left Minuend in radians.
+   * @param right Subtrahend in radians.
+   * @return The result of minuend - subtrahend in angular space.
+   */
+  public static double subtractByAbsolutes(final double left, final double right) {
+    return FastMath.PI - FastMath.abs(FastMath.PI - FastMath.abs(left - right));
   }
 
   /** @return Value in radians in range (-pi; pi]. */
   @Value.Parameter(order = 1)
   public abstract double radians();
 
+  /** @return Value in degrees in range (-180; 180]. */
+  public final double degrees() {
+    return FastMath.toDegrees(radians());
+  }
+
   /** @return Value in degrees in range [0; 360). */
-  @Value.Lazy
-  public double degrees360() {
+  public final double degrees360() {
     return FastMath.toDegrees(radians2PI());
   }
 
   /** @return Value in radians in range [0; 2pi). */
-  @Value.Lazy
-  public double radians2PI() {
+  public final double radians2PI() {
     return (radians() < 0.0) ? (radians() + MathUtils.TWO_PI) : radians();
   }
 
-  @Value.Lazy
-  public boolean isValid() {
+  public final boolean isValid() {
     return !Double.isNaN(radians());
   }
 
@@ -196,17 +186,6 @@ public abstract class Angle implements Comparable<Angle> {
    */
   public final Angle subtract(final Angle other) {
     return ImmutableAngle.of(Angle.subtractByAbsolutes(radians(), other.radians()));
-  }
-
-  /**
-   * Calculate angles' difference using formula: pi - |pi - |left - right||.
-   *
-   * @param left Minuend in radians.
-   * @param right Subtrahend in radians.
-   * @return The result of minuend - subtrahend in angular space.
-   */
-  public static double subtractByAbsolutes(final double left, final double right) {
-    return FastMath.PI - FastMath.abs(FastMath.PI - FastMath.abs(left - right));
   }
 
   /**
@@ -253,9 +232,26 @@ public abstract class Angle implements Comparable<Angle> {
     return String.format(Locale.US, "Angle{degrees=%.2f}", degrees());
   }
 
-  /** @return Value in degrees in range (-180; 180]. */
-  @Value.Lazy
-  public double degrees() {
-    return FastMath.toDegrees(radians());
+  @Value.Check
+  protected Angle normalize() {
+    double value = radians();
+
+    if (Double.isNaN(value)) {
+      return this;
+    }
+
+    Validate.finite(value);
+
+    if ((value > -FastMath.PI && value <= FastMath.PI)) {
+      return this;
+    }
+
+    while (value <= -FastMath.PI) {
+      value += MathUtils.TWO_PI;
+    }
+    while (value > FastMath.PI) {
+      value -= MathUtils.TWO_PI;
+    }
+    return ImmutableAngle.of(value);
   }
 }

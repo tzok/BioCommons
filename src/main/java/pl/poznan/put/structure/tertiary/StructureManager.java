@@ -4,8 +4,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import pl.poznan.put.pdb.analysis.CifParser;
-import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
+import pl.poznan.put.pdb.analysis.StructureModel;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -31,7 +31,6 @@ public final class StructureManager {
   private static final String ENCODING_UTF_8 = "UTF-8";
   private static final Collection<StructureInfo> STRUCTURES = new ArrayList<>();
   private static final PdbParser PDB_PARSER = new PdbParser(false);
-  private static final CifParser CIF_PARSER = new CifParser();
 
   private StructureManager() {
     super();
@@ -103,7 +102,7 @@ public final class StructureManager {
       if (!StructureManager.isCif(fileContent)) {
         throw new IOException("File is not a mmCIF structure: " + file);
       }
-      final List<? extends StructureModel> pdbModels = StructureManager.CIF_PARSER.parse(fileContent);
+      final List<? extends StructureModel> pdbModels = CifParser.parse(fileContent);
       StructureManager.storeStructureInfo(file, pdbModels);
       return pdbModels;
     }
@@ -121,6 +120,34 @@ public final class StructureManager {
         .filter(si -> Objects.equals(si.getPath(), file))
         .map(StructureInfo::getStructure)
         .collect(Collectors.toList());
+  }
+
+  public static List<? extends StructureModel> loadStructure(final String pdbId)
+      throws IOException {
+    if (pdbId.length() != 4) {
+      throw new IllegalArgumentException("Invalid PDB id: " + pdbId);
+    }
+
+    final URL url = new URL(String.format("http://files.rcsb.org/download/%s.pdb.gz", pdbId));
+    final String pdbContent = StructureManager.unzipContent(IOUtils.toByteArray(url));
+
+    final File pdbFile = File.createTempFile("bio-commons", ".pdb");
+    FileUtils.writeStringToFile(pdbFile, pdbContent, StructureManager.ENCODING_UTF_8);
+
+    final List<? extends StructureModel> models = StructureManager.PDB_PARSER.parse(pdbContent);
+    StructureManager.storeStructureInfo(pdbFile, models);
+    return models;
+  }
+
+  public static void remove(final File path) {
+    final Collection<StructureInfo> toRemove =
+        StructureManager.STRUCTURES.stream()
+            .filter(si -> Objects.equals(si.getPath(), path))
+            .collect(Collectors.toList());
+
+    for (final StructureInfo si : toRemove) {
+      StructureManager.STRUCTURES.remove(si);
+    }
   }
 
   private static String readFile(final File file) throws IOException {
@@ -190,33 +217,6 @@ public final class StructureManager {
 
       StructureManager.STRUCTURES.add(
           new StructureInfo(model, file, String.format(format, name, i + 1)));
-    }
-  }
-
-  public static List<? extends StructureModel> loadStructure(final String pdbId) throws IOException {
-    if (pdbId.length() != 4) {
-      throw new IllegalArgumentException("Invalid PDB id: " + pdbId);
-    }
-
-    final URL url = new URL(String.format("http://files.rcsb.org/download/%s.pdb.gz", pdbId));
-    final String pdbContent = StructureManager.unzipContent(IOUtils.toByteArray(url));
-
-    final File pdbFile = File.createTempFile("bio-commons", ".pdb");
-    FileUtils.writeStringToFile(pdbFile, pdbContent, StructureManager.ENCODING_UTF_8);
-
-    final List<? extends StructureModel> models = StructureManager.PDB_PARSER.parse(pdbContent);
-    StructureManager.storeStructureInfo(pdbFile, models);
-    return models;
-  }
-
-  public static void remove(final File path) {
-    final Collection<StructureInfo> toRemove =
-        StructureManager.STRUCTURES.stream()
-            .filter(si -> Objects.equals(si.getPath(), path))
-            .collect(Collectors.toList());
-
-    for (final StructureInfo si : toRemove) {
-      StructureManager.STRUCTURES.remove(si);
     }
   }
 }

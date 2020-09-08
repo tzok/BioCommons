@@ -189,6 +189,11 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
           bondLength.max());
     }
 
+    @Override
+    public int compareTo(final AtomBasedTorsionAngleType.AtomPair t) {
+      return Integer.compare(leftAtom.serialNumber(), t.leftAtom.serialNumber());
+    }
+
     private boolean isValid() {
       // skip check if any of the residues has icode
       if (StringUtils.isNotBlank(leftResidue.insertionCode())
@@ -207,11 +212,6 @@ public abstract class AtomBasedTorsionAngleType extends TorsionAngleType {
       }
 
       return distance <= bondLength.max() * 1.5;
-    }
-
-    @Override
-    public int compareTo(final AtomBasedTorsionAngleType.AtomPair t) {
-      return Integer.compare(leftAtom.serialNumber(), t.leftAtom.serialNumber());
     }
   }
 }

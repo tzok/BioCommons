@@ -57,6 +57,150 @@ public class DotBracket implements DotBracketInterface, Serializable {
     strands.add(new StrandView("", this, 0, structure.length()));
   }
 
+  public static DotBracket fromString(final String data) {
+    final Matcher matcher = DotBracket.DOTBRACKET_PATTERN.matcher(data);
+
+    final Collection<Pair<Integer, Integer>> pairBeginEnd = new ArrayList<>();
+    final List<String> strandNames = new ArrayList<>();
+    final StringBuilder sequenceBuilder = new StringBuilder(data.length());
+    final StringBuilder structureBuilder = new StringBuilder(data.length());
+    int begin = 0;
+    int end = 0;
+
+    while (matcher.find()) {
+      final String strandName =
+          (matcher.group(1) != null) ? matcher.group(1).substring(1).trim() : "";
+      final String sequence = matcher.group(2);
+      final String structure = matcher.group(3);
+
+      if (sequence.length() != structure.length()) {
+        throw new InvalidStructureException("Invalid dot-bracket string:\n" + data);
+      }
+
+      strandNames.add(strandName.replaceFirst("strand_", ""));
+      sequenceBuilder.append(sequence);
+      structureBuilder.append(structure);
+
+      end += sequence.length();
+      pairBeginEnd.add(Pair.of(begin, end));
+      begin = end;
+    }
+
+    if ((sequenceBuilder.length() == 0) || (structureBuilder.length() == 0)) {
+      throw new InvalidStructureException("Cannot parse dot-bracket:\n" + data);
+    }
+
+    final DotBracket dotBracket =
+        new DotBracket(sequenceBuilder.toString(), structureBuilder.toString());
+    dotBracket.strands.clear();
+
+    int index = 0;
+    for (final Pair<Integer, Integer> pair : pairBeginEnd) {
+      dotBracket.strands.add(
+          new StrandView(strandNames.get(index), dotBracket, pair.getLeft(), pair.getRight()));
+      index += 1;
+    }
+
+    return dotBracket;
+  }
+
+  public static List<List<Strand>> candidatesToCombine(final Iterable<? extends Strand> strands) {
+    final List<List<Strand>> result = new ArrayList<>();
+    final List<Strand> toCombine = new ArrayList<>();
+    int level = 0;
+
+    for (final Strand strand : strands) {
+      toCombine.add(strand);
+
+      for (final DotBracketSymbol symbol : strand.getSymbols()) {
+        level += symbol.isOpening() ? 1 : 0;
+        level -= symbol.isClosing() ? 1 : 0;
+      }
+
+      if (level == 0) {
+        result.add(new ArrayList<>(toCombine));
+        toCombine.clear();
+      }
+    }
+
+    return result;
+  }
+
+  @Override
+  public final String toString() {
+    return ">strand\n" + sequence + '\n' + structure;
+  }
+
+  @Override
+  public final String getSequence() {
+    return sequence;
+  }
+
+  @Override
+  public final String getStructure() {
+    return structure;
+  }
+
+  @Override
+  public final List<DotBracketSymbol> getSymbols() {
+    return Collections.unmodifiableList(symbols);
+  }
+
+  @Override
+  public final DotBracketSymbol getSymbol(final int index) {
+    assert index < symbols.size();
+    return symbols.get(index);
+  }
+
+  @Override
+  public final String toStringWithStrands() {
+    return strands.stream()
+        .map(strand -> String.valueOf(strand) + '\n')
+        .collect(Collectors.joining());
+  }
+
+  @Override
+  public final List<Strand> getStrands() {
+    return Collections.unmodifiableList(strands);
+  }
+
+  @Override
+  public List<? extends CombinedStrand> combineStrands() {
+    return DotBracket.candidatesToCombine(strands).stream()
+        .map(CombinedStrand::new)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public int getRealSymbolIndex(final DotBracketSymbol symbol) {
+    return symbol.getIndex() + 1;
+  }
+
+  public final int getLength() {
+    return structure.length();
+  }
+
+  public final int getStrandCount() {
+    return strands.size();
+  }
+
+  public final void splitStrands(final Ct ct) {
+    strands.clear();
+
+    int start = 0;
+    int i = 0;
+
+    for (final Ct.ExtendedEntry e : ct.getEntries()) {
+      if (e.getAfter() == 0) {
+        final Strand strand = new StrandView("", this, start, i + 1);
+        strands.add(strand);
+        start = i + 1;
+      }
+
+      i += 1;
+    }
+  }
+
   private void buildSymbolList() {
     final char[] seq = sequence.toCharArray();
     final char[] str = structure.toCharArray();
@@ -125,150 +269,6 @@ public class DotBracket implements DotBracketInterface, Serializable {
       }
 
       DotBracket.log.error("Unknown symbol in dot-bracket string: {}", str);
-    }
-  }
-
-  public static DotBracket fromString(final String data) {
-    final Matcher matcher = DotBracket.DOTBRACKET_PATTERN.matcher(data);
-
-    final Collection<Pair<Integer, Integer>> pairBeginEnd = new ArrayList<>();
-    final List<String> strandNames = new ArrayList<>();
-    final StringBuilder sequenceBuilder = new StringBuilder(data.length());
-    final StringBuilder structureBuilder = new StringBuilder(data.length());
-    int begin = 0;
-    int end = 0;
-
-    while (matcher.find()) {
-      final String strandName =
-          (matcher.group(1) != null) ? matcher.group(1).substring(1).trim() : "";
-      final String sequence = matcher.group(2);
-      final String structure = matcher.group(3);
-
-      if (sequence.length() != structure.length()) {
-        throw new InvalidStructureException("Invalid dot-bracket string:\n" + data);
-      }
-
-      strandNames.add(strandName.replaceFirst("strand_", ""));
-      sequenceBuilder.append(sequence);
-      structureBuilder.append(structure);
-
-      end += sequence.length();
-      pairBeginEnd.add(Pair.of(begin, end));
-      begin = end;
-    }
-
-    if ((sequenceBuilder.length() == 0) || (structureBuilder.length() == 0)) {
-      throw new InvalidStructureException("Cannot parse dot-bracket:\n" + data);
-    }
-
-    final DotBracket dotBracket =
-        new DotBracket(sequenceBuilder.toString(), structureBuilder.toString());
-    dotBracket.strands.clear();
-
-    int index = 0;
-    for (final Pair<Integer, Integer> pair : pairBeginEnd) {
-      dotBracket.strands.add(
-          new StrandView(strandNames.get(index), dotBracket, pair.getLeft(), pair.getRight()));
-      index += 1;
-    }
-
-    return dotBracket;
-  }
-
-  @Override
-  public final String toString() {
-    return ">strand\n" + sequence + '\n' + structure;
-  }
-
-  @Override
-  public final String getSequence() {
-    return sequence;
-  }
-
-  @Override
-  public final String getStructure() {
-    return structure;
-  }
-
-  @Override
-  public final List<DotBracketSymbol> getSymbols() {
-    return Collections.unmodifiableList(symbols);
-  }
-
-  @Override
-  public final DotBracketSymbol getSymbol(final int index) {
-    assert index < symbols.size();
-    return symbols.get(index);
-  }
-
-  @Override
-  public final String toStringWithStrands() {
-    return strands.stream()
-        .map(strand -> String.valueOf(strand) + '\n')
-        .collect(Collectors.joining());
-  }
-
-  @Override
-  public final List<Strand> getStrands() {
-    return Collections.unmodifiableList(strands);
-  }
-
-  @Override
-  public List<? extends CombinedStrand> combineStrands() {
-    return DotBracket.candidatesToCombine(strands).stream()
-        .map(CombinedStrand::new)
-        .collect(Collectors.toList());
-  }
-
-  public static List<List<Strand>> candidatesToCombine(final Iterable<? extends Strand> strands) {
-    final List<List<Strand>> result = new ArrayList<>();
-    final List<Strand> toCombine = new ArrayList<>();
-    int level = 0;
-
-    for (final Strand strand : strands) {
-      toCombine.add(strand);
-
-      for (final DotBracketSymbol symbol : strand.getSymbols()) {
-        level += symbol.isOpening() ? 1 : 0;
-        level -= symbol.isClosing() ? 1 : 0;
-      }
-
-      if (level == 0) {
-        result.add(new ArrayList<>(toCombine));
-        toCombine.clear();
-      }
-    }
-
-    return result;
-  }
-
-  @Override
-  public int getRealSymbolIndex(final DotBracketSymbol symbol) {
-    return symbol.getIndex() + 1;
-  }
-
-  public final int getLength() {
-    return structure.length();
-  }
-
-  public final int getStrandCount() {
-    return strands.size();
-  }
-
-  public final void splitStrands(final Ct ct) {
-    strands.clear();
-
-    int start = 0;
-    int i = 0;
-
-    for (final Ct.ExtendedEntry e : ct.getEntries()) {
-      if (e.getAfter() == 0) {
-        final Strand strand = new StrandView("", this, start, i + 1);
-        strands.add(strand);
-        start = i + 1;
-      }
-
-      i += 1;
     }
   }
 }

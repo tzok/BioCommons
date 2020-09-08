@@ -12,14 +12,6 @@ import javax.annotation.Nonnull;
 @Value.Immutable
 public abstract class PdbNamedResidueIdentifier
     implements ChainNumberICode, Comparable<PdbNamedResidueIdentifier> {
-  @Override
-  public final String toString() {
-    final String chain = StringUtils.isBlank(chainIdentifier()) ? "" : (chainIdentifier() + '.');
-    final String icode = StringUtils.isBlank(insertionCode()) ? "" : insertionCode();
-    final String name = (oneLetterName() == ' ') ? "" : Character.toString(oneLetterName());
-    return chain + name + residueNumber() + icode;
-  }
-
   /** @return The value of the {@code chainIdentifier} attribute */
   @Value.Parameter(order = 1)
   public abstract String chainIdentifier();
@@ -35,6 +27,14 @@ public abstract class PdbNamedResidueIdentifier
   /** @return The value of the {@code oneLetterName} attribute */
   @Value.Parameter(order = 4)
   public abstract char oneLetterName();
+
+  @Override
+  public final String toString() {
+    final String chain = StringUtils.isBlank(chainIdentifier()) ? "" : (chainIdentifier() + '.');
+    final String icode = StringUtils.isBlank(insertionCode()) ? "" : insertionCode();
+    final String name = (oneLetterName() == ' ') ? "" : Character.toString(oneLetterName());
+    return chain + name + residueNumber() + icode;
+  }
 
   @Override
   public final int compareTo(@Nonnull final PdbNamedResidueIdentifier t) {

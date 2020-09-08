@@ -59,6 +59,10 @@ public abstract class PdbRemark2Line implements Serializable {
     }
   }
 
+  /** @return The value of the {@code resolution} attribute */
+  @Value.Parameter(order = 1)
+  public abstract double resolution();
+
   @Override
   public final String toString() {
     if (Double.isNaN(resolution())) {
@@ -67,8 +71,4 @@ public abstract class PdbRemark2Line implements Serializable {
 
     return String.format(Locale.US, PdbRemark2Line.FORMAT, resolution());
   }
-
-  /** @return The value of the {@code resolution} attribute */
-  @Value.Parameter(order = 1)
-  public abstract double resolution();
 }

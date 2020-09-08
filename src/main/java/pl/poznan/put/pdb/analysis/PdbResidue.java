@@ -60,6 +60,21 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
   @Value.Parameter(order = 5)
   public abstract boolean isModifiedInPDB();
 
+  @Value.Parameter(order = 1)
+  public abstract PdbResidueIdentifier identifier();
+
+  @Value.Parameter(order = 2)
+  public abstract String residueName();
+
+  @Value.Parameter(order = 3)
+  public abstract String modifiedResidueName();
+
+  @Value.Parameter(order = 6)
+  public abstract boolean isMissing();
+
+  @Value.Parameter(order = 4)
+  public abstract List<PdbAtomLine> atoms();
+
   public final boolean wasSuccessfullyDetected() {
     return residueInformationProvider().moleculeType() != MoleculeType.UNKNOWN;
   }
@@ -115,9 +130,6 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
     return identifier().chainIdentifier();
   }
 
-  @Value.Parameter(order = 1)
-  public abstract PdbResidueIdentifier identifier();
-
   @Override
   public final int residueNumber() {
     return identifier().residueNumber();
@@ -150,22 +162,10 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
     return ResidueTypeDetector.detectResidueType(modifiedResidueName(), atomNames());
   }
 
-  @Value.Parameter(order = 2)
-  public abstract String residueName();
-
-  @Value.Parameter(order = 3)
-  public abstract String modifiedResidueName();
-
-  @Value.Parameter(order = 6)
-  public abstract boolean isMissing();
-
   @Value.Lazy
   public Set<AtomName> atomNames() {
     return atoms().stream().map(PdbAtomLine::detectAtomName).collect(Collectors.toSet());
   }
-
-  @Value.Parameter(order = 4)
-  public abstract List<PdbAtomLine> atoms();
 
   public final char oneLetterName() {
     return namedResidueIdentifer().oneLetterName();
@@ -173,10 +173,6 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
 
   public final boolean isModified() {
     return !isMissing() && (isModifiedInPDB() || isModifiedByAtomContent());
-  }
-
-  private boolean isModifiedByAtomContent() {
-    return wasSuccessfullyDetected() && !hasAllAtoms();
   }
 
   public final MoleculeType getMoleculeType() {
@@ -279,5 +275,9 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
     }
 
     throw new IllegalArgumentException("Failed to find: " + atomName);
+  }
+
+  private boolean isModifiedByAtomContent() {
+    return wasSuccessfullyDetected() && !hasAllAtoms();
   }
 }

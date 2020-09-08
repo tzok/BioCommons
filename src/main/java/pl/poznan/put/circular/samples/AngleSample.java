@@ -5,8 +5,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.immutables.value.Value;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
@@ -19,30 +17,9 @@ import java.util.stream.Collectors;
 /** A class to compute statistics from a sample of angular values. */
 @Value.Immutable
 public abstract class AngleSample {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AngleSample.class);
-
-  @Value.Check
-  protected void check() {
-    Validate.notEmpty(data());
-  }
-
+  /** @return The value of the {@code data} attribute */
   @Value.Parameter(order = 1)
   public abstract Collection<Angle> data();
-
-  @Value.Lazy
-  protected TrigonometricMoment um1() {
-    return TrigonometricMoment.computeUncentered(data(), 1);
-  }
-
-  @Value.Lazy
-  protected TrigonometricMoment cm2() {
-    return TrigonometricMoment.computeCentered(data(), 2, meanDirection());
-  }
-
-  @Value.Lazy
-  protected TrigonometricMoment um2() {
-    return TrigonometricMoment.computeUncentered(data(), 2);
-  }
 
   /** @return A mean angular value of the sample. */
   @Value.Lazy
@@ -116,12 +93,47 @@ public abstract class AngleSample {
     return medianAndMeanDeviation().getValue();
   }
 
-  private double computeMeanDeviation(final Angle alpha) {
-    return data().stream()
-            .mapToDouble(angle -> angle.subtract(alpha).radians())
-            .reduce(Double::sum)
-            .orElse(Double.NaN)
-        / data().size();
+  /**
+   * @param datapoint Value, must be one of those used to create this instance of AngleSample.
+   * @return The rank (index) of the value in the sample, when treating 0 as the beginning of the
+   *     circle.
+   */
+  public double circularRank(final Angle datapoint) {
+    if (!sortedData().contains(datapoint)) {
+      throw new InvalidCircularOperationException(
+          "Cannot calculate circular rank for an observation outside the sample range");
+    }
+
+    final int rank = sortedData().indexOf(datapoint) + 1;
+    return (MathUtils.TWO_PI * (double) rank) / (double) sortedData().size();
+  }
+
+  @Override
+  public String toString() {
+    return "AngleSample [meanDirection="
+        + meanDirection()
+        + ", meanResultantLength="
+        + meanResultantLength()
+        + ", circularVariance="
+        + circularVariance()
+        + ", circularStandardDeviation="
+        + circularStandardDeviation()
+        + ", circularDispersion="
+        + circularDispersion()
+        + ", skewness="
+        + skewness()
+        + ", kurtosis="
+        + kurtosis()
+        + ", medianDirection="
+        + medianDirection()
+        + ", meanDeviation="
+        + meanDeviation()
+        + ']';
+  }
+
+  @Value.Check
+  protected void check() {
+    Validate.notEmpty(data());
   }
 
   @Value.Lazy
@@ -152,6 +164,34 @@ public abstract class AngleSample {
     return Pair.of(minCandidate, minDeviation);
   }
 
+  @Value.Lazy
+  protected List<Angle> sortedData() {
+    return data().stream().sorted().collect(Collectors.toList());
+  }
+
+  @Value.Lazy
+  protected TrigonometricMoment um1() {
+    return TrigonometricMoment.computeUncentered(data(), 1);
+  }
+
+  @Value.Lazy
+  protected TrigonometricMoment cm2() {
+    return TrigonometricMoment.computeCentered(data(), 2, meanDirection());
+  }
+
+  @Value.Lazy
+  protected TrigonometricMoment um2() {
+    return TrigonometricMoment.computeUncentered(data(), 2);
+  }
+
+  private double computeMeanDeviation(final Angle alpha) {
+    return data().stream()
+            .mapToDouble(angle -> angle.subtract(alpha).radians())
+            .reduce(Double::sum)
+            .orElse(Double.NaN)
+        / data().size();
+  }
+
   private List<Angle> computeMiddlePoints() {
     final List<Angle> middlePoints = new ArrayList<>();
     for (int i = 1; i < sortedData().size(); i++) {
@@ -166,61 +206,5 @@ public abstract class AngleSample {
     final Angle middle = ImmutableAngle.of((last.radians() + first.radians()) / 2.0);
     middlePoints.add(middle);
     return middlePoints;
-  }
-
-  private Angle selectBetterMedian(final Angle candidate) {
-    final Angle alternative = ImmutableAngle.of(candidate.radians() + Math.PI);
-
-    double s1 = 0.0;
-    double s2 = 0.0;
-    for (final Angle angle : data()) {
-      s1 += angle.distance(candidate);
-      s2 += angle.distance(alternative);
-    }
-
-    return s1 <= s2 ? candidate : alternative;
-  }
-
-  /**
-   * @param datapoint Value, must be one of those used to create this instance of AngleSample.
-   * @return The rank (index) of the value in the sample, when treating 0 as the beginning of the
-   *     circle.
-   */
-  public double circularRank(final Angle datapoint) {
-    if (!sortedData().contains(datapoint)) {
-      throw new InvalidCircularOperationException(
-          "Cannot calculate circular rank for an observation outside the sample range");
-    }
-
-    final int rank = sortedData().indexOf(datapoint) + 1;
-    return (MathUtils.TWO_PI * (double) rank) / (double) sortedData().size();
-  }
-
-  @Value.Lazy
-  protected List<Angle> sortedData() {
-    return data().stream().sorted().collect(Collectors.toList());
-  }
-
-  @Override
-  public String toString() {
-    return "AngleSample [meanDirection="
-        + meanDirection()
-        + ", meanResultantLength="
-        + meanResultantLength()
-        + ", circularVariance="
-        + circularVariance()
-        + ", circularStandardDeviation="
-        + circularStandardDeviation()
-        + ", circularDispersion="
-        + circularDispersion()
-        + ", skewness="
-        + skewness()
-        + ", kurtosis="
-        + kurtosis()
-        + ", medianDirection="
-        + medianDirection()
-        + ", meanDeviation="
-        + meanDeviation()
-        + ']';
   }
 }

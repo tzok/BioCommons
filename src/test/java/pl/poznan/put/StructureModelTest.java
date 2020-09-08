@@ -252,9 +252,9 @@ public class StructureModelTest {
     final StructureModel model2Z74 = models2Z74.get(0);
     final List<PdbChain> chains2Z74 = model2Z74.chains();
     assertThat(
-        chains2Z74.get(0).getSequence().toUpperCase(Locale.US), is("AGCGCCUGGACUUAAAGCCAUUGCACU"));
+        chains2Z74.get(0).sequence().toUpperCase(Locale.US), is("AGCGCCUGGACUUAAAGCCAUUGCACU"));
     assertThat(
-        chains2Z74.get(1).getSequence().toUpperCase(Locale.US),
+        chains2Z74.get(1).sequence().toUpperCase(Locale.US),
         is(
             "CCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA"));
     assertThat(
@@ -267,15 +267,15 @@ public class StructureModelTest {
     final StructureModel model4A04 = models4A04.get(0);
     final List<PdbChain> chains4A04 = model4A04.chains();
     assertThat(
-        chains4A04.get(0).getSequence().toUpperCase(Locale.US),
+        chains4A04.get(0).sequence().toUpperCase(Locale.US),
         is(
             "MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD"));
     assertThat(
-        chains4A04.get(1).getSequence().toUpperCase(Locale.US),
+        chains4A04.get(1).sequence().toUpperCase(Locale.US),
         is(
             "MHHHHHHENLYFQGGVSVQLEMKALWDEFNQLGTEMIVTKAGRRMFPTFQVKLFGMDPMADYMLLMDFVPVDDKRYRYAFHSSSWLVAGKADPATPGRVHYHPDSPAKGAQWMKQIVSFDKLKLTNNLLDDNGHIILNSMHRYQPRFHVVYVDPRKDSEKYAEENFKTFVFEETRFTAVTAYQNHRITQLKIASNPFAKGFRD"));
     assertThat(
-        chains4A04.get(2).getSequence().toUpperCase(Locale.US), is("AATTTCACACCTAGGTGTGAAATT"));
+        chains4A04.get(2).sequence().toUpperCase(Locale.US), is("AATTTCACACCTAGGTGTGAAATT"));
   }
 
   @Test
@@ -326,7 +326,7 @@ public class StructureModelTest {
     assertThat(atoms.size(), is(1909));
 
     final PdbChain chain = chains.get(0);
-    final String sequence = chain.getSequence();
+    final String sequence = chain.sequence();
     assertThat(Character.isLowerCase(sequence.charAt(0)), is(true));
     assertThat(StringUtils.isAllUpperCase(sequence.substring(1)), is(true));
   }
@@ -420,8 +420,7 @@ public class StructureModelTest {
 
     final String cif1EHZ = structureModel.toCif();
 
-    final CifParser cifParser = new CifParser();
-    final List<CifModel> cifModels = cifParser.parse(cif1EHZ);
+    final List<CifModel> cifModels = CifParser.parse(cif1EHZ);
     assertThat(cifModels.size(), is(1));
     final StructureModel cifModel = cifModels.get(0);
 

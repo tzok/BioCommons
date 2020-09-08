@@ -16,25 +16,6 @@ import java.util.TreeMap;
  * 14, pp.410–416.
  */
 public class MinGain extends AbstractRegionRemover {
-  @Override
-  public final Region selectRegionToRemove(final ConflictMap conflictMap) {
-    final Set<Region> regions = conflictMap.getRegionsWithConflicts();
-
-    final List<Region> minGainRegions = MinGain.minGainRegions(conflictMap, regions);
-    if (minGainRegions.size() == 1) {
-      return minGainRegions.get(0);
-    }
-
-    final List<Region> maxConflictsRegions =
-        MaxConflicts.maxConflictRegions(conflictMap, minGainRegions);
-    if (maxConflictsRegions.size() == 1) {
-      return maxConflictsRegions.get(0);
-    }
-
-    maxConflictsRegions.sort(Comparator.comparingInt(Region::getBegin));
-    return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
-  }
-
   public static List<Region> minGainRegions(
       final ConflictMap conflictMap, final Iterable<Region> regions) {
     final SortedMap<Integer, List<Region>> mapGainRegions = new TreeMap<>();
@@ -52,5 +33,24 @@ public class MinGain extends AbstractRegionRemover {
     }
 
     return mapGainRegions.get(mapGainRegions.firstKey());
+  }
+
+  @Override
+  public final Region selectRegionToRemove(final ConflictMap conflictMap) {
+    final Set<Region> regions = conflictMap.getRegionsWithConflicts();
+
+    final List<Region> minGainRegions = MinGain.minGainRegions(conflictMap, regions);
+    if (minGainRegions.size() == 1) {
+      return minGainRegions.get(0);
+    }
+
+    final List<Region> maxConflictsRegions =
+        MaxConflicts.maxConflictRegions(conflictMap, minGainRegions);
+    if (maxConflictsRegions.size() == 1) {
+      return maxConflictsRegions.get(0);
+    }
+
+    maxConflictsRegions.sort(Comparator.comparingInt(Region::getBegin));
+    return maxConflictsRegions.get(maxConflictsRegions.size() - 1);
   }
 }

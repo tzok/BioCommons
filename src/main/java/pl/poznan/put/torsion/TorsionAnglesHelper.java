@@ -42,28 +42,6 @@ public final class TorsionAnglesHelper {
   }
 
   /**
-   * Calculate one dihedral angle value for given four atoms.
-   *
-   * @param a1 Atom 1.
-   * @param a2 Atom 2.
-   * @param a3 Atom 3.
-   * @param a4 Atom 4.
-   * @return Dihedral angle between atoms 1-4.
-   */
-  private static Angle calculateTorsionAtan(
-      final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3, final PdbAtomLine a4) {
-    if ((a1 == null) || (a2 == null) || (a3 == null) || (a4 == null)) {
-      return ImmutableAngle.of(Double.NaN);
-    }
-
-    final Vector3D v1 = new Vector3D(a1.x(), a1.y(), a1.z());
-    final Vector3D v2 = new Vector3D(a2.x(), a2.y(), a2.z());
-    final Vector3D v3 = new Vector3D(a3.x(), a3.y(), a3.z());
-    final Vector3D v4 = new Vector3D(a4.x(), a4.y(), a4.z());
-    return Angle.torsionAngle(v1, v2, v3, v4);
-  }
-
-  /**
    * Calculate one dihedral angle value for given four atoms. Use cos^-1 and a check for
    * pseudovector
    *
@@ -112,5 +90,27 @@ public final class TorsionAnglesHelper {
     double diff = Math.abs(a1Mod - a2Mod);
     diff = Math.min(diff, full - diff);
     return diff;
+  }
+
+  /**
+   * Calculate one dihedral angle value for given four atoms.
+   *
+   * @param a1 Atom 1.
+   * @param a2 Atom 2.
+   * @param a3 Atom 3.
+   * @param a4 Atom 4.
+   * @return Dihedral angle between atoms 1-4.
+   */
+  private static Angle calculateTorsionAtan(
+      final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3, final PdbAtomLine a4) {
+    if ((a1 == null) || (a2 == null) || (a3 == null) || (a4 == null)) {
+      return ImmutableAngle.of(Double.NaN);
+    }
+
+    final Vector3D v1 = new Vector3D(a1.x(), a1.y(), a1.z());
+    final Vector3D v2 = new Vector3D(a2.x(), a2.y(), a2.z());
+    final Vector3D v3 = new Vector3D(a3.x(), a3.y(), a3.z());
+    final Vector3D v4 = new Vector3D(a4.x(), a4.y(), a4.z());
+    return Angle.torsionAngle(v1, v2, v3, v4);
   }
 }
