@@ -11,7 +11,6 @@ import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
-import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
@@ -65,7 +64,7 @@ public class StructureModelTest {
     final PdbResidue residue = model.findResidue("A", 10, " ");
     assertThat(residue.residueName(), is("2MG"));
     assertThat(residue.modifiedResidueName(), is("G"));
-    assertThat(residue.getDetectedResidueName(), is("G"));
+    assertThat(residue.defaultPdbName(), is("G"));
   }
 
   @Test
@@ -77,7 +76,7 @@ public class StructureModelTest {
     final PdbResidue residue = model.findResidue("A", 74, " ");
     assertThat(residue.residueName(), is("C"));
     assertThat(residue.modifiedResidueName(), is("C"));
-    assertThat(residue.getDetectedResidueName(), is("C"));
+    assertThat(residue.defaultPdbName(), is("C"));
   }
 
   @Test
@@ -118,7 +117,7 @@ public class StructureModelTest {
     final PdbResidue residueA54 = model.findResidue("A", 54, " ");
     assertThat(residueA54.residueName(), is("5MU"));
     assertThat(residueA54.modifiedResidueName(), is("U"));
-    assertThat(residueA54.getDetectedResidueName(), is("U"));
+    assertThat(residueA54.defaultPdbName(), is("U"));
     assertThat(residueA54.isModified(), is(true));
     assertThat(residueA54.hasAllAtoms(), is(false));
   }
@@ -158,17 +157,17 @@ public class StructureModelTest {
       } else if ("5MU".equals(residue.residueName())) {
         assertThat(residue.residueName(), is("5MU"));
         assertThat(residue.modifiedResidueName(), is("U"));
-        assertThat(residue.getDetectedResidueName(), is("U"));
+        assertThat(residue.defaultPdbName(), is("U"));
         assertThat(residue.isModified(), is(true));
         assertThat(residue.hasAllAtoms(), is(false));
       } else {
         assertThat(
             String.format(
                 "Detected %s for %s/%s",
-                residue.getDetectedResidueName(),
+                residue.defaultPdbName(),
                 residue.residueName(),
                 residue.modifiedResidueName()),
-            residue.getDetectedResidueName(),
+            residue.defaultPdbName(),
             is(residue.modifiedResidueName()));
         assertThat(!residue.hasAllAtoms(), is(residue.isModified()));
       }

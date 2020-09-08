@@ -38,13 +38,13 @@ public final class StructureManager {
 
   public static List<StructureModel> getAllStructures() {
     return StructureManager.STRUCTURES.stream()
-        .map(StructureInfo::getStructure)
+        .map(StructureInfo::structure)
         .collect(Collectors.toList());
   }
 
   public static List<String> getAllNames() {
     return StructureManager.STRUCTURES.stream()
-        .map(StructureInfo::getName)
+        .map(StructureInfo::name)
         .collect(Collectors.toList());
   }
 
@@ -58,8 +58,8 @@ public final class StructureManager {
 
   public static String getName(final StructureModel structure) {
     for (final StructureInfo si : StructureManager.STRUCTURES) {
-      if (Objects.equals(si.getStructure(), structure)) {
-        return si.getName();
+      if (Objects.equals(si.structure(), structure)) {
+        return si.name();
       }
     }
     throw new IllegalArgumentException("Failed to find PdbModel");
@@ -67,8 +67,8 @@ public final class StructureManager {
 
   public static File getFile(final StructureModel structure) {
     for (final StructureInfo si : StructureManager.STRUCTURES) {
-      if (Objects.equals(si.getStructure(), structure)) {
-        return si.getPath();
+      if (Objects.equals(si.structure(), structure)) {
+        return si.path();
       }
     }
     throw new IllegalArgumentException("Failed to find PdbModel");
@@ -76,8 +76,8 @@ public final class StructureManager {
 
   public static StructureModel getStructure(final String name) {
     for (final StructureInfo si : StructureManager.STRUCTURES) {
-      if (Objects.equals(si.getName(), name)) {
-        return si.getStructure();
+      if (Objects.equals(si.name(), name)) {
+        return si.structure();
       }
     }
     throw new IllegalArgumentException("Failed to find structure");
@@ -117,8 +117,8 @@ public final class StructureManager {
 
   public static List<StructureModel> getModels(final File file) {
     return StructureManager.STRUCTURES.stream()
-        .filter(si -> Objects.equals(si.getPath(), file))
-        .map(StructureInfo::getStructure)
+        .filter(si -> Objects.equals(si.path(), file))
+        .map(StructureInfo::structure)
         .collect(Collectors.toList());
   }
 
@@ -142,7 +142,7 @@ public final class StructureManager {
   public static void remove(final File path) {
     final Collection<StructureInfo> toRemove =
         StructureManager.STRUCTURES.stream()
-            .filter(si -> Objects.equals(si.getPath(), path))
+            .filter(si -> Objects.equals(si.path(), path))
             .collect(Collectors.toList());
 
     for (final StructureInfo si : toRemove) {
@@ -216,7 +216,7 @@ public final class StructureManager {
       }
 
       StructureManager.STRUCTURES.add(
-          new StructureInfo(model, file, String.format(format, name, i + 1)));
+          ImmutableStructureInfo.of(model, file, String.format(format, name, i + 1)));
     }
   }
 }

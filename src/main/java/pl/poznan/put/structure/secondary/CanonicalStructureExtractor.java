@@ -27,7 +27,7 @@ public final class CanonicalStructureExtractor {
   public static BpSeq bpSeq(final ResidueCollection residueCollection) {
     final List<PdbResidue> residues =
         residueCollection.residues().stream()
-            .filter(pdbResidue -> pdbResidue.getMoleculeType() == MoleculeType.RNA)
+            .filter(pdbResidue -> pdbResidue.moleculeType() == MoleculeType.RNA)
             .collect(Collectors.toList());
     final ResidueCollection collection = ImmutableSimpleResidueCollection.of(residues);
     final Collection<ClassifiedBasePair> basePairs =

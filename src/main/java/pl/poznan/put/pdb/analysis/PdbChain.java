@@ -29,7 +29,7 @@ public abstract class PdbChain implements Comparable<PdbChain>, Serializable, Re
     int proteinCounter = 0;
 
     for (final PdbResidue residue : residues()) {
-      switch (residue.getMoleculeType()) {
+      switch (residue.moleculeType()) {
         case PROTEIN:
           proteinCounter += 1;
           break;

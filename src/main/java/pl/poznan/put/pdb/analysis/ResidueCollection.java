@@ -11,7 +11,7 @@ import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.rna.torsion.Chi;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
-import pl.poznan.put.torsion.PseudoTorsionAngleType;
+import pl.poznan.put.torsion.AtomPair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,12 +32,13 @@ public interface ResidueCollection {
             .map(PdbResidue::torsionAngleTypes)
             .flatMap(Collection::stream)
             .filter(torsionAngleType -> torsionAngleType instanceof AtomBasedTorsionAngleType)
-            .filter(torsionAngleType -> !(torsionAngleType instanceof PseudoTorsionAngleType))
-            .filter(torsionAngleType -> !(torsionAngleType instanceof Chi))
             .map(torsionAngleType -> (AtomBasedTorsionAngleType) torsionAngleType)
+            .filter(torsionAngleType -> !torsionAngleType.isPseudoTorsion())
+            .filter(torsionAngleType -> !Objects.equals(torsionAngleType, Chi.PURINE_CHI))
+            .filter(torsionAngleType -> !Objects.equals(torsionAngleType, Chi.PYRIMIDINE_CHI))
             .collect(Collectors.toSet());
 
-    final Set<AtomBasedTorsionAngleType.AtomPair> atomPairs =
+    final Set<AtomPair> atomPairs =
         IntStream.range(0, residues().size())
             .boxed()
             .flatMap(
@@ -48,7 +49,7 @@ public interface ResidueCollection {
             .collect(Collectors.toCollection(TreeSet::new));
 
     return atomPairs.stream()
-        .map(AtomBasedTorsionAngleType.AtomPair::generateValidationMessage)
+        .map(AtomPair::generateValidationMessage)
         .filter(StringUtils::isNotBlank)
         .collect(Collectors.toList());
   }
@@ -90,7 +91,7 @@ public interface ResidueCollection {
 
   default List<PdbAtomLine> filteredAtoms(final MoleculeType moleculeType) {
     return residues().stream()
-        .filter(pdbResidue -> pdbResidue.getMoleculeType() == moleculeType)
+        .filter(pdbResidue -> pdbResidue.moleculeType() == moleculeType)
         .filter(pdbResidue -> !pdbResidue.isMissing())
         .flatMap(pdbResidue -> pdbResidue.atoms().stream())
         .collect(Collectors.toList());

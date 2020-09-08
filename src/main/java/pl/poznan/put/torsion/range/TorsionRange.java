@@ -1,6 +1,5 @@
 package pl.poznan.put.torsion.range;
 
-import lombok.Getter;
 import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
@@ -8,7 +7,6 @@ import pl.poznan.put.circular.ImmutableAngle;
 import java.util.Arrays;
 
 /** Torsion angle ranges as defined in Saenger's "Principles...". */
-@Getter
 public enum TorsionRange implements Range {
   SYN_CIS("sp", -30.0, 30.0),
   ANTI_TRANS("ap", 150.0, -150.0),
@@ -38,6 +36,18 @@ public enum TorsionRange implements Range {
     return TorsionRange.PROVIDER;
   }
 
+  public String displayName() {
+    return displayName;
+  }
+
+  public Angle begin() {
+    return begin;
+  }
+
+  public Angle end() {
+    return end;
+  }
+
   /**
    * Calculate difference between two angle ranges. It will be either 0 (equal), 1 (neighbour), 2
    * (next to neighbour) or 3 (opposite). Because each range is exactly 60 degree wide, then
@@ -57,7 +67,7 @@ public enum TorsionRange implements Range {
       return RangeDifference.INVALID;
     }
 
-    final int delta = (int) Math.round(begin.subtract(other.getBegin()).degrees360());
+    final int delta = (int) Math.round(begin.subtract(other.begin()).degrees360());
     return RangeDifference.fromValue(delta / 60);
   }
 }

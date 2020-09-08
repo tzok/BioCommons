@@ -1,60 +1,60 @@
 package pl.poznan.put.rna;
 
-import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
+import org.immutables.value.Value;
 
 import java.io.Serializable;
 import java.util.Locale;
 
-@EqualsAndHashCode
-public final class RNAInteractionType implements Serializable, Comparable<RNAInteractionType> {
+@Value.Immutable
+public abstract class RNAInteractionType implements Serializable, Comparable<RNAInteractionType> {
   public static final RNAInteractionType BASE_BASE =
-      new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, true);
+      ImmutableRNAInteractionType.builder()
+          .left(RNAResidueComponentType.BASE)
+          .right(RNAResidueComponentType.BASE)
+          .isPairing(true)
+          .build();
   public static final RNAInteractionType BASE_BASE_1H =
-      new RNAInteractionType(
-          RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, "base - base (1H)");
+      ImmutableRNAInteractionType.builder()
+          .left(RNAResidueComponentType.BASE)
+          .right(RNAResidueComponentType.BASE)
+          .isPairing(false)
+          .description("base - base (1H)")
+          .build();
   public static final RNAInteractionType BASE_PHOSPHATE =
-      new RNAInteractionType(
-          RNAResidueComponentType.BASE, RNAResidueComponentType.PHOSPHATE, false);
+      ImmutableRNAInteractionType.builder()
+          .left(RNAResidueComponentType.BASE)
+          .right(RNAResidueComponentType.PHOSPHATE)
+          .isPairing(false)
+          .build();
   public static final RNAInteractionType BASE_RIBOSE =
-      new RNAInteractionType(RNAResidueComponentType.BASE, RNAResidueComponentType.RIBOSE, false);
+      ImmutableRNAInteractionType.builder()
+          .left(RNAResidueComponentType.BASE)
+          .right(RNAResidueComponentType.RIBOSE)
+          .isPairing(false)
+          .build();
   public static final RNAInteractionType SUGAR_SUGAR =
-      new RNAInteractionType(RNAResidueComponentType.RIBOSE, RNAResidueComponentType.RIBOSE, false);
+      ImmutableRNAInteractionType.builder()
+          .left(RNAResidueComponentType.RIBOSE)
+          .right(RNAResidueComponentType.RIBOSE)
+          .isPairing(false)
+          .build();
   public static final RNAInteractionType STACKING =
-      new RNAInteractionType(
-          RNAResidueComponentType.BASE, RNAResidueComponentType.BASE, "stacking");
+      ImmutableRNAInteractionType.builder()
+          .left(RNAResidueComponentType.BASE)
+          .right(RNAResidueComponentType.BASE)
+          .isPairing(false)
+          .description("stacking")
+          .build();
   public static final RNAInteractionType OTHER =
-      new RNAInteractionType(
-          RNAResidueComponentType.UNKNOWN, RNAResidueComponentType.UNKNOWN, "other");
+      ImmutableRNAInteractionType.builder()
+          .left(RNAResidueComponentType.UNKNOWN)
+          .right(RNAResidueComponentType.UNKNOWN)
+          .isPairing(false)
+          .description("other")
+          .build();
 
-  private final RNAResidueComponentType left;
-  private final RNAResidueComponentType right;
-  private final boolean isPairing;
-  private final String description;
-
-  public RNAInteractionType(
-      final RNAResidueComponentType left,
-      final RNAResidueComponentType right,
-      final boolean isPairing) {
-    super();
-    this.left = left;
-    this.right = right;
-    this.isPairing = isPairing;
-    description =
-        left.name().toLowerCase(Locale.ENGLISH) + " - " + right.name().toLowerCase(Locale.ENGLISH);
-  }
-
-  public RNAInteractionType(
-      final RNAResidueComponentType left,
-      final RNAResidueComponentType right,
-      final String description) {
-    super();
-    this.left = left;
-    this.right = right;
-    isPairing = false;
-    this.description = description;
-  }
-
-  private static int getNucleotideFragmentInternalValue(final RNAResidueComponentType type) {
+  private static int fragmentInternalValue(final RNAResidueComponentType type) {
     switch (type) {
       case BASE:
         return 1;
@@ -68,32 +68,33 @@ public final class RNAInteractionType implements Serializable, Comparable<RNAInt
     }
   }
 
-  public RNAResidueComponentType getLeft() {
-    return left;
-  }
+  public abstract RNAResidueComponentType left();
 
-  public RNAResidueComponentType getRight() {
-    return right;
-  }
+  public abstract RNAResidueComponentType right();
 
-  public boolean isPairing() {
-    return isPairing;
-  }
+  public abstract boolean isPairing();
 
-  @Override
-  public String toString() {
-    return description;
+  @Value.Default
+  public String description() {
+    return StringUtils.lowerCase(String.format("%s - %s", right(), left()), Locale.US);
   }
 
   @Override
-  public int compareTo(final RNAInteractionType t) {
-    final int mine = getInternalValue();
-    final int theirs = t.getInternalValue();
-    return Integer.compare(mine, theirs);
+  public final String toString() {
+    return description();
   }
 
-  public RNAInteractionType invert() {
-    return new RNAInteractionType(right, left, isPairing);
+  @Override
+  public final int compareTo(final RNAInteractionType t) {
+    return Integer.compare(internalValue(), t.internalValue());
+  }
+
+  public final RNAInteractionType invert() {
+    return ImmutableRNAInteractionType.builder()
+        .left(right())
+        .right(left())
+        .isPairing(isPairing())
+        .build();
   }
 
   /*
@@ -102,15 +103,15 @@ public final class RNAInteractionType implements Serializable, Comparable<RNAInt
    * be taken by pairing base-base interactions, then non-pairing, then
    * base-sugar, etc. Also, 'stacking' interactions should be the last
    */
-  private int getInternalValue() {
+  private int internalValue() {
     if (equals(RNAInteractionType.STACKING)) {
       return Integer.MAX_VALUE;
     }
 
     int value = 0;
-    value += RNAInteractionType.getNucleotideFragmentInternalValue(left);
-    value += RNAInteractionType.getNucleotideFragmentInternalValue(right);
-    if (isPairing) {
+    value += RNAInteractionType.fragmentInternalValue(left());
+    value += RNAInteractionType.fragmentInternalValue(right());
+    if (isPairing()) {
       value = -value;
     }
     return value;

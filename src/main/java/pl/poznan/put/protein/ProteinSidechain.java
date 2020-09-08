@@ -4,11 +4,8 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
-import pl.poznan.put.protein.torsion.Calpha;
-import pl.poznan.put.protein.torsion.Omega;
-import pl.poznan.put.protein.torsion.Phi;
 import pl.poznan.put.protein.torsion.ProteinChiType;
-import pl.poznan.put.protein.torsion.Psi;
+import pl.poznan.put.protein.torsion.ProteinTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.Quadruplet;
 
@@ -39,10 +36,10 @@ public abstract class ProteinSidechain extends ResidueComponent
     this.oneLetterName = oneLetterName;
     this.pdbNames = Arrays.asList(pdbNames);
 
-    torsionAngleTypes.add(Phi.getInstance());
-    torsionAngleTypes.add(Psi.getInstance());
-    torsionAngleTypes.add(Omega.getInstance());
-    torsionAngleTypes.add(Calpha.getInstance());
+    torsionAngleTypes.add(ProteinTorsionAngleType.PHI.angleTypes().get(0));
+    torsionAngleTypes.add(ProteinTorsionAngleType.PSI.angleTypes().get(0));
+    torsionAngleTypes.add(ProteinTorsionAngleType.OMEGA.angleTypes().get(0));
+    torsionAngleTypes.add(ProteinTorsionAngleType.CALPHA.angleTypes().get(0));
   }
 
   @Override
@@ -80,7 +77,6 @@ public abstract class ProteinSidechain extends ResidueComponent
     if (!hasChiDefined(chiType)) {
       throw new IllegalArgumentException("Invalid " + chiType + " angle for " + longName);
     }
-
     return chiAtoms.get(chiType);
   }
 

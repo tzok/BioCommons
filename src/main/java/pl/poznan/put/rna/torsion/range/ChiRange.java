@@ -1,6 +1,5 @@
 package pl.poznan.put.rna.torsion.range;
 
-import lombok.Getter;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
@@ -15,7 +14,6 @@ import java.util.Arrays;
  * Torsion angle ranges for CHI as defined in Saenger's "Principles...".
  * http://jenalib.leibniz-fli.de/Piet/help/backbone.html
  */
-@Getter
 public enum ChiRange implements Range {
   HIGH_ANTI("high anti", -90.0, -15.0),
   SYN("syn", -15.0, 110.0),
@@ -56,11 +54,23 @@ public enum ChiRange implements Range {
     return ChiRange.PROVIDER;
   }
 
+  public String displayName() {
+    return displayName;
+  }
+
+  public Angle begin() {
+    return begin;
+  }
+
+  public Angle end() {
+    return end;
+  }
+
   @Override
   public RangeDifference compare(final Range other) {
     if (!(other instanceof ChiRange)) {
       throw new IllegalArgumentException(
-          "A ChiRange object can be compared only with other " + "ChiRange object");
+          "A ChiRange object can be compared only with other ChiRange object");
     }
 
     if ((this == ChiRange.INVALID) || (other == ChiRange.INVALID)) {

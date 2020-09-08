@@ -13,7 +13,7 @@ public abstract class Pyrimidine extends Base {
       final char oneLetterName,
       final String... names) {
     super(atoms, longName, oneLetterName, names);
-    torsionAngleTypes.add(Chi.getPyrimidineInstance());
+    torsionAngleTypes.add(Chi.PYRIMIDINE_CHI);
   }
 
   @Override

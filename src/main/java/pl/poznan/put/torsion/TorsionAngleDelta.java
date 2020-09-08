@@ -60,8 +60,8 @@ public class TorsionAngleDelta {
       state = State.BOTH_VALID;
       delta = target.subtract(model);
 
-      final Range targetRange = masterType.getRange(target);
-      final Range modelRange = masterType.getRange(model);
+      final Range targetRange = masterType.range(target);
+      final Range modelRange = masterType.range(model);
       rangeDifference = targetRange.compare(modelRange);
     }
 

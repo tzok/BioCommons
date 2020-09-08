@@ -18,10 +18,8 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.rna.Base;
-import pl.poznan.put.rna.NucleicAcidResidueComponent;
 import pl.poznan.put.rna.Purine;
 import pl.poznan.put.rna.Pyrimidine;
-import pl.poznan.put.rna.RNAResidueComponentType;
 import pl.poznan.put.rna.base.NucleobaseType;
 import pl.poznan.put.torsion.TorsionAngleType;
 
@@ -30,14 +28,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Value.Immutable
-public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>, ChainNumberICode {
+public abstract class PdbResidue
+    implements Serializable, Comparable<PdbResidue>, ChainNumberICode, ResidueInformationProvider {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbResidue.class);
 
   public static PdbResidue fromBioJavaGroup(final Group group) {
@@ -57,9 +55,6 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
     return ImmutablePdbResidue.of(residueIdentifier, residueName, residueName, atoms, false, false);
   }
 
-  @Value.Parameter(order = 5)
-  public abstract boolean isModifiedInPDB();
-
   @Value.Parameter(order = 1)
   public abstract PdbResidueIdentifier identifier();
 
@@ -69,15 +64,14 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
   @Value.Parameter(order = 3)
   public abstract String modifiedResidueName();
 
-  @Value.Parameter(order = 6)
-  public abstract boolean isMissing();
-
   @Value.Parameter(order = 4)
   public abstract List<PdbAtomLine> atoms();
 
-  public final boolean wasSuccessfullyDetected() {
-    return residueInformationProvider().moleculeType() != MoleculeType.UNKNOWN;
-  }
+  @Value.Parameter(order = 5)
+  public abstract boolean isModifiedInPDB();
+
+  @Value.Parameter(order = 6)
+  public abstract boolean isMissing();
 
   @Value.Lazy
   public boolean hasAllAtoms() {
@@ -106,52 +100,19 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
         PdbResidue.LOGGER.debug(
             "Residue {} ({}) contains additional atoms: {}",
             this,
-            getDetectedResidueName(),
+            defaultPdbName(),
             Arrays.toString(actual.toArray(new AtomName[0])));
       }
       if (!expected.isEmpty()) {
         PdbResidue.LOGGER.debug(
             "Residue {} ({}) has missing atoms: {}",
             this,
-            getDetectedResidueName(),
+            defaultPdbName(),
             Arrays.toString(expected.toArray(new AtomName[0])));
       }
     }
 
     return result;
-  }
-
-  public final String getDetectedResidueName() {
-    return residueInformationProvider().defaultPdbName();
-  }
-
-  @Override
-  public final String chainIdentifier() {
-    return identifier().chainIdentifier();
-  }
-
-  @Override
-  public final int residueNumber() {
-    return identifier().residueNumber();
-  }
-
-  @Override
-  public final String insertionCode() {
-    return identifier().insertionCode();
-  }
-
-  @Value.Lazy
-  public PdbNamedResidueIdentifier namedResidueIdentifer() {
-    final char oneLetterName = residueInformationProvider().oneLetterName();
-    return ImmutablePdbNamedResidueIdentifier.of(
-        identifier().chainIdentifier(),
-        identifier().residueNumber(),
-        identifier().insertionCode(),
-        isModified() ? Character.toLowerCase(oneLetterName) : oneLetterName);
-  }
-
-  public final List<TorsionAngleType> torsionAngleTypes() {
-    return residueInformationProvider().torsionAngleTypes();
   }
 
   @Value.Lazy
@@ -167,16 +128,56 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
     return atoms().stream().map(PdbAtomLine::detectAtomName).collect(Collectors.toSet());
   }
 
-  public final char oneLetterName() {
-    return namedResidueIdentifer().oneLetterName();
+  @Value.Lazy
+  public PdbNamedResidueIdentifier namedResidueIdentifer() {
+    final char oneLetterName = residueInformationProvider().oneLetterName();
+    return ImmutablePdbNamedResidueIdentifier.of(
+        identifier().chainIdentifier(),
+        identifier().residueNumber(),
+        identifier().insertionCode(),
+        isModified() ? Character.toLowerCase(oneLetterName) : oneLetterName);
   }
 
-  public final boolean isModified() {
-    return !isMissing() && (isModifiedInPDB() || isModifiedByAtomContent());
+  @Value.Lazy
+  public Plane nucleobasePlane() {
+    if (residueInformationProvider() instanceof NucleobaseType) {
+      final Base base = ((NucleobaseType) residueInformationProvider()).getBaseInstance();
+
+      if (base instanceof Purine) {
+        final Vector3D p1 = findAtom(AtomName.N9).toVector3D();
+        final Vector3D p2 = findAtom(AtomName.C2).toVector3D();
+        final Vector3D p3 = findAtom(AtomName.C6).toVector3D();
+        return new Plane(p1, p2, p3, 1.0e-3);
+      } else if (base instanceof Pyrimidine) {
+        final Vector3D p1 = findAtom(AtomName.N1).toVector3D();
+        final Vector3D p2 = findAtom(AtomName.N3).toVector3D();
+        final Vector3D p3 = findAtom(AtomName.C5).toVector3D();
+        return new Plane(p1, p2, p3, 1.0e-3);
+      }
+    }
+
+    throw new IllegalArgumentException(
+        "Cannot compute base plane for not a nucleotide: " + identifier());
   }
 
-  public final MoleculeType getMoleculeType() {
-    return residueInformationProvider().moleculeType();
+  @Value.Lazy
+  public boolean hasHydrogen() {
+    return atomNames().stream().anyMatch(atomName -> !atomName.isHeavy());
+  }
+
+  @Override
+  public final String chainIdentifier() {
+    return identifier().chainIdentifier();
+  }
+
+  @Override
+  public final int residueNumber() {
+    return identifier().residueNumber();
+  }
+
+  @Override
+  public final String insertionCode() {
+    return identifier().insertionCode();
   }
 
   @Override
@@ -196,13 +197,36 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
     return identifier().compareTo(t.identifier());
   }
 
-  public final boolean hasAtom(final AtomName atomName) {
-    return atomNames().contains(atomName);
+  public final boolean wasSuccessfullyDetected() {
+    return residueInformationProvider().moleculeType() != MoleculeType.UNKNOWN;
   }
 
-  @Value.Lazy
-  public boolean hasHydrogen() {
-    return atomNames().stream().anyMatch(atomName -> !atomName.isHeavy());
+  public final boolean isModified() {
+    return !isMissing() && (isModifiedInPDB() || isModifiedByAtomContent());
+  }
+
+  public final MoleculeType moleculeType() {
+    return residueInformationProvider().moleculeType();
+  }
+
+  public final String description() {
+    return residueInformationProvider().description();
+  }
+
+  public final char oneLetterName() {
+    return namedResidueIdentifer().oneLetterName();
+  }
+
+  public final String defaultPdbName() {
+    return residueInformationProvider().defaultPdbName();
+  }
+
+  public final List<TorsionAngleType> torsionAngleTypes() {
+    return residueInformationProvider().torsionAngleTypes();
+  }
+
+  public final boolean hasAtom(final AtomName atomName) {
+    return atomNames().contains(atomName);
   }
 
   public final boolean isConnectedTo(final PdbResidue other) {
@@ -229,52 +253,11 @@ public abstract class PdbResidue implements Serializable, Comparable<PdbResidue>
     return atoms().stream().map(PdbAtomLine::toCif).collect(Collectors.joining("\n"));
   }
 
-  public final List<PdbAtomLine> getComponentAtoms(final RNAResidueComponentType type) {
-    return residueInformationProvider().moleculeComponents().stream()
-        .filter(
-            component ->
-                (component instanceof NucleicAcidResidueComponent)
-                    && (((NucleicAcidResidueComponent) component).getType() == type))
-        .findFirst()
-        .map(
-            component ->
-                component.getAtoms().stream()
-                    .filter(this::hasAtom)
-                    .map(this::findAtom)
-                    .collect(Collectors.toList()))
-        .orElse(Collections.emptyList());
-  }
-
-  @Value.Lazy
-  public Plane getNucleobasePlane() {
-    if (residueInformationProvider() instanceof NucleobaseType) {
-      final Base base = ((NucleobaseType) residueInformationProvider()).getBaseInstance();
-
-      if (base instanceof Purine) {
-        final Vector3D p1 = findAtom(AtomName.N9).toVector3D();
-        final Vector3D p2 = findAtom(AtomName.C2).toVector3D();
-        final Vector3D p3 = findAtom(AtomName.C6).toVector3D();
-        return new Plane(p1, p2, p3, 1.0e-3);
-      } else if (base instanceof Pyrimidine) {
-        final Vector3D p1 = findAtom(AtomName.N1).toVector3D();
-        final Vector3D p2 = findAtom(AtomName.N3).toVector3D();
-        final Vector3D p3 = findAtom(AtomName.C5).toVector3D();
-        return new Plane(p1, p2, p3, 1.0e-3);
-      }
-    }
-
-    throw new IllegalArgumentException(
-        "Cannot compute base plane for not a nucleotide: " + identifier());
-  }
-
   public final PdbAtomLine findAtom(final AtomName atomName) {
-    for (final PdbAtomLine atom : atoms()) {
-      if (atom.detectAtomName() == atomName) {
-        return atom;
-      }
-    }
-
-    throw new IllegalArgumentException("Failed to find: " + atomName);
+    return atoms().stream()
+        .filter(atom -> atom.detectAtomName() == atomName)
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Failed to find: " + atomName));
   }
 
   private boolean isModifiedByAtomContent() {

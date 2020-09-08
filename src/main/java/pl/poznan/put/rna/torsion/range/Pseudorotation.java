@@ -1,6 +1,5 @@
 package pl.poznan.put.rna.torsion.range;
 
-import lombok.Getter;
 import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
@@ -10,7 +9,6 @@ import pl.poznan.put.torsion.range.RangeProvider;
 
 import java.util.Arrays;
 
-@Getter
 public enum Pseudorotation implements Range {
   TWIST_3_2("C2'-exo-C3'-endo", 0 * 18.0),
   ENVELOPE_3_ENDO("C3'-endo", 1.0 * 18.0),
@@ -55,6 +53,18 @@ public enum Pseudorotation implements Range {
     return Pseudorotation.PROVIDER;
   }
 
+  public String displayName() {
+    return displayName;
+  }
+
+  public Angle begin() {
+    return begin;
+  }
+
+  public Angle end() {
+    return end;
+  }
+
   @Override
   public RangeDifference compare(final Range other) {
     if (!(other instanceof Pseudorotation)) {
@@ -70,7 +80,7 @@ public enum Pseudorotation implements Range {
       return RangeDifference.EQUAL;
     }
 
-    double difference = begin.subtract(other.getBegin()).degrees();
+    double difference = begin.subtract(other.begin()).degrees();
     if (difference > 90.0) {
       difference = 180.0 - difference;
     }

@@ -3,16 +3,18 @@ package pl.poznan.put.protein.torsion;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
+import pl.poznan.put.torsion.ImmutableAtomBasedTorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.ImmutableQuadruplet;
 import pl.poznan.put.types.Quadruplet;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public final class Chi3 extends AtomBasedTorsionAngleType {
+public final class Chi3 {
   public static final Quadruplet<AtomName> ARGININE_ATOMS =
       ImmutableQuadruplet.of(AtomName.CB, AtomName.CG, AtomName.CD, AtomName.NE);
   public static final Quadruplet<AtomName> GLUTAMIC_ACID_ATOMS =
@@ -24,26 +26,35 @@ public final class Chi3 extends AtomBasedTorsionAngleType {
   public static final Quadruplet<AtomName> METHIONINE_ATOMS =
       ImmutableQuadruplet.of(AtomName.CB, AtomName.CG, AtomName.SD, AtomName.CE);
 
-  private static final Map<Quadruplet<AtomName>, Chi3> INSTANCE_CACHE = new HashMap<>();
+  private static final Map<Quadruplet<AtomName>, TorsionAngleType> ANGLE_MAP =
+      Stream.of(
+              Chi3.ARGININE_ATOMS,
+              Chi3.GLUTAMIC_ACID_ATOMS,
+              Chi3.GLUTAMINE_ATOMS,
+              Chi3.LYSINE_ATOMS,
+              Chi3.METHIONINE_ATOMS)
+          .collect(Collectors.toSet())
+          .stream()
+          .collect(
+              Collectors.toMap(
+                  Function.identity(),
+                  quad ->
+                      ImmutableAtomBasedTorsionAngleType.of(
+                          MoleculeType.PROTEIN,
+                          Unicode.CHI3,
+                          "chi3",
+                          quad,
+                          ImmutableQuadruplet.of(0, 0, 0, 0))));
 
-  private Chi3(final Quadruplet<AtomName> atoms) {
-    super(MoleculeType.PROTEIN, Unicode.CHI3, atoms, ImmutableQuadruplet.of(0, 0, 0, 0));
+  private Chi3() {
+    super();
   }
 
-  public static Chi3[] getInstances() {
-    final List<Chi3> instances = new ArrayList<>();
-    instances.add(Chi3.getInstance(Chi3.ARGININE_ATOMS));
-    instances.add(Chi3.getInstance(Chi3.GLUTAMIC_ACID_ATOMS));
-    instances.add(Chi3.getInstance(Chi3.GLUTAMINE_ATOMS));
-    instances.add(Chi3.getInstance(Chi3.LYSINE_ATOMS));
-    instances.add(Chi3.getInstance(Chi3.METHIONINE_ATOMS));
-    return instances.toArray(new Chi3[0]);
+  public static Collection<TorsionAngleType> angleTypes() {
+    return Chi3.ANGLE_MAP.values();
   }
 
-  public static Chi3 getInstance(final Quadruplet<AtomName> atoms) {
-    if (!Chi3.INSTANCE_CACHE.containsKey(atoms)) {
-      Chi3.INSTANCE_CACHE.put(atoms, new Chi3(atoms));
-    }
-    return Chi3.INSTANCE_CACHE.get(atoms);
+  public static TorsionAngleType getInstance(final Quadruplet<AtomName> chiAtoms) {
+    return Chi3.ANGLE_MAP.get(chiAtoms);
   }
 }

@@ -4,25 +4,19 @@ import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
-import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.rna.base.NucleobaseType;
-import pl.poznan.put.rna.torsion.Alpha;
-import pl.poznan.put.rna.torsion.Beta;
 import pl.poznan.put.rna.torsion.Chi;
-import pl.poznan.put.rna.torsion.Delta;
-import pl.poznan.put.rna.torsion.Epsilon;
-import pl.poznan.put.rna.torsion.Gamma;
 import pl.poznan.put.rna.torsion.RNATorsionAngleType;
-import pl.poznan.put.rna.torsion.Zeta;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -34,20 +28,20 @@ public class AverageTorsionAngleTypeTest {
 
   @Test
   public final void getDisplayName() {
-    assertThat(averageTorsionAngleType.getLongDisplayName(), is("MCQ(α, β, γ, δ, ε, ζ, χ)"));
-    assertThat(averageTorsionAngleType.getShortDisplayName(), is("MCQ(α, β, γ, δ, ε, ζ, χ)"));
+    assertThat(averageTorsionAngleType.longDisplayName(), is("MCQ(α, β, γ, δ, ε, ζ, χ)"));
+    assertThat(averageTorsionAngleType.shortDisplayName(), is("MCQ(α, β, γ, δ, ε, ζ, χ)"));
   }
 
   @Test
   public final void getExportName() {
     assertThat(
-        averageTorsionAngleType.getExportName(), is("MCQ_alpha_beta_gamma_delta_epsilon_zeta_chi"));
+        averageTorsionAngleType.exportName(), is("MCQ_alpha_beta_gamma_delta_epsilon_zeta_chi"));
   }
 
   @Test
   public final void getConsideredAngles() {
     final List<MasterTorsionAngleType> consideredAngles =
-        averageTorsionAngleType.getConsideredAngles();
+        averageTorsionAngleType.consideredAngles();
 
     assertThat(consideredAngles.size(), is(7));
     assertThat(consideredAngles, hasItem(RNATorsionAngleType.ALPHA));
@@ -70,12 +64,18 @@ public class AverageTorsionAngleTypeTest {
     final List<PdbResidue> residues = model.residues();
     assertThat(residues.size(), is(76));
 
-    final TorsionAngleValue alpha = Alpha.getInstance().calculate(residues, 1);
-    final TorsionAngleValue beta = Beta.getInstance().calculate(residues, 1);
-    final TorsionAngleValue gamma = Gamma.getInstance().calculate(residues, 1);
-    final TorsionAngleValue delta = Delta.getInstance().calculate(residues, 1);
-    final TorsionAngleValue epsilon = Epsilon.getInstance().calculate(residues, 1);
-    final TorsionAngleValue zeta = Zeta.getInstance().calculate(residues, 1);
+    final TorsionAngleValue alpha =
+        RNATorsionAngleType.ALPHA.angleTypes().get(0).calculate(residues, 1);
+    final TorsionAngleValue beta =
+        RNATorsionAngleType.BETA.angleTypes().get(0).calculate(residues, 1);
+    final TorsionAngleValue gamma =
+        RNATorsionAngleType.GAMMA.angleTypes().get(0).calculate(residues, 1);
+    final TorsionAngleValue delta =
+        RNATorsionAngleType.DELTA.angleTypes().get(0).calculate(residues, 1);
+    final TorsionAngleValue epsilon =
+        RNATorsionAngleType.EPSILON.angleTypes().get(0).calculate(residues, 1);
+    final TorsionAngleValue zeta =
+        RNATorsionAngleType.ZETA.angleTypes().get(0).calculate(residues, 1);
 
     assertThat(alpha.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-67.45))));
     assertThat(beta.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-178.39))));
@@ -88,7 +88,19 @@ public class AverageTorsionAngleTypeTest {
     final ResidueInformationProvider provider = residue.residueInformationProvider();
     assertThat(provider, is(NucleobaseType.CYTOSINE));
 
-    final TorsionAngleValue chi = Chi.getPyrimidineInstance().calculate(residues, 1);
+    final TorsionAngleType chiType =
+        provider.torsionAngleTypes().stream()
+            .filter(
+                angleType ->
+                    Objects.equals(angleType, Chi.PURINE_CHI)
+                        || Objects.equals(angleType, Chi.PYRIMIDINE_CHI))
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException("Failed to find chi angle type for: " + residue));
+
+    assertThat(chiType, is(Chi.PYRIMIDINE_CHI));
+    final TorsionAngleValue chi = chiType.calculate(residues, 1);
     assertThat(chi.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-163.82))));
 
     final TorsionAngleValue result = averageTorsionAngleType.calculate(residues, 1);
@@ -100,12 +112,18 @@ public class AverageTorsionAngleTypeTest {
   public final void calculateFromValues() {
     final List<TorsionAngleValue> values =
         Arrays.asList(
-            new TorsionAngleValue(Alpha.getInstance(), ImmutableAngle.of(FastMath.toRadians(60.0))),
-            new TorsionAngleValue(Alpha.getInstance(), ImmutableAngle.of(FastMath.toRadians(25.0))),
             new TorsionAngleValue(
-                Alpha.getInstance(), ImmutableAngle.of(FastMath.toRadians(-80.0))),
+                RNATorsionAngleType.ALPHA.angleTypes().get(0),
+                ImmutableAngle.of(FastMath.toRadians(60.0))),
             new TorsionAngleValue(
-                Alpha.getInstance(), ImmutableAngle.of(FastMath.toRadians(-150.0))));
+                RNATorsionAngleType.ALPHA.angleTypes().get(0),
+                ImmutableAngle.of(FastMath.toRadians(25.0))),
+            new TorsionAngleValue(
+                RNATorsionAngleType.ALPHA.angleTypes().get(0),
+                ImmutableAngle.of(FastMath.toRadians(-80.0))),
+            new TorsionAngleValue(
+                RNATorsionAngleType.ALPHA.angleTypes().get(0),
+                ImmutableAngle.of(FastMath.toRadians(-150.0))));
     final TorsionAngleValue result = averageTorsionAngleType.calculate(values);
 
     assertThat(result.getValue(), is(ImmutableAngle.of(FastMath.toRadians(-15.363804))));
@@ -113,8 +131,7 @@ public class AverageTorsionAngleTypeTest {
 
   @Test
   public final void getAngleTypes() {
-    final Collection<? extends TorsionAngleType> angleTypes =
-        averageTorsionAngleType.getAngleTypes();
+    final Collection<? extends TorsionAngleType> angleTypes = averageTorsionAngleType.angleTypes();
     assertThat(angleTypes.size(), is(1));
     assertThat(angleTypes.contains(averageTorsionAngleType), is(true));
   }

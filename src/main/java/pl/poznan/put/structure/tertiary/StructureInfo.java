@@ -1,21 +1,24 @@
 package pl.poznan.put.structure.tertiary;
 
-import lombok.Data;
+import org.immutables.value.Value;
 import pl.poznan.put.pdb.analysis.StructureModel;
 
 import java.io.File;
 import java.util.Comparator;
 
-@Data
-public class StructureInfo implements Comparable<StructureInfo> {
-  private final StructureModel structure;
-  private final File path;
-  private final String name;
+@Value.Immutable
+public abstract class StructureInfo implements Comparable<StructureInfo> {
+  @Value.Parameter(order = 1)
+  public abstract StructureModel structure();
 
-  private final Comparator<StructureInfo> comparator = Comparator.comparing(StructureInfo::getName);
+  @Value.Parameter(order = 2)
+  public abstract File path();
+
+  @Value.Parameter(order = 3)
+  public abstract String name();
 
   @Override
   public final int compareTo(final StructureInfo t) {
-    return comparator.compare(this, t);
+    return Comparator.comparing(StructureInfo::name).compare(this, t);
   }
 }

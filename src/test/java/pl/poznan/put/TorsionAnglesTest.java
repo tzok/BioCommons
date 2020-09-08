@@ -6,7 +6,8 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
 import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.rna.torsion.Beta;
+import pl.poznan.put.rna.torsion.RNATorsionAngleType;
+import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 import pl.poznan.put.torsion.TorsionAnglesHelper;
 
@@ -33,6 +34,10 @@ public class TorsionAnglesTest {
   private static final double RADIANS = -2.2349490129;
   private static final double DEGREES = -128.0531458665;
   // @formatter:on
+
+  private static boolean isBelowEpsilon(final double value) {
+    return FastMath.abs(value) < 1.0e-6;
+  }
 
   @Test
   public final void testAngle() {
@@ -67,7 +72,8 @@ public class TorsionAnglesTest {
         TorsionAnglesTest.isBelowEpsilon(torsionAngleDegrees - TorsionAnglesTest.DEGREES),
         is(true));
 
-    final Beta beta = Beta.getInstance();
+    final AtomBasedTorsionAngleType beta =
+        (AtomBasedTorsionAngleType) RNATorsionAngleType.BETA.angleTypes().get(0);
     final TorsionAngleValue angleValue = beta.calculate(a1, a2, a3, a4);
 
     assertThat(angleValue.getValue().isValid(), is(true));
@@ -79,9 +85,5 @@ public class TorsionAnglesTest {
         TorsionAnglesTest.isBelowEpsilon(
             angleValue.getValue().degrees() - TorsionAnglesTest.DEGREES),
         is(true));
-  }
-
-  private static boolean isBelowEpsilon(final double value) {
-    return FastMath.abs(value) < 1.0e-6;
   }
 }

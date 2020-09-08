@@ -13,7 +13,7 @@ public abstract class Purine extends Base {
       final char oneLetterName,
       final String... names) {
     super(atoms, longName, oneLetterName, names);
-    torsionAngleTypes.add(Chi.getPurineInstance());
+    torsionAngleTypes.add(Chi.PURINE_CHI);
   }
 
   @Override

@@ -3,11 +3,11 @@ package pl.poznan.put.torsion.range;
 import pl.poznan.put.circular.Angle;
 
 public interface Range {
-  String getDisplayName();
+  String displayName();
 
-  Angle getBegin();
+  Angle begin();
 
-  Angle getEnd();
+  Angle end();
 
   RangeDifference compare(Range other);
 }

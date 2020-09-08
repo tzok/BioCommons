@@ -25,17 +25,12 @@ public abstract class PdbCompactFragment implements ResidueCollection {
   @Value.Parameter(order = 2)
   public abstract List<PdbResidue> residues();
 
-  public final String asSequence() {
-    return residues().stream()
-        .map(residue -> String.valueOf(residue.oneLetterName()))
-        .collect(Collectors.joining());
-  }
-
   public final PdbCompactFragment shifted(final int shift, final int size) {
     return ImmutablePdbCompactFragment.of(name(), residues().subList(shift, shift + size));
   }
 
-  public final Set<TorsionAngleType> commonTorsionAngleTypes() {
+  @Value.Lazy
+  public Set<TorsionAngleType> commonTorsionAngleTypes() {
     return mapResidueAngleValue().values().stream()
         .flatMap(Collection::stream)
         .map(TorsionAngleValue::getAngleType)
@@ -64,7 +59,7 @@ public abstract class PdbCompactFragment implements ResidueCollection {
 
   public final TorsionAngleValue torsionAngleValue(
       final ChainNumberICode chainNumberICode, final MasterTorsionAngleType masterType) {
-    final Collection<? extends TorsionAngleType> angleTypes = masterType.getAngleTypes();
+    final Collection<? extends TorsionAngleType> angleTypes = masterType.angleTypes();
 
     for (final TorsionAngleValue angleValue :
         mapResidueAngleValue().get(chainNumberICode.toResidueIdentifer())) {
@@ -81,7 +76,7 @@ public abstract class PdbCompactFragment implements ResidueCollection {
 
   public final MoleculeType moleculeType() {
     // in compact fragment, all residues have the same molecule type
-    return residues().get(0).getMoleculeType();
+    return residues().get(0).moleculeType();
   }
 
   @Override

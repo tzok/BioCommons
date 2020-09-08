@@ -23,17 +23,17 @@ public interface StructureModel extends ResidueCollection {
 
   int modelNumber();
 
+  List<PdbAtomLine> atoms();
+
   List<PdbModresLine> modifiedResidues();
 
   List<PdbRemark465Line> missingResidues();
 
-  List<PdbAtomLine> atoms();
-
-  List<PdbChain> chains();
-
   String title();
 
   Set<PdbResidueIdentifier> chainTerminatedAfter();
+
+  List<PdbChain> chains();
 
   StructureModel filteredNewInstance(MoleculeType moleculeType);
 
@@ -56,7 +56,7 @@ public interface StructureModel extends ResidueCollection {
 
   default List<PdbRemark465Line> filteredMissing(final MoleculeType moleculeType) {
     return residues().stream()
-        .filter(pdbResidue -> pdbResidue.getMoleculeType() == moleculeType)
+        .filter(pdbResidue -> pdbResidue.moleculeType() == moleculeType)
         .filter(PdbResidue::isMissing)
         .map(
             pdbResidue ->

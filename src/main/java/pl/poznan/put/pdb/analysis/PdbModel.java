@@ -61,6 +61,10 @@ public abstract class PdbModel implements Serializable, StructureModel {
   public abstract int modelNumber();
 
   @Override
+  @Value.Parameter(order = 5)
+  public abstract List<PdbAtomLine> atoms();
+
+  @Override
   @Value.Parameter(order = 6)
   @Value.Auxiliary
   public abstract List<PdbModresLine> modifiedResidues();
@@ -71,8 +75,14 @@ public abstract class PdbModel implements Serializable, StructureModel {
   public abstract List<PdbRemark465Line> missingResidues();
 
   @Override
-  @Value.Parameter(order = 5)
-  public abstract List<PdbAtomLine> atoms();
+  @Value.Parameter(order = 8)
+  @Value.Auxiliary
+  public abstract String title();
+
+  @Override
+  @Value.Parameter(order = 9)
+  @Value.Auxiliary
+  public abstract Set<PdbResidueIdentifier> chainTerminatedAfter();
 
   @Value.Lazy
   public List<PdbChain> chains() {
@@ -87,16 +97,6 @@ public abstract class PdbModel implements Serializable, StructureModel {
         .flatMap(residueGroup -> residueGroupToChains(residueGroup).stream())
         .collect(Collectors.toList());
   }
-
-  @Override
-  @Value.Parameter(order = 8)
-  @Value.Auxiliary
-  public abstract String title();
-
-  @Override
-  @Value.Parameter(order = 9)
-  @Value.Auxiliary
-  public abstract Set<PdbResidueIdentifier> chainTerminatedAfter();
 
   @Override
   public PdbModel filteredNewInstance(final MoleculeType moleculeType) {
@@ -145,18 +145,7 @@ public abstract class PdbModel implements Serializable, StructureModel {
     Validate.notEmpty(atoms());
   }
 
-  protected final boolean isMissing(final PdbResidueIdentifier residueIdentifier) {
-    return missingResidues().stream()
-        .anyMatch(missingResidue -> missingResidue.toResidueIdentifer().equals(residueIdentifier));
-  }
-
-  protected final boolean isModified(final PdbResidueIdentifier residueIdentifier) {
-    return modifiedResidues().stream()
-        .anyMatch(
-            modifiedResidue -> modifiedResidue.toResidueIdentifer().equals(residueIdentifier));
-  }
-
-  protected final PdbModresLine modificationDetails(final PdbResidueIdentifier residueIdentifier) {
+  private PdbModresLine modificationDetails(final PdbResidueIdentifier residueIdentifier) {
     return modifiedResidues().stream()
         .filter(modifiedResidue -> modifiedResidue.toResidueIdentifer().equals(residueIdentifier))
         .findFirst()
@@ -164,6 +153,12 @@ public abstract class PdbModel implements Serializable, StructureModel {
             () ->
                 new IllegalArgumentException(
                     "Failed to find information about modification of: " + residueIdentifier));
+  }
+
+  private boolean isModified(final PdbResidueIdentifier residueIdentifier) {
+    return modifiedResidues().stream()
+        .anyMatch(
+            modifiedResidue -> modifiedResidue.toResidueIdentifer().equals(residueIdentifier));
   }
 
   private PdbResidue atomGroupToResidue(final List<? extends PdbAtomLine> residueAtoms) {

@@ -77,7 +77,7 @@ public final class SequenceAligner {
     final Map<AbstractSequence, PdbCompactFragment> mapSequenceName = new HashMap<>();
 
     for (final PdbCompactFragment fragment : fragments) {
-      final String fragmentSequence = fragment.asSequence();
+      final String fragmentSequence = fragment.sequence();
       final AbstractSequence sequence;
 
       sequence =
