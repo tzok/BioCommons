@@ -8,6 +8,7 @@ import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
+import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.rna.base.NucleobaseType;
 import pl.poznan.put.rna.torsion.Alpha;
 import pl.poznan.put.rna.torsion.Beta;
@@ -62,10 +63,10 @@ public class AverageTorsionAngleTypeTest {
   public final void calculateFromPdb() throws Exception {
     final PdbParser parser = new PdbParser();
     final String content = ResourcesHelper.loadResource("1EHZ.pdb");
-    final List<PdbModel> models = parser.parse(content);
+    final List<StructureModel> models = parser.parse(content);
     assertThat(models.size(), is(1));
 
-    final PdbModel model = models.get(0);
+    final StructureModel model = models.get(0);
     final List<PdbResidue> residues = model.residues();
     assertThat(residues.size(), is(76));
 

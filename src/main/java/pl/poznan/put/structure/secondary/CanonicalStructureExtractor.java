@@ -32,7 +32,7 @@ public final class CanonicalStructureExtractor {
     final ResidueCollection collection = ImmutableSimpleResidueCollection.of(residues);
     final Collection<ClassifiedBasePair> basePairs =
         CanonicalStructureExtractor.basePairs(collection);
-    return BpSeq.fromResidueCollection(collection.namedResidueIdentifers(), basePairs);
+    return BpSeq.fromResidueCollection(collection.namedResidueIdentifiers(), basePairs);
   }
 
   /*

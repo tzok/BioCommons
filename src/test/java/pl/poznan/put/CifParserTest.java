@@ -7,6 +7,7 @@ import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.util.List;
@@ -22,15 +23,15 @@ public class CifParserTest {
     final List<CifModel> models = parser.parse(cif100D);
     assertThat(models.size(), is(1));
 
-    final PdbModel model = models.get(0);
-    final List<PdbChain> chains = model.getChains();
+    final StructureModel model = models.get(0);
+    final List<PdbChain> chains = model.chains();
     assertThat(chains.size(), is(2));
 
     final List<ExperimentalTechnique> experimentalTechniques =
-        model.getExperimentalDataLine().experimentalTechniques();
+        model.experimentalData().experimentalTechniques();
     assertThat(experimentalTechniques.size(), is(1));
     assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
-    assertThat(model.getResolutionLine().resolution(), is(1.9));
+    assertThat(model.resolution().resolution(), is(1.9));
   }
 
   @Test
@@ -39,7 +40,7 @@ public class CifParserTest {
     final CifParser parser = new CifParser();
     final List<CifModel> models = parser.parse(cif148L);
     assertThat(models.size(), is(1));
-    final PdbModel model = models.get(0);
+    final StructureModel model = models.get(0);
 
     final PdbResidue residueE164 = model.findResidue("E", 164, " ");
     assertThat(residueE164.isMissing(), is(true));
@@ -49,10 +50,10 @@ public class CifParserTest {
     assertThat(residueS169.modifiedResidueName(), is("LYS"));
 
     final List<ExperimentalTechnique> experimentalTechniques =
-        model.getExperimentalDataLine().experimentalTechniques();
+        model.experimentalData().experimentalTechniques();
     assertThat(experimentalTechniques.size(), is(1));
     assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
-    assertThat(model.getResolutionLine().resolution(), is(1.9));
+    assertThat(model.resolution().resolution(), is(1.9));
   }
 
   @Test
@@ -62,15 +63,15 @@ public class CifParserTest {
     final List<CifModel> models = parser.parse(cif5A93);
     assertThat(models.size(), is(1));
 
-    final PdbModel model = models.get(0);
-    final List<PdbChain> chains = model.getChains();
+    final StructureModel model = models.get(0);
+    final List<PdbChain> chains = model.chains();
     assertThat(chains.size(), is(1));
 
     final List<ExperimentalTechnique> experimentalTechniques =
-        model.getExperimentalDataLine().experimentalTechniques();
+        model.experimentalData().experimentalTechniques();
     assertThat(experimentalTechniques.size(), is(2));
     assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
     assertThat(experimentalTechniques.get(1), is(ExperimentalTechnique.NEUTRON_DIFFRACTION));
-    assertThat(model.getResolutionLine().resolution(), is(2.2));
+    assertThat(model.resolution().resolution(), is(2.2));
   }
 }

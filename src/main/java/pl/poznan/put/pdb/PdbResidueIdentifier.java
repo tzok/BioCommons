@@ -45,14 +45,4 @@ public abstract class PdbResidueIdentifier
 
     return insertionCode().compareTo(t.insertionCode());
   }
-
-  /**
-   * Copy the current immutable object by setting a value for the {@link
-   * PdbResidueIdentifier#chainIdentifier() chainIdentifier} attribute. An equals check used to
-   * prevent copying of the same value by returning {@code this}.
-   *
-   * @param value A new value for chainIdentifier
-   * @return A modified copy of the {@code this} object
-   */
-  public abstract PdbResidueIdentifier withChainIdentifier(String value);
 }

@@ -193,7 +193,7 @@ public final class ExtendedSecondaryStructure {
       if ((leontisWesthof != LeontisWesthof.UNKNOWN) && set.contains(leontisWesthof)) {
         for (final DotBracket dotBracket : dotBracketFromBasePairs(leontisWesthof)) {
           builder
-              .append(leontisWesthof.getShortName())
+              .append(leontisWesthof.shortName())
               .append(' ')
               .append(dotBracket.getStructure())
               .append('\n');

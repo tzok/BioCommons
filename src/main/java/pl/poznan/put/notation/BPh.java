@@ -40,7 +40,7 @@ public enum BPh {
   }
 
   /** @return The default display name. */
-  public String getDisplayName() {
+  public String displayName() {
     return displayNames[0];
   }
 }

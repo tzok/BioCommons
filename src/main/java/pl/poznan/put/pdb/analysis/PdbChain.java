@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Value.Immutable
-public abstract class PdbChain implements Comparable<PdbChain>, Serializable {
+public abstract class PdbChain implements Comparable<PdbChain>, Serializable, ResidueCollection {
   public static PdbChain fromBioJavaChain(final Chain chain) {
     final List<PdbResidue> residues =
         chain.getAtomGroups().stream()

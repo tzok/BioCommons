@@ -2,9 +2,9 @@ package pl.poznan.put.structure.secondary.formats;
 
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbChain;
-import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
+import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
@@ -28,13 +28,13 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
 
   public DotBracketFromPdb(
       final DotBracketInterface dotBracket,
-      final PdbModel model,
+      final StructureModel model,
       final Iterable<? extends ClassifiedBasePair> nonCanonical) {
     this(dotBracket.getSequence(), dotBracket.getStructure(), model);
     markRepresentedNonCanonicals(nonCanonical);
   }
 
-  public DotBracketFromPdb(final String sequence, final String structure, final PdbModel model) {
+  public DotBracketFromPdb(final String sequence, final String structure, final StructureModel model) {
     super(sequence, DotBracketFromPdb.updateMissingIndices(structure, model));
 
     mapSymbolsAndResidues(model);
@@ -69,12 +69,12 @@ public class DotBracketFromPdb extends DotBracket implements DotBracketFromPdbIn
     }
   }
 
-  private void splitStrands(final PdbModel model) {
+  private void splitStrands(final StructureModel model) {
     strands.clear();
     int start = 0;
     int end = 0;
 
-    for (final PdbChain chain : model.getChains()) {
+    for (final PdbChain chain : model.chains()) {
       end += chain.residues().size();
       strands.add(new StrandView(chain.identifier(), this, start, end));
       start = end;

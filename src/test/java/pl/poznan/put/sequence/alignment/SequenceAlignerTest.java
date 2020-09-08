@@ -5,8 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.pdb.analysis.ImmutablePdbCompactFragment;
 import pl.poznan.put.pdb.analysis.PdbCompactFragment;
-import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
+import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.io.IOException;
@@ -35,8 +35,8 @@ public class SequenceAlignerTest {
   @Before
   public final void setUp() throws IOException {
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models1EHZ = parser.parse(ResourcesHelper.loadResource("1EHZ.pdb"));
-    final List<PdbModel> models2MIY = parser.parse(ResourcesHelper.loadResource("2MIY.pdb"));
+    final List<StructureModel> models1EHZ = parser.parse(ResourcesHelper.loadResource("1EHZ.pdb"));
+    final List<StructureModel> models2MIY = parser.parse(ResourcesHelper.loadResource("2MIY.pdb"));
 
     assertThat(!models1EHZ.isEmpty(), is(true));
     assertThat(!models2MIY.isEmpty(), is(true));

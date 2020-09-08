@@ -58,7 +58,7 @@ public class PdbParser {
     strictMode = true;
   }
 
-  public final synchronized List<PdbModel> parse(final String structureContent) {
+  public final synchronized List<StructureModel> parse(final String structureContent) {
     resetState();
 
     for (final String line : structureContent.split("\n")) {
@@ -86,13 +86,13 @@ public class PdbParser {
     final String titleBuilder =
         titleLines.stream().map(PdbTitleLine::title).collect(Collectors.joining());
 
-    final List<PdbModel> result = new ArrayList<>();
+    final List<StructureModel> result = new ArrayList<>();
 
     for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
       final int modelNumber = entry.getKey();
       final List<PdbAtomLine> atoms = entry.getValue();
-      final PdbModel pdbModel =
-          new PdbModel(
+      final StructureModel structureModel =
+          ImmutablePdbModel.of(
               headerLine.orElse(ImmutablePdbHeaderLine.of("", new Date(0L), "")),
               experimentalDataLine.orElse(ImmutablePdbExpdtaLine.of(Collections.emptyList())),
               resolutionLine.orElse(ImmutablePdbRemark2Line.of(Double.NaN)),
@@ -102,7 +102,7 @@ public class PdbParser {
               missingResidues,
               titleBuilder,
               chainTerminatedAfter);
-      result.add(pdbModel);
+      result.add(structureModel);
     }
 
     return result;

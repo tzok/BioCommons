@@ -10,6 +10,7 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
@@ -208,8 +209,8 @@ public final class Ct implements Serializable {
     return new Ct(ctEntries);
   }
 
-  public static Ct fromBpSeqAndPdbModel(final BpSeq bpSeq, final PdbModel model) {
-    final PdbModel rna;
+  public static Ct fromBpSeqAndPdbModel(final BpSeq bpSeq, final StructureModel model) {
+    final StructureModel rna;
     try {
       rna = model.filteredNewInstance(MoleculeType.RNA);
     } catch (final PdbParsingException e) {

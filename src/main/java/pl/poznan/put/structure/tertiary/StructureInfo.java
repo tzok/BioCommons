@@ -1,14 +1,14 @@
 package pl.poznan.put.structure.tertiary;
 
 import lombok.Data;
-import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.StructureModel;
 
 import java.io.File;
 import java.util.Comparator;
 
 @Data
 public class StructureInfo implements Comparable<StructureInfo> {
-  private final PdbModel structure;
+  private final StructureModel structure;
   private final File path;
   private final String name;
 

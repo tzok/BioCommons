@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.ImmutablePdbAtomLine;
+import pl.poznan.put.pdb.ImmutablePdbRemark465Line;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbRemark2Line;
@@ -80,7 +81,7 @@ public final class CifConverter {
       return CifContainer.emptyInstance(cifFile);
     }
 
-    for (final PdbModel model : rnaModels) {
+    for (final StructureModel model : rnaModels) {
       if (!CifConverter.isConversionPossible(model)) {
         return CifContainer.emptyInstance(cifFile);
       }
@@ -99,7 +100,7 @@ public final class CifConverter {
 
       final StringBuilder pdbBuilder = new StringBuilder();
       CifConverter.writeHeader(firstModel, chainMap, pdbBuilder);
-      for (final PdbModel model : rnaModels) {
+      for (final StructureModel model : rnaModels) {
         CifConverter.writeModel(model, chainGroup, chainMap, pdbBuilder);
       }
 
@@ -110,8 +111,8 @@ public final class CifConverter {
     return ImmutableCifContainer.of(cifFile, fileChainMap);
   }
 
-  private static boolean isConversionPossible(final PdbModel model) {
-    for (final PdbChain chain : model.getChains()) {
+  private static boolean isConversionPossible(final StructureModel model) {
+    for (final PdbChain chain : model.chains()) {
       for (final PdbResidue residue : chain.residues()) {
         if (residue.residueNumber() > CifConverter.MAX_RESIDUE_NUMBER) {
           CifConverter.LOGGER.error(
@@ -169,8 +170,8 @@ public final class CifConverter {
    * @param model A parsed coordinates of a mmCIF file.
    * @return A list of sets, each containing one chain.
    */
-  private static List<Set<String>> initializeChainGroups(final PdbModel model) {
-    return model.getChains().stream()
+  private static List<Set<String>> initializeChainGroups(final StructureModel model) {
+    return model.chains().stream()
         .map(chain -> new HashSet<>(Collections.singleton(chain.identifier())))
         .collect(Collectors.toList());
   }
@@ -185,7 +186,7 @@ public final class CifConverter {
   private static Map<String, Set<String>> initializeChainContactMap(final CifModel model) {
     final Map<String, Set<String>> chainContacts = new HashMap<>();
 
-    for (final QuantifiedBasePair quantifiedBasePair : model.getBasePairs()) {
+    for (final QuantifiedBasePair quantifiedBasePair : model.basePairs()) {
       final BasePair basePair = quantifiedBasePair.getBasePair();
       final String left = basePair.getLeft().chainIdentifier();
       final String right = basePair.getRight().chainIdentifier();
@@ -240,17 +241,17 @@ public final class CifConverter {
   }
 
   private static void writeHeader(
-      final PdbModel firstModel,
+      final StructureModel firstModel,
       final BidiMap<? super String, String> chainMap,
       final StringBuilder pdbBuilder) {
-    pdbBuilder.append(firstModel.getHeaderLine()).append(System.lineSeparator());
-    if (!firstModel.getExperimentalDataLine().experimentalTechniques().isEmpty()) {
-      pdbBuilder.append(firstModel.getExperimentalDataLine()).append(System.lineSeparator());
+    pdbBuilder.append(firstModel.header()).append(System.lineSeparator());
+    if (!firstModel.experimentalData().experimentalTechniques().isEmpty()) {
+      pdbBuilder.append(firstModel.experimentalData()).append(System.lineSeparator());
     }
     pdbBuilder.append(PdbRemark2Line.PROLOGUE).append(System.lineSeparator());
-    pdbBuilder.append(firstModel.getResolutionLine()).append(System.lineSeparator());
+    pdbBuilder.append(firstModel.resolution()).append(System.lineSeparator());
 
-    final List<PdbRemark465Line> missingResidues = firstModel.getMissingResidues();
+    final List<PdbRemark465Line> missingResidues = firstModel.missingResidues();
     if (!missingResidues.isEmpty()) {
       pdbBuilder.append(PdbRemark465Line.PROLOGUE).append(System.lineSeparator());
 
@@ -259,13 +260,14 @@ public final class CifConverter {
         final MoleculeType moleculeType = CifConverter.getChainType(firstModel, chainIdentifier);
         if (moleculeType == MoleculeType.RNA) {
           chainIdentifier = CifConverter.mapChain(chainMap, chainIdentifier);
-          missingResidue = missingResidue.withChainIdentifier(chainIdentifier);
+          missingResidue =
+              ImmutablePdbRemark465Line.copyOf(missingResidue).withChainIdentifier(chainIdentifier);
           pdbBuilder.append(missingResidue).append(System.lineSeparator());
         }
       }
     }
 
-    for (final PdbModresLine modifiedResidue : firstModel.getModifiedResidues()) {
+    for (final PdbModresLine modifiedResidue : firstModel.modifiedResidues()) {
       pdbBuilder.append(modifiedResidue).append(System.lineSeparator());
     }
   }
@@ -279,8 +281,8 @@ public final class CifConverter {
    *     MoleculeType#UNKNOWN} if the chain is not present.
    */
   private static MoleculeType getChainType(
-      final PdbModel firstModel, final String chainIdentifier) {
-    return firstModel.getChains().stream()
+      final StructureModel firstModel, final String chainIdentifier) {
+    return firstModel.chains().stream()
         .filter(chain -> Objects.equals(chain.identifier(), chainIdentifier))
         .findFirst()
         .map(PdbChain::moleculeType)
@@ -304,15 +306,15 @@ public final class CifConverter {
   }
 
   private static void writeModel(
-      final PdbModel rnaModel,
+      final StructureModel rnaModel,
       final Collection<String> allowedChains,
       final BidiMap<? super String, String> chainMap,
       final StringBuilder pdbBuilder) {
-    pdbBuilder.append("MODEL ").append(rnaModel.getModelNumber()).append(System.lineSeparator());
+    pdbBuilder.append("MODEL ").append(rnaModel.modelNumber()).append(System.lineSeparator());
 
     int serialNumber = 1;
 
-    for (final PdbChain chain : rnaModel.getChains()) {
+    for (final PdbChain chain : rnaModel.chains()) {
       if (allowedChains.contains(chain.identifier())) {
         for (final PdbResidue residue : chain.residues()) {
           for (final PdbAtomLine atom : residue.atoms()) {

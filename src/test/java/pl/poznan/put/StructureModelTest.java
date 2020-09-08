@@ -12,6 +12,7 @@ import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.structure.secondary.CanonicalStructureExtractor;
@@ -26,12 +27,12 @@ import java.util.Locale;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class PdbModelTest {
+public class StructureModelTest {
   @Test
   public final void testParsing() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
     assertThat(models.size(), is(1));
   }
 
@@ -39,8 +40,8 @@ public class PdbModelTest {
   public final void testResidueAnalysis() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
+    final StructureModel model = models.get(0);
     final List<PdbResidue> residues = model.residues();
     assertThat(residues.size(), is(76));
   }
@@ -49,9 +50,9 @@ public class PdbModelTest {
   public final void testChainAnalysis() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
-    final List<PdbChain> chains = model.getChains();
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
+    final StructureModel model = models.get(0);
+    final List<PdbChain> chains = model.chains();
     assertThat(chains.size(), is(1));
   }
 
@@ -59,8 +60,8 @@ public class PdbModelTest {
   public final void testModifiedResidue() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
+    final StructureModel model = models.get(0);
     final PdbResidue residue = model.findResidue("A", 10, " ");
     assertThat(residue.residueName(), is("2MG"));
     assertThat(residue.modifiedResidueName(), is("G"));
@@ -71,8 +72,8 @@ public class PdbModelTest {
   public final void testUnmodifiedResidue() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
+    final StructureModel model = models.get(0);
     final PdbResidue residue = model.findResidue("A", 74, " ");
     assertThat(residue.residueName(), is("C"));
     assertThat(residue.modifiedResidueName(), is("C"));
@@ -83,8 +84,8 @@ public class PdbModelTest {
   public final void testO3PModificationDetection() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
+    final StructureModel model = models.get(0);
     final List<PdbResidue> residues = model.residues();
 
     // for first residue expect a mismatch in atom count because it has an
@@ -98,8 +99,8 @@ public class PdbModelTest {
   public final void testUridineModificationDetection() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
+    final StructureModel model = models.get(0);
 
     // the H2U (dihydrouridine) is modified by two additional hydrogens
     // which is undetectable in a non-hydrogen PDB file
@@ -126,8 +127,8 @@ public class PdbModelTest {
   public final void testPSUModificationDetection() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
+    final StructureModel model = models.get(0);
 
     // the PSU (dihydrouridine) is modified by two additional hydrogens
     // which is undetectable in a non-hydrogen PDB file; there can be a
@@ -140,8 +141,8 @@ public class PdbModelTest {
   public final void testModificationDetection() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
+    final StructureModel model = models.get(0);
 
     for (final PdbResidue residue : model.residues()) {
       if (!residue.wasSuccessfullyDetected()) {
@@ -178,9 +179,9 @@ public class PdbModelTest {
   public final void testResidueInTerminatedChain() throws Exception {
     final String pdb2Z74 = ResourcesHelper.loadResource("2Z74.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb2Z74);
-    final PdbModel model = models.get(0);
-    final List<PdbChain> chains = model.getChains();
+    final List<StructureModel> models = parser.parse(pdb2Z74);
+    final StructureModel model = models.get(0);
+    final List<PdbChain> chains = model.chains();
     assertThat(
         String.format("Found chains (expected [A, B]): %s", Arrays.toString(chains.toArray())),
         chains.size(),
@@ -191,8 +192,8 @@ public class PdbModelTest {
   public final void testMissingResidues() throws Exception {
     final String pdb2Z74 = ResourcesHelper.loadResource("2Z74.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb2Z74);
-    final PdbModel model = models.get(0);
+    final List<StructureModel> models = parser.parse(pdb2Z74);
+    final StructureModel model = models.get(0);
     final PdbResidue residueA21 = model.findResidue("A", 21, " ");
     assertThat(residueA21.isMissing(), is(true));
     final PdbResidue residueB21 = model.findResidue("B", 21, " ");
@@ -203,53 +204,53 @@ public class PdbModelTest {
   public final void testOutputParsable() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
-    final List<PdbModel> parsed = parser.parse(model.toPdbString());
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
+    final StructureModel model = models.get(0);
+    final List<StructureModel> parsed = parser.parse(model.toPdb());
 
     assertThat(models.size(), is(1));
     assertThat(parsed.size(), is(1));
 
-    assertThat(models.get(0).getChains().size(), is(1));
-    assertThat(parsed.get(0).getChains().size(), is(1));
+    assertThat(models.get(0).chains().size(), is(1));
+    assertThat(parsed.get(0).chains().size(), is(1));
 
-    assertThat(models.get(0).getChains().get(0).residues().size(), is(76));
-    assertThat(parsed.get(0).getChains().get(0).residues().size(), is(76));
+    assertThat(models.get(0).chains().get(0).residues().size(), is(76));
+    assertThat(parsed.get(0).chains().get(0).residues().size(), is(76));
   }
 
   @Test
   public final void testOutputParsableByBioJava() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
+    final StructureModel model = models.get(0);
 
     final PDBFileParser fileParser = new PDBFileParser();
     final Structure structure =
         fileParser.parsePDBFile(
-            IOUtils.toInputStream(model.toPdbString(), Charset.defaultCharset()));
+            IOUtils.toInputStream(model.toPdb(), Charset.defaultCharset()));
 
     assertThat(structure.getChains().size(), is(1));
-    assertThat(model.getChains().size(), is(1));
+    assertThat(model.chains().size(), is(1));
 
     assertThat(structure.getChain("A").getAtomGroups().size(), is(76));
-    assertThat(model.getChains().get(0).residues().size(), is(76));
+    assertThat(model.chains().get(0).residues().size(), is(76));
   }
 
   @Test
   public final void testSequence() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
+    final List<StructureModel> models = parser.parse(pdb1EHZ);
+    final StructureModel model = models.get(0);
     assertThat(
-        model.getSequence().toUpperCase(Locale.US),
+        model.sequence().toUpperCase(Locale.US),
         is("GCGGAUUUAGCUCAGUUGGGAGAGCGCCAGACUGAAGAUCUGGAGGUCCUGUGUUCGAUCCACAGAAUUCGCACCA"));
 
     final String pdb2Z74 = ResourcesHelper.loadResource("2Z74.pdb");
-    final List<PdbModel> models2Z74 = parser.parse(pdb2Z74);
-    final PdbModel model2Z74 = models2Z74.get(0);
-    final List<PdbChain> chains2Z74 = model2Z74.getChains();
+    final List<StructureModel> models2Z74 = parser.parse(pdb2Z74);
+    final StructureModel model2Z74 = models2Z74.get(0);
+    final List<PdbChain> chains2Z74 = model2Z74.chains();
     assertThat(
         chains2Z74.get(0).getSequence().toUpperCase(Locale.US), is("AGCGCCUGGACUUAAAGCCAUUGCACU"));
     assertThat(
@@ -257,14 +258,14 @@ public class PdbModelTest {
         is(
             "CCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA"));
     assertThat(
-        model2Z74.getSequence().toUpperCase(Locale.US),
+        model2Z74.sequence().toUpperCase(Locale.US),
         is(
             "AGCGCCUGGACUUAAAGCCAUUGCACUCCGGCUUUAAGUUGACGAGGGCAGGGUUUAUCGAGACAUCGGCGGGUGCCCUGCGGUCUUCCUGCGACCGUUAGAGGACUGGUAAAACCACAGGCGACUGUGGCAUAGAGCAGUCCGGGCAGGAA"));
 
     final String pdb4A04 = ResourcesHelper.loadResource("4A04.pdb");
-    final List<PdbModel> models4A04 = parser.parse(pdb4A04);
-    final PdbModel model4A04 = models4A04.get(0);
-    final List<PdbChain> chains4A04 = model4A04.getChains();
+    final List<StructureModel> models4A04 = parser.parse(pdb4A04);
+    final StructureModel model4A04 = models4A04.get(0);
+    final List<PdbChain> chains4A04 = model4A04.chains();
     assertThat(
         chains4A04.get(0).getSequence().toUpperCase(Locale.US),
         is(
@@ -281,12 +282,12 @@ public class PdbModelTest {
   public final void test79CharLongAtomLines() throws Exception {
     final String pdbPKB300 = ResourcesHelper.loadResource("PKB300.pdb");
     final PdbParser parser = new PdbParser(false);
-    final List<PdbModel> models = parser.parse(pdbPKB300);
+    final List<StructureModel> models = parser.parse(pdbPKB300);
     assertThat(models.size(), is(1));
-    final PdbModel model = models.get(0);
-    final List<PdbChain> chains = model.getChains();
+    final StructureModel model = models.get(0);
+    final List<PdbChain> chains = model.chains();
     final List<PdbResidue> residues = model.residues();
-    final List<PdbAtomLine> atoms = model.getAtoms();
+    final List<PdbAtomLine> atoms = model.atoms();
 
     assertThat(chains.size(), is(1));
     assertThat(residues.size(), is(37));
@@ -297,12 +298,12 @@ public class PdbModelTest {
   public final void testAmberModel() throws Exception {
     final String pdbAmber = ResourcesHelper.loadResource("amber.pdb");
     final PdbParser parser = new PdbParser(false);
-    final List<PdbModel> models = parser.parse(pdbAmber);
+    final List<StructureModel> models = parser.parse(pdbAmber);
     assertThat(models.size(), is(1));
-    final PdbModel model = models.get(0);
-    final List<PdbChain> chains = model.getChains();
+    final StructureModel model = models.get(0);
+    final List<PdbChain> chains = model.chains();
     final List<PdbResidue> residues = model.residues();
-    final List<PdbAtomLine> atoms = model.getAtoms();
+    final List<PdbAtomLine> atoms = model.atoms();
 
     assertThat(chains.size(), is(3));
     assertThat(residues.size(), is(49));
@@ -313,13 +314,13 @@ public class PdbModelTest {
   public final void testNMRModelsWithHydrogenAtoms() throws Exception {
     final String pdb2MIY = ResourcesHelper.loadResource("2MIY.pdb");
     final PdbParser parser = new PdbParser(false);
-    final List<PdbModel> models = parser.parse(pdb2MIY);
+    final List<StructureModel> models = parser.parse(pdb2MIY);
     assertThat(models.size(), is(18));
 
-    final PdbModel model = models.get(0);
-    final List<PdbChain> chains = model.getChains();
+    final StructureModel model = models.get(0);
+    final List<PdbChain> chains = model.chains();
     final List<PdbResidue> residues = model.residues();
-    final List<PdbAtomLine> atoms = model.getAtoms();
+    final List<PdbAtomLine> atoms = model.atoms();
     assertThat(chains.size(), is(1));
     assertThat(residues.size(), is(59));
     assertThat(atoms.size(), is(1909));
@@ -338,15 +339,15 @@ public class PdbModelTest {
     final String bpseq1EHZ = ResourcesHelper.loadResource("1EHZ-2D-bpseq.txt");
     final String bpseq2Z74 = ResourcesHelper.loadResource("2Z74-2D-bpseq.txt");
     final String bpseq2MIY = ResourcesHelper.loadResource("2MIY-2D-bpseq.txt");
-    PdbModelTest.assertBpSeqEquals(pdb1EHZ, bpseq1EHZ);
-    PdbModelTest.assertBpSeqEquals(pdb2Z74, bpseq2Z74);
-    PdbModelTest.assertBpSeqEquals(pdb2MIY, bpseq2MIY);
+    StructureModelTest.assertBpSeqEquals(pdb1EHZ, bpseq1EHZ);
+    StructureModelTest.assertBpSeqEquals(pdb2Z74, bpseq2Z74);
+    StructureModelTest.assertBpSeqEquals(pdb2MIY, bpseq2MIY);
   }
 
   private static void assertBpSeqEquals(final String pdbString, final String bpSeqString) {
     final PdbParser parser = new PdbParser(false);
-    final List<PdbModel> models = parser.parse(pdbString);
-    final PdbModel model = models.get(0);
+    final List<StructureModel> models = parser.parse(pdbString);
+    final StructureModel model = models.get(0);
 
     final BpSeq bpSeqFromModel = CanonicalStructureExtractor.bpSeq(model);
     assertThat(bpSeqFromModel.toString(), is(bpSeqString));
@@ -359,21 +360,21 @@ public class PdbModelTest {
   public final void testFrabaseExport() throws Exception {
     final String pdbFrabaseExport = ResourcesHelper.loadResource("FrabaseExport.pdb");
     final PdbParser parser = new PdbParser(false);
-    final List<PdbModel> models = parser.parse(pdbFrabaseExport);
+    final List<StructureModel> models = parser.parse(pdbFrabaseExport);
     assertThat(models.size(), is(2));
 
-    final PdbModel model0 = models.get(0);
-    final List<PdbChain> chains0 = model0.getChains();
+    final StructureModel model0 = models.get(0);
+    final List<PdbChain> chains0 = model0.chains();
     final List<PdbResidue> residues0 = model0.residues();
-    final List<PdbAtomLine> atoms0 = model0.getAtoms();
+    final List<PdbAtomLine> atoms0 = model0.atoms();
     assertThat(chains0.size(), is(1));
     assertThat(residues0.size(), is(7));
     assertThat(atoms0.size(), is(150));
 
-    final PdbModel model1 = models.get(1);
-    final List<PdbChain> chains1 = model1.getChains();
+    final StructureModel model1 = models.get(1);
+    final List<PdbChain> chains1 = model1.chains();
     final List<PdbResidue> residues1 = model1.residues();
-    final List<PdbAtomLine> atoms1 = model1.getAtoms();
+    final List<PdbAtomLine> atoms1 = model1.atoms();
     assertThat(chains1.size(), is(1));
     assertThat(residues1.size(), is(7));
     assertThat(atoms1.size(), is(150));
@@ -383,23 +384,23 @@ public class PdbModelTest {
   public final void testModelWithResiduesUNK() throws Exception {
     final String pdb3KFU = ResourcesHelper.loadResource("3KFU.pdb");
     final PdbParser parser = new PdbParser(false);
-    final List<PdbModel> models = parser.parse(pdb3KFU);
+    final List<StructureModel> models = parser.parse(pdb3KFU);
     assertThat(models.size(), is(1));
 
-    final PdbModel model = models.get(0);
-    assertThat(model.getChains().size(), is(14));
+    final StructureModel model = models.get(0);
+    assertThat(model.chains().size(), is(14));
 
-    final PdbModel rna = model.filteredNewInstance(MoleculeType.RNA);
-    assertThat(rna.getChains().size(), is(4));
+    final StructureModel rna = model.filteredNewInstance(MoleculeType.RNA);
+    assertThat(rna.chains().size(), is(4));
   }
 
   @Test
   public final void test148L() throws Exception {
     final String pdb148L = ResourcesHelper.loadResource("148L.pdb");
     final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb148L);
+    final List<StructureModel> models = parser.parse(pdb148L);
     assertThat(models.size(), is(1));
-    final PdbModel model = models.get(0);
+    final StructureModel model = models.get(0);
 
     final PdbResidue residueE164 = model.findResidue("E", 164, " ");
     assertThat(residueE164.isMissing(), is(true));
@@ -413,20 +414,20 @@ public class PdbModelTest {
   public final void testCif() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
     final PdbParser pdbParser = new PdbParser();
-    final List<PdbModel> pdbModels = pdbParser.parse(pdb1EHZ);
-    assertThat(pdbModels.size(), is(1));
-    final PdbModel pdbModel = pdbModels.get(0);
+    final List<StructureModel> structureModels = pdbParser.parse(pdb1EHZ);
+    assertThat(structureModels.size(), is(1));
+    final StructureModel structureModel = structureModels.get(0);
 
-    final String cif1EHZ = pdbModel.toCif();
+    final String cif1EHZ = structureModel.toCif();
 
     final CifParser cifParser = new CifParser();
     final List<CifModel> cifModels = cifParser.parse(cif1EHZ);
     assertThat(cifModels.size(), is(1));
-    final PdbModel cifModel = cifModels.get(0);
+    final StructureModel cifModel = cifModels.get(0);
 
-    final List<PdbResidue> pdbResidues = pdbModel.residues();
+    final List<PdbResidue> pdbResidues = structureModel.residues();
     final List<PdbResidue> cifResidues = cifModel.residues();
-    assertThat(pdbResidues.size(), is(cifResidues.size()));
+    assertThat(cifResidues.size(), is(pdbResidues.size()));
 
     for (int i = 0; i < pdbResidues.size(); i++) {
       final PdbResidue pdbResidue = pdbResidues.get(i);

@@ -371,14 +371,4 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
   public final Vector3D toVector3D() {
     return new Vector3D(x(), y(), z());
   }
-
-  /**
-   * Copy the current immutable object by setting a value for the {@link
-   * PdbAtomLine#alternateLocation() alternateLocation} attribute. An equals check used to prevent
-   * copying of the same value by returning {@code this}.
-   *
-   * @param value A new value for alternateLocation
-   * @return A modified copy of the {@code this} object
-   */
-  public abstract PdbAtomLine withAlternateLocation(String value);
 }

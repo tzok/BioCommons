@@ -567,7 +567,7 @@ class CifConsumer implements MMcifConsumer {
       final int modelNumber = entry.getKey();
       final List<PdbAtomLine> atoms = entry.getValue();
       final CifModel pdbModel =
-          new CifModel(
+          ImmutableCifModel.of(
               headerLine,
               experimentalDataLine,
               resolutionLine,
@@ -575,9 +575,9 @@ class CifConsumer implements MMcifConsumer {
               atoms,
               modifiedResidues,
               missingResidues,
-              basePairs,
-              title,
-              Collections.emptyList());
+              title != null ? title : "",
+              Collections.emptyList(),
+              basePairs);
       result.add(pdbModel);
     }
 
