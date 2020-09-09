@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Value.Immutable
 @Value.Modifiable
 public abstract class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializable {
   private static final List<Character> OPENING =

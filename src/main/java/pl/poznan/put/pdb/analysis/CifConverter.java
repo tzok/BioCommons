@@ -222,7 +222,7 @@ public final class CifConverter {
     final Map<String, Set<String>> chainContacts = new HashMap<>();
 
     for (final QuantifiedBasePair quantifiedBasePair : model.basePairs()) {
-      final BasePair basePair = quantifiedBasePair.getBasePair();
+      final BasePair basePair = quantifiedBasePair.basePair();
       final String left = basePair.getLeft().chainIdentifier();
       final String right = basePair.getRight().chainIdentifier();
 

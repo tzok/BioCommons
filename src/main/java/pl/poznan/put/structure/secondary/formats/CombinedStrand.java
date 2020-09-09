@@ -1,49 +1,81 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import lombok.EqualsAndHashCode;
+import org.immutables.value.Value;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 import pl.poznan.put.structure.secondary.ModifiableDotBracketSymbol;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-@EqualsAndHashCode
-public class CombinedStrand implements DotBracketInterface {
-  protected final List<Strand> strands = new ArrayList<>();
-  protected final List<ModifiableDotBracketSymbol> symbols = new ArrayList<>();
+@Value.Immutable
+public abstract class CombinedStrand implements DotBracket {
+  @Value.Parameter(order = 1)
+  protected abstract List<Strand> inputStrands();
 
-  public CombinedStrand(final Iterable<? extends Strand> strands) {
-    super();
+  @Override
+  public final String toString() {
+    final String builder = strands().stream().map(Strand::name).collect(Collectors.joining());
+    return ">strand_" + builder + '\n' + getSequence(false) + '\n' + getStructure(false);
+  }
 
+  @Override
+  public String sequence() {
+    return getSequence(false);
+  }
+
+  @Override
+  public String structure() {
+    return getStructure(false);
+  }
+
+  @Value.Lazy
+  @Value.Auxiliary
+  public List<DotBracketSymbol> symbols() {
+    return strands().stream()
+        .map(Strand::symbols)
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
+  }
+
+  @Value.Lazy
+  @Value.Auxiliary
+  public List<Strand> strands() {
     final Map<DotBracketSymbol, Integer> symbolToIndex = new HashMap<>();
     int i = 0;
-    for (final Strand strand : strands) {
+    for (final Strand strand : inputStrands()) {
       for (final DotBracketSymbol symbol : strand.symbols()) {
         symbolToIndex.put(symbol, i);
         i += 1;
       }
     }
 
-    for (final Strand strand : strands) {
+    final List<Strand> strands = new ArrayList<>();
+    final List<ModifiableDotBracketSymbol> symbols = new ArrayList<>();
+
+    for (final Strand strand : inputStrands()) {
       final List<DotBracketSymbol> strandSymbols = new ArrayList<>();
+
       for (final DotBracketSymbol symbol : strand.symbols()) {
         final char sequence = symbol.sequence();
         final char structure = symbol.structure();
         final int index = symbolToIndex.get(symbol);
         final ModifiableDotBracketSymbol renumbered =
             ModifiableDotBracketSymbol.create(sequence, structure, index);
+        renumbered.setPrevious(symbol.previous());
+        renumbered.setNext(symbol.next());
+        renumbered.setPair(symbol.pair());
+        renumbered.setIsNonCanonical(symbol.isNonCanonical());
+
         strandSymbols.add(renumbered);
         symbols.add(renumbered);
       }
-      this.strands.add(ImmutableStrandDirect.of(strand.name(), strandSymbols));
+
+      strands.add(ImmutableStrandDirect.of(strand.name(), strandSymbols));
     }
 
     for (final Strand strand : strands) {
@@ -65,117 +97,12 @@ public class CombinedStrand implements DotBracketInterface {
         }
       }
     }
-  }
 
-  CombinedStrand() {
-    super();
-  }
-
-  public final int getLength() {
-    return strands.stream().mapToInt(Strand::length).sum();
-  }
-
-  public final Iterable<TerminalMissing> getTerminalMissing() {
-    final Collection<TerminalMissing> result = new ArrayList<>();
-    for (final Strand strand : strands) {
-      result.add(strand.missingBegin());
-      result.add(strand.missingEnd());
-    }
-    return result;
-  }
-
-  public final List<DotBracketSymbol> getInternalMissing() {
-    // collect all missing from beginning and ends of strands
-    final Set<DotBracketSymbol> missingNonInternal =
-        strands.stream()
-            .flatMap(
-                strand ->
-                    Stream.concat(
-                        strand.missingBegin().symbols().stream(),
-                        strand.missingEnd().symbols().stream()))
-            .collect(Collectors.toSet());
-
-    // get all missing symbols which are internal
-    return strands.stream()
-        .flatMap(strand -> strand.symbols().stream())
-        .filter(dotBracketSymbol -> !missingNonInternal.contains(dotBracketSymbol))
-        .filter(DotBracketSymbol::isMissing)
-        .collect(Collectors.toList());
-  }
-
-  public final int getPseudoknotOrder() {
-    return strands.stream()
-        .max(Comparator.comparingInt(Strand::pseudoknotOrder))
-        .map(Strand::pseudoknotOrder)
-        .orElse(0);
-  }
-
-  public final boolean contains(final DotBracketSymbol symbol) {
-    return strands.stream().anyMatch(strand -> strand.symbols().contains(symbol));
+    return strands;
   }
 
   @Override
-  public final String toString() {
-    final String builder = strands.stream().map(Strand::name).collect(Collectors.joining());
-
-    return ">strand_" + builder + '\n' + getSequence(false) + '\n' + getStructure(false);
-  }
-
-  public String getSequence(final boolean separateStrands) {
-    final StringBuilder builder = new StringBuilder();
-    for (final Strand strand : strands) {
-      builder.append(strand.sequence());
-      if (separateStrands) {
-        builder.append('&');
-      }
-    }
-    return builder.toString();
-  }
-
-  public String getStructure(final boolean separateStrands) {
-    final StringBuilder builder = new StringBuilder();
-    for (final Strand strand : strands) {
-      builder.append(strand.structure());
-      if (separateStrands) {
-        builder.append('&');
-      }
-    }
-    return builder.toString();
-  }
-
-  @Override
-  public final String getSequence() {
-    return getSequence(false);
-  }
-
-  @Override
-  public final String getStructure() {
-    return getStructure(false);
-  }
-
-  @Override
-  public final List<DotBracketSymbol> getSymbols() {
-    return Collections.unmodifiableList(symbols);
-  }
-
-  @Override
-  public final DotBracketSymbol getSymbol(final int index) {
-    return getSymbols().get(index);
-  }
-
-  @Override
-  public final String toStringWithStrands() {
-    return strands.stream()
-        .map(strand -> String.valueOf(strand) + '\n')
-        .collect(Collectors.joining());
-  }
-
-  public final List<Strand> getStrands() {
-    return Collections.unmodifiableList(strands);
-  }
-
-  @Override
-  public final List<? extends CombinedStrand> combineStrands() {
+  public final List<DotBracket> combineStrands() {
     return Collections.singletonList(this);
   }
 
@@ -190,34 +117,24 @@ public class CombinedStrand implements DotBracketInterface {
    * @return True if the strand contains only dots or minuses.
    */
   public final boolean isInvalid() {
-    for (final Strand strand : strands) {
+    for (final Strand strand : strands()) {
       for (final char c : strand.structure().toCharArray()) {
         if ((c != '.') && (c != '-')) {
           return false;
         }
       }
     }
-
     return true;
   }
 
   public final int indexOfSymbol(final DotBracketSymbol symbol) {
     int baseIndex = 0;
-    for (final Strand strand : strands) {
+    for (final Strand strand : strands()) {
       if (strand.symbols().contains(symbol)) {
         return baseIndex + strand.symbols().indexOf(symbol);
       }
       baseIndex += strand.length();
     }
     throw new IllegalArgumentException("Failed to find symbol " + symbol + " in strands:\n" + this);
-  }
-
-  public final Strand getStrand(final DotBracketSymbol symbol) {
-    for (final Strand strand : strands) {
-      if (strand.symbols().contains(symbol)) {
-        return strand;
-      }
-    }
-    throw new IllegalArgumentException("Failed to find strand containing symbol: " + symbol);
   }
 }

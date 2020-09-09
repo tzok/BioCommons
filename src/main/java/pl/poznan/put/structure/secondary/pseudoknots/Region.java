@@ -37,14 +37,14 @@ public final class Region {
       }
 
       final BpSeq.Entry last = regionEntries.get(regionEntries.size() - 1);
-      if ((entry.getIndex() == (last.getIndex() + 1))
-          && (entry.getPair() == (last.getPair() - 1))) {
+      if ((entry.index() == (last.index() + 1))
+          && (entry.pair() == (last.pair() - 1))) {
         regionEntries.add(entry);
         continue;
       }
 
       final BpSeq.Entry first = regionEntries.get(0);
-      regions.add(new Region(id, regionEntries, first.getIndex(), first.getPair()));
+      regions.add(new Region(id, regionEntries, first.index(), first.pair()));
       regionEntries.clear();
       regionEntries.add(entry);
 
@@ -53,7 +53,7 @@ public final class Region {
 
     if (!regionEntries.isEmpty()) {
       final BpSeq.Entry first = regionEntries.get(0);
-      regions.add(new Region(id, regionEntries, first.getIndex(), first.getPair()));
+      regions.add(new Region(id, regionEntries, first.index(), first.pair()));
     }
 
     return regions;
@@ -66,11 +66,11 @@ public final class Region {
 
     for (final Region region : regions) {
       for (final BpSeq.Entry entry : region.entries) {
-        if (entry.getIndex() < min) {
-          min = entry.getIndex();
+        if (entry.index() < min) {
+          min = entry.index();
         }
-        if (entry.getPair() > max) {
-          max = entry.getPair();
+        if (entry.pair() > max) {
+          max = entry.pair();
         }
         entries.add(entry);
       }

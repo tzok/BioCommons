@@ -8,7 +8,19 @@ import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.RNAInteractionType;
 
 @Value.Modifiable
-public abstract class QuantifiedBasePair implements ClassifiedBasePair {
+public abstract class AnalyzedBasePair implements ClassifiedBasePair {
+  public static ModifiableAnalyzedBasePair assumeCanonical(final BasePair pair) {
+    return ModifiableAnalyzedBasePair.create(
+        pair,
+        RNAInteractionType.BASE_BASE,
+        Saenger.assumeCanonical(pair),
+        LeontisWesthof.CWW,
+        BPh.UNKNOWN,
+        BR.UNKNOWN,
+        HelixOrigin.UNKNOWN,
+        false);
+  }
+
   @Value.Parameter(order = 1)
   public abstract BasePair basePair();
 
@@ -36,8 +48,8 @@ public abstract class QuantifiedBasePair implements ClassifiedBasePair {
   public abstract boolean isRepresented();
 
   @Override
-  public ClassifiedBasePair invert() {
-    return ModifiableQuantifiedBasePair.create(
+  public final ClassifiedBasePair invert() {
+    return ModifiableAnalyzedBasePair.create(
         basePair().invert(),
         interactionType().invert(),
         saenger(),
@@ -45,36 +57,11 @@ public abstract class QuantifiedBasePair implements ClassifiedBasePair {
         bph(),
         br(),
         helixOrigin(),
-        isRepresented(),
-        shear(),
-        stretch(),
-        stagger(),
-        buckle(),
-        propeller(),
-        opening());
+        isRepresented());
   }
 
-  @Value.Parameter(order = 9)
-  @Value.Auxiliary
-  public abstract double shear();
-
-  @Value.Parameter(order = 10)
-  @Value.Auxiliary
-  public abstract double stretch();
-
-  @Value.Parameter(order = 11)
-  @Value.Auxiliary
-  public abstract double stagger();
-
-  @Value.Parameter(order = 12)
-  @Value.Auxiliary
-  public abstract double buckle();
-
-  @Value.Parameter(order = 13)
-  @Value.Auxiliary
-  public abstract double propeller();
-
-  @Value.Parameter(order = 14)
-  @Value.Auxiliary
-  public abstract double opening();
+  // required for Spring to get "isRepresented" field
+  public final Boolean getIsRepresented() {
+    return isRepresented();
+  }
 }

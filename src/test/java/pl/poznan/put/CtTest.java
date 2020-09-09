@@ -2,7 +2,7 @@ package pl.poznan.put;
 
 import org.junit.Test;
 import pl.poznan.put.structure.secondary.formats.Ct;
-import pl.poznan.put.structure.secondary.formats.DotBracket;
+import pl.poznan.put.structure.secondary.formats.DefaultDotBracket;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.utility.ResourcesHelper;
 
@@ -244,13 +244,13 @@ public class CtTest {
 
   @Test
   public final void fromDotBracket() {
-    Ct.fromDotBracket(DotBracket.fromString(DotBracketTest.FROM_2Z74));
+    Ct.fromDotBracket(DefaultDotBracket.fromString(DefaultDotBracketTest.FROM_2Z74));
   }
 
   @Test
   public final void test4UG0() throws Exception {
     final String dbn4UG0 = ResourcesHelper.loadResource("4UG0-dotbracket.txt");
-    final DotBracket dotBracket = DotBracket.fromString(dbn4UG0);
+    final DefaultDotBracket dotBracket = DefaultDotBracket.fromString(dbn4UG0);
     Ct.fromDotBracket(dotBracket);
   }
 }

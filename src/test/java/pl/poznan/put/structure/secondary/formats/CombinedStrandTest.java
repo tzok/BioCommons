@@ -2,7 +2,7 @@ package pl.poznan.put.structure.secondary.formats;
 
 import org.junit.Test;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
-import pl.poznan.put.structure.secondary.ImmutableDotBracketSymbol;
+import pl.poznan.put.structure.secondary.ModifiableDotBracketSymbol;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,11 +14,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class CombinedStrandTest {
   @Test
   public final void getInternalMissingOneStrand() {
-    final DotBracket dotBracket = DotBracket.fromString(">strand_A\nACGUACGUACGU\n.((------)).");
+    final DefaultDotBracket dotBracket =
+        DefaultDotBracket.fromString(">strand_A\nACGUACGUACGU\n.((------)).");
     final CombinedStrand combinedStrand =
-        new CombinedStrand(
+        ImmutableCombinedStrand.of(
             Collections.singletonList(
-                ImmutableStrandView.of("", dotBracket, 0, dotBracket.getLength())));
+                ImmutableStrandView.of("", dotBracket, 0, dotBracket.length())));
     final List<DotBracketSymbol> internalMissing = combinedStrand.getInternalMissing();
     assertThat(internalMissing.size(), is(6));
   }
@@ -29,26 +30,27 @@ public class CombinedStrandTest {
         ImmutableStrandDirect.of(
             "A",
             Arrays.asList(
-                ImmutableDotBracketSymbol.of('A', '.', 1),
-                ImmutableDotBracketSymbol.of('A', '-', 2)));
+                ModifiableDotBracketSymbol.create('A', '.', 1),
+                ModifiableDotBracketSymbol.create('A', '-', 2)));
     final Strand strandSecond =
         ImmutableStrandDirect.of(
             "B",
             Arrays.asList(
-                ImmutableDotBracketSymbol.of('A', '-', 1),
-                ImmutableDotBracketSymbol.of('B', '.', 2)));
+                ModifiableDotBracketSymbol.create('A', '-', 1),
+                ModifiableDotBracketSymbol.create('B', '.', 2)));
 
     // each strand has 0 internal missing residues
-    final CombinedStrand combinedFirst = new CombinedStrand(Collections.singletonList(strandFirst));
+    final CombinedStrand combinedFirst =
+        ImmutableCombinedStrand.of(Collections.singletonList(strandFirst));
     assertThat(combinedFirst.getInternalMissing().size(), is(0));
     final CombinedStrand combinedSecond =
-        new CombinedStrand(Collections.singletonList(strandSecond));
+        ImmutableCombinedStrand.of(Collections.singletonList(strandSecond));
     assertThat(combinedSecond.getInternalMissing().size(), is(0));
 
     // combined, the strands still have 0 internal missing residues, even though they form ".--."
     // structure
     final CombinedStrand combinedBoth =
-        new CombinedStrand(Arrays.asList(strandFirst, strandSecond));
+        ImmutableCombinedStrand.of(Arrays.asList(strandFirst, strandSecond));
     assertThat(combinedBoth.getInternalMissing().size(), is(0));
   }
 }

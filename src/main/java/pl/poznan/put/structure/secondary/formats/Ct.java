@@ -1,8 +1,7 @@
 package pl.poznan.put.structure.secondary.formats;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
+import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.PdbParsingException;
@@ -92,7 +91,7 @@ public final class Ct implements Serializable {
             "Invalid CT format. Failed to parse column values: " + line, e);
       }
 
-      entries.add(new ExtendedEntry(index, pair, before, after, original, seq));
+      entries.add(ImmutableExtendedEntry.of(index, pair, before, after, original, seq));
     }
 
     return new Ct(entries);
@@ -100,16 +99,24 @@ public final class Ct implements Serializable {
 
   public static Ct fromBpSeq(final BpSeq bpSeq) {
     final List<ExtendedEntry> ctEntries = new ArrayList<>();
-    final SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
+    final SortedSet<BpSeq.Entry> entries = bpSeq.entries();
     final int size = entries.size();
 
     for (final BpSeq.Entry entry : entries) {
-      final int index = entry.getIndex();
-      final int pair = entry.getPair();
-      final char seq = entry.getSeq();
-      final String comment = entry.getComment();
+      final int index = entry.index();
+      final int pair = entry.pair();
+      final char seq = entry.seq();
+      final String comment = entry.comment();
       ctEntries.add(
-          new ExtendedEntry(index, pair, index - 1, (index + 1) % (size + 1), index, seq, comment));
+          ImmutableExtendedEntry.builder()
+              .index(index)
+              .pair(pair)
+              .before(index - 1)
+              .after((index + 1) % (size + 1))
+              .original(index)
+              .seq(seq)
+              .comment(comment)
+              .build());
     }
 
     return new Ct(ctEntries);
@@ -125,7 +132,7 @@ public final class Ct implements Serializable {
 
     final List<ExtendedEntry> ctEntries = new ArrayList<>();
     final List<PdbResidue> residues = rna.residues();
-    final SortedSet<BpSeq.Entry> entries = bpSeq.getEntries();
+    final SortedSet<BpSeq.Entry> entries = bpSeq.entries();
     int i = 0;
 
     for (final BpSeq.Entry entry : entries) {
@@ -133,14 +140,23 @@ public final class Ct implements Serializable {
       final PdbChain chain = rna.findChainContainingResidue(residue.toResidueIdentifer());
       final List<PdbResidue> chainResidues = chain.residues();
 
-      final int index = entry.getIndex();
-      final int pair = entry.getPair();
+      final int index = entry.index();
+      final int pair = entry.pair();
       final int before = chainResidues.indexOf(residue);
       final int after = (before + 2) % (chainResidues.size() + 1);
       final int original = residue.residueNumber();
-      final char seq = entry.getSeq();
-      final String comment = entry.getComment();
-      ctEntries.add(new ExtendedEntry(index, pair, before, after, original, seq, comment));
+      final char seq = entry.seq();
+      final String comment = entry.comment();
+      ctEntries.add(
+          ImmutableExtendedEntry.builder()
+              .index(index)
+              .pair(pair)
+              .before(before)
+              .after(after)
+              .original(original)
+              .seq(seq)
+              .comment(comment)
+              .build());
 
       i += 1;
     }
@@ -148,10 +164,10 @@ public final class Ct implements Serializable {
     return new Ct(ctEntries);
   }
 
-  public static Ct fromDotBracket(final DotBracketInterface dotBracket) {
+  public static Ct fromDotBracket(final DotBracket dotBracket) {
     final List<ExtendedEntry> entries = new ArrayList<>();
 
-    for (final Strand strand : dotBracket.getStrands()) {
+    for (final Strand strand : dotBracket.strands()) {
       final List<DotBracketSymbol> symbols = strand.symbols();
 
       for (int i = 0, symbolsSize = symbols.size(); i < symbolsSize; i++) {
@@ -165,7 +181,7 @@ public final class Ct implements Serializable {
         final int original = dotBracket.getRealSymbolIndex(symbol);
         final char seq = symbol.sequence();
 
-        entries.add(new ExtendedEntry(index, pairIndex, i, after, original, seq));
+        entries.add(ImmutableExtendedEntry.of(index, pairIndex, i, after, original, seq));
       }
     }
 
@@ -177,7 +193,7 @@ public final class Ct implements Serializable {
   }
 
   public int getStrandCount() {
-    return (int) entries.stream().filter(entry -> entry.getAfter() == 0).count();
+    return (int) entries.stream().filter(entry -> entry.after() == 0).count();
   }
 
   public Iterable<ExtendedEntry> getEntries() {
@@ -189,7 +205,7 @@ public final class Ct implements Serializable {
     final List<Region> regions = Region.createRegions(bpSeq);
     regions.stream()
         .filter(region -> region.getLength() == 1)
-        .mapToInt(region -> region.getEntries().get(0).getIndex())
+        .mapToInt(region -> region.getEntries().get(0).index())
         .forEach(this::removePair);
   }
 
@@ -218,34 +234,31 @@ public final class Ct implements Serializable {
     final Map<Integer, Integer> map = new HashMap<>();
 
     for (final ExtendedEntry e : entries) {
-      map.put(e.getIndex(), e.getPair());
+      map.put(e.index(), e.pair());
     }
 
     int previous = 0;
 
     for (final ExtendedEntry e : entries) {
-      if ((e.getIndex() - previous) != 1) {
+      if ((e.index() - previous) != 1) {
         throw new InvalidStructureException(
-            "Inconsistent numbering in CT format: previous="
-                + previous
-                + ", current="
-                + e.getIndex());
+            "Inconsistent numbering in CT format: previous=" + previous + ", current=" + e.index());
       }
 
-      previous = e.getIndex();
-      final int pair = map.get(e.getIndex());
+      previous = e.index();
+      final int pair = map.get(e.index());
 
       if (pair != 0) {
         if (!map.containsKey(pair)) {
           throw new InvalidStructureException(
-              "Inconsistency in CT format: (" + e.getIndex() + " -> " + pair + ')');
+              "Inconsistency in CT format: (" + e.index() + " -> " + pair + ')');
         }
 
-        if (map.get(pair) != e.getIndex()) {
+        if (map.get(pair) != e.index()) {
           throw new InvalidStructureException(
               String.format(
                   "Inconsistency in CT format: (%d -> %d) and (%d -> %d)",
-                  e.getIndex(), pair, pair, map.get(pair)));
+                  e.index(), pair, pair, map.get(pair)));
         }
       }
     }
@@ -253,12 +266,12 @@ public final class Ct implements Serializable {
     // previous == maximum index
 
     for (final ExtendedEntry e : entries) {
-      if ((e.getBefore() < 0) || (e.getBefore() >= previous)) {
+      if ((e.before() < 0) || (e.before() >= previous)) {
         throw new InvalidStructureException(
             "Inconsistency in CT format. Third column has invalid" + " value in entry: " + e);
       }
 
-      if ((e.getAfter() == 1) || (e.getAfter() < 0) || (e.getAfter() > (previous + 1))) {
+      if ((e.after() == 1) || (e.after() < 0) || (e.after() > (previous + 1))) {
         throw new InvalidStructureException(
             "Inconsistency in CT format. Fourth column has " + "invalid value in entry: " + e);
       }
@@ -270,29 +283,29 @@ public final class Ct implements Serializable {
     boolean expectNewStrand = true;
 
     for (final ExtendedEntry e : entries) {
-      if ((e.getBefore() != 0) == expectNewStrand) {
+      if ((e.before() != 0) == expectNewStrand) {
         throw new InvalidStructureException(
             "Inconsistency in CT format. The field 'before' is "
                 + "non-zero for the first entry in a strand: "
                 + e);
       }
 
-      expectNewStrand = e.getAfter() == 0;
+      expectNewStrand = e.after() == 0;
     }
 
     final ExtendedEntry lastEntry = entries.last();
 
-    if (lastEntry.getAfter() != 0) {
+    if (lastEntry.after() != 0) {
       if (Ct.FIX_LAST_ENTRY) {
         entries.remove(lastEntry);
         entries.add(
-            new ExtendedEntry(
-                lastEntry.getIndex(),
-                lastEntry.getPair(),
-                lastEntry.getBefore(),
+            ImmutableExtendedEntry.of(
+                lastEntry.index(),
+                lastEntry.pair(),
+                lastEntry.before(),
                 0,
-                lastEntry.getOriginal(),
-                lastEntry.getSeq()));
+                lastEntry.original(),
+                lastEntry.seq()));
       } else {
         throw new InvalidStructureException(
             "The field 'after' in the last entry is non-zero: " + lastEntry);
@@ -302,101 +315,90 @@ public final class Ct implements Serializable {
 
   private void removePair(final int index) {
     final Optional<ExtendedEntry> entry =
-        entries.stream().filter(e -> e.getIndex() == index).findFirst();
+        entries.stream().filter(e -> e.index() == index).findFirst();
     final Optional<ExtendedEntry> paired =
-        entries.stream().filter(e -> e.getPair() == index).findFirst();
+        entries.stream().filter(e -> e.pair() == index).findFirst();
 
     if (entry.isPresent()) {
       final ExtendedEntry o = entry.get();
       entries.remove(o);
       entries.add(
-          new ExtendedEntry(
-              o.getIndex(),
-              0,
-              o.getBefore(),
-              o.getAfter(),
-              o.getOriginal(),
-              o.getSeq(),
-              o.getComment()));
+          ImmutableExtendedEntry.builder()
+              .index(o.index())
+              .pair(0)
+              .before(o.before())
+              .after(o.after())
+              .original(o.original())
+              .seq(o.seq())
+              .comment(o.comment())
+              .build());
     }
 
     if (paired.isPresent()) {
       final ExtendedEntry o = paired.get();
       entries.remove(o);
       entries.add(
-          new ExtendedEntry(
-              o.getIndex(),
-              0,
-              o.getBefore(),
-              o.getAfter(),
-              o.getOriginal(),
-              o.getSeq(),
-              o.getComment()));
+          ImmutableExtendedEntry.builder()
+              .index(o.index())
+              .pair(0)
+              .before(o.before())
+              .after(o.after())
+              .original(o.original())
+              .seq(o.seq())
+              .comment(o.comment())
+              .build());
     }
   }
 
-  @Data
-  @EqualsAndHashCode(callSuper = true)
-  public static final class ExtendedEntry extends BpSeq.Entry {
-    private final int before;
-    private final int after;
-    private final int original;
+  @Value.Immutable
+  public abstract static class ExtendedEntry implements Comparable<ExtendedEntry> {
+    @Value.Parameter(order = 1)
+    public abstract int index();
 
-    private ExtendedEntry(
-        final int index,
-        final int pair,
-        final int before,
-        final int after,
-        final int original,
-        final char seq) {
-      this(index, pair, before, after, original, seq, "");
-    }
+    @Value.Parameter(order = 2)
+    public abstract int pair();
 
-    private ExtendedEntry(
-        final int index,
-        final int pair,
-        final int before,
-        final int after,
-        final int original,
-        final char seq,
-        final String comment) {
-      super(index, pair, seq, comment);
-      this.before = before;
-      this.after = after;
-      this.original = original;
-    }
+    @Value.Parameter(order = 3)
+    public abstract int before();
 
-    public int getAfter() {
-      return after;
+    @Value.Parameter(order = 4)
+    public abstract int after();
+
+    @Value.Parameter(order = 5)
+    public abstract int original();
+
+    @Value.Parameter(order = 6)
+    public abstract char seq();
+
+    @Value.Default
+    public String comment() {
+      return "";
     }
 
     @Override
     public String toString() {
       final StringBuilder builder = new StringBuilder();
-      builder.append(index);
+      builder.append(index());
       builder.append(' ');
-      builder.append(seq);
+      builder.append(seq());
       builder.append(' ');
-      builder.append(before);
+      builder.append(before());
       builder.append(' ');
-      builder.append(after);
+      builder.append(after());
       builder.append(' ');
-      builder.append(pair);
+      builder.append(pair());
       builder.append(' ');
-      builder.append(original);
-      if (Ct.printComments && !StringUtils.isBlank(comment)) {
+      builder.append(original());
+      if (Ct.printComments && !StringUtils.isBlank(comment())) {
         builder.append(" # ");
-        builder.append(comment);
+        builder.append(comment());
       }
       return builder.toString();
     }
 
-    private int getBefore() {
-      return before;
-    }
-
-    private int getOriginal() {
-      return original;
+    @Override
+    public int compareTo(final ExtendedEntry t) {
+      return Integer.compare(index(), t.index());
     }
   }
 }

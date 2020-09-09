@@ -2,6 +2,7 @@ package pl.poznan.put.structure.secondary.pseudoknots.dp;
 
 import org.apache.commons.collections4.CollectionUtils;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
+import pl.poznan.put.structure.secondary.formats.ImmutableBpSeq;
 import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.RegionRemover;
@@ -235,9 +236,9 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     final List<BpSeq> bpSeqs = new ArrayList<>();
 
     for (final List<BpSeq.Entry> result : results) {
-      final BpSeq nextBpSeq = new BpSeq(bpSeq.getEntries());
+      BpSeq nextBpSeq = ImmutableBpSeq.copyOf(bpSeq);
       for (final BpSeq.Entry entry : result) {
-        nextBpSeq.removePair(entry);
+        nextBpSeq = nextBpSeq.withoutPair(entry);
       }
       bpSeqs.add(nextBpSeq);
     }

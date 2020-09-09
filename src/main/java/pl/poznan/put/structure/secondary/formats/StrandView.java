@@ -15,39 +15,39 @@ public abstract class StrandView implements Strand {
   public final TerminalMissing missingBegin() {
     int i = begin();
     for (; i < end(); i++) {
-      final DotBracketSymbol symbol = parent().getSymbol(i);
+      final DotBracketSymbol symbol = parent().symbols().get(i);
       if (!symbol.isMissing()) {
         break;
       }
     }
-    return ImmutableTerminalMissing.of(parent().getSymbols().subList(begin(), i));
+    return ImmutableTerminalMissing.of(parent().symbols().subList(begin(), i));
   }
 
   @Override
   public final TerminalMissing missingEnd() {
     int i = end() - 1;
     for (; i >= begin(); i--) {
-      final DotBracketSymbol symbol = parent().getSymbol(i);
+      final DotBracketSymbol symbol = parent().symbols().get(i);
       if (!symbol.isMissing()) {
         break;
       }
     }
-    return ImmutableTerminalMissing.of(parent().getSymbols().subList(i + 1, end()));
+    return ImmutableTerminalMissing.of(parent().symbols().subList(i + 1, end()));
   }
 
   @Value.Lazy
   public List<DotBracketSymbol> symbols() {
-    return parent().getSymbols().subList(begin(), end());
+    return parent().symbols().subList(begin(), end());
   }
 
   @Override
   public final String description() {
-    if (parent() instanceof DotBracketFromPdb) {
-      final DotBracketFromPdb fromPdb = (DotBracketFromPdb) parent();
+    if (parent() instanceof DefaultDotBracketFromPdb) {
+      final DefaultDotBracketFromPdb fromPdb = (DefaultDotBracketFromPdb) parent();
       final PdbNamedResidueIdentifier fromIdentifier =
-          fromPdb.getResidueIdentifier(fromPdb.getSymbol(begin()));
+          fromPdb.getResidueIdentifier(fromPdb.symbols().get(begin()));
       final PdbNamedResidueIdentifier toIdentifier =
-          fromPdb.getResidueIdentifier(fromPdb.getSymbol(end() - 1));
+          fromPdb.getResidueIdentifier(fromPdb.symbols().get(end() - 1));
 
       return String.format(
           "%s %s %s %s %s", fromIdentifier, toIdentifier, sequence(), structure(), sequenceRY());
@@ -64,7 +64,7 @@ public abstract class StrandView implements Strand {
   public abstract int end();
 
   @Value.Parameter(order = 2)
-  public abstract DotBracketInterface parent();
+  public abstract DotBracket parent();
 
   @Override
   public final String toString() {

@@ -13,7 +13,7 @@ import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.rna.RNAInteractionType;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.Converter;
-import pl.poznan.put.structure.secondary.formats.DotBracket;
+import pl.poznan.put.structure.secondary.formats.DefaultDotBracket;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.structure.secondary.formats.LevelByLevelConverter;
 import pl.poznan.put.structure.secondary.pseudoknots.elimination.MinGain;
@@ -137,14 +137,15 @@ public abstract class ExtendedSecondaryStructure {
                   "A", i + 1, " ", sequence.length() > i ? sequence.charAt(i) : 'N');
           final BasePair basePair = new BasePair(left, right);
           final ClassifiedBasePair classifiedBasePair =
-              new ClassifiedBasePair(
+              ModifiableAnalyzedBasePair.create(
                   basePair,
                   RNAInteractionType.BASE_BASE,
                   Saenger.UNKNOWN,
                   leontisWesthof,
                   BPh.UNKNOWN,
                   BR.UNKNOWN,
-                  HelixOrigin.UNKNOWN);
+                  HelixOrigin.UNKNOWN,
+                  false);
           basePairs.add(classifiedBasePair);
         } else if (c != '.') {
           throw new IllegalArgumentException(
@@ -164,7 +165,7 @@ public abstract class ExtendedSecondaryStructure {
     if (StringUtils.isBlank(sequence)) {
       int maxIndex = Integer.MIN_VALUE;
       for (final ClassifiedBasePair basePair : basePairs) {
-        maxIndex = Integer.max(maxIndex, basePair.getBasePair().getRight().residueNumber());
+        maxIndex = Integer.max(maxIndex, basePair.basePair().getRight().residueNumber());
       }
       sequence = StringUtils.repeat('N', maxIndex);
     }
@@ -176,7 +177,7 @@ public abstract class ExtendedSecondaryStructure {
   public abstract String sequence();
 
   @Value.Parameter(order = 2)
-  protected abstract Collection<ClassifiedBasePair> inputBasePairs();
+  protected abstract Collection<? extends ClassifiedBasePair> inputBasePairs();
 
   @Override
   public String toString() {
@@ -184,15 +185,15 @@ public abstract class ExtendedSecondaryStructure {
     builder.append("seq ").append(sequence()).append('\n');
 
     final Set<LeontisWesthof> set =
-        basePairs().stream().map(ClassifiedBasePair::getLeontisWesthof).collect(Collectors.toSet());
+        basePairs().stream().map(ClassifiedBasePair::leontisWesthof).collect(Collectors.toSet());
 
     for (final LeontisWesthof leontisWesthof : LeontisWesthof.values()) {
       if ((leontisWesthof != LeontisWesthof.UNKNOWN) && set.contains(leontisWesthof)) {
-        for (final DotBracket dotBracket : dotBracketFromBasePairs(leontisWesthof)) {
+        for (final DefaultDotBracket dotBracket : dotBracketFromBasePairs(leontisWesthof)) {
           builder
               .append(leontisWesthof.shortName())
               .append(' ')
-              .append(dotBracket.getStructure())
+              .append(dotBracket.structure())
               .append('\n');
         }
       }
@@ -206,23 +207,23 @@ public abstract class ExtendedSecondaryStructure {
     return inputBasePairs().stream().filter(ClassifiedBasePair::is5to3).collect(Collectors.toSet());
   }
 
-  private List<DotBracket> dotBracketFromBasePairs(final LeontisWesthof leontisWesthof) {
+  private List<DefaultDotBracket> dotBracketFromBasePairs(final LeontisWesthof leontisWesthof) {
     try {
       final List<ClassifiedBasePair> filteredBasePairs =
           basePairs().stream()
-              .filter(cbp -> RNAInteractionType.BASE_BASE.equals(cbp.getInteractionType()))
-              .filter(cbp -> leontisWesthof == cbp.getLeontisWesthof())
-              .sorted(Comparator.comparingInt(cbp -> cbp.getBasePair().getLeft().residueNumber()))
+              .filter(cbp -> RNAInteractionType.BASE_BASE.equals(cbp.interactionType()))
+              .filter(cbp -> leontisWesthof == cbp.leontisWesthof())
+              .sorted(Comparator.comparingInt(cbp -> cbp.basePair().getLeft().residueNumber()))
               .collect(Collectors.toList());
 
-      final List<DotBracket> result = new ArrayList<>();
+      final List<DefaultDotBracket> result = new ArrayList<>();
 
       do {
         final Set<ClassifiedBasePair> layer = new LinkedHashSet<>();
         final Set<Integer> usedIndices = new HashSet<>();
 
         for (final ClassifiedBasePair classifiedBasePair : filteredBasePairs) {
-          final BasePair basePair = classifiedBasePair.getBasePair();
+          final BasePair basePair = classifiedBasePair.basePair();
           final int left = basePair.getLeft().residueNumber();
           final int right = basePair.getRight().residueNumber();
 
@@ -245,7 +246,7 @@ public abstract class ExtendedSecondaryStructure {
     }
   }
 
-  private DotBracket basePairsToDotBracket(
+  private DefaultDotBracket basePairsToDotBracket(
       final Iterable<? extends ClassifiedBasePair> filteredBasePairs) {
     final List<PdbNamedResidueIdentifier> identifiers = new ArrayList<>();
     final char[] array = sequence().toCharArray();

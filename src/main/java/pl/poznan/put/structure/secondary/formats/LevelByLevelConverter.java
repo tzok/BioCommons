@@ -46,8 +46,8 @@ public class LevelByLevelConverter implements Converter {
 
     while (current.isPresent()) {
       for (final BpSeq.Entry pairs : current.get().bpSeq().getPaired()) {
-        final int i = pairs.getIndex();
-        final int j = pairs.getPair();
+        final int i = pairs.index();
+        final int j = pairs.pair();
 
         if (structure[i - 1] == '.') {
           structure[i - 1] = LevelByLevelConverter.BRACKETS_OPENING[current.get().level()];
@@ -62,7 +62,7 @@ public class LevelByLevelConverter implements Converter {
   }
 
   @Override
-  public final DotBracket convert(final BpSeq bpSeq) {
+  public final DefaultDotBracket convert(final BpSeq bpSeq) {
     List<State> states = new ArrayList<>();
     states.add(ImmutableState.of(Optional.empty(), bpSeq, 0));
 
@@ -72,7 +72,7 @@ public class LevelByLevelConverter implements Converter {
 
     Collections.sort(states);
     final String structure = LevelByLevelConverter.traceback(states.get(0));
-    return new DotBracket(bpSeq.getSequence(), structure);
+    return ImmutableDefaultDotBracket.of(bpSeq.getSequence(), structure);
   }
 
   private List<State> processStates(final Collection<State> states) {

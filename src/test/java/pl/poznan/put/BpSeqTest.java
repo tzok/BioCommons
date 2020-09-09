@@ -8,7 +8,7 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.Ct;
-import pl.poznan.put.structure.secondary.formats.DotBracket;
+import pl.poznan.put.structure.secondary.formats.DefaultDotBracket;
 import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
 import pl.poznan.put.utility.ResourcesHelper;
 
@@ -70,7 +70,7 @@ public class BpSeqTest {
     BpSeq.fromString(BpSeqTest.INPUT_TOO_LONG_SEQ);
   }
 
-  @Test(expected = InvalidStructureException.class)
+  @Test(expected = IllegalArgumentException.class)
   public final void testIndex1() {
     BpSeq.fromString(BpSeqTest.INPUT_INDEX_1);
   }
@@ -80,7 +80,7 @@ public class BpSeqTest {
     BpSeq.fromString(BpSeqTest.INPUT_INDEX_2);
   }
 
-  @Test(expected = InvalidStructureException.class)
+  @Test(expected = IllegalArgumentException.class)
   public final void testPair1() {
     BpSeq.fromString(BpSeqTest.INPUT_PAIR_1);
   }
@@ -90,29 +90,29 @@ public class BpSeqTest {
     BpSeq.fromString(BpSeqTest.INPUT_PAIR_2);
   }
 
-  @Test(expected = InvalidStructureException.class)
+  @Test(expected = IllegalArgumentException.class)
   public final void testNumbering() {
     BpSeq.fromString(BpSeqTest.INPUT_NUMBERING);
   }
 
-  @Test(expected = InvalidStructureException.class)
+  @Test(expected = IllegalArgumentException.class)
   public final void testSelfPaired() {
     BpSeq.fromString(BpSeqTest.INPUT_SELF_PAIRED);
   }
 
-  @Test(expected = InvalidStructureException.class)
+  @Test(expected = IllegalArgumentException.class)
   public final void testMapping1() {
     BpSeq.fromString(BpSeqTest.INPUT_MAPPING_1);
   }
 
-  @Test(expected = InvalidStructureException.class)
+  @Test(expected = IllegalArgumentException.class)
   public final void testMapping2() {
     BpSeq.fromString(BpSeqTest.INPUT_MAPPING_2);
   }
 
   @Test
   public final void fromDotBracket() {
-    final DotBracket db = DotBracket.fromString(DotBracketTest.FROM_2Z74);
+    final DefaultDotBracket db = DefaultDotBracket.fromString(DefaultDotBracketTest.FROM_2Z74);
     BpSeq.fromDotBracket(db);
   }
 
@@ -139,13 +139,12 @@ public class BpSeqTest {
   public final void testRemovalOfIsolatedBasePairs() {
     final BpSeq all = BpSeq.fromString(bpseq1DDYall);
     final BpSeq nonIsolated = BpSeq.fromString(bpseq1DDYnonisolated);
-    assertThat(all.removeIsolatedPairs(), is(true));
-    assertThat(all, is(nonIsolated));
+    assertThat(all.withoutIsolatedPairs(), is(nonIsolated));
   }
 
   @Test
   public final void testUnsucessfulRemovalOfIsolatedBasePairs() {
     final BpSeq nonIsolated = BpSeq.fromString(bpseq1DDYnonisolated);
-    assertThat(nonIsolated.removeIsolatedPairs(), is(false));
+    assertThat(nonIsolated.withoutIsolatedPairs(), is(nonIsolated));
   }
 }

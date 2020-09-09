@@ -64,7 +64,10 @@ import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
+import pl.poznan.put.rna.RNAInteractionType;
 import pl.poznan.put.structure.secondary.BasePair;
+import pl.poznan.put.structure.secondary.HelixOrigin;
+import pl.poznan.put.structure.secondary.ModifiableQuantifiedBasePair;
 import pl.poznan.put.structure.secondary.QuantifiedBasePair;
 
 import javax.annotation.Nullable;
@@ -531,12 +534,15 @@ class CifConsumer implements MMcifConsumer {
       final double propeller = CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.PROPELLER);
       final double opening = CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.OPENING);
       final QuantifiedBasePair quantifiedBasePair =
-          new QuantifiedBasePair(
+          ModifiableQuantifiedBasePair.create(
               basePair,
+              RNAInteractionType.BASE_BASE,
               saenger,
               leontisWesthof,
               BPh.UNKNOWN,
               BR.UNKNOWN,
+              HelixOrigin.UNKNOWN,
+              false,
               shear,
               stretch,
               stagger,
@@ -545,6 +551,16 @@ class CifConsumer implements MMcifConsumer {
               opening);
       basePairs.add(quantifiedBasePair);
     }
+  }
+
+  @Override
+  public final void setFileParsingParameters(final FileParsingParameters fileParsingParameters) {
+    parameters = fileParsingParameters;
+  }
+
+  @Override
+  public final FileParsingParameters getFileParsingParameters() {
+    return parameters;
   }
 
   public final List<CifModel> getModels() {
@@ -567,30 +583,20 @@ class CifConsumer implements MMcifConsumer {
       final int modelNumber = entry.getKey();
       final List<PdbAtomLine> atoms = entry.getValue();
       final CifModel pdbModel =
-              CifModel.of(
-                      headerLine,
-                      experimentalDataLine,
-                      resolutionLine,
-                      modelNumber,
-                      atoms,
-                      modifiedResidues,
-                      missingResidues,
-                      title != null ? title : "",
-                      Collections.emptyList(),
-                      basePairs);
+          CifModel.of(
+              headerLine,
+              experimentalDataLine,
+              resolutionLine,
+              modelNumber,
+              atoms,
+              modifiedResidues,
+              missingResidues,
+              title != null ? title : "",
+              Collections.emptyList(),
+              basePairs);
       result.add(pdbModel);
     }
 
     return result;
-  }
-
-  @Override
-  public final FileParsingParameters getFileParsingParameters() {
-    return parameters;
-  }
-
-  @Override
-  public final void setFileParsingParameters(final FileParsingParameters fileParsingParameters) {
-    parameters = fileParsingParameters;
   }
 }

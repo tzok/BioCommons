@@ -56,14 +56,15 @@ public final class CanonicalStructureExtractor {
         if (BasePair.isCanonicalPair(left, right)) {
           final BasePair basePair = new BasePair(leftId, rightId);
           final ClassifiedBasePair classifiedBasePair =
-              new ClassifiedBasePair(
+              ModifiableAnalyzedBasePair.create(
                   basePair,
                   RNAInteractionType.BASE_BASE,
                   Saenger.XIX,
                   LeontisWesthof.CWW,
                   BPh.UNKNOWN,
                   BR.UNKNOWN,
-                  HelixOrigin.UNKNOWN);
+                  HelixOrigin.UNKNOWN,
+                  false);
 
           if (!paired.contains(leftId) && !paired.contains(rightId)) {
             basePairs.add(classifiedBasePair);

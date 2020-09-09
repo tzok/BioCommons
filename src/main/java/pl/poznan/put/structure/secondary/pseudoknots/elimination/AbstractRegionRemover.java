@@ -1,6 +1,7 @@
 package pl.poznan.put.structure.secondary.pseudoknots.elimination;
 
 import pl.poznan.put.structure.secondary.formats.BpSeq;
+import pl.poznan.put.structure.secondary.formats.ImmutableBpSeq;
 import pl.poznan.put.structure.secondary.pseudoknots.ConflictMap;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
@@ -56,9 +57,9 @@ public abstract class AbstractRegionRemover implements RegionRemover {
       }
     }
 
-    final BpSeq result = new BpSeq(bpSeq.getEntries());
+    BpSeq result = ImmutableBpSeq.copyOf(bpSeq);
     for (final BpSeq.Entry validPair : validPairs) {
-      result.removePair(validPair);
+      result = result.withoutPair(validPair);
     }
     return Collections.singletonList(result);
   }
