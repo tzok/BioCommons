@@ -5,15 +5,15 @@ import java.io.File;
 import java.util.List;
 
 /**
- * An interface representing a set of PDB files which all correspond to the same structure and also
- * their chain names' mapping.
+ * A set of PDB files which all correspond to the same structure and also their chain names'
+ * mapping.
  */
 public interface ModelContainer extends Closeable {
   /** @return A list of PDB files corresponding to this container. */
   List<File> pdbFiles();
 
   /**
-   * Check mapping of chains to get the original mmCIF chain name from the generated PDB chain name.
+   * Checks mapping of chains to get the original mmCIF chain name from the generated PDB chain name.
    *
    * @param pdbFile A PDB file.
    * @param pdbChain Chain name in the PDB file.
@@ -22,7 +22,7 @@ public interface ModelContainer extends Closeable {
   String originalCifChainName(final File pdbFile, final String pdbChain);
 
   /**
-   * Check mapping of chains to get the generated PDB chain name from the original mmCIF chain name.
+   * Checks mapping of chains to get the generated PDB chain name from the original mmCIF chain name.
    *
    * @param pdbFile A PDB file.
    * @param cifChain Chain name in the mmCif file.

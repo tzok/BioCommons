@@ -1,10 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.apache.commons.lang3.Validate;
-import org.immutables.value.Value;
-import pl.poznan.put.pdb.ImmutablePdbExpdtaLine;
-import pl.poznan.put.pdb.ImmutablePdbHeaderLine;
-import pl.poznan.put.pdb.ImmutablePdbRemark2Line;
+import pl.poznan.put.pdb.ChainNumberICode;
+import pl.poznan.put.pdb.ImmutablePdbRemark465Line;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbExpdtaLine;
 import pl.poznan.put.pdb.PdbHeaderLine;
@@ -13,191 +10,126 @@ import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-@Value.Immutable
-public abstract class PdbModel implements Serializable, StructureModel {
-  public static PdbModel of(final Iterable<? extends PdbAtomLine> atoms) {
-    return ImmutablePdbModel.of(
-        ImmutablePdbHeaderLine.of("", new Date(0L), ""),
-        ImmutablePdbExpdtaLine.of(Collections.emptyList()),
-        ImmutablePdbRemark2Line.of(Double.NaN),
-        1,
-        atoms,
-        Collections.emptyList(),
-        Collections.emptyList(),
-        "",
-        Collections.emptyList());
+/** A structure parsed from a PDB file. */
+public interface PdbModel extends ResidueCollection {
+  /** @return The structure header. */
+  PdbHeaderLine header();
+
+  /** @return Details about experiment used to solve the structure. */
+  PdbExpdtaLine experimentalData();
+
+  /** @return Information about the experimental resolution. */
+  PdbRemark2Line resolution();
+
+  /** @return Model number as stated in the PDB or mmCIF file. */
+  int modelNumber();
+
+  /** @return The list of atoms present in the structure. */
+  List<PdbAtomLine> atoms();
+
+  /** @return The list of modified residues as parsed from the PDB or mmCIF file. */
+  List<PdbModresLine> modifiedResidues();
+
+  /** @return The list of missing residues as parsed from the PDB or mmCIF file. */
+  List<PdbRemark465Line> missingResidues();
+
+  /** @return Structure title. */
+  String title();
+
+  /** @return The set of residues, after which the chain was terminated. */
+  Set<PdbResidueIdentifier> chainTerminatedAfter();
+
+  /** @return The list of chains in the structure. */
+  List<SingleTypedResidueCollection> chains();
+
+  /**
+   * Filters out residues of a given molecule type (RNA or protein) and creates a new instance of
+   * this class.
+   *
+   * @param moleculeType Type of molecule.
+   * @return An instance of this class with residues only of a desired type.
+   */
+  PdbModel filteredNewInstance(MoleculeType moleculeType);
+
+  /** @return PDB id of the structure. */
+  default String idCode() {
+    return header().idCode();
   }
 
-  @Override
-  @Value.Parameter(order = 1)
-  @Value.Auxiliary
-  public abstract PdbHeaderLine header();
+  /**
+   * Checks if any chain is of a given type.
+   *
+   * @param moleculeType The type of molecule to check.
+   * @return True if at least one chain is of given type.
+   */
+  default boolean containsAny(final MoleculeType moleculeType) {
+    return chains().stream().anyMatch(chain -> chain.moleculeType() == moleculeType);
+  }
 
-  @Override
-  @Value.Parameter(order = 2)
-  @Value.Auxiliary
-  public abstract PdbExpdtaLine experimentalData();
+  /**
+   * Finds a chain which has a given residue.
+   *
+   * @param query A triplet of (chain, number, icode) to look for.
+   * @return A chain with desired residue.
+   */
+  default SingleTypedResidueCollection findChainContainingResidue(final ChainNumberICode query) {
+    return chains().stream()
+        .filter(pdbChain -> pdbChain.hasResidue(query))
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new IllegalArgumentException("Failed to find chain containing residue: " + query));
+  }
 
-  @Override
-  @Value.Parameter(order = 3)
-  @Value.Auxiliary
-  public abstract PdbRemark2Line resolution();
-
-  @Override
-  @Value.Parameter(order = 4)
-  @Value.Auxiliary
-  public abstract int modelNumber();
-
-  @Override
-  @Value.Parameter(order = 5)
-  public abstract List<PdbAtomLine> atoms();
-
-  @Override
-  @Value.Parameter(order = 6)
-  @Value.Auxiliary
-  public abstract List<PdbModresLine> modifiedResidues();
-
-  @Override
-  @Value.Parameter(order = 7)
-  @Value.Auxiliary
-  public abstract List<PdbRemark465Line> missingResidues();
-
-  @Override
-  @Value.Parameter(order = 8)
-  @Value.Auxiliary
-  public abstract String title();
-
-  @Override
-  @Value.Parameter(order = 9)
-  @Value.Auxiliary
-  public abstract Set<PdbResidueIdentifier> chainTerminatedAfter();
-
-  @Value.Lazy
-  public List<PdbChain> chains() {
-    final Map<String, List<PdbResidue>> chainResidues = new LinkedHashMap<>();
-    residues()
-        .forEach(
-            residue -> {
-              chainResidues.putIfAbsent(residue.chainIdentifier(), new ArrayList<>());
-              chainResidues.get(residue.chainIdentifier()).add(residue);
-            });
-    return chainResidues.values().stream()
-        .flatMap(residueGroup -> residueGroupToChains(residueGroup).stream())
+  /**
+   * Finds all missing residues of the given type.
+   *
+   * @param moleculeType The type of molecule to look for.
+   * @return A list of missing residues.
+   */
+  default List<PdbRemark465Line> filteredMissing(final MoleculeType moleculeType) {
+    return residues().stream()
+        .filter(pdbResidue -> pdbResidue.moleculeType() == moleculeType)
+        .filter(PdbResidue::isMissing)
+        .map(
+            pdbResidue ->
+                ImmutablePdbRemark465Line.of(
+                    modelNumber(),
+                    pdbResidue.residueName(),
+                    pdbResidue.chainIdentifier(),
+                    pdbResidue.residueNumber(),
+                    pdbResidue.insertionCode()))
         .collect(Collectors.toList());
   }
 
-  @Override
-  public PdbModel filteredNewInstance(final MoleculeType moleculeType) {
-    return ImmutablePdbModel.of(
-        header(),
-        experimentalData(),
-        resolution(),
-        modelNumber(),
-        filteredAtoms(moleculeType),
-        modifiedResidues(),
-        filteredMissing(moleculeType),
-        title(),
-        chainTerminatedAfter());
-  }
-
-  @Value.Lazy
-  public List<PdbResidue> residues() {
-    // group atoms by common (chain, number, icode)
-    final Map<PdbResidueIdentifier, List<PdbAtomLine>> atomGroups = new LinkedHashMap<>();
-    atoms()
-        .forEach(
-            atom -> {
-              atomGroups.putIfAbsent(atom.toResidueIdentifer(), new ArrayList<>());
-              atomGroups.get(atom.toResidueIdentifer()).add(atom);
-            });
-
-    // create residues out of atom groups and leave only those detected as nucleotides or amino
-    // acids
-    final Stream<PdbResidue> existingResidueStream =
-        atomGroups.values().stream()
-            .map(this::atomGroupToResidue)
-            .filter(PdbResidue::wasSuccessfullyDetected);
-
-    // create residues out of information about missing residues in the headers
-    final Stream<PdbResidue> missingResidueStream =
-        missingResidues().stream().map(PdbRemark465Line::toResidue);
-
-    // create a list of residues
-    return Stream.concat(existingResidueStream, missingResidueStream)
-        .sorted()
-        .collect(Collectors.toList());
-  }
-
-  @Value.Check
-  protected void check() {
-    Validate.notEmpty(atoms());
-  }
-
-  private PdbModresLine modificationDetails(final PdbResidueIdentifier residueIdentifier) {
+  /**
+   * Checks if a given residue is modified (as stated in the PDB or mmCIF headers).
+   *
+   * @param query An identifier of a residue.
+   * @return True if the residue is modified.
+   */
+  default boolean isModified(final PdbResidueIdentifier query) {
     return modifiedResidues().stream()
-        .filter(modifiedResidue -> modifiedResidue.toResidueIdentifer().equals(residueIdentifier))
+        .anyMatch(modifiedResidue -> PdbResidueIdentifier.from(modifiedResidue).equals(query));
+  }
+
+  /**
+   * Provides details about modification of the residue.
+   *
+   * @param query An identifier of a residue.
+   * @return An object containing details about residue modification.
+   */
+  default PdbModresLine modificationDetails(final PdbResidueIdentifier query) {
+    return modifiedResidues().stream()
+        .filter(modifiedResidue -> PdbResidueIdentifier.from(modifiedResidue).equals(query))
         .findFirst()
         .orElseThrow(
             () ->
                 new IllegalArgumentException(
-                    "Failed to find information about modification of: " + residueIdentifier));
-  }
-
-  private boolean isModified(final PdbResidueIdentifier residueIdentifier) {
-    return modifiedResidues().stream()
-        .anyMatch(
-            modifiedResidue -> modifiedResidue.toResidueIdentifer().equals(residueIdentifier));
-  }
-
-  private PdbResidue atomGroupToResidue(final List<? extends PdbAtomLine> residueAtoms) {
-    final PdbResidueIdentifier residueIdentifier = residueAtoms.get(0).toResidueIdentifer();
-    final boolean isModified = isModified(residueIdentifier);
-    final String residueName = residueAtoms.get(0).residueName();
-    final String modifiedResidueName =
-        isModified ? modificationDetails(residueIdentifier).standardResidueName() : residueName;
-    return ImmutablePdbResidue.of(
-        residueIdentifier, residueName, modifiedResidueName, residueAtoms, isModified, false);
-  }
-
-  private List<PdbChain> residueGroupToChains(final List<? extends PdbResidue> residueGroup) {
-    final List<PdbChain> chains = new ArrayList<>();
-    final List<Integer> branchingPoints =
-        IntStream.range(0, residueGroup.size())
-            .filter(i -> chainTerminatedAfter().contains(residueGroup.get(i).toResidueIdentifer()))
-            .mapToObj(i -> i)
-            .collect(Collectors.toList());
-
-    int begin = 0;
-    for (final int branchingPoint : branchingPoints) {
-      // move `end` past all missing residues after TER line
-      int end = branchingPoint + 1;
-      for (; end < residueGroup.size() && residueGroup.get(end).isMissing(); end++)
-        ;
-      chains.add(
-          ImmutablePdbChain.of(
-              residueGroup.get(0).chainIdentifier(), residueGroup.subList(begin, end)));
-      begin = end;
-    }
-
-    if (begin < residueGroup.size()) {
-      chains.add(
-          ImmutablePdbChain.of(
-              residueGroup.get(0).chainIdentifier(),
-              residueGroup.subList(begin, residueGroup.size())));
-    }
-
-    return chains;
+                    "Failed to find information about modification of: " + query));
   }
 }

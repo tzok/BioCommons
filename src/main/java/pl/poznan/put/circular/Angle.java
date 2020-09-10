@@ -13,18 +13,14 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-/**
- * A class of measurements where one can distinguish a direction (i.e. [0..360) degrees)
- *
- * @author tzok
- */
+/** A measurement for which one can distinguish a direction (i.e. [0..360) degrees) */
 @Value.Immutable
 public abstract class Angle implements Comparable<Angle> {
   private static final Pattern DOT = Pattern.compile("[.]");
   private static final int MINUTES_IN_DAY = 24 * 60;
 
   /**
-   * Calculate angle ABC.
+   * Calculates angle ABC.
    *
    * @param coordA Coordinate of point A.
    * @param coordB Coordinate of point B.
@@ -39,7 +35,7 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /**
-   * Calculate torsion angle given four points.
+   * Calculates torsion angle given four points.
    *
    * @param coordA Coordinate of point A.
    * @param coordB Coordinate of point B.
@@ -60,8 +56,8 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /**
-   * Parse string in format HH.MM as a vector on a circular clock. For 'm' minutes after midnight,
-   * the vector has value of '360 * m / (24 * 60)'.
+   * Parses a string in format HH.MM as a vector on a circular clock. For 'm' minutes after
+   * midnight, the vector has value of '360 * m / (24 * 60)'.
    *
    * @param hourMinute String in format HH.MM.
    * @return A vector representation of time on a circular clock.
@@ -90,7 +86,7 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /**
-   * Calculate angles' difference using formula min(|left - right|, 360 - |left - right|).
+   * Calculates angles' difference using formula min(|left - right|, 360 - |left - right|).
    *
    * @param left Minuend in radians.
    * @param right Subtrahend in radians.
@@ -102,7 +98,7 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /**
-   * Calculate angles' difference using formula acos(dot(left, right)).
+   * Calculates angles' difference using formula acos(dot(left, right)).
    *
    * @param left Minuend in radians.
    * @param right Subtrahend in radians.
@@ -117,7 +113,7 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /**
-   * Calculate angles' difference using formula: pi - |pi - |left - right||.
+   * Calculates angles' difference using formula: pi - |pi - |left - right||.
    *
    * @param left Minuend in radians.
    * @param right Subtrahend in radians.
@@ -146,12 +142,13 @@ public abstract class Angle implements Comparable<Angle> {
     return (radians() < 0.0) ? (radians() + MathUtils.TWO_PI) : radians();
   }
 
+  /** @return True if value is not NaN. */
   public final boolean isValid() {
     return !Double.isNaN(radians());
   }
 
   /**
-   * Return true if this instance is in range [begin; end). For example 45 degrees is between 30
+   * Return strue if this instance is in range [begin; end). For example 45 degrees is between 30
    * degrees and 60 degrees. Also, 15 degrees is between -30 and 30 degrees.
    *
    * @param begin Beginning of the range of values.
@@ -169,7 +166,7 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /**
-   * Multiply the angular value by a constant.
+   * Multiplies the angular value by a constant.
    *
    * @param v Multiplier.
    * @return Angular value multiplied.
@@ -179,7 +176,7 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /**
-   * Subtract another angular value from this.
+   * Subtracts another angular value from this.
    *
    * @param other Another angular value.
    * @return Result of this - other in angular space.
@@ -189,7 +186,7 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /**
-   * Return an ordered difference between angles. It describes a rotation from one angle to another
+   * Returns an ordered difference between angles. It describes a rotation from one angle to another
    * one and is therefore in range [-180; 180) degrees.
    *
    * @param other The other angle which value should be subtracted from this one.
@@ -207,7 +204,7 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /**
-   * Compute a useful distance in range [0; 2] between two angular values.
+   * Computes a useful distance in range [0; 2] between two angular values.
    *
    * @param other The other angle.
    * @return Value in range [0; 2] denoting distance between two angles.

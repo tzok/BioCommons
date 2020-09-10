@@ -10,14 +10,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * An implementation of {@link ModelContainer} which is created from mmCIF file and its possible
- * split into multiple PDB files.
- */
+/** A container of one or more PDB files converted from a single mmCIF file. */
 @Value.Immutable
 public abstract class CifContainer implements ModelContainer {
   /**
-   * Create an empty instance (without any chain mapping).
+   * Creates an empty instance (without any chain mapping).
    *
    * @param cifFile Path to the mmCIF file.
    * @return An instance without any chain mapping.
@@ -26,7 +23,7 @@ public abstract class CifContainer implements ModelContainer {
     return ImmutableCifContainer.of(cifFile, Collections.emptyMap());
   }
 
-  /** @return The value of the {@code fileChainMap} attribute, */
+  /** @return The mapping of chain name in PDB and mmCIF for a specific file. */
   @Value.Parameter(order = 2)
   public abstract Map<File, BidiMap<String, String>> fileChainMap();
 
@@ -57,10 +54,7 @@ public abstract class CifContainer implements ModelContainer {
     return fileChainMap().get(pdbFile).get(cifChain);
   }
 
-  /**
-   * This class is {@link AutoCloseable} and upon closing, all files (PDB and PDBx/mmCIF) will be
-   * deleted.
-   */
+  /** Deletes all files (PDB and mmCIF) maintained by this instance. */
   @Override
   public final void close() {
     FileUtils.deleteQuietly(cifFile());

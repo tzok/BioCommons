@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-/** Representation of EXPDTA line in PDB files. */
+/** A representation of EXPDTA line in PDB files. */
 @Value.Immutable
 public abstract class PdbExpdtaLine implements Serializable {
   // @formatter:off
@@ -24,7 +24,7 @@ public abstract class PdbExpdtaLine implements Serializable {
   private static final String RECORD_NAME = "EXPDTA";
 
   /**
-   * Parse text and treat as an EXPDTA line in PDB format.
+   * Parses text as an EXPDTA line in PDB format.
    *
    * @param line EXPDTA line in PDB format.
    * @return An instance of this class.
@@ -54,6 +54,11 @@ public abstract class PdbExpdtaLine implements Serializable {
 
   @Override
   public final String toString() {
+    return toPdb();
+  }
+
+  /** @return A line in PDB format. */
+  public final String toPdb() {
     final StringBuilder builder = new StringBuilder();
 
     if (experimentalTechniques().isEmpty()) {

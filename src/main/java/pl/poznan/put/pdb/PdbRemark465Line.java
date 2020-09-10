@@ -13,20 +13,9 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
 
-/** Representation of REMARK 465 in PDB format which describes missing residues. */
+/** A representation of REMARK 465 in PDB format which describes missing residues. */
 @Value.Immutable
 public abstract class PdbRemark465Line implements ChainNumberICode, Serializable {
-  // @formatter:off
-  public static final String PROLOGUE =
-      "REMARK 465                                                                      \n"
-          + "REMARK 465 MISSING RESIDUES                                                     \n"
-          + "REMARK 465 THE FOLLOWING RESIDUES WERE NOT LOCATED IN THE                       \n"
-          + "REMARK 465 EXPERIMENT. (M=MODEL NUMBER; RES=RESIDUE NAME; C=CHAIN               \n"
-          + "REMARK 465 IDENTIFIER; SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)                \n"
-          + "REMARK 465                                                                      \n"
-          + "REMARK 465   M RES C SSSEQI                                                     ";
-  private static final Logger LOGGER = LoggerFactory.getLogger(PdbRemark465Line.class);
-  // @formatter:on
   // @formatter:off
   /*
      REMARK 465
@@ -52,6 +41,16 @@ public abstract class PdbRemark465Line implements ChainNumberICode, Serializable
      REMARK 465     MET A     1
      REMARK 465     GLY A     2
   */
+  // @formatter:on
+
+  public static final String PROLOGUE =
+      "REMARK 465                                                                      \n"
+          + "REMARK 465 MISSING RESIDUES                                                     \n"
+          + "REMARK 465 THE FOLLOWING RESIDUES WERE NOT LOCATED IN THE                       \n"
+          + "REMARK 465 EXPERIMENT. (M=MODEL NUMBER; RES=RESIDUE NAME; C=CHAIN               \n"
+          + "REMARK 465 IDENTIFIER; SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)                \n"
+          + "REMARK 465                                                                      \n"
+          + "REMARK 465   M RES C SSSEQI                                                     ";
   private static final String[] COMMENT_LINES = {
     "REMARK 465",
     "REMARK 465 MISSING RESIDUES",
@@ -63,14 +62,13 @@ public abstract class PdbRemark465Line implements ChainNumberICode, Serializable
     "REMARK 465 SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)",
     "REMARK 465 RES C SSSEQI"
   };
-
-  // @formatter:on
   private static final String REMARK_FORMAT =
       "  %1s %3s %c %5d%c                                                     ";
   private static final String FORMAT = "REMARK 465 " + PdbRemark465Line.REMARK_FORMAT;
+  private static final Logger LOGGER = LoggerFactory.getLogger(PdbRemark465Line.class);
 
   /**
-   * Check if {@code line} is just a comment or a line with actual information.
+   * Checks if {@code line} is just a comment or a line with actual information.
    *
    * @param line A line of text.
    * @return True if {@code line} contains a comment only.
@@ -84,7 +82,7 @@ public abstract class PdbRemark465Line implements ChainNumberICode, Serializable
   }
 
   /**
-   * Parse a line of text to create an instance of this class.
+   * Parses a line of text to create an instance of this class.
    *
    * @param line A line of text starting with REMARK 465.
    * @return An instance of this class
@@ -145,6 +143,11 @@ public abstract class PdbRemark465Line implements ChainNumberICode, Serializable
 
   @Override
   public final String toString() {
+    return toPdb();
+  }
+
+  /** @return A line in PDB format. */
+  public final String toPdb() {
     if (chainIdentifier().length() != 1) {
       PdbRemark465Line.LOGGER.error(
           "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
@@ -168,8 +171,18 @@ public abstract class PdbRemark465Line implements ChainNumberICode, Serializable
         icode);
   }
 
+  /**
+   * Creates an instance of {@link PdbResidue} marked as missing and without atoms.
+   *
+   * @return An instance of a missing residue.
+   */
   public final PdbResidue toResidue() {
     return ImmutablePdbResidue.of(
-        toResidueIdentifer(), residueName(), residueName(), Collections.emptyList(), false, true);
+        PdbResidueIdentifier.from(this),
+        residueName(),
+        residueName(),
+        Collections.emptyList(),
+        false,
+        true);
   }
 }

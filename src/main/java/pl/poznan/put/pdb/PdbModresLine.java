@@ -8,11 +8,9 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 
-/** Representation of MODRES line in PDB format. */
+/** A representation of MODRES line in PDB format. */
 @Value.Immutable
 public abstract class PdbModresLine implements ChainNumberICode, Serializable {
-  private static final Logger LOGGER = LoggerFactory.getLogger(PdbModresLine.class);
-
   // @formatter:off
   /*
      COLUMNS        DATA TYPE     FIELD       DEFINITION
@@ -29,9 +27,10 @@ public abstract class PdbModresLine implements ChainNumberICode, Serializable {
   // @formatter:on
   private static final String FORMAT = "MODRES %4s %3s %c %4d%c %3s  %41s          ";
   private static final String RECORD_NAME = "MODRES";
+  private static final Logger LOGGER = LoggerFactory.getLogger(PdbModresLine.class);
 
   /**
-   * Parse text with MODRES line in PDB format.
+   * Parses text with MODRES line in PDB format.
    *
    * @param line A text with MODRES line in PDB format.
    * @return An instance of this class with fields set to parsed values.
@@ -101,6 +100,11 @@ public abstract class PdbModresLine implements ChainNumberICode, Serializable {
 
   @Override
   public final String toString() {
+    return toPdb();
+  }
+
+  /** @return A line in PDB format. */
+  public final String toPdb() {
     if (chainIdentifier().length() != 1) {
       PdbModresLine.LOGGER.error(
           "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");

@@ -3,9 +3,7 @@ package pl.poznan.put.pdb.analysis;
 import org.apache.commons.lang3.StringUtils;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ChainNumberICode;
-import pl.poznan.put.pdb.CifConstants;
 import pl.poznan.put.pdb.ImmutablePdbAtomLine;
-import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
@@ -13,6 +11,7 @@ import pl.poznan.put.rna.torsion.Chi;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.AtomPair;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -23,9 +22,44 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public interface ResidueCollection {
+/** A collection of residues. */
+@FunctionalInterface
+public interface ResidueCollection extends Serializable {
+  /** @return The list of residues. */
   List<PdbResidue> residues();
 
+  /**
+   * Creates a new instance of this class in which atoms with alternate locations are present only
+   * once.
+   *
+   * @return A copy of the current instance, but without alternate locations in atoms.
+   */
+  default ResidueCollection withoutAlternateLocations() {
+    final List<PdbResidue> residues = new ArrayList<>();
+
+    for (final PdbResidue residue : residues()) {
+      final Set<AtomName> resolved = EnumSet.noneOf(AtomName.class);
+      final Collection<PdbAtomLine> atoms = new ArrayList<>();
+
+      for (final PdbAtomLine atom : residue.atoms()) {
+        if (!resolved.contains(atom.detectAtomName())) {
+          atoms.add(ImmutablePdbAtomLine.copyOf(atom).withAlternateLocation(" "));
+          resolved.add(atom.detectAtomName());
+        }
+      }
+
+      residues.add(ImmutablePdbResidue.copyOf(residue).withAtoms(atoms));
+    }
+
+    return ImmutableSimpleResidueCollection.of(residues);
+  }
+
+  /**
+   * Analyzes atomic bond lenths to find violations (too long or too short) and generates a report
+   * in a form of a list of validation messages.
+   *
+   * @return A list of error messages.
+   */
   default List<String> findBondLengthViolations() {
     final Set<AtomBasedTorsionAngleType> angleTypes =
         residues().stream()
@@ -54,41 +88,68 @@ public interface ResidueCollection {
         .collect(Collectors.toList());
   }
 
-  default PdbResidue findResidue(
-      final String chainIdentifier, final int residueNumber, final String insertionCode) {
-    return findResidue(
-        ImmutablePdbResidueIdentifier.of(chainIdentifier, residueNumber, insertionCode));
+  /**
+   * Checks if a given (chain, number, icode) is present in this collection of residues.
+   *
+   * @param query A residue identifier.
+   * @return True if a given residue is part of this collection.
+   */
+  default boolean hasResidue(final ChainNumberICode query) {
+    return residues().stream()
+        .anyMatch(
+            residue ->
+                Objects.equals(
+                    PdbResidueIdentifier.from(residue), PdbResidueIdentifier.from(query)));
   }
 
+  /**
+   * Finds a residue by a triplet (chain, number, icode).
+   *
+   * @param query A residue identifier.
+   * @return The residue found in this collection of residues.
+   */
   default PdbResidue findResidue(final ChainNumberICode query) {
     return residues().stream()
-        .filter(residue -> Objects.equals(residue.toResidueIdentifer(), query.toResidueIdentifer()))
+        .filter(
+            residue ->
+                Objects.equals(
+                    PdbResidueIdentifier.from(residue), PdbResidueIdentifier.from(query)))
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException("Failed to find residue: " + query));
   }
 
-  default boolean hasResidue(
-      final String chainIdentifier, final int residueNumber, final String insertionCode) {
-    return hasResidue(
-        ImmutablePdbResidueIdentifier.of(chainIdentifier, residueNumber, insertionCode));
+  /**
+   * Finds a residue by a triplet (chain, number, icode).
+   *
+   * @param query A residue identifier.
+   * @return The index of a residue found in this collection of residues.
+   */
+  default int indexOf(final ChainNumberICode query) {
+    final PdbResidueIdentifier identifier = PdbResidueIdentifier.from(query);
+    return IntStream.range(0, residues().size())
+        .filter(i -> PdbResidueIdentifier.from(residues().get(i)).equals(identifier))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Failed to find residue: " + identifier));
   }
 
-  default boolean hasResidue(final ChainNumberICode query) {
-    return residues().stream()
-        .anyMatch(
-            residue -> Objects.equals(residue.toResidueIdentifer(), query.toResidueIdentifer()));
-  }
-
-  default List<PdbNamedResidueIdentifier> namedResidueIdentifiers() {
-    return residues().stream().map(PdbResidue::namedResidueIdentifer).collect(Collectors.toList());
-  }
-
+  /**
+   * Generates a sequence out of this residue collection.
+   *
+   * @return A sequence of one-letter-codes e.g. ACGGGG.
+   */
   default String sequence() {
     return residues().stream()
-        .map(residue -> String.valueOf(residue.oneLetterName()))
+        .map(PdbResidue::oneLetterName)
+        .map(String::valueOf)
         .collect(Collectors.joining());
   }
 
+  /**
+   * Filters atoms in this residue collection.
+   *
+   * @param moleculeType Type of molecule to leave in the result.
+   * @return A list of atoms of a given type.
+   */
   default List<PdbAtomLine> filteredAtoms(final MoleculeType moleculeType) {
     return residues().stream()
         .filter(pdbResidue -> pdbResidue.moleculeType() == moleculeType)
@@ -97,10 +158,21 @@ public interface ResidueCollection {
         .collect(Collectors.toList());
   }
 
+  /** @return A list of residue identifiers. */
   default List<PdbResidueIdentifier> residueIdentifiers() {
-    return residues().stream().map(PdbResidue::toResidueIdentifer).collect(Collectors.toList());
+    return residues().stream().map(PdbResidueIdentifier::from).collect(Collectors.toList());
   }
 
+  /** @return A list of named residue identifiers. */
+  default List<PdbNamedResidueIdentifier> namedResidueIdentifiers() {
+    return residues().stream().map(PdbResidue::namedResidueIdentifer).collect(Collectors.toList());
+  }
+
+  /**
+   * Generates a list of ATOM lines in PDB format from this instance.
+   *
+   * @return A representation of this residue collection in PDB format.
+   */
   default String toPdb() {
     final StringBuilder builder = new StringBuilder();
 
@@ -112,30 +184,15 @@ public interface ResidueCollection {
     return builder.toString();
   }
 
-  default ResidueCollection withoutAlternateLocations() {
-    final List<PdbResidue> residues = new ArrayList<>();
-
-    for (final PdbResidue residue : residues()) {
-      final Set<AtomName> resolved = EnumSet.noneOf(AtomName.class);
-      final Collection<PdbAtomLine> atoms = new ArrayList<>();
-
-      for (final PdbAtomLine atom : residue.atoms()) {
-        if (!resolved.contains(atom.detectAtomName())) {
-          atoms.add(ImmutablePdbAtomLine.copyOf(atom).withAlternateLocation(" "));
-          resolved.add(atom.detectAtomName());
-        }
-      }
-
-      residues.add(ImmutablePdbResidue.copyOf(residue).withAtoms(atoms));
-    }
-
-    return ImmutableSimpleResidueCollection.of(residues);
-  }
-
+  /**
+   * Generates a list of ATOM lines in mmCIF format from this instance.
+   *
+   * @return A representation of this residue collection in mmCIF format.
+   */
   default String toCif() {
     final StringBuilder builder = new StringBuilder();
     builder.append("data_").append('\n');
-    builder.append(CifConstants.CIF_LOOP).append('\n');
+    builder.append(PdbAtomLine.CIF_LOOP).append('\n');
 
     for (final PdbResidue residue : residues()) {
       builder.append(residue.toCif());
@@ -143,13 +200,5 @@ public interface ResidueCollection {
     }
 
     return builder.toString();
-  }
-
-  default int indexOf(final ChainNumberICode query) {
-    final PdbResidueIdentifier identifier = query.toResidueIdentifer();
-    return IntStream.range(0, residues().size())
-        .filter(i -> residues().get(i).toResidueIdentifer().equals(identifier))
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("Failed to find residue: " + identifier));
   }
 }

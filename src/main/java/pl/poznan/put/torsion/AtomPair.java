@@ -6,6 +6,7 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.Bond;
 import pl.poznan.put.atom.BondLength;
 import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
 import java.util.Locale;
@@ -35,7 +36,7 @@ public abstract class AtomPair implements Comparable<AtomPair> {
           "%s-%s distance in %s is %.2f but should be in range [%.2f; %.2f]",
           leftAtom().atomName(),
           rightAtom().atomName(),
-          leftResidue().toResidueIdentifer(),
+          PdbResidueIdentifier.from(leftResidue()),
           distance(),
           bondLength().min(),
           bondLength().max());
@@ -46,8 +47,8 @@ public abstract class AtomPair implements Comparable<AtomPair> {
         "%s-%s distance between %s and %s is %.2f but should be in range [%.2f; %.2f]",
         leftAtom().atomName(),
         rightAtom().atomName(),
-        leftResidue().toResidueIdentifer(),
-        rightResidue().toResidueIdentifer(),
+        PdbResidueIdentifier.from(leftResidue()),
+        PdbResidueIdentifier.from(rightResidue()),
         distance(),
         bondLength().min(),
         bondLength().max());

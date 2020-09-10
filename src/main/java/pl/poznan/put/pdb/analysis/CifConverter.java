@@ -30,8 +30,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * A converter from mmCIF to (possibly multiple) PDB files. It takes care of formats' mismatches
- * (e.g. multi-character chain names in mmCIF vs single-character in PDB).
+ * A converter from mmCIF to one or more PDB files. It takes care of formats' mismatches (e.g.
+ * multi-character chain names in mmCIF vs single-character in PDB).
  */
 public final class CifConverter {
   private static final Logger LOGGER = LoggerFactory.getLogger(CifConverter.class);
@@ -52,7 +52,7 @@ public final class CifConverter {
   }
 
   /**
-   * Parse file in mmCIF format and convert it into a container of multiple PDB files.
+   * Parses a file in mmCIF format and convert it into a container of multiple PDB files.
    *
    * @param cifFile Path to mmCIF file.
    * @return A container of (possibly) multiple PDB files with mapped chain names.
@@ -65,13 +65,13 @@ public final class CifConverter {
   }
 
   /**
-   * Convert a parsed mmCIF model into a set of PDB files with mapped chain names.
+   * Converts a parsed mmCIF model into a set of PDB files with mapped chain names.
    *
    * @param model A parse mmCIF model.
    * @return A container of (possibly) multiple PDB files with mapped chain names.
    * @throws IOException When writing to output files fails.
    */
-  public static ModelContainer convert(final CifModel model) throws IOException {
+  public static ModelContainer convert(final DefaultCifModel model) throws IOException {
     final File cifFile = File.createTempFile("cif2pdb", ".cif");
     FileUtils.write(cifFile, model.toCif(), Charset.defaultCharset());
 
@@ -100,13 +100,13 @@ public final class CifConverter {
     return ImmutableCifContainer.of(cifFile, fileChainMap);
   }
 
-  private static ModelContainer convert(
-      final File cifFile, final Iterable<? extends CifModel> models) throws IOException {
+  private static ModelContainer convert(final File cifFile, final List<CifModel> models)
+      throws IOException {
     final List<CifModel> rnaModels = new ArrayList<>();
 
     for (final CifModel model : models) {
       if (model.containsAny(MoleculeType.RNA)) {
-        final CifModel rnaModel = model.filteredNewInstance(MoleculeType.RNA);
+        final CifModel rnaModel = (CifModel) model.filteredNewInstance(MoleculeType.RNA);
         rnaModels.add(rnaModel);
       }
     }
@@ -116,7 +116,7 @@ public final class CifConverter {
       return CifContainer.emptyInstance(cifFile);
     }
 
-    for (final StructureModel model : rnaModels) {
+    for (final PdbModel model : rnaModels) {
       if (!CifConverter.isConversionPossible(model)) {
         return CifContainer.emptyInstance(cifFile);
       }
@@ -135,7 +135,7 @@ public final class CifConverter {
 
       final StringBuilder pdbBuilder = new StringBuilder();
       CifConverter.writeHeader(firstModel, chainMap, pdbBuilder);
-      for (final StructureModel model : rnaModels) {
+      for (final PdbModel model : rnaModels) {
         CifConverter.writeModel(model, chainGroup, chainMap, pdbBuilder);
       }
 
@@ -146,7 +146,7 @@ public final class CifConverter {
     return ImmutableCifContainer.of(cifFile, fileChainMap);
   }
 
-  private static boolean isConversionPossible(final StructureModel model) {
+  private static boolean isConversionPossible(final PdbModel model) {
     for (final PdbChain chain : model.chains()) {
       for (final PdbResidue residue : chain.residues()) {
         if (residue.residueNumber() > CifConverter.MAX_RESIDUE_NUMBER) {
@@ -160,7 +160,7 @@ public final class CifConverter {
   }
 
   /**
-   * Starting with a one-element set for each chain, merge them basing on the contact information.
+   * Merges chains which are in contact to form groups.
    *
    * @param model A parsed mmCIF model.
    * @return A list of sets of chains' identifiers. Each set contains chains which are in contact
@@ -205,7 +205,7 @@ public final class CifConverter {
    * @param model A parsed coordinates of a mmCIF file.
    * @return A list of sets, each containing one chain.
    */
-  private static List<Set<String>> initializeChainGroups(final StructureModel model) {
+  private static List<Set<String>> initializeChainGroups(final PdbModel model) {
     return model.chains().stream()
         .map(chain -> new HashSet<>(Collections.singleton(chain.identifier())))
         .collect(Collectors.toList());
@@ -276,7 +276,7 @@ public final class CifConverter {
   }
 
   private static void writeHeader(
-      final StructureModel firstModel,
+      final PdbModel firstModel,
       final BidiMap<? super String, String> chainMap,
       final StringBuilder pdbBuilder) {
     pdbBuilder.append(firstModel.header()).append(System.lineSeparator());
@@ -316,11 +316,11 @@ public final class CifConverter {
    *     MoleculeType#UNKNOWN} if the chain is not present.
    */
   private static MoleculeType getChainType(
-      final StructureModel firstModel, final String chainIdentifier) {
+      final PdbModel firstModel, final String chainIdentifier) {
     return firstModel.chains().stream()
         .filter(chain -> Objects.equals(chain.identifier(), chainIdentifier))
         .findFirst()
-        .map(PdbChain::moleculeType)
+        .map(SingleTypedResidueCollection::moleculeType)
         .orElse(MoleculeType.UNKNOWN);
   }
 
@@ -341,7 +341,7 @@ public final class CifConverter {
   }
 
   private static void writeModel(
-      final StructureModel rnaModel,
+      final PdbModel rnaModel,
       final Collection<String> allowedChains,
       final BidiMap<? super String, String> chainMap,
       final StringBuilder pdbBuilder) {

@@ -2,14 +2,14 @@ package pl.poznan.put.atom;
 
 import org.immutables.value.Value;
 
-/** Information about atomic bond length. */
+/** An atomic bond length. */
 @Value.Immutable
 public interface BondLength {
   /** @return The minimum length. */
   @Value.Parameter(order = 1)
   double min();
 
-  /** @return The naximum length. */
+  /** @return The maximum length. */
   @Value.Parameter(order = 2)
   double max();
 

@@ -14,26 +14,26 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/** A class to compute statistics from a sample of angular values. */
+/** A sample of angular values and computed statistics. */
 @Value.Immutable
 public abstract class AngleSample {
-  /** @return The value of the {@code data} attribute */
+  /** @return The collection of values in the sample. */
   @Value.Parameter(order = 1)
   public abstract Collection<Angle> data();
 
   /** @return A mean angular value of the sample. */
   @Value.Lazy
   public Angle meanDirection() {
-    return um1().getMeanDirection();
+    return um1().meanDirection();
   }
 
   /**
-   * @return Length of the mean direction vector in range [0; 1]. The closer it is to 1, the less
-   *     diverse are the data in the sample.
+   * @return The length of the mean direction vector in range [0; 1]. The closer it is to 1, the
+   *     less diverse are the data in the sample.
    */
   @Value.Lazy
   public double meanResultantLength() {
-    return um1().getMeanResultantLength();
+    return um1().meanResultantLength();
   }
 
   /** @return A measure of variance of the data on the circle, taking values in range [0; 1]. */
@@ -56,24 +56,23 @@ public abstract class AngleSample {
    */
   @Value.Lazy
   public double circularDispersion() {
-    return (1.0 - cm2().getMeanResultantLength()) / (2.0 * FastMath.pow(meanResultantLength(), 2));
+    return (1.0 - cm2().meanResultantLength()) / (2.0 * FastMath.pow(meanResultantLength(), 2));
   }
 
   /** @return Another measure of variance of the data. */
   @Value.Lazy
   public double skewness() {
-    return (cm2().getMeanResultantLength()
-            * FastMath.sin(
-                cm2().getMeanDirection().subtract(meanDirection().multiply(2.0)).radians()))
+    return (cm2().meanResultantLength()
+            * FastMath.sin(cm2().meanDirection().subtract(meanDirection().multiply(2.0)).radians()))
         / FastMath.sqrt(circularVariance());
   }
 
   /** @return Another measure of variance of the data. */
   @Value.Lazy
   public double kurtosis() {
-    return ((cm2().getMeanResultantLength()
+    return ((cm2().meanResultantLength()
                 * FastMath.cos(
-                    um2().getMeanDirection().subtract(meanDirection().multiply(2.0)).radians()))
+                    um2().meanDirection().subtract(meanDirection().multiply(2.0)).radians()))
             - FastMath.pow(meanResultantLength(), 4))
         / FastMath.pow(circularVariance(), 2);
   }
@@ -94,6 +93,9 @@ public abstract class AngleSample {
   }
 
   /**
+   * Computes the rank (index) of the value in the current sample assuming that 0 is the beginning
+   * of the circle.
+   *
    * @param datapoint Value, must be one of those used to create this instance of AngleSample.
    * @return The rank (index) of the value in the sample, when treating 0 as the beginning of the
    *     circle.

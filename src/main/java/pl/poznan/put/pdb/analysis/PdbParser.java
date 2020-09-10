@@ -58,7 +58,7 @@ public class PdbParser {
     strictMode = true;
   }
 
-  public final synchronized List<StructureModel> parse(final String structureContent) {
+  public final synchronized List<PdbModel> parse(final String structureContent) {
     resetState();
 
     for (final String line : structureContent.split("\n")) {
@@ -86,13 +86,13 @@ public class PdbParser {
     final String titleBuilder =
         titleLines.stream().map(PdbTitleLine::title).collect(Collectors.joining());
 
-    final List<StructureModel> result = new ArrayList<>();
+    final List<PdbModel> result = new ArrayList<>();
 
     for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
       final int modelNumber = entry.getKey();
       final List<PdbAtomLine> atoms = entry.getValue();
-      final StructureModel structureModel =
-          ImmutablePdbModel.of(
+      final PdbModel structureModel =
+          ImmutableDefaultPdbModel.of(
               headerLine.orElse(ImmutablePdbHeaderLine.of("", new Date(0L), "")),
               experimentalDataLine.orElse(ImmutablePdbExpdtaLine.of(Collections.emptyList())),
               resolutionLine.orElse(ImmutablePdbRemark2Line.of(Double.NaN)),
@@ -145,7 +145,7 @@ public class PdbParser {
   private void handleAtomLine(final String line) {
     try {
       final PdbAtomLine atomLine = PdbAtomLine.parse(line, strictMode);
-      final PdbResidueIdentifier identifier = atomLine.toResidueIdentifer();
+      final PdbResidueIdentifier identifier = PdbResidueIdentifier.from(atomLine);
 
       if (processedIdentifiers.contains(identifier)) {
         PdbParser.LOGGER.warn("Duplicate residue, ignoring it: {}", identifier);
@@ -182,7 +182,7 @@ public class PdbParser {
 
   private void handleTerLine() {
     final List<PdbAtomLine> atomLines = modelAtoms.get(currentModelNumber);
-    chainTerminatedAfter.add(atomLines.get(atomLines.size() - 1).toResidueIdentifer());
+    chainTerminatedAfter.add(PdbResidueIdentifier.from(atomLines.get(atomLines.size() - 1)));
   }
 
   private void handleMissingResidueLine(final String line) {

@@ -4,12 +4,18 @@ import org.biojava.nbio.structure.Chain;
 import org.immutables.value.Value;
 
 import javax.annotation.Nonnull;
-import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/** A chain in a structure. */
 @Value.Immutable
-public abstract class PdbChain implements Comparable<PdbChain>, Serializable, ResidueCollection {
+public abstract class PdbChain implements Comparable<PdbChain>, SingleTypedResidueCollection {
+  /**
+   * Creates an instance of this class from a chain instance from BioJava.
+   *
+   * @param chain An instance of Chain from BioJava.
+   * @return An instance of this class with data converted from BioJava chain.
+   */
   public static PdbChain fromBioJavaChain(final Chain chain) {
     final List<PdbResidue> residues =
         chain.getAtomGroups().stream()
@@ -18,31 +24,12 @@ public abstract class PdbChain implements Comparable<PdbChain>, Serializable, Re
     return ImmutablePdbChain.of(chain.getId(), residues);
   }
 
+  /** @return The chain identifier. */
   @Value.Parameter(order = 1)
   public abstract String identifier();
 
   @Value.Parameter(order = 2)
   public abstract List<PdbResidue> residues();
-
-  public MoleculeType moleculeType() {
-    int rnaCounter = 0;
-    int proteinCounter = 0;
-
-    for (final PdbResidue residue : residues()) {
-      switch (residue.moleculeType()) {
-        case PROTEIN:
-          proteinCounter += 1;
-          break;
-        case RNA:
-          rnaCounter += 1;
-          break;
-        case UNKNOWN:
-          break;
-      }
-    }
-
-    return (rnaCounter > proteinCounter) ? MoleculeType.RNA : MoleculeType.PROTEIN;
-  }
 
   @Override
   public final int compareTo(@Nonnull final PdbChain t) {

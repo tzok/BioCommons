@@ -6,5 +6,5 @@ import pl.poznan.put.types.DistanceMatrix;
 @FunctionalInterface
 public interface Clusterable {
   /** @return A distance matrix. */
-  DistanceMatrix getDataForClustering();
+  DistanceMatrix distanceMatrix();
 }

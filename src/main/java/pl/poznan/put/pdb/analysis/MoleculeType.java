@@ -5,6 +5,7 @@ import pl.poznan.put.atom.AtomType;
 import pl.poznan.put.atom.Bond;
 import pl.poznan.put.pdb.PdbAtomLine;
 
+/** A type of molecule (RNA or protein). */
 public enum MoleculeType {
   RNA,
   PROTEIN,
@@ -30,6 +31,14 @@ public enum MoleculeType {
     return c.distanceTo(n) <= (Bond.length(AtomType.C, AtomType.N).max() * 1.5);
   }
 
+  /**
+   * Checks if two residues are connected. For nucleotides, the check is on O3'-P bond. For amino
+   * acids, the check is on C-N bond.
+   *
+   * @param r1 The first residue.
+   * @param r2 The second residue.
+   * @return True if residues are connected.
+   */
   public boolean areConnected(final PdbResidue r1, final PdbResidue r2) {
     switch (this) {
       case RNA:

@@ -3,9 +3,9 @@ package pl.poznan.put;
 import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.StructureModel;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.Ct;
 import pl.poznan.put.structure.secondary.formats.DefaultDotBracket;
@@ -119,15 +119,15 @@ public class BpSeqTest {
   @Test
   public final void testManyChainsWithMissingResidues() {
     final PdbParser parser = new PdbParser();
-    final List<StructureModel> models = parser.parse(pdb1XPO);
+    final List<PdbModel> models = parser.parse(pdb1XPO);
     assertThat(models.size(), is(1));
-    final StructureModel model = models.get(0);
+    final PdbModel model = models.get(0);
 
     assertThat(
         model.residues().stream().filter(PdbResidue::isMissing).count(),
         is((long)model.missingResidues().size()));
 
-    final StructureModel rna = model.filteredNewInstance(MoleculeType.RNA);
+    final PdbModel rna = model.filteredNewInstance(MoleculeType.RNA);
     assertThat(model.missingResidues().size(), is(103));
     assertThat(rna.missingResidues().size(), is(36));
 

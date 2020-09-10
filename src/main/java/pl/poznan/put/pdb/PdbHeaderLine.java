@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
-/** Representation of HEADER file in PDB format. */
+/** A representation of HEADER file in PDB format. */
 @Value.Immutable
 public abstract class PdbHeaderLine implements Serializable {
   // @formatter:off
@@ -29,7 +29,7 @@ public abstract class PdbHeaderLine implements Serializable {
   private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMM-yy", Locale.US);
 
   /**
-   * Parse text with HEADER line in PDB format.
+   * Parses text with HEADER line in PDB format.
    *
    * @param line Text with HEADER line in PDB format.
    * @return An instance of this class with fields set to values parsed from the {@code line}.
@@ -69,6 +69,11 @@ public abstract class PdbHeaderLine implements Serializable {
 
   @Override
   public final String toString() {
+    return toPdb();
+  }
+
+  /** @return A line in PDB format. */
+  public final String toPdb() {
     return String.format(
         Locale.US,
         PdbHeaderLine.FORMAT,

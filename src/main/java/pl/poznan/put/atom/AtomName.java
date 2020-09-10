@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Enumeration of all atom names to be found in PDB and mmCIF files. */
+/** A unified atom name found in PDB and mmCIF files with a list of alternative names. */
 public enum AtomName {
   C(AtomType.C, "C"),
   C1(AtomType.C, "C1"),
@@ -279,7 +279,7 @@ public enum AtomName {
   }
 
   /**
-   * Check if this constant matches a name found in PDB or mmCIF file. Certain atom names have more
+   * Checks if this constant matches a name found in PDB or mmCIF file. Certain atom names have more
    * than one matching PDB names e.g. O2P/OP2.
    *
    * @param pdbName Name found in PDB or mmCIF file.
@@ -290,7 +290,7 @@ public enum AtomName {
   }
 
   /**
-   * Get the default atom name (if more than one is configured).
+   * Gets the default atom name (if more than one is configured).
    *
    * @return The default name for this constant.
    */
@@ -299,7 +299,7 @@ public enum AtomName {
   }
 
   /**
-   * Check if atom is heavy (i.e. not a hydrogen).
+   * Checks if atom is heavy (i.e. not a hydrogen).
    *
    * @return True if this constant describes an atom which is not a hydrogen.
    */
@@ -308,7 +308,7 @@ public enum AtomName {
   }
 
   /**
-   * Get enum describing the type of atom that this constant represents.
+   * Gets enum describing the type of atom that this constant represents.
    *
    * @return {{@link AtomType}} object representing the atom type.
    */

@@ -3,8 +3,8 @@ package pl.poznan.put.atom;
 import org.apache.commons.collections4.map.MultiKeyMap;
 
 /**
- * A utility class to work with atomic bonds' lengths. Data parsed from Charmm36 topology &amp;
- * parameter files.
+ * An atomic bond and corresponding length. Data parsed from Charmm36 topology &amp; parameter
+ * files.
  */
 public final class Bond {
   private static final MultiKeyMap<AtomType, BondLength> MAP = new MultiKeyMap<>();
@@ -38,7 +38,7 @@ public final class Bond {
   }
 
   /**
-   * Return bond length between two atoms.
+   * Returns bond length between two atoms.
    *
    * @param left Type of first atom.
    * @param right Type of second atom.

@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.PdbParsingException;
 import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.pdb.analysis.PdbChain;
+import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.StructureModel;
+import pl.poznan.put.pdb.analysis.SingleTypedResidueCollection;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
 import pl.poznan.put.structure.secondary.pseudoknots.Region;
 
@@ -122,8 +122,8 @@ public final class Ct implements Serializable {
     return new Ct(ctEntries);
   }
 
-  public static Ct fromBpSeqAndPdbModel(final BpSeq bpSeq, final StructureModel model) {
-    final StructureModel rna;
+  public static Ct fromBpSeqAndPdbModel(final BpSeq bpSeq, final PdbModel model) {
+    final PdbModel rna;
     try {
       rna = model.filteredNewInstance(MoleculeType.RNA);
     } catch (final PdbParsingException e) {
@@ -137,7 +137,7 @@ public final class Ct implements Serializable {
 
     for (final BpSeq.Entry entry : entries) {
       final PdbResidue residue = residues.get(i);
-      final PdbChain chain = rna.findChainContainingResidue(residue.toResidueIdentifer());
+      final SingleTypedResidueCollection chain = rna.findChainContainingResidue(residue);
       final List<PdbResidue> chainResidues = chain.residues();
 
       final int index = entry.index();

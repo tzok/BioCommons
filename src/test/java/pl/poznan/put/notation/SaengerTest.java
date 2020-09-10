@@ -11,7 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class SaengerTest {
   @Test
   public final void fromOrdinal() {
-    assertThat(Saenger.fromOrdinal(20), is(Saenger.XX));
+    assertThat(Saenger.fromNumber(20), is(Saenger.XX));
   }
 
   @Test

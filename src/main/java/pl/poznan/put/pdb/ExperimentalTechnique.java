@@ -2,9 +2,7 @@ package pl.poznan.put.pdb;
 
 import java.util.Arrays;
 
-/**
- * Lists all experimental techniques a structure can be solved with (according to the PDB sources).
- */
+/** An experimental technique used to solve a structure (according to the PDB sources). */
 public enum ExperimentalTechnique {
   ELECTRON_CRYSTALLOGRAPHY("ELECTRON CRYSTALLOGRAPHY"),
   ELECTRON_MICROSCOPY("ELECTRON MICROSCOPY"),
@@ -28,7 +26,7 @@ public enum ExperimentalTechnique {
   }
 
   /**
-   * Find a matching instance of this enum in case-insensitive manner.
+   * Finds a matching instance of this enum in case-insensitive manner.
    *
    * @param pdbName A string representation of an experimental technique.
    * @return An instance of this class that matches {@code fullName} or UNKNOWN if none does.

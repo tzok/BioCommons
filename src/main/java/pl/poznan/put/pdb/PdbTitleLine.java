@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 
-/** Representation of TITLE line in PDB format. */
+/** A representation of TITLE line in PDB format. */
 @Value.Immutable
 public abstract class PdbTitleLine implements Serializable {
   // @formatter:off
@@ -18,11 +18,12 @@ public abstract class PdbTitleLine implements Serializable {
    *  11 - 80       String         title             Title of the experiment.
    */
   // @formatter:on
+
   private static final String FORMAT = "TITLE   %2s%70s"; // NON-NLS
   private static final String RECORD_NAME = "TITLE"; // NON-NLS
 
   /**
-   * Parse text as TITLE in PDB format.
+   * Parses a line of text as TITLE in PDB format.
    *
    * @param line A TITLE line.
    * @return An instance of this class.
@@ -55,7 +56,12 @@ public abstract class PdbTitleLine implements Serializable {
   public abstract String title();
 
   @Override
-  public String toString() {
+  public final String toString() {
+    return toPdb();
+  }
+
+  /** @return A line in PDB format. */
+  public final String toPdb() {
     return String.format(Locale.US, PdbTitleLine.FORMAT, continuation(), title());
   }
 }

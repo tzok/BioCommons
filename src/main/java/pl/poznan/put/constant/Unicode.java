@@ -1,6 +1,6 @@
 package pl.poznan.put.constant;
 
-/** Useful constants in structural bioinformatics e.g. greek letters, Angstrom, etc. */
+/** A set of useful constants in structural bioinformatics e.g. greek letters, Angstrom, etc. */
 public final class Unicode {
   public static final String ALPHA = "α";
   public static final String BETA = "β";

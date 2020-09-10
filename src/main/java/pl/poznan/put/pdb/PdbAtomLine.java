@@ -22,7 +22,28 @@ import java.util.Objects;
 /** Representation of ATOM and HETATM lines in both PDB and mmCIF files. */
 @Value.Immutable
 public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
-  private static final Logger LOGGER = LoggerFactory.getLogger(PdbAtomLine.class);
+  /**
+   * A constant required by mmCIF format which also documents the order of fields that {@link
+   * PdbAtomLine#toCif()} follows.
+   */
+  public static final String CIF_LOOP =
+      "loop_\n"
+          + "_atom_site.group_PDB\n"
+          + "_atom_site.id\n"
+          + "_atom_site.auth_atom_id\n"
+          + "_atom_site.label_alt_id\n"
+          + "_atom_site.auth_comp_id\n"
+          + "_atom_site.auth_asym_id\n"
+          + "_atom_site.auth_seq_id\n"
+          + "_atom_site.pdbx_PDB_ins_code\n"
+          + "_atom_site.Cartn_x\n"
+          + "_atom_site.Cartn_y\n"
+          + "_atom_site.Cartn_z\n"
+          + "_atom_site.occupancy\n"
+          + "_atom_site.B_iso_or_equiv\n"
+          + "_atom_site.type_symbol\n"
+          + "_atom_site.pdbx_formal_charge";
+
   // @formatter:off
   /*
      COLUMNS        DATA  TYPE    FIELD        DEFINITION
@@ -49,9 +70,10 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
       "ATOM  %5d  %-3s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
   // @formatter:on
   private static final String RECORD_NAME = "ATOM";
+  private static final Logger LOGGER = LoggerFactory.getLogger(PdbAtomLine.class);
 
   /**
-   * Create an instance of this class from {@link Atom} object.
+   * Creates an instance of this class from {@link Atom} object.
    *
    * @param atom An instance of BioJava object.
    * @return An instance of this class with fields values equal to those in {@code atom} object.
@@ -96,7 +118,7 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
   }
 
   /**
-   * Parse text as ATOM or HETATM line in strict mode (all 80 characters in the line are required).
+   * Parses text as ATOM or HETATM line in strict mode (all 80 characters in the line are required).
    *
    * @param line A text in PDB format (ATOM or HETATM).
    * @return An instance of this class with fields containing values parsed from the text.
@@ -106,7 +128,7 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
   }
 
   /**
-   * Parse text as ATOM or HETATM line in a strict or non-strict mode.
+   * Parses text as ATOM or HETATM line in a strict or non-strict mode.
    *
    * @param line A text in PDB format (ATOM or HETATM).
    * @param strictMode If true, then all 80 characters are required, otherwise the "bare minimum" of
@@ -238,38 +260,7 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
 
   @Override
   public final String toString() {
-    if (alternateLocation().length() != 1) {
-      PdbAtomLine.LOGGER.error(
-          "Field 'alternateLocation' is longer than 1 char. Only first letter will be taken");
-    }
-    if (chainIdentifier().length() != 1) {
-      PdbAtomLine.LOGGER.error(
-          "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
-    }
-    if (insertionCode().length() != 1) {
-      PdbAtomLine.LOGGER.error(
-          "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
-    }
-
-    final String format =
-        (atomName().length() == 4) ? PdbAtomLine.FORMAT_ATOM_4_CHARACTER : PdbAtomLine.FORMAT;
-    return String.format(
-        Locale.US,
-        format,
-        serialNumber(),
-        atomName(),
-        alternateLocation().charAt(0),
-        residueName(),
-        chainIdentifier().charAt(0),
-        residueNumber(),
-        insertionCode().charAt(0),
-        x(),
-        y(),
-        z(),
-        occupancy(),
-        temperatureFactor(),
-        elementSymbol(),
-        charge());
+    return toPdb();
   }
 
   /** @return An instance of {@link AtomName} enum that matches this object. */
@@ -278,7 +269,7 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
   }
 
   /**
-   * Calculate euclidean distance to another atom.
+   * Calculates the euclidean distance to another atom.
    *
    * @param other Another instance of this class.
    * @return Euclidean distance in 3D between two atoms.
@@ -290,7 +281,7 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
   }
 
   /**
-   * Create an instance of BioJava {@link Atom} with fields having the same values as this object.
+   * Creates an instance of BioJava {@link Atom} with fields having the same values as this object.
    *
    * @return An instance of {@link Atom} with the same values as this object.
    */
@@ -327,7 +318,7 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
   }
 
   /**
-   * Create an ATOM line in mmCIF format (according to format: {@link CifConstants#CIF_LOOP}).
+   * Creates an ATOM line in mmCIF format (according to format: {@link PdbAtomLine#CIF_LOOP}).
    *
    * @return A string representation of the ATOM line in mmCIF format.
    */
@@ -365,6 +356,46 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
       builder.append('?');
     }
     return builder.toString();
+  }
+
+  /**
+   * Creates an ATOM line in PDB format.
+   *
+   * @return A string representation of the ATOM line in PDB format.
+   */
+  public final String toPdb() {
+    if (alternateLocation().length() != 1) {
+      PdbAtomLine.LOGGER.error(
+          "Field 'alternateLocation' is longer than 1 char. Only first letter will be taken");
+    }
+    if (chainIdentifier().length() != 1) {
+      PdbAtomLine.LOGGER.error(
+          "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
+    }
+    if (insertionCode().length() != 1) {
+      PdbAtomLine.LOGGER.error(
+          "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
+    }
+
+    final String format =
+        (atomName().length() == 4) ? PdbAtomLine.FORMAT_ATOM_4_CHARACTER : PdbAtomLine.FORMAT;
+    return String.format(
+        Locale.US,
+        format,
+        serialNumber(),
+        atomName(),
+        alternateLocation().charAt(0),
+        residueName(),
+        chainIdentifier().charAt(0),
+        residueNumber(),
+        insertionCode().charAt(0),
+        x(),
+        y(),
+        z(),
+        occupancy(),
+        temperatureFactor(),
+        elementSymbol(),
+        charge());
   }
 
   /** @return An instance of {@link Vector3D} with (x, y, z) coordinates of this instance. */

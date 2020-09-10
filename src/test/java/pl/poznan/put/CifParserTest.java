@@ -2,11 +2,12 @@ package pl.poznan.put;
 
 import org.junit.Test;
 import pl.poznan.put.pdb.ExperimentalTechnique;
+import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
-import pl.poznan.put.pdb.analysis.PdbChain;
+import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.StructureModel;
+import pl.poznan.put.pdb.analysis.SingleTypedResidueCollection;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.util.List;
@@ -21,8 +22,8 @@ public class CifParserTest {
     final List<CifModel> models = CifParser.parse(cif100D);
     assertThat(models.size(), is(1));
 
-    final StructureModel model = models.get(0);
-    final List<PdbChain> chains = model.chains();
+    final PdbModel model = models.get(0);
+    final List<SingleTypedResidueCollection> chains = model.chains();
     assertThat(chains.size(), is(2));
 
     final List<ExperimentalTechnique> experimentalTechniques =
@@ -37,12 +38,14 @@ public class CifParserTest {
     final String cif148L = ResourcesHelper.loadResource("148L.cif");
     final List<CifModel> models = CifParser.parse(cif148L);
     assertThat(models.size(), is(1));
-    final StructureModel model = models.get(0);
+    final PdbModel model = models.get(0);
 
-    final PdbResidue residueE164 = model.findResidue("E", 164, " ");
+    final PdbResidue residueE164 =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("E", 164, " "));
     assertThat(residueE164.isMissing(), is(true));
 
-    final PdbResidue residueS169 = model.findResidue("S", 169, " ");
+    final PdbResidue residueS169 =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("S", 169, " "));
     assertThat(residueS169.residueName(), is("API"));
     assertThat(residueS169.modifiedResidueName(), is("LYS"));
 
@@ -59,8 +62,8 @@ public class CifParserTest {
     final List<CifModel> models = CifParser.parse(cif5A93);
     assertThat(models.size(), is(1));
 
-    final StructureModel model = models.get(0);
-    final List<PdbChain> chains = model.chains();
+    final PdbModel model = models.get(0);
+    final List<SingleTypedResidueCollection> chains = model.chains();
     assertThat(chains.size(), is(1));
 
     final List<ExperimentalTechnique> experimentalTechniques =

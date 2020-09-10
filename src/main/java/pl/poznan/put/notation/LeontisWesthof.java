@@ -41,14 +41,14 @@ public enum LeontisWesthof {
   }
 
   /**
-   * This is not a "real" enum's ordinal, but a numeric index of Leontis-Westhof pair as used by
-   * other tools.
+   * Matches a number in range 1-12 to one of the constants. This is useful to parse mmCIF format,
+   * which contains {@code hbond_12} field.
    *
-   * @param ordinal Value between 1-12.
+   * @param number A value between 1-12.
    * @return Enum value represented by the ordinal value.
    */
-  public static LeontisWesthof fromOrdinal(final int ordinal) {
-    switch (ordinal) {
+  public static LeontisWesthof fromNumber(final int number) {
+    switch (number) {
       case 1:
         return LeontisWesthof.CWW;
       case 2:
@@ -79,7 +79,7 @@ public enum LeontisWesthof {
   }
 
   /**
-   * Find a constant that matches a given name in case-insensitive manner or return UNKNOWN
+   * Finds a constant that matches a given name in case-insensitive manner or return UNKNOWN
    * otherwise. For example, cww is the same as cWW.
    *
    * @param input A string representing LW notation.
@@ -111,12 +111,12 @@ public enum LeontisWesthof {
   }
 
   /**
-   * This is not a "real" enum's ordinal, but a numeric index of Leontis-Westhof pair as used by
-   * other tools.
+   * Generates a value in range 1-12 (or {@code Integer.MAX_VALUE}) which corresponds to this
+   * instance. The value is consistent with mmCIF format and its {@code hbond_12} field.
    *
-   * @return Value between 1-12 or Integer.MAX_VALUE for unknown LW.
+   * @return A value between 1-12 or Integer.MAX_VALUE for unknown LW.
    */
-  public int toOrdinal() {
+  public int toNumber() {
     switch (this) {
       case CWW:
         return 1;

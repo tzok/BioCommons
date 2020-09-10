@@ -4,8 +4,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import pl.poznan.put.pdb.analysis.CifParser;
+import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
-import pl.poznan.put.pdb.analysis.StructureModel;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -36,7 +36,7 @@ public final class StructureManager {
     super();
   }
 
-  public static List<StructureModel> getAllStructures() {
+  public static List<PdbModel> getAllStructures() {
     return StructureManager.STRUCTURES.stream()
         .map(StructureInfo::structure)
         .collect(Collectors.toList());
@@ -48,15 +48,15 @@ public final class StructureManager {
         .collect(Collectors.toList());
   }
 
-  public static List<String> getNames(final Iterable<? extends StructureModel> structures) {
+  public static List<String> getNames(final Iterable<? extends PdbModel> structures) {
     final List<String> result = new ArrayList<>();
-    for (final StructureModel model : structures) {
+    for (final PdbModel model : structures) {
       result.add(StructureManager.getName(model));
     }
     return result;
   }
 
-  public static String getName(final StructureModel structure) {
+  public static String getName(final PdbModel structure) {
     for (final StructureInfo si : StructureManager.STRUCTURES) {
       if (Objects.equals(si.structure(), structure)) {
         return si.name();
@@ -65,7 +65,7 @@ public final class StructureManager {
     throw new IllegalArgumentException("Failed to find PdbModel");
   }
 
-  public static File getFile(final StructureModel structure) {
+  public static File getFile(final PdbModel structure) {
     for (final StructureInfo si : StructureManager.STRUCTURES) {
       if (Objects.equals(si.structure(), structure)) {
         return si.path();
@@ -74,7 +74,7 @@ public final class StructureManager {
     throw new IllegalArgumentException("Failed to find PdbModel");
   }
 
-  public static StructureModel getStructure(final String name) {
+  public static PdbModel getStructure(final String name) {
     for (final StructureInfo si : StructureManager.STRUCTURES) {
       if (Objects.equals(si.name(), name)) {
         return si.structure();
@@ -89,8 +89,8 @@ public final class StructureManager {
    * @param file Path to the PDB file.
    * @return Structure object..
    */
-  public static List<? extends StructureModel> loadStructure(final File file) throws IOException {
-    final List<StructureModel> models = StructureManager.getModels(file);
+  public static List<? extends PdbModel> loadStructure(final File file) throws IOException {
+    final List<PdbModel> models = StructureManager.getModels(file);
     if (!models.isEmpty()) {
       return models;
     }
@@ -102,7 +102,7 @@ public final class StructureManager {
       if (!StructureManager.isCif(fileContent)) {
         throw new IOException("File is not a mmCIF structure: " + file);
       }
-      final List<? extends StructureModel> pdbModels = CifParser.parse(fileContent);
+      final List<? extends PdbModel> pdbModels = CifParser.parse(fileContent);
       StructureManager.storeStructureInfo(file, pdbModels);
       return pdbModels;
     }
@@ -110,19 +110,19 @@ public final class StructureManager {
     if (!StructureManager.isPdb(fileContent)) {
       throw new IOException("File is not a PDB structure: " + file);
     }
-    final List<? extends StructureModel> pdbModels = StructureManager.PDB_PARSER.parse(fileContent);
+    final List<? extends PdbModel> pdbModels = StructureManager.PDB_PARSER.parse(fileContent);
     StructureManager.storeStructureInfo(file, pdbModels);
     return pdbModels;
   }
 
-  public static List<StructureModel> getModels(final File file) {
+  public static List<PdbModel> getModels(final File file) {
     return StructureManager.STRUCTURES.stream()
         .filter(si -> Objects.equals(si.path(), file))
         .map(StructureInfo::structure)
         .collect(Collectors.toList());
   }
 
-  public static List<? extends StructureModel> loadStructure(final String pdbId)
+  public static List<? extends PdbModel> loadStructure(final String pdbId)
       throws IOException {
     if (pdbId.length() != 4) {
       throw new IllegalArgumentException("Invalid PDB id: " + pdbId);
@@ -134,7 +134,7 @@ public final class StructureManager {
     final File pdbFile = File.createTempFile("bio-commons", ".pdb");
     FileUtils.writeStringToFile(pdbFile, pdbContent, StructureManager.ENCODING_UTF_8);
 
-    final List<? extends StructureModel> models = StructureManager.PDB_PARSER.parse(pdbContent);
+    final List<? extends PdbModel> models = StructureManager.PDB_PARSER.parse(pdbContent);
     StructureManager.storeStructureInfo(pdbFile, models);
     return models;
   }
@@ -186,7 +186,7 @@ public final class StructureManager {
   }
 
   private static void storeStructureInfo(
-      final File file, final List<? extends StructureModel> structures) {
+      final File file, final List<? extends PdbModel> structures) {
     String format = "%s";
 
     if (structures.size() > 1) {
@@ -201,7 +201,7 @@ public final class StructureManager {
     }
 
     for (int i = 0; i < structures.size(); i++) {
-      final StructureModel model = structures.get(i);
+      final PdbModel model = structures.get(i);
       String name = model.idCode();
 
       if (StringUtils.isBlank(name)) {

@@ -3,7 +3,7 @@ package pl.poznan.put.structure.secondary.formats;
 import org.immutables.value.Value;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbChain;
-import pl.poznan.put.pdb.analysis.StructureModel;
+import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.ClassifiedBasePair;
 import pl.poznan.put.structure.secondary.DotBracketSymbol;
@@ -44,7 +44,7 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
   public abstract DefaultDotBracket dotBracket();
 
   @Value.Parameter(order = 2)
-  public abstract StructureModel model();
+  public abstract PdbModel model();
 
   @Override
   public final String sequence() {

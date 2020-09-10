@@ -1,7 +1,7 @@
 package pl.poznan.put.structure.tertiary;
 
 import org.immutables.value.Value;
-import pl.poznan.put.pdb.analysis.StructureModel;
+import pl.poznan.put.pdb.analysis.PdbModel;
 
 import java.io.File;
 import java.util.Comparator;
@@ -9,7 +9,7 @@ import java.util.Comparator;
 @Value.Immutable
 public abstract class StructureInfo implements Comparable<StructureInfo> {
   @Value.Parameter(order = 1)
-  public abstract StructureModel structure();
+  public abstract PdbModel structure();
 
   @Value.Parameter(order = 2)
   public abstract File path();

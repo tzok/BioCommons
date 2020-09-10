@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Classification of RNA base pairs described in Principles of Nucleic Acid Structure. W. Saenger.
+ * A classification of RNA base pairs described in Principles of Nucleic Acid Structure. W. Saenger.
  */
 public enum Saenger {
   I,
@@ -40,7 +40,7 @@ public enum Saenger {
   UNKNOWN;
 
   /**
-   * Find enum that matches the given name or return UNKNOWN otherwise.
+   * Finds an enum that matches the given name or return UNKNOWN otherwise.
    *
    * @param str A string representing Saenger notation.
    * @return An instance of this enum that matches the given name or UNKNOWN if none does.
@@ -53,21 +53,21 @@ public enum Saenger {
   }
 
   /**
-   * This is not a "real" ordinal, but an integer in range [1; 28] that matches one of the Sanger
-   * roman numerals.
+   * Matches a value in range 1-28 to an instance of this class with the same value written as a
+   * Roman numeral. The number is used in mmCIF files in {@code hbond_28} field.
    *
-   * @param ordinal An integer in range [1; 28].
+   * @param number An integer in range [1; 28].
    * @return An instance of this class that matches {@code ordinal} or UNKNOWN if none does.
    */
-  public static Saenger fromOrdinal(final int ordinal) {
-    if ((ordinal >= 1) && (ordinal <= 28)) {
-      return Saenger.values()[ordinal - 1];
+  public static Saenger fromNumber(final int number) {
+    if ((number >= 1) && (number <= 28)) {
+      return Saenger.values()[number - 1];
     }
     return Saenger.UNKNOWN;
   }
 
   /**
-   * Check which one of {@link Saenger} instances matches a canonical base pair of provided
+   * Checks which one of {@link Saenger} instances matches a canonical base pair of provided
    * sequence. C-G canonical base pairs are XIX, A-U are XX and G-U are XXVIII. If base pair
    * sequence is other than C-G, A-U or G-U, then this method returns UNKNOWN.
    *
@@ -93,7 +93,7 @@ public enum Saenger {
   }
 
   /**
-   * Check if instance of {@link Saenger} represents a canonical base pair (XIX, XX and XXVIII).
+   * Checks if instance of {@link Saenger} represents a canonical base pair (XIX, XX and XXVIII).
    *
    * @param saenger An instance to be checked.
    * @return True if {@code saenger} is either XIX, XX or XXVIII.

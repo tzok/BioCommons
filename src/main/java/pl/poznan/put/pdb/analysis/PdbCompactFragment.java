@@ -18,16 +18,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/** A collection of residues such that (i, i+1) are connected. */
 @Value.Immutable
-public abstract class PdbCompactFragment implements ResidueCollection {
+public abstract class PdbCompactFragment implements SingleTypedResidueCollection {
   @Value.Parameter(order = 1)
-  public abstract String name();
-
-  @Value.Parameter(order = 2)
   public abstract List<PdbResidue> residues();
 
   public final PdbCompactFragment shifted(final int shift, final int size) {
-    return ImmutablePdbCompactFragment.of(name(), residues().subList(shift, shift + size));
+    return ImmutablePdbCompactFragment.of(residues().subList(shift, shift + size));
   }
 
   @Value.Lazy
@@ -52,7 +50,7 @@ public abstract class PdbCompactFragment implements ResidueCollection {
         values.add(value);
       }
 
-      mapResidueAngleValue.put(residue.toResidueIdentifer(), values);
+      mapResidueAngleValue.put(PdbResidueIdentifier.from(residue), values);
     }
 
     return mapResidueAngleValue;
@@ -63,7 +61,7 @@ public abstract class PdbCompactFragment implements ResidueCollection {
     final Collection<? extends TorsionAngleType> angleTypes = masterType.angleTypes();
 
     for (final TorsionAngleValue angleValue :
-        mapResidueAngleValue().get(chainNumberICode.toResidueIdentifer())) {
+        mapResidueAngleValue().get(PdbResidueIdentifier.from(chainNumberICode))) {
       for (final TorsionAngleType angleType : angleTypes) {
         if (Objects.equals(angleType, angleValue.angleType())) {
           return angleValue;
@@ -73,11 +71,6 @@ public abstract class PdbCompactFragment implements ResidueCollection {
 
     final TorsionAngleType first = angleTypes.iterator().next();
     return ImmutableTorsionAngleValue.of(first, ImmutableAngle.of(Double.NaN));
-  }
-
-  public final MoleculeType moleculeType() {
-    // in compact fragment, all residues have the same molecule type
-    return residues().get(0).moleculeType();
   }
 
   @Override

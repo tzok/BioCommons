@@ -3,7 +3,7 @@ package pl.poznan.put.notation;
 import java.util.Arrays;
 
 /**
- * Base-phosphate notation described in: Classification and Energetics of the Base-Phosphate
+ * A base-phosphate notation described in: Classification and Energetics of the Base-Phosphate
  * Interactions in RNA. C.L. Zirbel, J.E. Šponer, J. Šponer, J. Stombaugh, N.B. Leontis. Nucleic
  * Acids Research. 2009. 37(15):4898–4918. doi:10.1093/nar/gkp468
  */
@@ -27,7 +27,7 @@ public enum BPh {
   }
 
   /**
-   * Find an enum constant that matches the given one or return a predefined UNKNOWN value.
+   * Finds an enum constant that matches the given one or return a predefined UNKNOWN value.
    *
    * @param candidate A string representing a BPh value.
    * @return An instance of this class that matches given name or UNKNOWN if none does.

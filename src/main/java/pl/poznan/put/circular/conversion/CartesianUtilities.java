@@ -10,10 +10,7 @@ import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
 
-/**
- * A class containg utility functions on the edge between cartesian and trigonometric
- * representations.
- */
+/** A set of utility functions on the edge between cartesian and trigonometric representations. */
 public final class CartesianUtilities {
   private CartesianUtilities() {
     super();
@@ -48,8 +45,8 @@ public final class CartesianUtilities {
   }
 
   /**
-   * Compute position of atom D, if you know positions of A, B and C, and the length of bond B-C,
-   * and and the angle B-C-D and the torsion angle A-B-C-D.
+   * Computes position of atom D, if you know positions of A, B and C, and the length of bond B-C,
+   * and the angle B-C-D and the torsion angle A-B-C-D.
    *
    * @param coordA Coordinates of atom A.
    * @param coordB Coordinates of atom B.

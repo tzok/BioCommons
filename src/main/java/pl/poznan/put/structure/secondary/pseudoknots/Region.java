@@ -37,8 +37,7 @@ public final class Region {
       }
 
       final BpSeq.Entry last = regionEntries.get(regionEntries.size() - 1);
-      if ((entry.index() == (last.index() + 1))
-          && (entry.pair() == (last.pair() - 1))) {
+      if ((entry.index() == (last.index() + 1)) && (entry.pair() == (last.pair() - 1))) {
         regionEntries.add(entry);
         continue;
       }

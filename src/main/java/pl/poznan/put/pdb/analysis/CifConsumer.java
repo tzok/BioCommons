@@ -75,6 +75,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -100,10 +101,10 @@ class CifConsumer implements MMcifConsumer {
   private static final String OPENING = "opening"; // NON-NLS
 
   private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
-  private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
-  private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
+  private final Collection<PdbRemark465Line> missingResidues = new ArrayList<>();
+  private final Collection<PdbModresLine> modifiedResidues = new ArrayList<>();
   private final List<ExperimentalTechnique> experimentalTechniques = new ArrayList<>();
-  private final List<QuantifiedBasePair> basePairs = new ArrayList<>();
+  private final Collection<QuantifiedBasePair> basePairs = new ArrayList<>();
   private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
   @Nullable private Date depositionDate;
@@ -518,14 +519,14 @@ class CifConsumer implements MMcifConsumer {
       final String saengerString = map.get("hbond_type_28");
       Saenger saenger = Saenger.UNKNOWN;
       if (!Objects.equals("?", saengerString)) {
-        saenger = Saenger.fromOrdinal(Integer.parseInt(saengerString));
+        saenger = Saenger.fromNumber(Integer.parseInt(saengerString));
       }
 
       final String leontisWesthofString = map.get("hbond_type_12");
       final LeontisWesthof leontisWesthof =
           Objects.equals("?", leontisWesthofString)
               ? LeontisWesthof.UNKNOWN
-              : LeontisWesthof.fromOrdinal(Integer.parseInt(leontisWesthofString));
+              : LeontisWesthof.fromNumber(Integer.parseInt(leontisWesthofString));
 
       final double shear = CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.SHEAR);
       final double stretch = CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.STRETCH);
@@ -583,7 +584,7 @@ class CifConsumer implements MMcifConsumer {
       final int modelNumber = entry.getKey();
       final List<PdbAtomLine> atoms = entry.getValue();
       final CifModel pdbModel =
-          CifModel.of(
+          ImmutableDefaultCifModel.of(
               headerLine,
               experimentalDataLine,
               resolutionLine,

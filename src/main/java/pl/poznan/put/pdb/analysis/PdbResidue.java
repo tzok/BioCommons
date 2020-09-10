@@ -23,7 +23,6 @@ import pl.poznan.put.rna.Pyrimidine;
 import pl.poznan.put.rna.base.NucleobaseType;
 import pl.poznan.put.torsion.TorsionAngleType;
 
-import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
 
 @Value.Immutable
 public abstract class PdbResidue
-    implements Serializable, Comparable<PdbResidue>, ChainNumberICode, ResidueInformationProvider {
+    implements Serializable, ChainNumberICode, ResidueInformationProvider {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbResidue.class);
 
   public static PdbResidue fromBioJavaGroup(final Group group) {
@@ -190,11 +189,6 @@ public abstract class PdbResidue
         + modifiedResidueName()
         + residueNumber
         + (Objects.equals(" ", insertionCode) ? "" : insertionCode);
-  }
-
-  @Override
-  public final int compareTo(@Nonnull final PdbResidue t) {
-    return identifier().compareTo(t.identifier());
   }
 
   public final boolean wasSuccessfullyDetected() {

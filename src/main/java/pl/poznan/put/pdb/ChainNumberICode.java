@@ -1,7 +1,12 @@
 package pl.poznan.put.pdb;
 
-/** Methods that allow to address a residue by its chain name, residue number and insertion code. */
-public interface ChainNumberICode {
+import org.apache.commons.lang3.builder.CompareToBuilder;
+
+/**
+ * A set of methods that allow to address a residue by its chain name, residue number and insertion
+ * code.
+ */
+public interface ChainNumberICode extends Comparable<ChainNumberICode> {
   /** @return The identifier of the chain a residue belongs to. */
   String chainIdentifier();
 
@@ -14,13 +19,12 @@ public interface ChainNumberICode {
    */
   String insertionCode();
 
-  /**
-   * Create an instance of {@link PdbResidueIdentifier} that holds the info gathered by methods of
-   * this interface.
-   *
-   * @return An object that can be used to address specific residue.
-   */
-  default PdbResidueIdentifier toResidueIdentifer() {
-    return ImmutablePdbResidueIdentifier.of(chainIdentifier(), residueNumber(), insertionCode());
+  @Override
+  default int compareTo(final ChainNumberICode t) {
+    return new CompareToBuilder()
+        .append(chainIdentifier(), t.chainIdentifier())
+        .append(residueNumber(), t.residueNumber())
+        .append(insertionCode(), t.insertionCode())
+        .build();
   }
 }
