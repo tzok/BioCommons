@@ -98,7 +98,7 @@ public abstract class BpSeq implements Serializable {
 
   public static BpSeq fromResidueCollection(
       final List<PdbNamedResidueIdentifier> residues,
-      final Iterable<? extends ClassifiedBasePair> basePairs) {
+      final Iterable<ClassifiedBasePair> basePairs) {
     final Collection<BasePair> allBasePairs = new ArrayList<>();
     final Map<BasePair, String> basePairToComment = new HashMap<>();
 
@@ -123,7 +123,7 @@ public abstract class BpSeq implements Serializable {
 
   private static Collection<Entry> generateEntriesForPaired(
       final List<PdbNamedResidueIdentifier> residues,
-      final Iterable<? extends BasePair> basePairs,
+      final Iterable<BasePair> basePairs,
       final Map<BasePair, String> basePairToComment) {
     final Collection<Entry> entries = new ArrayList<>();
 
@@ -154,8 +154,7 @@ public abstract class BpSeq implements Serializable {
   }
 
   private static Collection<Entry> generateEntriesForUnpaired(
-      final List<PdbNamedResidueIdentifier> residues,
-      final Iterable<? extends BasePair> allBasePairs) {
+      final List<PdbNamedResidueIdentifier> residues, final Iterable<BasePair> allBasePairs) {
     final Collection<PdbNamedResidueIdentifier> paired = new HashSet<>();
 
     for (final BasePair basePair : allBasePairs) {

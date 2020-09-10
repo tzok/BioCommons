@@ -44,7 +44,7 @@ public interface PdbModel extends ResidueCollection {
   Set<PdbResidueIdentifier> chainTerminatedAfter();
 
   /** @return The list of chains in the structure. */
-  List<SingleTypedResidueCollection> chains();
+  List<PdbChain> chains();
 
   /**
    * Filters out residues of a given molecule type (RNA or protein) and creates a new instance of

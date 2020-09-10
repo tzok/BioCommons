@@ -5,6 +5,7 @@ import pl.poznan.put.pdb.ExperimentalTechnique;
 import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
+import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.SingleTypedResidueCollection;
@@ -23,7 +24,7 @@ public class CifParserTest {
     assertThat(models.size(), is(1));
 
     final PdbModel model = models.get(0);
-    final List<SingleTypedResidueCollection> chains = model.chains();
+    final List<PdbChain> chains = model.chains();
     assertThat(chains.size(), is(2));
 
     final List<ExperimentalTechnique> experimentalTechniques =
@@ -63,7 +64,7 @@ public class CifParserTest {
     assertThat(models.size(), is(1));
 
     final PdbModel model = models.get(0);
-    final List<SingleTypedResidueCollection> chains = model.chains();
+    final List<PdbChain> chains = model.chains();
     assertThat(chains.size(), is(1));
 
     final List<ExperimentalTechnique> experimentalTechniques =

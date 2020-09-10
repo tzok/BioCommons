@@ -118,8 +118,7 @@ public abstract class AbstractDynamicProgramming implements DynamicProgramming {
     return result;
   }
 
-  private static List<SubSolution> selectBestCandidates(
-      final Collection<? extends SubSolution> candidates) {
+  private static List<SubSolution> selectBestCandidates(final Collection<SubSolution> candidates) {
     if (candidates.isEmpty()) {
       return Collections.emptyList();
     }

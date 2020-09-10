@@ -131,7 +131,7 @@ public class AverageTorsionAngleTypeTest {
 
   @Test
   public final void getAngleTypes() {
-    final Collection<? extends TorsionAngleType> angleTypes = averageTorsionAngleType.angleTypes();
+    final Collection<TorsionAngleType> angleTypes = averageTorsionAngleType.angleTypes();
     assertThat(angleTypes.size(), is(1));
     assertThat(angleTypes.contains(averageTorsionAngleType), is(true));
   }

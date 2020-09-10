@@ -58,7 +58,7 @@ public abstract class PdbCompactFragment implements SingleTypedResidueCollection
 
   public final TorsionAngleValue torsionAngleValue(
       final ChainNumberICode chainNumberICode, final MasterTorsionAngleType masterType) {
-    final Collection<? extends TorsionAngleType> angleTypes = masterType.angleTypes();
+    final Collection<TorsionAngleType> angleTypes = masterType.angleTypes();
 
     for (final TorsionAngleValue angleValue :
         mapResidueAngleValue().get(PdbResidueIdentifier.from(chainNumberICode))) {

@@ -9,5 +9,5 @@ import java.util.List;
 public interface TorsionAngleType extends DisplayableExportable {
   MoleculeType moleculeType();
 
-  TorsionAngleValue calculate(List<? extends PdbResidue> residues, int currentIndex);
+  TorsionAngleValue calculate(List<PdbResidue> residues, int currentIndex);
 }

@@ -11,6 +11,7 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
@@ -64,7 +65,7 @@ public class StructureModelTest {
     final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
-    final List<SingleTypedResidueCollection> chains = model.chains();
+    final List<PdbChain> chains = model.chains();
     assertThat(chains.size(), is(1));
   }
 
@@ -191,7 +192,7 @@ public class StructureModelTest {
     final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb2Z74);
     final PdbModel model = models.get(0);
-    final List<SingleTypedResidueCollection> chains = model.chains();
+    final List<PdbChain> chains = model.chains();
     assertThat(
         String.format("Found chains (expected [A, B]): %s", Arrays.toString(chains.toArray())),
         chains.size(),
@@ -259,7 +260,7 @@ public class StructureModelTest {
     final String pdb2Z74 = ResourcesHelper.loadResource("2Z74.pdb");
     final List<PdbModel> models2Z74 = parser.parse(pdb2Z74);
     final PdbModel model2Z74 = models2Z74.get(0);
-    final List<SingleTypedResidueCollection> chains2Z74 = model2Z74.chains();
+    final List<PdbChain> chains2Z74 = model2Z74.chains();
     assertThat(
         chains2Z74.get(0).sequence().toUpperCase(Locale.US), is("AGCGCCUGGACUUAAAGCCAUUGCACU"));
     assertThat(
@@ -274,7 +275,7 @@ public class StructureModelTest {
     final String pdb4A04 = ResourcesHelper.loadResource("4A04.pdb");
     final List<PdbModel> models4A04 = parser.parse(pdb4A04);
     final PdbModel model4A04 = models4A04.get(0);
-    final List<SingleTypedResidueCollection> chains4A04 = model4A04.chains();
+    final List<PdbChain> chains4A04 = model4A04.chains();
     assertThat(
         chains4A04.get(0).sequence().toUpperCase(Locale.US),
         is(
@@ -293,7 +294,7 @@ public class StructureModelTest {
     final List<PdbModel> models = parser.parse(pdbPKB300);
     assertThat(models.size(), is(1));
     final PdbModel model = models.get(0);
-    final List<SingleTypedResidueCollection> chains = model.chains();
+    final List<PdbChain> chains = model.chains();
     final List<PdbResidue> residues = model.residues();
     final List<PdbAtomLine> atoms = model.atoms();
 
@@ -309,7 +310,7 @@ public class StructureModelTest {
     final List<PdbModel> models = parser.parse(pdbAmber);
     assertThat(models.size(), is(1));
     final PdbModel model = models.get(0);
-    final List<SingleTypedResidueCollection> chains = model.chains();
+    final List<PdbChain> chains = model.chains();
     final List<PdbResidue> residues = model.residues();
     final List<PdbAtomLine> atoms = model.atoms();
 
@@ -326,7 +327,7 @@ public class StructureModelTest {
     assertThat(models.size(), is(18));
 
     final PdbModel model = models.get(0);
-    final List<SingleTypedResidueCollection> chains = model.chains();
+    final List<PdbChain> chains = model.chains();
     final List<PdbResidue> residues = model.residues();
     final List<PdbAtomLine> atoms = model.atoms();
     assertThat(chains.size(), is(1));
@@ -360,7 +361,7 @@ public class StructureModelTest {
     assertThat(models.size(), is(2));
 
     final PdbModel model0 = models.get(0);
-    final List<SingleTypedResidueCollection> chains0 = model0.chains();
+    final List<PdbChain> chains0 = model0.chains();
     final List<PdbResidue> residues0 = model0.residues();
     final List<PdbAtomLine> atoms0 = model0.atoms();
     assertThat(chains0.size(), is(1));
@@ -368,7 +369,7 @@ public class StructureModelTest {
     assertThat(atoms0.size(), is(150));
 
     final PdbModel model1 = models.get(1);
-    final List<SingleTypedResidueCollection> chains1 = model1.chains();
+    final List<PdbChain> chains1 = model1.chains();
     final List<PdbResidue> residues1 = model1.residues();
     final List<PdbAtomLine> atoms1 = model1.atoms();
     assertThat(chains1.size(), is(1));

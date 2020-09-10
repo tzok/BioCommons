@@ -82,7 +82,7 @@ public abstract class DefaultCifModel extends AbstractPdbModel implements CifMod
 
   @Override
   @Value.Lazy
-  public List<SingleTypedResidueCollection> chains() {
+  public List<PdbChain> chains() {
     return super.chains();
   }
 

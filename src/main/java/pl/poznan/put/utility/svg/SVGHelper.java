@@ -117,7 +117,7 @@ public final class SVGHelper {
     return SVGHelper.merge(Arrays.asList(svgs));
   }
 
-  public static SVGDocument merge(final List<? extends SVGDocument> svgs) {
+  public static SVGDocument merge(final List<SVGDocument> svgs) {
     if (svgs.isEmpty()) {
       return SVGHelper.emptyDocument();
     }

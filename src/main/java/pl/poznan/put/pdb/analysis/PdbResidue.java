@@ -228,7 +228,7 @@ public abstract class PdbResidue
     return moleculeType.areConnected(this, other);
   }
 
-  public final int findConnectedResidueIndex(final List<? extends PdbResidue> candidates) {
+  public final int findConnectedResidueIndex(final List<PdbResidue> candidates) {
     final MoleculeType moleculeType = residueInformationProvider().moleculeType();
     for (int i = 0; i < candidates.size(); i++) {
       final PdbResidue candidate = candidates.get(i);

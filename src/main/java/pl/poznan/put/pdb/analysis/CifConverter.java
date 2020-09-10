@@ -249,7 +249,7 @@ public final class CifConverter {
    * @return List of packed chain groups. A packed chain group contains one or more regular chain
    *     groups such that they can be fitted into a single PDB file.
    */
-  private static List<Set<String>> packGroups(final List<? extends Set<String>> chainGroups) {
+  private static List<Set<String>> packGroups(final List<Set<String>> chainGroups) {
     // sort chain groups in descending size order
     chainGroups.sort((t, t1) -> -Integer.compare(t.size(), t1.size()));
 
@@ -277,7 +277,7 @@ public final class CifConverter {
 
   private static void writeHeader(
       final PdbModel firstModel,
-      final BidiMap<? super String, String> chainMap,
+      final BidiMap<String, String> chainMap,
       final StringBuilder pdbBuilder) {
     pdbBuilder.append(firstModel.header()).append(System.lineSeparator());
     if (!firstModel.experimentalData().experimentalTechniques().isEmpty()) {
@@ -333,7 +333,7 @@ public final class CifConverter {
    * @return The PDB identifier.
    */
   private static String mapChain(
-      final BidiMap<? super String, String> chainMap, final String chainIdentifier) {
+      final BidiMap<String, String> chainMap, final String chainIdentifier) {
     if (!chainMap.containsKey(chainIdentifier)) {
       chainMap.put(chainIdentifier, CifConverter.PRINTABLE_CHARS.get(chainMap.size()));
     }
@@ -343,7 +343,7 @@ public final class CifConverter {
   private static void writeModel(
       final PdbModel rnaModel,
       final Collection<String> allowedChains,
-      final BidiMap<? super String, String> chainMap,
+      final BidiMap<String, String> chainMap,
       final StringBuilder pdbBuilder) {
     pdbBuilder.append("MODEL ").append(rnaModel.modelNumber()).append(System.lineSeparator());
 

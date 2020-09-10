@@ -23,7 +23,7 @@ public abstract class AverageTorsionAngleType implements TorsionAngleType, Maste
 
   @Override
   public final TorsionAngleValue calculate(
-      final List<? extends PdbResidue> residues, final int currentIndex) {
+      final List<PdbResidue> residues, final int currentIndex) {
     final PdbResidue residue = residues.get(currentIndex);
     final Collection<Angle> angles = new ArrayList<>();
 
@@ -89,7 +89,7 @@ public abstract class AverageTorsionAngleType implements TorsionAngleType, Maste
     return builder.toString();
   }
 
-  public final TorsionAngleValue calculate(final Iterable<? extends TorsionAngleValue> values) {
+  public final TorsionAngleValue calculate(final Iterable<TorsionAngleValue> values) {
     final Collection<Angle> angles = new ArrayList<>();
 
     for (final MasterTorsionAngleType masterType : consideredAngles()) {

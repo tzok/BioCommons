@@ -276,7 +276,7 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
   private void linkStrands(
       final Strand firstStrand,
       final DotBracketSymbol symbolInSecondStrand,
-      final Map<? super Strand, Set<Strand>> strandMap) {
+      final Map<Strand, Set<Strand>> strandMap) {
     for (final Strand secondStrand : strands()) {
       if (!secondStrand.equals(firstStrand)
           && secondStrand.symbols().contains(symbolInSecondStrand)) {

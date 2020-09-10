@@ -19,7 +19,7 @@ public abstract class AbstractPdbModel implements PdbModel {
    *
    * @return A list of chains in the structure.
    */
-  public List<SingleTypedResidueCollection> chains() {
+  public List<PdbChain> chains() {
     final Map<String, List<PdbResidue>> chainResidues = new LinkedHashMap<>();
     residues()
         .forEach(
@@ -64,7 +64,7 @@ public abstract class AbstractPdbModel implements PdbModel {
         .collect(Collectors.toList());
   }
 
-  private PdbResidue atomGroupToResidue(final List<? extends PdbAtomLine> residueAtoms) {
+  private PdbResidue atomGroupToResidue(final List<PdbAtomLine> residueAtoms) {
     final PdbResidueIdentifier residueIdentifier = PdbResidueIdentifier.from(residueAtoms.get(0));
     final boolean isModified = isModified(residueIdentifier);
     final String residueName = residueAtoms.get(0).residueName();
@@ -74,8 +74,8 @@ public abstract class AbstractPdbModel implements PdbModel {
         residueIdentifier, residueName, modifiedResidueName, residueAtoms, isModified, false);
   }
 
-  private List<SingleTypedResidueCollection> residueGroupToChains(final List<? extends PdbResidue> residueGroup) {
-    final List<SingleTypedResidueCollection> chains = new ArrayList<>();
+  private List<PdbChain> residueGroupToChains(final List<PdbResidue> residueGroup) {
+    final List<PdbChain> chains = new ArrayList<>();
     final List<Integer> branchingPoints =
         IntStream.range(0, residueGroup.size())
             .filter(

@@ -90,7 +90,7 @@ public abstract class DefaultDotBracket implements DotBracket, Serializable {
     return ImmutableDefaultDotBracket.copyOf(dotBracket).withStrands(strands);
   }
 
-  public static List<List<Strand>> candidatesToCombine(final Iterable<? extends Strand> strands) {
+  public static List<List<Strand>> candidatesToCombine(final Iterable<Strand> strands) {
     final List<List<Strand>> result = new ArrayList<>();
     final List<Strand> toCombine = new ArrayList<>();
     int level = 0;

@@ -17,8 +17,7 @@ public abstract class TrigonometricMoment {
    * @param p A p-th moment to be calculated.
    * @return The p-th uncentered trigonometric moment of the sample.
    */
-  public static TrigonometricMoment computeUncentered(
-      final Collection<? extends Angle> data, final int p) {
+  public static TrigonometricMoment computeUncentered(final Collection<Angle> data, final int p) {
     return TrigonometricMoment.compute(data, p, ImmutableAngle.of(0.0));
   }
 
@@ -31,12 +30,12 @@ public abstract class TrigonometricMoment {
    * @return The p-th centered trigonometric moment of the sample.
    */
   public static TrigonometricMoment computeCentered(
-      final Collection<? extends Angle> data, final int p, final Angle theta) {
+      final Collection<Angle> data, final int p, final Angle theta) {
     return TrigonometricMoment.compute(data, p, theta);
   }
 
   private static TrigonometricMoment compute(
-      final Collection<? extends Angle> data, final int p, final Angle theta) {
+      final Collection<Angle> data, final int p, final Angle theta) {
     assert !data.isEmpty();
 
     double c = 0.0;

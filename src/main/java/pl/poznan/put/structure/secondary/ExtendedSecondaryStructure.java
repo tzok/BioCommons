@@ -177,7 +177,7 @@ public abstract class ExtendedSecondaryStructure {
   public abstract String sequence();
 
   @Value.Parameter(order = 2)
-  protected abstract Collection<? extends ClassifiedBasePair> inputBasePairs();
+  protected abstract Collection<ClassifiedBasePair> inputBasePairs();
 
   @Override
   public String toString() {
@@ -247,7 +247,7 @@ public abstract class ExtendedSecondaryStructure {
   }
 
   private DefaultDotBracket basePairsToDotBracket(
-      final Iterable<? extends ClassifiedBasePair> filteredBasePairs) {
+      final Iterable<ClassifiedBasePair> filteredBasePairs) {
     final List<PdbNamedResidueIdentifier> identifiers = new ArrayList<>();
     final char[] array = sequence().toCharArray();
 

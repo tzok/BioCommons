@@ -35,8 +35,7 @@ public abstract class PseudophasePuckerType implements TorsionAngleType {
   }
 
   @Override
-  public TorsionAngleValue calculate(
-      final List<? extends PdbResidue> residues, final int currentIndex) {
+  public TorsionAngleValue calculate(final List<PdbResidue> residues, final int currentIndex) {
     final TorsionAngleValue nu0 =
         RNATorsionAngleType.NU0.angleTypes().get(0).calculate(residues, currentIndex);
     final TorsionAngleValue nu1 =

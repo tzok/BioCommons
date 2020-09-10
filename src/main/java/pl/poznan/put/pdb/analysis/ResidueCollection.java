@@ -51,7 +51,7 @@ public interface ResidueCollection extends Serializable {
       residues.add(ImmutablePdbResidue.copyOf(residue).withAtoms(atoms));
     }
 
-    return ImmutableSimpleResidueCollection.of(residues);
+    return ImmutableDefaultResidueCollection.of(residues);
   }
 
   /**

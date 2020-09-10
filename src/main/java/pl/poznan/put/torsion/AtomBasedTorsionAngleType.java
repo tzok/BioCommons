@@ -20,8 +20,7 @@ public interface AtomBasedTorsionAngleType extends TorsionAngleType {
   @Value.Parameter(order = 1)
   MoleculeType moleculeType();
 
-  default TorsionAngleValue calculate(
-      final List<? extends PdbResidue> residues, final int currentIndex) {
+  default TorsionAngleValue calculate(final List<PdbResidue> residues, final int currentIndex) {
     final List<AtomPair> atomPairs = findAtomPairs(residues, currentIndex);
 
     if (atomPairs.isEmpty()) {
@@ -69,8 +68,7 @@ public interface AtomBasedTorsionAngleType extends TorsionAngleType {
         this, TorsionAnglesHelper.calculateTorsionAngle(a1, a2, a3, a4));
   }
 
-  default List<AtomPair> findAtomPairs(
-      final List<? extends PdbResidue> residues, final int currentIndex) {
+  default List<AtomPair> findAtomPairs(final List<PdbResidue> residues, final int currentIndex) {
     final List<PdbResidue> foundResidues = new ArrayList<>(4);
     final List<PdbAtomLine> foundAtoms = new ArrayList<>(4);
 

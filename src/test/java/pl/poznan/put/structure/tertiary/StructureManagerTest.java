@@ -22,28 +22,37 @@ import static org.mockito.Mockito.mock;
 public class StructureManagerTest {
   private File file1EHZ;
   private File file1EVV;
+  private File file100D;
   private PdbModel model1EHZ;
   private PdbModel model1EVV;
+  private PdbModel model100D;
 
   @Before
   public final void setUp() throws URISyntaxException, IOException {
     file1EHZ = ResourcesHelper.loadResourceFile("1EHZ.pdb");
-    final List<? extends PdbModel> models1EHZ = StructureManager.loadStructure(file1EHZ);
+    final List<PdbModel> models1EHZ = StructureManager.loadStructure(file1EHZ);
     assertThat(models1EHZ.size(), is(1));
     model1EHZ = models1EHZ.get(0);
 
-    final List<? extends PdbModel> models1EVV = StructureManager.loadStructure("1EVV");
+    final List<PdbModel> models1EVV = StructureManager.loadStructure("1EVV");
     assertThat(models1EVV.size(), is(1));
     model1EVV = models1EVV.get(0);
     file1EVV = StructureManager.getFile(model1EVV);
+
+    final List<PdbModel> models100D = StructureManager.loadStructure(ResourcesHelper.loadResourceFile("100D.cif"));
+    assertThat(models100D.size(), is(1));
+    model100D = models100D.get(0);
+    file100D = StructureManager.getFile(model100D);
   }
 
   @After
   public final void tearDown() {
-    assertThat(StructureManager.getAllStructures().size(), is(2));
+    assertThat(StructureManager.getAllStructures().size(), is(3));
     StructureManager.remove(file1EHZ);
-    assertThat(StructureManager.getAllStructures().size(), is(1));
+    assertThat(StructureManager.getAllStructures().size(), is(2));
     StructureManager.remove(file1EVV);
+    assertThat(StructureManager.getAllStructures().size(), is(1));
+    StructureManager.remove(file100D);
     assertThat(StructureManager.getAllStructures().isEmpty(), is(true));
 
     // this is temporary file downloaded each time in @Before method
@@ -93,7 +102,7 @@ public class StructureManagerTest {
   @Test
   public final void getNameMultiModel() throws Exception {
     final File file = ResourcesHelper.loadResourceFile("2MIY.pdb");
-    final List<? extends PdbModel> models = StructureManager.loadStructure(file);
+    final List<PdbModel> models = StructureManager.loadStructure(file);
     final int size = models.size();
     assertThat(size, is(18));
 
@@ -111,14 +120,14 @@ public class StructureManagerTest {
   public final void getAllStructures() {
     final List<PdbModel> structures = StructureManager.getAllStructures();
     assertThat(
-        CollectionUtils.isEqualCollection(Arrays.asList(model1EHZ, model1EVV), structures),
+        CollectionUtils.isEqualCollection(Arrays.asList(model1EHZ, model1EVV, model100D), structures),
         is(true));
   }
 
   @Test
   public final void getAllNames() {
     final List<String> names = StructureManager.getAllNames();
-    assertThat(CollectionUtils.isEqualCollection(Arrays.asList("1EHZ", "1EVV"), names), is(true));
+    assertThat(CollectionUtils.isEqualCollection(Arrays.asList("1EHZ", "1EVV", "100D"), names), is(true));
   }
 
   @Test

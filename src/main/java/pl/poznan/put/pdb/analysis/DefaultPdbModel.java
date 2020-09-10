@@ -29,7 +29,7 @@ public abstract class DefaultPdbModel extends AbstractPdbModel {
    * @return An instance of a PdbModel without a header, experimental data information, missing or
    *     modified residues.
    */
-  public static PdbModel of(final Iterable<? extends PdbAtomLine> atoms) {
+  public static PdbModel of(final Iterable<PdbAtomLine> atoms) {
     return ImmutableDefaultPdbModel.of(
         ImmutablePdbHeaderLine.of("", new Date(0L), ""),
         ImmutablePdbExpdtaLine.of(Collections.emptyList()),
@@ -102,7 +102,7 @@ public abstract class DefaultPdbModel extends AbstractPdbModel {
 
   @Override
   @Value.Lazy
-  public List<SingleTypedResidueCollection> chains() {
+  public List<PdbChain> chains() {
     return super.chains();
   }
 
