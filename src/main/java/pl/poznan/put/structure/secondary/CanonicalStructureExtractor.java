@@ -9,7 +9,7 @@ import pl.poznan.put.pdb.analysis.ImmutableDefaultResidueCollection;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
-import pl.poznan.put.rna.RNAInteractionType;
+import pl.poznan.put.rna.InteractionType;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 
 import java.util.ArrayList;
@@ -27,7 +27,9 @@ public final class CanonicalStructureExtractor {
   public static BpSeq bpSeq(final ResidueCollection residueCollection) {
     final List<PdbResidue> residues =
         residueCollection.residues().stream()
-            .filter(pdbResidue -> pdbResidue.moleculeType() == MoleculeType.RNA)
+            .filter(
+                pdbResidue ->
+                    pdbResidue.residueInformationProvider().moleculeType() == MoleculeType.RNA)
             .collect(Collectors.toList());
     final ResidueCollection collection = ImmutableDefaultResidueCollection.of(residues);
     final Collection<ClassifiedBasePair> basePairs =
@@ -58,7 +60,7 @@ public final class CanonicalStructureExtractor {
           final ClassifiedBasePair classifiedBasePair =
               ModifiableAnalyzedBasePair.create(
                   basePair,
-                  RNAInteractionType.BASE_BASE,
+                  InteractionType.BASE_BASE,
                   Saenger.XIX,
                   LeontisWesthof.CWW,
                   BPh.UNKNOWN,

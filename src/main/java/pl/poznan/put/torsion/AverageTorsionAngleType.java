@@ -6,6 +6,8 @@ import pl.poznan.put.circular.samples.AngleSample;
 import pl.poznan.put.circular.samples.ImmutableAngleSample;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.protein.AminoAcidTorsionAngle;
+import pl.poznan.put.rna.NucleotideTorsionAngle;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.TorsionRange;
 
@@ -15,9 +17,32 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Value.Immutable
 public abstract class AverageTorsionAngleType implements TorsionAngleType, MasterTorsionAngleType {
+  public static AverageTorsionAngleType forProtein() {
+    return ImmutableAverageTorsionAngleType.of(
+        MoleculeType.PROTEIN,
+        Stream.of(AminoAcidTorsionAngle.PHI, AminoAcidTorsionAngle.PSI, AminoAcidTorsionAngle.OMEGA)
+            .collect(Collectors.toList()));
+  }
+
+  public static AverageTorsionAngleType forNucleicAcid() {
+    return ImmutableAverageTorsionAngleType.of(
+        MoleculeType.RNA,
+        Stream.of(
+                NucleotideTorsionAngle.ALPHA,
+                NucleotideTorsionAngle.BETA,
+                NucleotideTorsionAngle.GAMMA,
+                NucleotideTorsionAngle.DELTA,
+                NucleotideTorsionAngle.EPSILON,
+                NucleotideTorsionAngle.ZETA,
+                NucleotideTorsionAngle.CHI)
+            .collect(Collectors.toList()));
+  }
+
   @Value.Parameter(order = 1)
   public abstract MoleculeType moleculeType();
 
@@ -27,7 +52,7 @@ public abstract class AverageTorsionAngleType implements TorsionAngleType, Maste
     final PdbResidue residue = residues.get(currentIndex);
     final Collection<Angle> angles = new ArrayList<>();
 
-    for (final TorsionAngleType type : residue.torsionAngleTypes()) {
+    for (final TorsionAngleType type : residue.residueInformationProvider().torsionAngleTypes()) {
       for (final MasterTorsionAngleType masterType : consideredAngles()) {
         if (masterType.angleTypes().contains(type)) {
           final TorsionAngleValue angleValue = type.calculate(residues, currentIndex);

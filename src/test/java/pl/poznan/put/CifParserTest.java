@@ -8,7 +8,6 @@ import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.SingleTypedResidueCollection;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.util.List;
@@ -47,7 +46,7 @@ public class CifParserTest {
 
     final PdbResidue residueS169 =
         model.findResidue(ImmutablePdbResidueIdentifier.of("S", 169, " "));
-    assertThat(residueS169.residueName(), is("API"));
+    assertThat(residueS169.standardResidueName(), is("API"));
     assertThat(residueS169.modifiedResidueName(), is("LYS"));
 
     final List<ExperimentalTechnique> experimentalTechniques =

@@ -4,7 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.poznan.put.pdb.analysis.ImmutablePdbResidue;
+import pl.poznan.put.pdb.analysis.DefaultPdbResidue;
+import pl.poznan.put.pdb.analysis.ImmutableDefaultPdbResidue;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
 import java.io.Serializable;
@@ -172,17 +173,12 @@ public abstract class PdbRemark465Line implements ChainNumberICode, Serializable
   }
 
   /**
-   * Creates an instance of {@link PdbResidue} marked as missing and without atoms.
+   * Creates an instance of {@link DefaultPdbResidue} marked as missing and without atoms.
    *
    * @return An instance of a missing residue.
    */
   public final PdbResidue toResidue() {
-    return ImmutablePdbResidue.of(
-        PdbResidueIdentifier.from(this),
-        residueName(),
-        residueName(),
-        Collections.emptyList(),
-        false,
-        true);
+    return ImmutableDefaultPdbResidue.of(
+        PdbResidueIdentifier.from(this), residueName(), residueName(), Collections.emptyList());
   }
 }

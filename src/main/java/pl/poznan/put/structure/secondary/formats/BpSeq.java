@@ -98,7 +98,7 @@ public abstract class BpSeq implements Serializable {
 
   public static BpSeq fromResidueCollection(
       final List<PdbNamedResidueIdentifier> residues,
-      final Iterable<ClassifiedBasePair> basePairs) {
+      final Iterable<? extends ClassifiedBasePair> basePairs) {
     final Collection<BasePair> allBasePairs = new ArrayList<>();
     final Map<BasePair, String> basePairToComment = new HashMap<>();
 

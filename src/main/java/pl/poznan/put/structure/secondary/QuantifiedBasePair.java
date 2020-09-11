@@ -5,7 +5,7 @@ import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
-import pl.poznan.put.rna.RNAInteractionType;
+import pl.poznan.put.rna.InteractionType;
 
 @Value.Modifiable
 public abstract class QuantifiedBasePair implements ClassifiedBasePair {
@@ -13,7 +13,7 @@ public abstract class QuantifiedBasePair implements ClassifiedBasePair {
   public abstract BasePair basePair();
 
   @Value.Parameter(order = 2)
-  public abstract RNAInteractionType interactionType();
+  public abstract InteractionType interactionType();
 
   @Value.Parameter(order = 3)
   public abstract Saenger saenger();

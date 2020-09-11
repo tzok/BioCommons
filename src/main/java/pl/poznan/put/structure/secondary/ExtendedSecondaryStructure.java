@@ -10,7 +10,7 @@ import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
-import pl.poznan.put.rna.RNAInteractionType;
+import pl.poznan.put.rna.InteractionType;
 import pl.poznan.put.structure.secondary.formats.BpSeq;
 import pl.poznan.put.structure.secondary.formats.Converter;
 import pl.poznan.put.structure.secondary.formats.DefaultDotBracket;
@@ -139,7 +139,7 @@ public abstract class ExtendedSecondaryStructure {
           final ClassifiedBasePair classifiedBasePair =
               ModifiableAnalyzedBasePair.create(
                   basePair,
-                  RNAInteractionType.BASE_BASE,
+                  InteractionType.BASE_BASE,
                   Saenger.UNKNOWN,
                   leontisWesthof,
                   BPh.UNKNOWN,
@@ -177,7 +177,7 @@ public abstract class ExtendedSecondaryStructure {
   public abstract String sequence();
 
   @Value.Parameter(order = 2)
-  protected abstract Collection<ClassifiedBasePair> inputBasePairs();
+  protected abstract Collection<? extends ClassifiedBasePair> inputBasePairs();
 
   @Override
   public String toString() {
@@ -211,7 +211,7 @@ public abstract class ExtendedSecondaryStructure {
     try {
       final List<ClassifiedBasePair> filteredBasePairs =
           basePairs().stream()
-              .filter(cbp -> RNAInteractionType.BASE_BASE.equals(cbp.interactionType()))
+              .filter(cbp -> InteractionType.BASE_BASE.equals(cbp.interactionType()))
               .filter(cbp -> leontisWesthof == cbp.leontisWesthof())
               .sorted(Comparator.comparingInt(cbp -> cbp.basePair().getLeft().residueNumber()))
               .collect(Collectors.toList());

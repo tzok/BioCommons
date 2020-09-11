@@ -5,7 +5,7 @@ import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
-import pl.poznan.put.rna.RNAInteractionType;
+import pl.poznan.put.rna.InteractionType;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -13,7 +13,7 @@ import java.util.Objects;
 public interface ClassifiedBasePair extends Serializable, Comparable<ClassifiedBasePair> {
   BasePair basePair();
 
-  RNAInteractionType interactionType();
+  InteractionType interactionType();
 
   Saenger saenger();
 
@@ -47,17 +47,17 @@ public interface ClassifiedBasePair extends Serializable, Comparable<ClassifiedB
   }
 
   default boolean isBaseRibose() {
-    return Objects.equals(interactionType(), RNAInteractionType.BASE_RIBOSE)
-        || Objects.equals(interactionType().invert(), RNAInteractionType.BASE_RIBOSE);
+    return Objects.equals(interactionType(), InteractionType.BASE_RIBOSE)
+        || Objects.equals(interactionType().invert(), InteractionType.BASE_RIBOSE);
   }
 
   default boolean isStacking() {
-    return Objects.equals(interactionType(), RNAInteractionType.STACKING);
+    return Objects.equals(interactionType(), InteractionType.STACKING);
   }
 
   default boolean isBasePhosphate() {
-    return Objects.equals(interactionType(), RNAInteractionType.BASE_PHOSPHATE)
-        || Objects.equals(interactionType().invert(), RNAInteractionType.BASE_PHOSPHATE);
+    return Objects.equals(interactionType(), InteractionType.BASE_PHOSPHATE)
+        || Objects.equals(interactionType().invert(), InteractionType.BASE_PHOSPHATE);
   }
 
   default boolean isPairing() {
@@ -66,8 +66,8 @@ public interface ClassifiedBasePair extends Serializable, Comparable<ClassifiedB
 
   default boolean isNonCanonical() {
     return !Saenger.isCanonical(saenger())
-        && (Objects.equals(interactionType(), RNAInteractionType.BASE_BASE)
-            || Objects.equals(interactionType(), RNAInteractionType.BASE_BASE_1H));
+        && (Objects.equals(interactionType(), InteractionType.BASE_BASE)
+            || Objects.equals(interactionType(), InteractionType.BASE_BASE_1H));
   }
 
   default boolean isCanonical() {

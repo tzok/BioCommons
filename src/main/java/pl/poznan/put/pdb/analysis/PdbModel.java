@@ -93,13 +93,14 @@ public interface PdbModel extends ResidueCollection {
    */
   default List<PdbRemark465Line> filteredMissing(final MoleculeType moleculeType) {
     return residues().stream()
-        .filter(pdbResidue -> pdbResidue.moleculeType() == moleculeType)
+        .filter(
+            pdbResidue -> pdbResidue.residueInformationProvider().moleculeType() == moleculeType)
         .filter(PdbResidue::isMissing)
         .map(
             pdbResidue ->
                 ImmutablePdbRemark465Line.of(
                     modelNumber(),
-                    pdbResidue.residueName(),
+                    pdbResidue.standardResidueName(),
                     pdbResidue.chainIdentifier(),
                     pdbResidue.residueNumber(),
                     pdbResidue.insertionCode()))

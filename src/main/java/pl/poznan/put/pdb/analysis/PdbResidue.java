@@ -1,157 +1,134 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
-import org.apache.commons.collections4.PredicateUtils;
+import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.biojava.nbio.structure.Group;
-import org.biojava.nbio.structure.ResidueNumber;
-import org.immutables.value.Value;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
-import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.rna.Base;
-import pl.poznan.put.rna.Purine;
-import pl.poznan.put.rna.Pyrimidine;
-import pl.poznan.put.rna.base.NucleobaseType;
-import pl.poznan.put.torsion.TorsionAngleType;
+import pl.poznan.put.rna.Nucleotide;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Value.Immutable
-public abstract class PdbResidue
-    implements Serializable, ChainNumberICode, ResidueInformationProvider {
-  private static final Logger LOGGER = LoggerFactory.getLogger(PdbResidue.class);
+/** A residue (nucleotide or amino acid). */
+public interface PdbResidue extends ChainNumberICode {
+  /** @return The identifier of a residue. */
+  PdbResidueIdentifier identifier();
 
-  public static PdbResidue fromBioJavaGroup(final Group group) {
-    final ResidueNumber residueNumberObject = group.getResidueNumber();
-    final String chainIdentifier = residueNumberObject.getChainName();
-    final int residueNumber = residueNumberObject.getSeqNum();
-    final String insertionCode =
-        (residueNumberObject.getInsCode() == null)
-            ? " "
-            : Character.toString(residueNumberObject.getInsCode());
-    final PdbResidueIdentifier residueIdentifier =
-        ImmutablePdbResidueIdentifier.of(chainIdentifier, residueNumber, insertionCode);
-    final List<PdbAtomLine> atoms =
-        group.getAtoms().stream().map(PdbAtomLine::fromBioJavaAtom).collect(Collectors.toList());
+  /**
+   * @return The usual name of the residue. For example, a pseudouridine will be seen as uracil
+   *     here.
+   */
+  String standardResidueName();
 
-    final String residueName = group.getPDBName();
-    return ImmutablePdbResidue.of(residueIdentifier, residueName, residueName, atoms, false, false);
+  /** @return The name of the residue as read from PDB or mmCIF file. */
+  String modifiedResidueName();
+
+  /** @return The list of atoms. */
+  List<PdbAtomLine> atoms();
+
+  /** @return A text representation of this residue in PDB format. */
+  default String toPdb() {
+    return atoms().stream().map(String::valueOf).collect(Collectors.joining("\n"));
   }
 
-  @Value.Parameter(order = 1)
-  public abstract PdbResidueIdentifier identifier();
-
-  @Value.Parameter(order = 2)
-  public abstract String residueName();
-
-  @Value.Parameter(order = 3)
-  public abstract String modifiedResidueName();
-
-  @Value.Parameter(order = 4)
-  public abstract List<PdbAtomLine> atoms();
-
-  @Value.Parameter(order = 5)
-  public abstract boolean isModifiedInPDB();
-
-  @Value.Parameter(order = 6)
-  public abstract boolean isMissing();
-
-  @Value.Lazy
-  public boolean hasAllAtoms() {
-    final Collection<AtomName> expected = new ArrayList<>();
-    final Collection<AtomName> additional = new ArrayList<>();
-
-    for (final ResidueComponent component : residueInformationProvider().moleculeComponents()) {
-      expected.addAll(component.getAtoms());
-      additional.addAll(component.getAdditionalAtoms());
-    }
-
-    final Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils.invokerPredicate("isHeavy");
-    final List<AtomName> actual = new ArrayList<>(atomNames());
-    CollectionUtils.filter(actual, isHeavyAtomPredicate);
-    CollectionUtils.filter(expected, isHeavyAtomPredicate);
-    final boolean result = CollectionUtils.isEqualCollection(actual, expected);
-
-    if (!result) {
-      final Collection<AtomName> intersection = new ArrayList<>(actual);
-      intersection.retainAll(expected);
-      actual.removeAll(intersection);
-      actual.removeAll(additional);
-      expected.removeAll(intersection);
-
-      if (!actual.isEmpty()) {
-        PdbResidue.LOGGER.debug(
-            "Residue {} ({}) contains additional atoms: {}",
-            this,
-            defaultPdbName(),
-            Arrays.toString(actual.toArray(new AtomName[0])));
-      }
-      if (!expected.isEmpty()) {
-        PdbResidue.LOGGER.debug(
-            "Residue {} ({}) has missing atoms: {}",
-            this,
-            defaultPdbName(),
-            Arrays.toString(expected.toArray(new AtomName[0])));
-      }
-    }
-
-    return result;
+  /** @return A text representation of this residue in mmCIF format. */
+  default String toCif() {
+    return atoms().stream().map(PdbAtomLine::toCif).collect(Collectors.joining("\n"));
   }
 
-  @Value.Lazy
-  public ResidueInformationProvider residueInformationProvider() {
-    if (isMissing()) {
-      return ResidueTypeDetector.detectResidueTypeFromResidueName(residueName());
-    }
+  /** @return True if the list of atoms is empty. */
+  default boolean isMissing() {
+    return atoms().isEmpty();
+  }
+
+  /**
+   * Detects the type of residue by its name and atom content.
+   *
+   * @return An instance with details about what this reside represents.
+   */
+  default ResidueInformationProvider residueInformationProvider() {
     return ResidueTypeDetector.detectResidueType(modifiedResidueName(), atomNames());
   }
 
-  @Value.Lazy
-  public Set<AtomName> atomNames() {
-    return atoms().stream().map(PdbAtomLine::detectAtomName).collect(Collectors.toSet());
+  /** @return A one letter name which is lowercase for modified residues and uppercase otherwise. */
+  default char oneLetterName() {
+    return isModified()
+        ? Character.toLowerCase(residueInformationProvider().oneLetterName())
+        : residueInformationProvider().oneLetterName();
   }
 
-  @Value.Lazy
-  public PdbNamedResidueIdentifier namedResidueIdentifer() {
-    final char oneLetterName = residueInformationProvider().oneLetterName();
-    return ImmutablePdbNamedResidueIdentifier.of(
-        identifier().chainIdentifier(),
-        identifier().residueNumber(),
-        identifier().insertionCode(),
-        isModified() ? Character.toLowerCase(oneLetterName) : oneLetterName);
+  /**
+   * Checks if this residue is connected with another one (see {@link
+   * MoleculeType#areConnected(PdbResidue, PdbResidue)}).
+   *
+   * @param other The other residue.
+   * @return True if this residue and the other one are connected.
+   */
+  default boolean isConnectedTo(final PdbResidue other) {
+    return residueInformationProvider().moleculeType().areConnected(this, other);
   }
 
-  @Value.Lazy
-  public Plane nucleobasePlane() {
-    if (residueInformationProvider() instanceof NucleobaseType) {
-      final Base base = ((NucleobaseType) residueInformationProvider()).getBaseInstance();
+  @Override
+  default String chainIdentifier() {
+    return identifier().chainIdentifier();
+  }
 
-      if (base instanceof Purine) {
-        final Vector3D p1 = findAtom(AtomName.N9).toVector3D();
-        final Vector3D p2 = findAtom(AtomName.C2).toVector3D();
-        final Vector3D p3 = findAtom(AtomName.C6).toVector3D();
-        return new Plane(p1, p2, p3, 1.0e-3);
-      } else if (base instanceof Pyrimidine) {
-        final Vector3D p1 = findAtom(AtomName.N1).toVector3D();
-        final Vector3D p2 = findAtom(AtomName.N3).toVector3D();
-        final Vector3D p3 = findAtom(AtomName.C5).toVector3D();
-        return new Plane(p1, p2, p3, 1.0e-3);
+  @Override
+  default int residueNumber() {
+    return identifier().residueNumber();
+  }
+
+  @Override
+  default String insertionCode() {
+    return identifier().insertionCode();
+  }
+
+  /**
+   * Finds an atom of a given name.
+   *
+   * @param atomName An atom name.
+   * @return An instance of atom (with coordinates) of the given type.
+   */
+  default PdbAtomLine findAtom(final AtomName atomName) {
+    return atoms().stream()
+        .filter(atom -> atom.detectAtomName() == atomName)
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Failed to find: " + atomName));
+  }
+
+  /**
+   * Calculates the plane equation of the nucleobase in this residue. This method works only for
+   * nucleotides and will throw an {@code IllegalArgumentException} for amino acids. The plane for
+   * purines (A or G) is based on N9, C2 and C6 atoms. The plane for pyrimidines (C, U or T) is
+   * based on N1, N3 and C5 atoms.
+   *
+   * @return The plane of the nucleobase.
+   */
+  default Plane nucleobasePlane() {
+    if (residueInformationProvider() instanceof Nucleotide) {
+      switch ((Nucleotide) residueInformationProvider()) {
+        case ADENINE:
+        case GUANINE:
+          return new Plane(
+              findAtom(AtomName.N9).toVector3D(),
+              findAtom(AtomName.C2).toVector3D(),
+              findAtom(AtomName.C6).toVector3D(),
+              1.0e-3);
+        case CYTOSINE:
+        case URACIL:
+        case THYMINE:
+          return new Plane(
+              findAtom(AtomName.N1).toVector3D(),
+              findAtom(AtomName.N3).toVector3D(),
+              findAtom(AtomName.C5).toVector3D(),
+              1.0e-3);
       }
     }
 
@@ -159,102 +136,60 @@ public abstract class PdbResidue
         "Cannot compute base plane for not a nucleotide: " + identifier());
   }
 
-  @Value.Lazy
-  public boolean hasHydrogen() {
-    return atomNames().stream().anyMatch(atomName -> !atomName.isHeavy());
+  /** @return The instance of named identifier. */
+  default PdbNamedResidueIdentifier namedResidueIdentifer() {
+    return ImmutablePdbNamedResidueIdentifier.of(
+        identifier().chainIdentifier(),
+        identifier().residueNumber(),
+        identifier().insertionCode(),
+        isModified() ? Character.toLowerCase(oneLetterName()) : oneLetterName());
   }
 
-  @Override
-  public final String chainIdentifier() {
-    return identifier().chainIdentifier();
+  /** @return The set of all atom names available in this residue. */
+  default Set<AtomName> atomNames() {
+    return atoms().stream().map(PdbAtomLine::detectAtomName).collect(Collectors.toSet());
   }
 
-  @Override
-  public final int residueNumber() {
-    return identifier().residueNumber();
-  }
-
-  @Override
-  public final String insertionCode() {
-    return identifier().insertionCode();
-  }
-
-  @Override
-  public final String toString() {
-    final String chainIdentifier = identifier().chainIdentifier();
-    final int residueNumber = identifier().residueNumber();
-    final String insertionCode = identifier().insertionCode();
-    return chainIdentifier
-        + '.'
-        + modifiedResidueName()
-        + residueNumber
-        + (Objects.equals(" ", insertionCode) ? "" : insertionCode);
-  }
-
-  public final boolean wasSuccessfullyDetected() {
-    return residueInformationProvider().moleculeType() != MoleculeType.UNKNOWN;
-  }
-
-  public final boolean isModified() {
-    return !isMissing() && (isModifiedInPDB() || isModifiedByAtomContent());
-  }
-
-  public final MoleculeType moleculeType() {
-    return residueInformationProvider().moleculeType();
-  }
-
-  public final String description() {
-    return residueInformationProvider().description();
-  }
-
-  public final char oneLetterName() {
-    return namedResidueIdentifer().oneLetterName();
-  }
-
-  public final String defaultPdbName() {
-    return residueInformationProvider().defaultPdbName();
-  }
-
-  public final List<TorsionAngleType> torsionAngleTypes() {
-    return residueInformationProvider().torsionAngleTypes();
-  }
-
-  public final boolean hasAtom(final AtomName atomName) {
+  /**
+   * Checks whether this residue has atom of the given name.
+   *
+   * @param atomName The atom name.
+   * @return True if this residue has an atom of the given name.
+   */
+  default boolean hasAtom(final AtomName atomName) {
     return atomNames().contains(atomName);
   }
 
-  public final boolean isConnectedTo(final PdbResidue other) {
-    final MoleculeType moleculeType = residueInformationProvider().moleculeType();
-    return moleculeType.areConnected(this, other);
+  /** @return True if there is any hydrogen atom available in this residue. */
+  default boolean hasAnyHydrogen() {
+    return atomNames().stream().anyMatch(atomName -> !atomName.isHeavy());
   }
 
-  public final int findConnectedResidueIndex(final List<PdbResidue> candidates) {
-    final MoleculeType moleculeType = residueInformationProvider().moleculeType();
-    for (int i = 0; i < candidates.size(); i++) {
-      final PdbResidue candidate = candidates.get(i);
-      if (moleculeType.areConnected(this, candidate)) {
-        return i;
-      }
-    }
-    return -1;
+  /**
+   * Compares the set of actual atoms in this residue with the set of expected atoms derived from
+   * the detected type of residue.
+   *
+   * @return True if all expected heavy atoms (non-hydrogen) for this residue type are present in
+   *     this residue.
+   */
+  default boolean hasAllHeavyAtoms() {
+    final Set<AtomName> heavyAtoms =
+        atomNames().stream().filter(AtomName::isHeavy).collect(Collectors.toSet());
+    final Set<AtomName> expectedHeavyAtoms =
+        residueInformationProvider().moleculeComponents().stream()
+            .map(ResidueComponent::requiredAtoms)
+            .flatMap(Collection::stream)
+            .filter(AtomName::isHeavy)
+            .collect(Collectors.toSet());
+    return SetUtils.isEqualSet(heavyAtoms, expectedHeavyAtoms);
   }
 
-  public final String toPdb() {
-    return atoms().stream().map(String::valueOf).collect(Collectors.joining("\n"));
-  }
-
-  public final String toCif() {
-    return atoms().stream().map(PdbAtomLine::toCif).collect(Collectors.joining("\n"));
-  }
-
-  public final PdbAtomLine findAtom(final AtomName atomName) {
-    return atoms().stream()
-        .filter(atom -> atom.detectAtomName() == atomName)
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("Failed to find: " + atomName));
-  }
-
-  private boolean isModifiedByAtomContent() {
-    return wasSuccessfullyDetected() && !hasAllAtoms();
+  /**
+   * @return True if the standard and modified residue names differ or if there are some atoms in
+   *     the residue, but they do not match the expected set of atoms.
+   */
+  default boolean isModified() {
+    return !Objects.equals(standardResidueName(), modifiedResidueName())
+        || (!isMissing() && !hasAllHeavyAtoms());
   }
 }

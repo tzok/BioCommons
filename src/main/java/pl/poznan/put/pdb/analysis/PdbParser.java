@@ -19,6 +19,7 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbTitleLine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -29,16 +30,17 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+/** A parser of PDB format. */
 public class PdbParser {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbParser.class);
 
   private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
   private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
-  private final Set<PdbResidueIdentifier> processedIdentifiers = new HashSet<>();
+  private final Collection<PdbResidueIdentifier> processedIdentifiers = new HashSet<>();
   private final Set<PdbResidueIdentifier> chainTerminatedAfter = new HashSet<>();
-  private final Set<Integer> endedModelNumbers = new HashSet<>();
+  private final Collection<Integer> endedModelNumbers = new HashSet<>();
   private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
-  private final List<PdbTitleLine> titleLines = new ArrayList<>();
+  private final Collection<PdbTitleLine> titleLines = new ArrayList<>();
 
   private final boolean strictMode;
 
@@ -48,16 +50,28 @@ public class PdbParser {
   private Optional<PdbResidueIdentifier> currentIdentifier = Optional.empty();
   private int currentModelNumber;
 
+  /**
+   * Creates an instance with the possibility to set {@code strictMode}.
+   *
+   * @param strictMode If false, then some of the checks on PDB format conformity are relaxed.
+   */
   public PdbParser(final boolean strictMode) {
     super();
     this.strictMode = strictMode;
   }
 
+  /** Creates an instance with {@code strictMode} set to true. */
   public PdbParser() {
     super();
     strictMode = true;
   }
 
+  /**
+   * Parses a string in PDB format.
+   *
+   * @param structureContent A string containing data in PDB format.
+   * @return An object representing the parsed data.
+   */
   public final synchronized List<PdbModel> parse(final String structureContent) {
     resetState();
 

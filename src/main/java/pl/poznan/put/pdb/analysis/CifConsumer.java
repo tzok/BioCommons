@@ -64,7 +64,7 @@ import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
-import pl.poznan.put.rna.RNAInteractionType;
+import pl.poznan.put.rna.InteractionType;
 import pl.poznan.put.structure.secondary.BasePair;
 import pl.poznan.put.structure.secondary.HelixOrigin;
 import pl.poznan.put.structure.secondary.ModifiableQuantifiedBasePair;
@@ -499,7 +499,7 @@ class CifConsumer implements MMcifConsumer {
       }
       final String resnL = map.get("i_label_comp_id");
       final char oneLetterL =
-          ResidueTypeDetector.detectResidueTypeFromResidueName(resnL).oneLetterName();
+          ResidueTypeDetector.detectResidueType(resnL, Collections.emptySet()).oneLetterName();
       final PdbNamedResidueIdentifier left =
           ImmutablePdbNamedResidueIdentifier.of(chainL, resiL, icodeL, oneLetterL);
 
@@ -511,7 +511,7 @@ class CifConsumer implements MMcifConsumer {
       }
       final String resnR = map.get("j_label_comp_id");
       final char oneLetterR =
-          ResidueTypeDetector.detectResidueTypeFromResidueName(resnR).oneLetterName();
+          ResidueTypeDetector.detectResidueType(resnR, Collections.emptySet()).oneLetterName();
       final PdbNamedResidueIdentifier right =
           ImmutablePdbNamedResidueIdentifier.of(chainR, resiR, icodeR, oneLetterR);
       final BasePair basePair = new BasePair(left, right);
@@ -537,7 +537,7 @@ class CifConsumer implements MMcifConsumer {
       final QuantifiedBasePair quantifiedBasePair =
           ModifiableQuantifiedBasePair.create(
               basePair,
-              RNAInteractionType.BASE_BASE,
+              InteractionType.BASE_BASE,
               saenger,
               leontisWesthof,
               BPh.UNKNOWN,

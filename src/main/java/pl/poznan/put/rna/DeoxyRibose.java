@@ -1,15 +1,17 @@
 package pl.poznan.put.rna;
 
+import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
 
-import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public final class DeoxyRibose extends Sugar {
-  private static final DeoxyRibose INSTANCE = new DeoxyRibose();
-
-  private DeoxyRibose() {
-    super(
-        Arrays.asList(
+@Value.Immutable(singleton = true)
+public abstract class DeoxyRibose implements Sugar {
+  @Override
+  public final Set<AtomName> requiredAtoms() {
+    return Stream.of(
             AtomName.C5p,
             AtomName.H5p,
             AtomName.H5pp,
@@ -22,10 +24,7 @@ public final class DeoxyRibose extends Sugar {
             AtomName.H2p,
             AtomName.H2pp,
             AtomName.C1p,
-            AtomName.H1p));
-  }
-
-  public static DeoxyRibose getInstance() {
-    return DeoxyRibose.INSTANCE;
+            AtomName.H1p)
+        .collect(Collectors.toSet());
   }
 }

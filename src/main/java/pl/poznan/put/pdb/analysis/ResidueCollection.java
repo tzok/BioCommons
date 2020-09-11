@@ -7,7 +7,7 @@ import pl.poznan.put.pdb.ImmutablePdbAtomLine;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.rna.torsion.Chi;
+import pl.poznan.put.rna.NucleotideTorsionAngle;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.AtomPair;
 
@@ -48,7 +48,12 @@ public interface ResidueCollection extends Serializable {
         }
       }
 
-      residues.add(ImmutablePdbResidue.copyOf(residue).withAtoms(atoms));
+      residues.add(
+          ImmutableDefaultPdbResidue.of(
+              residue.identifier(),
+              residue.standardResidueName(),
+              residue.modifiedResidueName(),
+              atoms));
     }
 
     return ImmutableDefaultResidueCollection.of(residues);
@@ -63,13 +68,15 @@ public interface ResidueCollection extends Serializable {
   default List<String> findBondLengthViolations() {
     final Set<AtomBasedTorsionAngleType> angleTypes =
         residues().stream()
-            .map(PdbResidue::torsionAngleTypes)
+            .map(PdbResidue::residueInformationProvider)
+            .map(ResidueInformationProvider::torsionAngleTypes)
             .flatMap(Collection::stream)
             .filter(torsionAngleType -> torsionAngleType instanceof AtomBasedTorsionAngleType)
             .map(torsionAngleType -> (AtomBasedTorsionAngleType) torsionAngleType)
             .filter(torsionAngleType -> !torsionAngleType.isPseudoTorsion())
-            .filter(torsionAngleType -> !Objects.equals(torsionAngleType, Chi.PURINE_CHI))
-            .filter(torsionAngleType -> !Objects.equals(torsionAngleType, Chi.PYRIMIDINE_CHI))
+            .filter(
+                torsionAngleType ->
+                    !NucleotideTorsionAngle.CHI.angleTypes().contains(torsionAngleType))
             .collect(Collectors.toSet());
 
     final Set<AtomPair> atomPairs =
@@ -152,7 +159,8 @@ public interface ResidueCollection extends Serializable {
    */
   default List<PdbAtomLine> filteredAtoms(final MoleculeType moleculeType) {
     return residues().stream()
-        .filter(pdbResidue -> pdbResidue.moleculeType() == moleculeType)
+        .filter(
+            pdbResidue -> pdbResidue.residueInformationProvider().moleculeType() == moleculeType)
         .filter(pdbResidue -> !pdbResidue.isMissing())
         .flatMap(pdbResidue -> pdbResidue.atoms().stream())
         .collect(Collectors.toList());

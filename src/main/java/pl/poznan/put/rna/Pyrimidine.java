@@ -1,23 +1,32 @@
 package pl.poznan.put.rna;
 
-import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.rna.torsion.Chi;
-import pl.poznan.put.types.Quadruplet;
+import pl.poznan.put.torsion.TorsionAngleType;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public abstract class Pyrimidine extends Base {
-  protected Pyrimidine(
-      final List<AtomName> atoms,
-      final String longName,
-      final char oneLetterName,
-      final String... names) {
-    super(atoms, longName, oneLetterName, names);
-    torsionAngleTypes.add(Chi.PYRIMIDINE_CHI);
-  }
-
+public interface Pyrimidine extends Nucleobase {
   @Override
-  public final Quadruplet<AtomName> getChiAtoms() {
-    return Chi.PYRIMIDINE_ATOMS;
+  default List<TorsionAngleType> torsionAngleTypes() {
+    return Stream.of(
+            NucleotideTorsionAngle.ALPHA.angleTypes().get(0),
+            NucleotideTorsionAngle.BETA.angleTypes().get(0),
+            NucleotideTorsionAngle.GAMMA.angleTypes().get(0),
+            NucleotideTorsionAngle.DELTA.angleTypes().get(0),
+            NucleotideTorsionAngle.EPSILON.angleTypes().get(0),
+            NucleotideTorsionAngle.ZETA.angleTypes().get(0),
+            NucleotideTorsionAngle.NU0.angleTypes().get(0),
+            NucleotideTorsionAngle.NU1.angleTypes().get(0),
+            NucleotideTorsionAngle.NU2.angleTypes().get(0),
+            NucleotideTorsionAngle.NU3.angleTypes().get(0),
+            NucleotideTorsionAngle.NU4.angleTypes().get(0),
+            NucleotideTorsionAngle.ETA.angleTypes().get(0),
+            NucleotideTorsionAngle.THETA.angleTypes().get(0),
+            NucleotideTorsionAngle.ETA_PRIM.angleTypes().get(0),
+            NucleotideTorsionAngle.THETA_PRIM.angleTypes().get(0),
+            NucleotideTorsionAngle.PSEUDOPHASE_PUCKER.angleTypes().get(0),
+            Chi.PYRIMIDINE.angleType())
+        .collect(Collectors.toList());
   }
 }

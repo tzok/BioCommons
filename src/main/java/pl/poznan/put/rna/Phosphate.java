@@ -1,17 +1,28 @@
 package pl.poznan.put.rna;
 
+import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
 
-import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public final class Phosphate extends NucleicAcidResidueComponent {
-  private static final Phosphate INSTANCE = new Phosphate();
+@Value.Immutable(singleton = true)
+public abstract class Phosphate implements NucleicAcidResidueComponent {
+  @Override
+  public final NucleotideComponentType nucleotideComponentType() {
+    return NucleotideComponentType.PHOSPHATE;
+  }
 
-  private Phosphate() {
-    super(
-        RNAResidueComponentType.PHOSPHATE,
-        Arrays.asList(AtomName.P, AtomName.O1P, AtomName.O2P, AtomName.O3p, AtomName.O5p),
-        Arrays.asList(
+  @Override
+  public final Set<AtomName> requiredAtoms() {
+    return Stream.of(AtomName.P, AtomName.O1P, AtomName.O2P, AtomName.O3p, AtomName.O5p)
+        .collect(Collectors.toSet());
+  }
+
+  @Override
+  public final Set<AtomName> additionalAtoms() {
+    return Stream.of(
             AtomName.O3P,
             AtomName.PA,
             AtomName.O1A,
@@ -28,10 +39,7 @@ public final class Phosphate extends NucleicAcidResidueComponent {
             AtomName.PG,
             AtomName.O1G,
             AtomName.O2G,
-            AtomName.O3G));
-  }
-
-  public static Phosphate getInstance() {
-    return Phosphate.INSTANCE;
+            AtomName.O3G)
+        .collect(Collectors.toSet());
   }
 }

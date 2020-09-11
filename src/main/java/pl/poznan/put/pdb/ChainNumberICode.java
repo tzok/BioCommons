@@ -2,11 +2,13 @@ package pl.poznan.put.pdb;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
+import java.io.Serializable;
+
 /**
  * A set of methods that allow to address a residue by its chain name, residue number and insertion
  * code.
  */
-public interface ChainNumberICode extends Comparable<ChainNumberICode> {
+public interface ChainNumberICode extends Comparable<ChainNumberICode>, Serializable {
   /** @return The identifier of the chain a residue belongs to. */
   String chainIdentifier();
 

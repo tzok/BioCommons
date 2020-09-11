@@ -5,14 +5,14 @@ import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
-import pl.poznan.put.rna.RNAInteractionType;
+import pl.poznan.put.rna.InteractionType;
 
 @Value.Modifiable
 public abstract class AnalyzedBasePair implements ClassifiedBasePair {
   public static ModifiableAnalyzedBasePair assumeCanonical(final BasePair pair) {
     return ModifiableAnalyzedBasePair.create(
         pair,
-        RNAInteractionType.BASE_BASE,
+        InteractionType.BASE_BASE,
         Saenger.assumeCanonical(pair),
         LeontisWesthof.CWW,
         BPh.UNKNOWN,
@@ -25,7 +25,7 @@ public abstract class AnalyzedBasePair implements ClassifiedBasePair {
   public abstract BasePair basePair();
 
   @Value.Parameter(order = 2)
-  public abstract RNAInteractionType interactionType();
+  public abstract InteractionType interactionType();
 
   @Value.Parameter(order = 3)
   public abstract Saenger saenger();

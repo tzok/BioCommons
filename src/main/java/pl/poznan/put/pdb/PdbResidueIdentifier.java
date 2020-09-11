@@ -2,12 +2,13 @@ package pl.poznan.put.pdb;
 
 import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
+import pl.poznan.put.pdb.analysis.DefaultPdbResidue;
 
 import java.io.Serializable;
 
 /**
  * A residue identifier is used only to address a residue in the structure. To work with residue
- * content, see {@link pl.poznan.put.pdb.analysis.PdbResidue}.
+ * content, see {@link DefaultPdbResidue}.
  */
 @Value.Immutable
 public abstract class PdbResidueIdentifier implements ChainNumberICode, Serializable {

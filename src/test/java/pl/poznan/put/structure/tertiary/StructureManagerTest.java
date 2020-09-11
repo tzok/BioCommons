@@ -30,16 +30,16 @@ public class StructureManagerTest {
   @Before
   public final void setUp() throws URISyntaxException, IOException {
     file1EHZ = ResourcesHelper.loadResourceFile("1EHZ.pdb");
-    final List<PdbModel> models1EHZ = StructureManager.loadStructure(file1EHZ);
+    final List<? extends PdbModel> models1EHZ = StructureManager.loadStructure(file1EHZ);
     assertThat(models1EHZ.size(), is(1));
     model1EHZ = models1EHZ.get(0);
 
-    final List<PdbModel> models1EVV = StructureManager.loadStructure("1EVV");
+    final List<? extends PdbModel> models1EVV = StructureManager.loadStructure("1EVV");
     assertThat(models1EVV.size(), is(1));
     model1EVV = models1EVV.get(0);
     file1EVV = StructureManager.getFile(model1EVV);
 
-    final List<PdbModel> models100D = StructureManager.loadStructure(ResourcesHelper.loadResourceFile("100D.cif"));
+    final List<? extends PdbModel> models100D = StructureManager.loadStructure(ResourcesHelper.loadResourceFile("100D.cif"));
     assertThat(models100D.size(), is(1));
     model100D = models100D.get(0);
     file100D = StructureManager.getFile(model100D);
@@ -102,7 +102,7 @@ public class StructureManagerTest {
   @Test
   public final void getNameMultiModel() throws Exception {
     final File file = ResourcesHelper.loadResourceFile("2MIY.pdb");
-    final List<PdbModel> models = StructureManager.loadStructure(file);
+    final List<? extends PdbModel> models = StructureManager.loadStructure(file);
     final int size = models.size();
     assertThat(size, is(18));
 

@@ -19,7 +19,7 @@ public abstract class PdbChain implements Comparable<PdbChain>, SingleTypedResid
   public static PdbChain fromBioJavaChain(final Chain chain) {
     final List<PdbResidue> residues =
         chain.getAtomGroups().stream()
-            .map(PdbResidue::fromBioJavaGroup)
+            .map(DefaultPdbResidue::fromBioJavaGroup)
             .collect(Collectors.toList());
     return ImmutablePdbChain.of(chain.getId(), residues);
   }
@@ -28,6 +28,7 @@ public abstract class PdbChain implements Comparable<PdbChain>, SingleTypedResid
   @Value.Parameter(order = 1)
   public abstract String identifier();
 
+  @Override
   @Value.Parameter(order = 2)
   public abstract List<PdbResidue> residues();
 

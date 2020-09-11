@@ -19,6 +19,7 @@ public abstract class AbstractPdbModel implements PdbModel {
    *
    * @return A list of chains in the structure.
    */
+  @Override
   public List<PdbChain> chains() {
     final Map<String, List<PdbResidue>> chainResidues = new LinkedHashMap<>();
     residues()
@@ -37,6 +38,7 @@ public abstract class AbstractPdbModel implements PdbModel {
    *
    * @return A list of residues in the structure.
    */
+  @Override
   public List<PdbResidue> residues() {
     // group atoms by common (chain, number, icode)
     final Map<PdbResidueIdentifier, List<PdbAtomLine>> atomGroups = new LinkedHashMap<>();
@@ -52,7 +54,9 @@ public abstract class AbstractPdbModel implements PdbModel {
     final Stream<PdbResidue> existingResidueStream =
         atomGroups.values().stream()
             .map(this::atomGroupToResidue)
-            .filter(PdbResidue::wasSuccessfullyDetected);
+            .filter(
+                residue ->
+                    residue.residueInformationProvider().moleculeType() != MoleculeType.UNKNOWN);
 
     // create residues out of information about missing residues in the headers
     final Stream<PdbResidue> missingResidueStream =
@@ -70,8 +74,8 @@ public abstract class AbstractPdbModel implements PdbModel {
     final String residueName = residueAtoms.get(0).residueName();
     final String modifiedResidueName =
         isModified ? modificationDetails(residueIdentifier).standardResidueName() : residueName;
-    return ImmutablePdbResidue.of(
-        residueIdentifier, residueName, modifiedResidueName, residueAtoms, isModified, false);
+    return ImmutableDefaultPdbResidue.of(
+        residueIdentifier, residueName, modifiedResidueName, residueAtoms);
   }
 
   private List<PdbChain> residueGroupToChains(final List<PdbResidue> residueGroup) {

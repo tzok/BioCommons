@@ -76,9 +76,9 @@ public class StructureModelTest {
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
     final PdbResidue residue = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 10, " "));
-    assertThat(residue.residueName(), is("2MG"));
+    assertThat(residue.standardResidueName(), is("2MG"));
     assertThat(residue.modifiedResidueName(), is("G"));
-    assertThat(residue.defaultPdbName(), is("G"));
+    assertThat(residue.residueInformationProvider().defaultName(), is("G"));
   }
 
   @Test
@@ -88,9 +88,9 @@ public class StructureModelTest {
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
     final PdbResidue residue = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 74, " "));
-    assertThat(residue.residueName(), is("C"));
+    assertThat(residue.standardResidueName(), is("C"));
     assertThat(residue.modifiedResidueName(), is("C"));
-    assertThat(residue.defaultPdbName(), is("C"));
+    assertThat(residue.residueInformationProvider().defaultName(), is("C"));
   }
 
   @Test
@@ -105,7 +105,7 @@ public class StructureModelTest {
     // unusual O3P terminal atom
     final PdbResidue residue = residues.get(0);
     assertThat(residue.isModified(), is(true));
-    assertThat(residue.hasAllAtoms(), is(false));
+    assertThat(residue.hasAllHeavyAtoms(), is(false));
   }
 
   @Test
@@ -119,21 +119,21 @@ public class StructureModelTest {
     // which is undetectable in a non-hydrogen PDB file
     final PdbResidue residueA16 = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 16, " "));
     assertThat(residueA16.isModified(), is(true));
-    assertThat(residueA16.hasAllAtoms(), is(true));
+    assertThat(residueA16.hasAllHeavyAtoms(), is(true));
 
     // the PSU (pseudouridine) contains the same atoms, but it is an isomer
     // and therefore a modified residue
     final PdbResidue residueA39 = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 39, " "));
     assertThat(residueA39.isModified(), is(true));
-    assertThat(residueA39.hasAllAtoms(), is(true));
+    assertThat(residueA39.hasAllHeavyAtoms(), is(true));
 
     // the 5MU (methyluridine) is the RNA counterpart of thymine
     final PdbResidue residueA54 = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 54, " "));
-    assertThat(residueA54.residueName(), is("5MU"));
+    assertThat(residueA54.standardResidueName(), is("5MU"));
     assertThat(residueA54.modifiedResidueName(), is("U"));
-    assertThat(residueA54.defaultPdbName(), is("U"));
+    assertThat(residueA54.residueInformationProvider().defaultName(), is("U"));
     assertThat(residueA54.isModified(), is(true));
-    assertThat(residueA54.hasAllAtoms(), is(false));
+    assertThat(residueA54.hasAllHeavyAtoms(), is(false));
   }
 
   @Test
@@ -147,7 +147,7 @@ public class StructureModelTest {
     // which is undetectable in a non-hydrogen PDB file; there can be a
     // mismatch between MODRES entry and hasAllAtoms() call
     final PdbResidue residue = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 39, " "));
-    assertThat(residue.hasAllAtoms(), is(residue.isModified()));
+    assertThat(residue.hasAllHeavyAtoms(), is(residue.isModified()));
   }
 
   @Test
@@ -158,30 +158,26 @@ public class StructureModelTest {
     final PdbModel model = models.get(0);
 
     for (final PdbResidue residue : model.residues()) {
-      if (!residue.wasSuccessfullyDetected()) {
-        continue;
-      }
-
       if (residue.hasAtom(AtomName.O3P)) {
         assertThat(residue.isModified(), is(true));
-        assertThat(residue.hasAllAtoms(), is(false));
-      } else if ("H2U".equals(residue.residueName()) || "PSU".equals(residue.residueName())) {
+        assertThat(residue.hasAllHeavyAtoms(), is(false));
+      } else if ("H2U".equals(residue.standardResidueName()) || "PSU".equals(residue.standardResidueName())) {
         assertThat(residue.isModified(), is(true));
-        assertThat(residue.hasAllAtoms(), is(true));
-      } else if ("5MU".equals(residue.residueName())) {
-        assertThat(residue.residueName(), is("5MU"));
+        assertThat(residue.hasAllHeavyAtoms(), is(true));
+      } else if ("5MU".equals(residue.standardResidueName())) {
+        assertThat(residue.standardResidueName(), is("5MU"));
         assertThat(residue.modifiedResidueName(), is("U"));
-        assertThat(residue.defaultPdbName(), is("U"));
+        assertThat(residue.residueInformationProvider().defaultName(), is("U"));
         assertThat(residue.isModified(), is(true));
-        assertThat(residue.hasAllAtoms(), is(false));
+        assertThat(residue.hasAllHeavyAtoms(), is(false));
       } else {
         assertThat(
             String.format(
                 "Detected %s for %s/%s",
-                residue.defaultPdbName(), residue.residueName(), residue.modifiedResidueName()),
-            residue.defaultPdbName(),
+                residue.residueInformationProvider().defaultName(), residue.standardResidueName(), residue.modifiedResidueName()),
+            residue.residueInformationProvider().defaultName(),
             is(residue.modifiedResidueName()));
-        assertThat(!residue.hasAllAtoms(), is(residue.isModified()));
+        assertThat(!residue.hasAllHeavyAtoms(), is(residue.isModified()));
       }
     }
   }
@@ -403,7 +399,7 @@ public class StructureModelTest {
     assertThat(residueE164.isMissing(), is(true));
 
     final PdbResidue residueS169 = model.findResidue(ImmutablePdbResidueIdentifier.of("S", 169, " "));
-    assertThat(residueS169.residueName(), is("API"));
+    assertThat(residueS169.standardResidueName(), is("API"));
     assertThat(residueS169.modifiedResidueName(), is("LYS"));
   }
 
