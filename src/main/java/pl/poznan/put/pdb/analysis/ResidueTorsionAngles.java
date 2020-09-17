@@ -4,6 +4,7 @@ import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 
@@ -48,6 +49,20 @@ public abstract class ResidueTorsionAngles {
     return values().stream()
         .filter(angle -> Objects.equals(angle.angleType(), type))
         .map(TorsionAngleValue::value)
+        .findFirst()
+        .orElse(ImmutableAngle.of(Double.NaN));
+  }
+
+  /**
+   * Finds the value of a master torsion angle type in this collection.
+   *
+   * @param masterType The master torsion angle tyoe to look for.
+   * @return The value of torsion angle in this residue or NaN if none found.
+   */
+  public final Angle value(final MasterTorsionAngleType masterType) {
+    return values().stream()
+        .flatMap(angleValue -> masterType.angleTypes().stream().map(this::value))
+        .filter(Angle::isValid)
         .findFirst()
         .orElse(ImmutableAngle.of(Double.NaN));
   }

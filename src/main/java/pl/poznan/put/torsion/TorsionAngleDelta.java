@@ -41,13 +41,9 @@ public class TorsionAngleDelta {
   }
 
   public static TorsionAngleDelta subtractTorsionAngleValues(
-      final MasterTorsionAngleType masterType,
-      final TorsionAngleValue targetValue,
-      final TorsionAngleValue modelValue) {
+      final MasterTorsionAngleType masterType, final Angle target, final Angle model) {
     Angle delta = ImmutableAngle.of(Double.NaN);
     RangeDifference rangeDifference = RangeDifference.INVALID;
-    final Angle target = targetValue.value();
-    final Angle model = modelValue.value();
     final State state;
 
     if (!target.isValid() && !model.isValid()) {

@@ -58,7 +58,8 @@ public abstract class PseudophasePuckerType implements TorsionAngleType {
         NucleotideTorsionAngle.NU4.angleTypes().get(0).calculate(residues, currentIndex);
 
     if (Stream.of(nu0, nu1, nu2, nu3, nu4)
-        .anyMatch(torsionAngleValue -> !Double.isNaN(torsionAngleValue.value().radians()))) {
+        .map(TorsionAngleValue::value)
+        .anyMatch(angle -> !angle.isValid())) {
       return ImmutableTorsionAngleValue.of(this, ImmutableAngle.of(Double.NaN));
     }
 

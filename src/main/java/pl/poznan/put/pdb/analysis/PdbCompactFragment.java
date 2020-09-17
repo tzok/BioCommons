@@ -19,6 +19,14 @@ public abstract class PdbCompactFragment implements SingleTypedResidueCollection
   @Value.Parameter(order = 1)
   public abstract List<PdbResidue> residues();
 
+  @Value.Default
+  public String name() {
+    if (residues().isEmpty()) {
+      return "";
+    }
+    return residues().get(0) + ":" + residues().size();
+  }
+
   /**
    * Creates a new instance from this one which starts from a shifted position and has a limited
    * size.
