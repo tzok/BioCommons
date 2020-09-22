@@ -6,8 +6,6 @@ import pl.poznan.put.circular.samples.AngleSample;
 import pl.poznan.put.circular.samples.ImmutableAngleSample;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.protein.AminoAcidTorsionAngle;
-import pl.poznan.put.rna.NucleotideTorsionAngle;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.TorsionRange;
 
@@ -17,30 +15,16 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Value.Immutable
 public abstract class AverageTorsionAngleType implements TorsionAngleType, MasterTorsionAngleType {
   public static AverageTorsionAngleType forProtein() {
     return ImmutableAverageTorsionAngleType.of(
-        MoleculeType.PROTEIN,
-        Stream.of(AminoAcidTorsionAngle.PHI, AminoAcidTorsionAngle.PSI, AminoAcidTorsionAngle.OMEGA)
-            .collect(Collectors.toList()));
+        MoleculeType.PROTEIN, MoleculeType.PROTEIN.mainAngleTypes());
   }
 
   public static AverageTorsionAngleType forNucleicAcid() {
-    return ImmutableAverageTorsionAngleType.of(
-        MoleculeType.RNA,
-        Stream.of(
-                NucleotideTorsionAngle.ALPHA,
-                NucleotideTorsionAngle.BETA,
-                NucleotideTorsionAngle.GAMMA,
-                NucleotideTorsionAngle.DELTA,
-                NucleotideTorsionAngle.EPSILON,
-                NucleotideTorsionAngle.ZETA,
-                NucleotideTorsionAngle.CHI)
-            .collect(Collectors.toList()));
+    return ImmutableAverageTorsionAngleType.of(MoleculeType.RNA, MoleculeType.RNA.mainAngleTypes());
   }
 
   @Value.Parameter(order = 1)

@@ -4,6 +4,16 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.AtomType;
 import pl.poznan.put.atom.Bond;
 import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.protein.AminoAcidTorsionAngle;
+import pl.poznan.put.rna.NucleotideTorsionAngle;
+import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
+import pl.poznan.put.torsion.MasterTorsionAngleType;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** A type of molecule (RNA or protein). */
 public enum MoleculeType {
@@ -48,6 +58,60 @@ public enum MoleculeType {
       case UNKNOWN:
       default:
         return false;
+    }
+  }
+
+  /**
+   * Generates a list of all atom-based torsion angle types for this molecule type.
+   *
+   * @return A list of atom-based torsion angle types.
+   */
+  public List<MasterTorsionAngleType> allAngleTypes() {
+    switch (this) {
+      case RNA:
+        return Arrays.stream(NucleotideTorsionAngle.values())
+            .filter(
+                masterType ->
+                    masterType.angleTypes().stream()
+                        .allMatch(angleType -> angleType instanceof AtomBasedTorsionAngleType))
+            .collect(Collectors.toList());
+      case PROTEIN:
+        return Arrays.stream(AminoAcidTorsionAngle.values())
+            .filter(
+                masterType ->
+                    masterType.angleTypes().stream()
+                        .allMatch(angleType -> angleType instanceof AtomBasedTorsionAngleType))
+            .collect(Collectors.toList());
+      case UNKNOWN:
+      default:
+        return Collections.emptyList();
+    }
+  }
+
+  /**
+   * Generates a list of main atom-based torsion angle types for this molecule type.
+   *
+   * @return A list of atom-based torsion angle types.
+   */
+  public List<MasterTorsionAngleType> mainAngleTypes() {
+    switch (this) {
+      case RNA:
+        return Stream.of(
+                NucleotideTorsionAngle.ALPHA,
+                NucleotideTorsionAngle.BETA,
+                NucleotideTorsionAngle.GAMMA,
+                NucleotideTorsionAngle.DELTA,
+                NucleotideTorsionAngle.EPSILON,
+                NucleotideTorsionAngle.ZETA,
+                NucleotideTorsionAngle.CHI)
+            .collect(Collectors.toList());
+      case PROTEIN:
+        return Stream.of(
+                AminoAcidTorsionAngle.PHI, AminoAcidTorsionAngle.PSI, AminoAcidTorsionAngle.OMEGA)
+            .collect(Collectors.toList());
+      case UNKNOWN:
+      default:
+        return Collections.emptyList();
     }
   }
 }
