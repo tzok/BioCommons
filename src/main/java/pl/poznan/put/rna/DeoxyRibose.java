@@ -7,8 +7,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/** A deoxyribose. */
 @Value.Immutable(singleton = true)
-public abstract class DeoxyRibose implements Sugar {
+abstract class DeoxyRibose implements Sugar {
   @Override
   public final Set<AtomName> requiredAtoms() {
     return Stream.of(

@@ -7,8 +7,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/** A phosphate, part of RNA backbone. */
 @Value.Immutable(singleton = true)
-public abstract class Phosphate implements NucleicAcidResidueComponent {
+abstract class Phosphate implements NucleicAcidResidueComponent {
   @Override
   public final NucleotideComponentType nucleotideComponentType() {
     return NucleotideComponentType.PHOSPHATE;

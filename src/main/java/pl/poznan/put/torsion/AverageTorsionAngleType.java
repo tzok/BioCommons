@@ -9,46 +9,68 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.TorsionRange;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+/** An average of one or more basic angle types. */
 @Value.Immutable
 public abstract class AverageTorsionAngleType implements TorsionAngleType, MasterTorsionAngleType {
+  /**
+   * @return The default instance for proteins based on {@link
+   *     pl.poznan.put.protein.AminoAcidTorsionAngle#PHI}, {@link
+   *     pl.poznan.put.protein.AminoAcidTorsionAngle#PSI}, and {@link
+   *     pl.poznan.put.protein.AminoAcidTorsionAngle#OMEGA}.
+   */
   public static AverageTorsionAngleType forProtein() {
     return ImmutableAverageTorsionAngleType.of(
         MoleculeType.PROTEIN, MoleculeType.PROTEIN.mainAngleTypes());
   }
 
+  /**
+   * @return The default instance for nucleic acids based on {@link
+   *     pl.poznan.put.rna.NucleotideTorsionAngle#ALPHA}, {@link
+   *     pl.poznan.put.rna.NucleotideTorsionAngle#BETA}, {@link
+   *     pl.poznan.put.rna.NucleotideTorsionAngle#GAMMA}, {@link
+   *     pl.poznan.put.rna.NucleotideTorsionAngle#DELTA}, {@link
+   *     pl.poznan.put.rna.NucleotideTorsionAngle#EPSILON}, {@link
+   *     pl.poznan.put.rna.NucleotideTorsionAngle#ZETA} and {@link
+   *     pl.poznan.put.rna.NucleotideTorsionAngle#CHI}.
+   */
   public static AverageTorsionAngleType forNucleicAcid() {
     return ImmutableAverageTorsionAngleType.of(MoleculeType.RNA, MoleculeType.RNA.mainAngleTypes());
   }
 
+  @Override
   @Value.Parameter(order = 1)
   public abstract MoleculeType moleculeType();
 
+  /**
+   * Calculates the average torsion angle value by calculating basic angle values and creating an
+   * {@link AngleSample} out of them to get the mean direction.
+   *
+   * @param residues The list of residues.
+   * @param currentIndex The index of current residue.
+   * @return The average value of torsion angles condigured for this type.
+   */
   @Override
   public final TorsionAngleValue calculate(
       final List<PdbResidue> residues, final int currentIndex) {
-    final PdbResidue residue = residues.get(currentIndex);
-    final Collection<Angle> angles = new ArrayList<>();
-
-    for (final TorsionAngleType type : residue.residueInformationProvider().torsionAngleTypes()) {
-      for (final MasterTorsionAngleType masterType : consideredAngles()) {
-        if (masterType.angleTypes().contains(type)) {
-          final TorsionAngleValue angleValue = type.calculate(residues, currentIndex);
-          angles.add(angleValue.value());
-        }
-      }
-    }
-
+    final List<Angle> angles =
+        residues.get(currentIndex).residueInformationProvider().torsionAngleTypes().stream()
+            .filter(consideredBasicAngleTypes()::contains)
+            .map(angleType -> angleType.calculate(residues, currentIndex))
+            .map(TorsionAngleValue::value)
+            .collect(Collectors.toList());
     final AngleSample angleSample = ImmutableAngleSample.of(angles);
     return ImmutableTorsionAngleValue.of(this, angleSample.meanDirection());
   }
 
+  /** @return The list of angle types to calculate average from. */
   @Value.Parameter(order = 2)
   public abstract List<MasterTorsionAngleType> consideredAngles();
 
@@ -98,19 +120,19 @@ public abstract class AverageTorsionAngleType implements TorsionAngleType, Maste
     return builder.toString();
   }
 
-  public final TorsionAngleValue calculate(final Iterable<TorsionAngleValue> values) {
-    final Collection<Angle> angles = new ArrayList<>();
-
-    for (final MasterTorsionAngleType masterType : consideredAngles()) {
-      for (final TorsionAngleValue angleValue : values) {
-        if (masterType.angleTypes().contains(angleValue.angleType())) {
-          if (angleValue.value().isValid()) {
-            angles.add(angleValue.value());
-          }
-        }
-      }
-    }
-
+  /**
+   * Calculates the average torsion angle value by collecting basic angle values and creating an
+   * {@link AngleSample} out of them to get the mean direction.
+   *
+   * @param values The collection of torsion angle values.
+   * @return The average value of torsion angles condigured for this type.
+   */
+  public final TorsionAngleValue calculate(final Collection<TorsionAngleValue> values) {
+    final List<Angle> angles =
+        values.stream()
+            .filter(angleValue -> consideredBasicAngleTypes().contains(angleValue.angleType()))
+            .map(TorsionAngleValue::value)
+            .collect(Collectors.toList());
     final AngleSample angleSample = ImmutableAngleSample.of(angles);
     return ImmutableTorsionAngleValue.of(this, angleSample.meanDirection());
   }
@@ -122,6 +144,14 @@ public abstract class AverageTorsionAngleType implements TorsionAngleType, Maste
 
   @Override
   public final Range range(final Angle angle) {
-    return TorsionRange.getProvider().fromAngle(angle);
+    return TorsionRange.rangeProvider().fromAngle(angle);
+  }
+
+  @Value.Lazy
+  protected Set<TorsionAngleType> consideredBasicAngleTypes() {
+    return consideredAngles().stream()
+        .map(MasterTorsionAngleType::angleTypes)
+        .flatMap(Collection::stream)
+        .collect(Collectors.toSet());
   }
 }

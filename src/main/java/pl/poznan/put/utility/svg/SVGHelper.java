@@ -25,11 +25,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
-import pl.poznan.put.utility.ExecHelper;
+import pl.poznan.put.utility.ImmutableExecHelper;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
-import java.awt.*;
+import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
@@ -39,13 +39,13 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/** A collection of methods to work with SVG images. */
 public final class SVGHelper {
   private static final Logger LOGGER = LoggerFactory.getLogger(SVGHelper.class);
   private static final NamespaceContext SVG_NAMESPACE = new SVGNamespace();
@@ -56,31 +56,60 @@ public final class SVGHelper {
     super();
   }
 
+  /**
+   * Loads an SVG image from file.
+   *
+   * @param file The path to the SVG file.
+   * @return An instance of {@link SVGDocument} parsed from the file.
+   * @throws IOException When reading of file fails.
+   */
   public static SVGDocument fromFile(final File file) throws IOException {
     return SVGHelper.fromUri(file.toURI());
   }
 
+  /**
+   * Loads an SVG image from URI.
+   *
+   * @param uri The URI of the SVG image.
+   * @return An instance of {@link SVGDocument} parsed from the URI.
+   * @throws IOException When reading of the URI fails.
+   */
   public static SVGDocument fromUri(final URI uri) throws IOException {
     final SAXSVGDocumentFactory factory =
         new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
     return (SVGDocument) factory.createDocument(uri.toString());
   }
 
-  public static FontMetrics getFontMetrics(final SVGGraphics2D svg) {
-    return svg.getFontMetrics();
-  }
-
+  /**
+   * Gets metrics for a line of ASCII letters in the context of SVG image.
+   *
+   * @param svg An instance of SVG graphics.
+   * @return Detailed metrics for the specific font in the SVG graphics.
+   */
   public static LineMetrics getLineMetrics(final SVGGraphics2D svg) {
     final FontRenderContext renderContext = svg.getFontRenderContext();
     final Font font = svg.getFont();
     return font.getLineMetrics(
-        "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM", renderContext);
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", renderContext);
   }
 
+  /** @return A singleton instance of SVG namespace. */
   public static NamespaceContext svgNamespaceContext() {
     return SVGHelper.SVG_NAMESPACE;
   }
 
+  /**
+   * Exports SVG image to a given output image format. When exporting to SVG, this method uses
+   * Batik's encoder. For other output formats, by default this method will try to use Inkscape
+   * (i.e. run an external process) and if it fails, this method will resort back to Batik's
+   * transcoder capabilities. This is due to the fact, that Batik sometimes has problems with
+   * rasterization of complex SVG images and Inkscape seems to perform better.
+   *
+   * @param svgDocument The image to export.
+   * @param format The output format.
+   * @return An array of bytes with the image data.
+   * @throws IOException When exporting fails.
+   */
   public static byte[] export(final SVGDocument svgDocument, final Format format)
       throws IOException {
     if (format == Format.SVG) {
@@ -95,12 +124,15 @@ public final class SVGHelper {
       FileUtils.writeByteArrayToFile(inputFile, SVGHelper.export(svgDocument, Format.SVG));
       outputFile = File.createTempFile("svg-helper", '.' + format.getExtension());
 
-      ExecHelper.execute(
-          "inkscape",
-          "--without-gui",
-          format.getInkscapeArgument(),
-          outputFile.getAbsolutePath(),
-          inputFile.getAbsolutePath());
+      ImmutableExecHelper.builder()
+          .command("inkscape")
+          .addArguments(
+              "--without-gui",
+              format.getInkscapeArgument(),
+              outputFile.getAbsolutePath(),
+              inputFile.getAbsolutePath())
+          .build()
+          .execute();
 
       return FileUtils.readFileToByteArray(outputFile);
     } catch (final IOException e) {
@@ -113,10 +145,12 @@ public final class SVGHelper {
     }
   }
 
-  public static SVGDocument merge(final SVGDocument... svgs) {
-    return SVGHelper.merge(Arrays.asList(svgs));
-  }
-
+  /**
+   * Merges several SVG images into one, by putting one next to another (from left to right).
+   *
+   * @param svgs The list of SVGs.
+   * @return An instance of {@link SVGDocument} with all input images combined.
+   */
   public static SVGDocument merge(final List<SVGDocument> svgs) {
     if (svgs.isEmpty()) {
       return SVGHelper.emptyDocument();
@@ -176,12 +210,19 @@ public final class SVGHelper {
     return mergedSvg;
   }
 
+  /** @return An empty SVG image. */
   public static SVGDocument emptyDocument() {
     return (SVGDocument)
         SVGHelper.DOM_IMPLEMENTATION.createDocument(
             SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
   }
 
+  /**
+   * Calculates a bounding box for given node of SVG document.
+   *
+   * @param doc A node in SVG document.
+   * @return Bounding box of this node.
+   */
   public static Rectangle2D calculateBoundingBox(final Document doc) {
     final GVTBuilder builder = new GVTBuilder();
     final BridgeContext ctx = new BridgeContext(new UserAgentAdapter());
@@ -189,12 +230,24 @@ public final class SVGHelper {
     return gvtRoot.getSensitiveBounds();
   }
 
+  /**
+   * Retrieves the width of the SVG document.
+   *
+   * @param document The SVG image.
+   * @return The width of the SVG image.
+   */
   public static double getWidth(final SVGDocument document) {
     final SVGSVGElement rootElement = document.getRootElement();
     final String attribute = rootElement.getAttribute(SVGConstants.SVG_WIDTH_ATTRIBUTE);
     return Double.parseDouble(attribute);
   }
 
+  /**
+   * Retrieves the height of the SVG document.
+   *
+   * @param document The SVG image.
+   * @return The height of the SVG image.
+   */
   public static double getHeight(final SVGDocument document) {
     final SVGSVGElement rootElement = document.getRootElement();
     final String attribute = rootElement.getAttribute(SVGConstants.SVG_HEIGHT_ATTRIBUTE);

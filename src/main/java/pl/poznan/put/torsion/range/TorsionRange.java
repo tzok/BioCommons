@@ -6,7 +6,7 @@ import pl.poznan.put.circular.ImmutableAngle;
 
 import java.util.Arrays;
 
-/** Torsion angle ranges as defined in Saenger's "Principles...". */
+/** A default torsion angle range as defined in Saenger's "Principles...". */
 public enum TorsionRange implements Range {
   SYN_CIS("sp", -30.0, 30.0),
   ANTI_TRANS("ap", 150.0, -150.0),
@@ -16,12 +16,6 @@ public enum TorsionRange implements Range {
   ANTICLINAL_MINUS("-ac", -150.0, -90.0),
   INVALID("invalid", Double.NaN, Double.NaN);
 
-  private static final RangeProvider PROVIDER =
-      angle ->
-          Arrays.stream(TorsionRange.values())
-              .filter(torsionRange -> angle.isBetween(torsionRange.begin, torsionRange.end))
-              .findFirst()
-              .orElse(TorsionRange.INVALID);
   private final String displayName;
   private final Angle begin;
   private final Angle end;
@@ -32,18 +26,28 @@ public enum TorsionRange implements Range {
     this.end = ImmutableAngle.of(FastMath.toRadians(end));
   }
 
-  public static RangeProvider getProvider() {
-    return TorsionRange.PROVIDER;
+  /**
+   * @return An instance of {@link RangeProvider} which will provide this ranges for angle values.
+   */
+  public static RangeProvider rangeProvider() {
+    return angle ->
+        Arrays.stream(TorsionRange.values())
+            .filter(torsionRange -> angle.isBetween(torsionRange.begin, torsionRange.end))
+            .findFirst()
+            .orElse(TorsionRange.INVALID);
   }
 
+  @Override
   public String displayName() {
     return displayName;
   }
 
+  @Override
   public Angle begin() {
     return begin;
   }
 
+  @Override
   public Angle end() {
     return end;
   }

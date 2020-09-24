@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+/** A collection of methods to work with resources (src/main/resources/). */
 public final class ResourcesHelper {
   private ResourcesHelper() {
     super();
@@ -32,6 +33,13 @@ public final class ResourcesHelper {
     }
   }
 
+  /**
+   * Translate resource address to a URI and then to File instance.
+   *
+   * @param resource Name of the resource.
+   * @return The path to the resource.
+   * @throws URISyntaxException If the resource URI could not be created.
+   */
   public static File loadResourceFile(final String resource) throws URISyntaxException {
     return new File(ResourcesHelper.loadResourceUri(resource));
   }

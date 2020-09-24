@@ -13,34 +13,34 @@ public class TorsionRangeTest {
   @Test
   public final void fromAngle() {
     assertThat(
-        TorsionRange.getProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(15.0))),
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(15.0))),
         is(TorsionRange.SYN_CIS));
     assertThat(
-        TorsionRange.getProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(60.0))),
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(60.0))),
         is(TorsionRange.SYNCLINAL_GAUCHE_PLUS));
     assertThat(
-        TorsionRange.getProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(120.0))),
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(120.0))),
         is(TorsionRange.ANTICLINAL_PLUS));
     assertThat(
-        TorsionRange.getProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(180.0))),
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(180.0))),
         is(TorsionRange.ANTI_TRANS));
     assertThat(
-        TorsionRange.getProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(-120.0))),
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(-120.0))),
         is(TorsionRange.ANTICLINAL_MINUS));
     assertThat(
-        TorsionRange.getProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(240.0))),
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(240.0))),
         is(TorsionRange.ANTICLINAL_MINUS));
     assertThat(
-        TorsionRange.getProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(-60.0))),
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(-60.0))),
         is(TorsionRange.SYNCLINAL_GAUCHE_MINUS));
     assertThat(
-        TorsionRange.getProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(300.0))),
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(300.0))),
         is(TorsionRange.SYNCLINAL_GAUCHE_MINUS));
     assertThat(
-        TorsionRange.getProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(-15.0))),
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(-15.0))),
         is(TorsionRange.SYN_CIS));
     assertThat(
-        TorsionRange.getProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(345.0))),
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(345.0))),
         is(TorsionRange.SYN_CIS));
   }
 

@@ -1,8 +1,10 @@
 package pl.poznan.put.utility;
 
+import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.Precision;
 import pl.poznan.put.constant.Unicode;
 
+/** A collection of formatting methods for angular values. */
 public final class AngleFormat {
   private AngleFormat() {
     super();
@@ -26,8 +28,8 @@ public final class AngleFormat {
       return "0";
     }
 
-    final double degrees = Math.toDegrees(radians);
-    final long rounded = Math.round(degrees);
+    final double degrees = FastMath.toDegrees(radians);
+    final long rounded = FastMath.round(degrees);
     return rounded + Unicode.DEGREE;
   }
 
@@ -50,7 +52,7 @@ public final class AngleFormat {
       return "0";
     }
 
-    final double degrees = Math.toDegrees(radians);
+    final double degrees = FastMath.toDegrees(radians);
     return NumberFormatUtils.threeDecimalDigits().format(degrees) + Unicode.DEGREE;
   }
 
@@ -62,7 +64,7 @@ public final class AngleFormat {
    * @return A {@link String} with the value of input in degrees.
    */
   public static String degrees(final double radians) {
-    final double degrees = Math.toDegrees(radians);
+    final double degrees = FastMath.toDegrees(radians);
     return Double.toString(degrees);
   }
 }

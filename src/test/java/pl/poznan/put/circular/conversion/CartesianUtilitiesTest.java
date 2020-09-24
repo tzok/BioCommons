@@ -1,8 +1,11 @@
 package pl.poznan.put.circular.conversion;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.apache.commons.math3.util.FastMath;
+import org.apache.commons.math3.util.Precision;
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.ImmutableAngle;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -77,5 +80,38 @@ public class CartesianUtilitiesTest {
             Angle.betweenPoints(actualAtomC5p, actualAtomC4p, expectedAtomC3p),
             Angle.torsionAngle(atomO5p, actualAtomC5p, actualAtomC4p, expectedAtomC3p));
     assertThat(actualAtomC3p, is(expectedAtomC3p));
+  }
+
+  @Test
+  public final void nextPlacement() {
+    final Vector3D coordA = new Vector3D(50.626, 49.730, 50.573); // P
+    final Vector3D coordB = new Vector3D(50.161, 49.136, 52.023); // O5'
+    final Vector3D coordC = new Vector3D(50.216, 49.948, 53.210); // C5'
+    final double lengthCD = 1.512413303300389;
+    final ImmutableAngle angleBCD = ImmutableAngle.of(FastMath.toRadians(110.54));
+    final ImmutableAngle torsionABCD = ImmutableAngle.of(FastMath.toRadians(-128.05));
+
+    final Vector3D actualCoordD =
+        CartesianUtilities.nextPlacement(coordA, coordB, coordC, lengthCD, angleBCD, torsionABCD);
+    final Vector3D expectedCoordD = new Vector3D(50.968, 49.231, 54.309); // C4'
+
+    assertThat(
+        Precision.equals(
+            Vector3D.distance(coordC, actualCoordD),
+            Vector3D.distance(coordC, expectedCoordD),
+            1.0e-3),
+        is(true));
+
+    assertThat(
+        Angle.betweenPoints(coordB, coordC, actualCoordD),
+        is(Angle.betweenPoints(coordB, coordC, expectedCoordD)));
+
+    assertThat(
+        Angle.torsionAngle(coordA, coordB, coordC, actualCoordD),
+        is(Angle.torsionAngle(coordA, coordB, coordC, expectedCoordD)));
+
+    assertThat(Precision.equals(actualCoordD.getX(), expectedCoordD.getX(), 1.0e-3), is(true));
+    assertThat(Precision.equals(actualCoordD.getY(), expectedCoordD.getY(), 1.0e-3), is(true));
+    assertThat(Precision.equals(actualCoordD.getZ(), expectedCoordD.getZ(), 1.0e-3), is(true));
   }
 }

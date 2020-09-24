@@ -5,7 +5,7 @@ import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.ImmutableAtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
-import pl.poznan.put.types.ImmutableQuadruplet;
+import pl.poznan.put.types.ImmutableQuadruple;
 
 /**
  * A glycosidic bond torsion angle (chi), which is defined differently for purines and pyrimidines.
@@ -16,15 +16,15 @@ public enum Chi {
           MoleculeType.RNA,
           Unicode.CHI,
           "chi",
-          ImmutableQuadruplet.of(AtomName.O4p, AtomName.C1p, AtomName.N9, AtomName.C4),
-          ImmutableQuadruplet.of(0, 0, 0, 0))),
+          ImmutableQuadruple.of(AtomName.O4p, AtomName.C1p, AtomName.N9, AtomName.C4),
+          ImmutableQuadruple.of(0, 0, 0, 0))),
   PYRIMIDINE(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.RNA,
           Unicode.CHI,
           "chi",
-          ImmutableQuadruplet.of(AtomName.O4p, AtomName.C1p, AtomName.N1, AtomName.C2),
-          ImmutableQuadruplet.of(0, 0, 0, 0)));
+          ImmutableQuadruple.of(AtomName.O4p, AtomName.C1p, AtomName.N1, AtomName.C2),
+          ImmutableQuadruple.of(0, 0, 0, 0)));
 
   private final TorsionAngleType angleType;
 

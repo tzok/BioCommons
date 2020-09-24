@@ -16,7 +16,7 @@ public final class CifParser {
   }
 
   /**
-   * Parse content in mmCIF format.
+   * Parses content in mmCIF format.
    *
    * @param structureContent A string with data in mmCIF format.
    * @return A parsed object representing a molecular structure.

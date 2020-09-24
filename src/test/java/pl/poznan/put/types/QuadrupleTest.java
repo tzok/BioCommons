@@ -6,12 +6,12 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class QuadrupletTest {
-  private Quadruplet<Integer> fromParameters;
+public class QuadrupleTest {
+  private Quadruple<Integer> fromParameters;
 
   @Before
   public final void setUp() {
-    fromParameters = ImmutableQuadruplet.<Integer>builder().a(1).b(2).c(3).d(4).build();
+    fromParameters = ImmutableQuadruple.<Integer>builder().a(1).b(2).c(3).d(4).build();
   }
 
   @Test

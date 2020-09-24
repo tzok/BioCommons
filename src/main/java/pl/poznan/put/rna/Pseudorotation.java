@@ -74,7 +74,7 @@ public enum Pseudorotation implements Range {
   public RangeDifference compare(final Range other) {
     if (!(other instanceof Pseudorotation)) {
       throw new IllegalArgumentException(
-          "A Pseudorotation object can be compared only with other " + "Pseudorotation object");
+          "A Pseudorotation object can be compared only with other Pseudorotation object");
     }
 
     if ((this == Pseudorotation.INVALID) || (other == Pseudorotation.INVALID)) {

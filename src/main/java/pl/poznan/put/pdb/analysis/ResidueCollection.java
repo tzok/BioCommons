@@ -102,11 +102,8 @@ public interface ResidueCollection extends Serializable {
    * @return True if a given residue is part of this collection.
    */
   default boolean hasResidue(final ChainNumberICode query) {
-    return residues().stream()
-        .anyMatch(
-            residue ->
-                Objects.equals(
-                    PdbResidueIdentifier.from(residue), PdbResidueIdentifier.from(query)));
+    final PdbResidueIdentifier queryIdentifier = PdbResidueIdentifier.from(query);
+    return residues().stream().map(PdbResidueIdentifier::from).anyMatch(queryIdentifier::equals);
   }
 
   /**
@@ -116,11 +113,9 @@ public interface ResidueCollection extends Serializable {
    * @return The residue found in this collection of residues.
    */
   default PdbResidue findResidue(final ChainNumberICode query) {
+    final PdbResidueIdentifier queryIdentifier = PdbResidueIdentifier.from(query);
     return residues().stream()
-        .filter(
-            residue ->
-                Objects.equals(
-                    PdbResidueIdentifier.from(residue), PdbResidueIdentifier.from(query)))
+        .filter(residue -> Objects.equals(PdbResidueIdentifier.from(residue), queryIdentifier))
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException("Failed to find residue: " + query));
   }

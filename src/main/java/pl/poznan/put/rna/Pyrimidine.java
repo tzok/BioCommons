@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/** A pyrimidine (cytosine, uracil or thymine). */
 public interface Pyrimidine extends Nucleobase {
   @Override
   default List<TorsionAngleType> torsionAngleTypes() {

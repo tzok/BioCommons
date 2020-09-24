@@ -5,15 +5,15 @@ import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.ImmutableAtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
-import pl.poznan.put.types.ImmutableQuadruplet;
-import pl.poznan.put.types.Quadruplet;
+import pl.poznan.put.types.ImmutableQuadruple;
+import pl.poznan.put.types.Quadruple;
 
 import java.util.Collections;
 import java.util.List;
 
 final class Chi5 {
-  public static final Quadruplet<AtomName> ARGININE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.CD, AtomName.NE, AtomName.CZ, AtomName.NH1);
+  public static final Quadruple<AtomName> ARGININE_ATOMS =
+      ImmutableQuadruple.of(AtomName.CD, AtomName.NE, AtomName.CZ, AtomName.NH1);
 
   private static final TorsionAngleType ANGLE_TYPE =
       ImmutableAtomBasedTorsionAngleType.of(
@@ -21,7 +21,7 @@ final class Chi5 {
           Unicode.CHI5,
           "chi5",
           Chi5.ARGININE_ATOMS,
-          ImmutableQuadruplet.of(0, 0, 0, 0));
+          ImmutableQuadruple.of(0, 0, 0, 0));
 
   private Chi5() {
     super();
@@ -31,7 +31,7 @@ final class Chi5 {
     return Collections.singletonList(Chi5.ANGLE_TYPE);
   }
 
-  public static TorsionAngleType getInstance(final Quadruplet<AtomName> unused) {
+  public static TorsionAngleType getInstance(final Quadruple<AtomName> unused) {
     return Chi5.ANGLE_TYPE;
   }
 }

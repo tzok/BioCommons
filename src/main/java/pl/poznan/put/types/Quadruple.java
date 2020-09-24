@@ -3,7 +3,7 @@ package pl.poznan.put.types;
 import org.immutables.value.Value;
 
 @Value.Immutable
-public interface Quadruplet<T> {
+public interface Quadruple<T> {
   @Value.Parameter(order = 1)
   T a();
 

@@ -5,7 +5,7 @@ import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.types.Quadruplet;
+import pl.poznan.put.types.Quadruple;
 
 /**
  * A class to calculate and manage dihedral angles for given BioJava structure.
@@ -23,7 +23,7 @@ public final class TorsionAnglesHelper {
    * @param atoms A 4-tuple of atoms.
    * @return Value of the tosion angle.
    */
-  public static Angle calculateTorsionAngle(final Quadruplet<PdbAtomLine> atoms) {
+  public static Angle calculateTorsionAngle(final Quadruple<PdbAtomLine> atoms) {
     return TorsionAnglesHelper.calculateTorsionAngle(atoms.a(), atoms.b(), atoms.c(), atoms.d());
   }
 

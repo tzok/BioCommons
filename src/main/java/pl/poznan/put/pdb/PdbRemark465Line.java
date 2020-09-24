@@ -8,7 +8,6 @@ import pl.poznan.put.pdb.analysis.DefaultPdbResidue;
 import pl.poznan.put.pdb.analysis.ImmutableDefaultPdbResidue;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
@@ -16,7 +15,7 @@ import java.util.Objects;
 
 /** A representation of REMARK 465 in PDB format which describes missing residues. */
 @Value.Immutable
-public abstract class PdbRemark465Line implements ChainNumberICode, Serializable {
+public abstract class PdbRemark465Line implements ChainNumberICode {
   // @formatter:off
   /*
      REMARK 465

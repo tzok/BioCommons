@@ -7,11 +7,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+/** A collections of methods for easy export of tabular data to CSV files. */
 public final class TabularExporter {
   private TabularExporter() {
     super();
   }
 
+  /**
+   * Exports the tabular data in CSV format and pushed it to an output stream.
+   *
+   * @param tableModel The data to export.
+   * @param stream The stream that will receive CSV data.
+   * @throws IOException When writing to the stream fails.
+   */
   public static void export(final TableModel tableModel, final OutputStream stream)
       throws IOException {
     final CsvWriter csvWriter = new CsvWriter(stream, ',', StandardCharsets.UTF_8);

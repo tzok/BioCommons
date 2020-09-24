@@ -5,8 +5,8 @@ import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.torsion.ImmutableAtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
-import pl.poznan.put.types.ImmutableQuadruplet;
-import pl.poznan.put.types.Quadruplet;
+import pl.poznan.put.types.ImmutableQuadruple;
+import pl.poznan.put.types.Quadruple;
 
 import java.util.Collection;
 import java.util.Map;
@@ -15,44 +15,44 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class Chi1 {
-  public static final Quadruplet<AtomName> ARGININE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> ASPARAGINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> ASPARTIC_ACID_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> CYSTEINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.SG);
-  public static final Quadruplet<AtomName> GLUTAMIC_ACID_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> GLUTAMINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> HISTIDINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> ISOLEUCINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG1);
-  public static final Quadruplet<AtomName> LEUCINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> LYSINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> METHIONINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> PHENYLALANINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> PROLINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> SERINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.OG);
-  public static final Quadruplet<AtomName> THREONINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.OG1);
-  public static final Quadruplet<AtomName> TRYPTOPHAN_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> TYROSINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
-  public static final Quadruplet<AtomName> VALINE_ATOMS =
-      ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG1);
+  public static final Quadruple<AtomName> ARGININE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> ASPARAGINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> ASPARTIC_ACID_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> CYSTEINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.SG);
+  public static final Quadruple<AtomName> GLUTAMIC_ACID_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> GLUTAMINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> HISTIDINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> ISOLEUCINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG1);
+  public static final Quadruple<AtomName> LEUCINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> LYSINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> METHIONINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> PHENYLALANINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> PROLINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> SERINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.OG);
+  public static final Quadruple<AtomName> THREONINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.OG1);
+  public static final Quadruple<AtomName> TRYPTOPHAN_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> TYROSINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG);
+  public static final Quadruple<AtomName> VALINE_ATOMS =
+      ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.CB, AtomName.CG1);
 
-  private static final Map<Quadruplet<AtomName>, TorsionAngleType> ANGLE_MAP =
+  private static final Map<Quadruple<AtomName>, TorsionAngleType> ANGLE_MAP =
       Stream.of(
               Chi1.ARGININE_ATOMS,
               Chi1.ASPARAGINE_ATOMS,
@@ -82,7 +82,7 @@ final class Chi1 {
                           Unicode.CHI1,
                           "chi1",
                           quad,
-                          ImmutableQuadruplet.of(0, 0, 0, 0))));
+                          ImmutableQuadruple.of(0, 0, 0, 0))));
 
   private Chi1() {
     super();
@@ -92,7 +92,7 @@ final class Chi1 {
     return Chi1.ANGLE_MAP.values();
   }
 
-  public static TorsionAngleType getInstance(final Quadruplet<AtomName> chiAtoms) {
+  public static TorsionAngleType getInstance(final Quadruple<AtomName> chiAtoms) {
     return Chi1.ANGLE_MAP.get(chiAtoms);
   }
 }

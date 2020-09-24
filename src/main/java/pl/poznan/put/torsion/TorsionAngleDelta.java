@@ -1,37 +1,16 @@
 package pl.poznan.put.torsion;
 
+import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.utility.AngleFormat;
 
-public class TorsionAngleDelta {
-  private final MasterTorsionAngleType masterTorsionAngleType;
-  private final State state;
-  private final Angle target;
-  private final Angle model;
-  private final Angle delta;
-  private final RangeDifference rangeDifference;
-
-  public TorsionAngleDelta(
-      final MasterTorsionAngleType masterTorsionAngleType,
-      final State state,
-      final Angle target,
-      final Angle model,
-      final Angle delta,
-      final RangeDifference rangeDifference) {
-    super();
-    this.masterTorsionAngleType = masterTorsionAngleType;
-    this.state = state;
-    this.target = target;
-    this.model = model;
-    this.delta = delta;
-    this.rangeDifference = rangeDifference;
-  }
-
+@Value.Immutable
+public abstract class TorsionAngleDelta {
   public static TorsionAngleDelta bothInvalidInstance(final MasterTorsionAngleType masterType) {
-    return new TorsionAngleDelta(
+    return ImmutableTorsionAngleDelta.of(
         masterType,
         State.BOTH_INVALID,
         ImmutableAngle.of(Double.NaN),
@@ -61,39 +40,26 @@ public class TorsionAngleDelta {
       rangeDifference = targetRange.compare(modelRange);
     }
 
-    return new TorsionAngleDelta(masterType, state, target, model, delta, rangeDifference);
+    return ImmutableTorsionAngleDelta.of(masterType, state, target, model, delta, rangeDifference);
   }
 
-  public final Angle getTarget() {
-    return target;
-  }
+  @Value.Parameter(order = 1)
+  public abstract MasterTorsionAngleType masterTorsionAngleType();
 
-  public final Angle getModel() {
-    return model;
-  }
+  @Value.Parameter(order = 2)
+  public abstract State state();
 
-  public final State getState() {
-    return state;
-  }
+  @Value.Parameter(order = 3)
+  public abstract Angle target();
 
-  public final Angle getDelta() {
-    return delta;
-  }
+  @Value.Parameter(order = 4)
+  public abstract Angle model();
 
-  public final RangeDifference getRangeDifference() {
-    return rangeDifference;
-  }
+  @Value.Parameter(order = 5)
+  public abstract Angle delta();
 
-  public final MasterTorsionAngleType getMasterTorsionAngleType() {
-    return masterTorsionAngleType;
-  }
-
-  @Override
-  public final String toString() {
-    return String.format(
-        "TorsionAngleDelta [state=%s, delta=%s, " + "rangeDifference=%s]",
-        state, delta, rangeDifference);
-  }
+  @Value.Parameter(order = 6)
+  public abstract RangeDifference rangeDifference();
 
   /**
    * Represent numeric value in a way external tools understand (dot as fraction point and no
@@ -106,13 +72,13 @@ public class TorsionAngleDelta {
   }
 
   public final String toString(final boolean isDisplayable) {
-    switch (state) {
+    switch (state()) {
       case BOTH_INVALID:
         return "Missing atoms both in target and model";
       case BOTH_VALID:
         return isDisplayable
-            ? AngleFormat.degreesRoundedToHundredth(delta.radians())
-            : AngleFormat.degrees(delta.radians());
+            ? AngleFormat.degreesRoundedToHundredth(delta().radians())
+            : AngleFormat.degrees(delta().radians());
       case TARGET_INVALID:
         return "Missing atoms in target";
       case MODEL_INVALID:

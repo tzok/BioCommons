@@ -6,42 +6,12 @@ import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.RotationConvention;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.ImmutableAngle;
 
 /** A set of utility functions on the edge between cartesian and trigonometric representations. */
 public final class CartesianUtilities {
   private CartesianUtilities() {
     super();
-  }
-
-  public static void main(final String[] args) {
-    final Vector3D coordA = new Vector3D(50.626, 49.730, 50.573); // P
-    final Vector3D coordB = new Vector3D(50.161, 49.136, 52.023); // O5'
-    final Vector3D coordC = new Vector3D(50.216, 49.948, 53.210); // C5'
-    final Vector3D expectedCoordD = new Vector3D(50.968, 49.231, 54.309); // C4'
-    final Vector3D actualCoordD =
-        CartesianUtilities.nextPlacement(
-            coordA,
-            coordB,
-            coordC,
-            1.512413303300389,
-            ImmutableAngle.of(FastMath.toRadians(110.54)),
-            ImmutableAngle.of(FastMath.toRadians(-128.05)));
-
-    final Vector3D vectorBC = coordC.subtract(coordB);
-    final Vector3D vectorCD = expectedCoordD.subtract(coordC).negate();
-
-    System.out.println("Expected: " + expectedCoordD);
-    System.out.println("Length:   " + Vector3D.distance(coordC, expectedCoordD));
-    System.out.println("Angle:    " + Angle.betweenPoints(coordB, coordC, expectedCoordD));
-    System.out.println("Torsion:  " + Angle.torsionAngle(coordA, coordB, coordC, expectedCoordD));
-    System.out.println();
-    System.out.println("Actual:   " + actualCoordD);
-    System.out.println("Length:   " + Vector3D.distance(coordC, actualCoordD));
-    System.out.println("Angle:    " + Angle.betweenPoints(coordB, coordC, actualCoordD));
-    System.out.println("Torsion:  " + Angle.torsionAngle(coordA, coordB, coordC, actualCoordD));
   }
 
   /**

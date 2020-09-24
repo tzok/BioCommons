@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/** A purine (adenine or guanine). */
 public interface Purine extends Nucleobase {
   @Override
   default List<TorsionAngleType> torsionAngleTypes() {

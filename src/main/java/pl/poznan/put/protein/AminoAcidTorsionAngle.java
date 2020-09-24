@@ -9,7 +9,7 @@ import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.TorsionRange;
-import pl.poznan.put.types.ImmutableQuadruplet;
+import pl.poznan.put.types.ImmutableQuadruple;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,29 +24,29 @@ public enum AminoAcidTorsionAngle implements MasterTorsionAngleType {
           MoleculeType.PROTEIN,
           Unicode.PHI,
           "phi",
-          ImmutableQuadruplet.of(AtomName.C, AtomName.N, AtomName.CA, AtomName.C),
-          ImmutableQuadruplet.of(-1, 0, 0, 0))),
+          ImmutableQuadruple.of(AtomName.C, AtomName.N, AtomName.CA, AtomName.C),
+          ImmutableQuadruple.of(-1, 0, 0, 0))),
   PSI(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.PROTEIN,
           Unicode.PSI,
           "psi",
-          ImmutableQuadruplet.of(AtomName.N, AtomName.CA, AtomName.C, AtomName.N),
-          ImmutableQuadruplet.of(0, 0, 0, 1))),
+          ImmutableQuadruple.of(AtomName.N, AtomName.CA, AtomName.C, AtomName.N),
+          ImmutableQuadruple.of(0, 0, 0, 1))),
   OMEGA(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.PROTEIN,
           Unicode.OMEGA,
           "omega",
-          ImmutableQuadruplet.of(AtomName.CA, AtomName.C, AtomName.N, AtomName.CA),
-          ImmutableQuadruplet.of(0, 0, 1, 1))),
+          ImmutableQuadruple.of(AtomName.CA, AtomName.C, AtomName.N, AtomName.CA),
+          ImmutableQuadruple.of(0, 0, 1, 1))),
   CALPHA(
       ImmutableAtomBasedTorsionAngleType.builder()
           .moleculeType(MoleculeType.PROTEIN)
           .shortDisplayName(Unicode.CALPHA)
           .exportName("c-alpha")
-          .atoms(ImmutableQuadruplet.of(AtomName.CA, AtomName.CA, AtomName.CA, AtomName.CA))
-          .residueRule(ImmutableQuadruplet.of(0, 1, 2, 3))
+          .atoms(ImmutableQuadruple.of(AtomName.CA, AtomName.CA, AtomName.CA, AtomName.CA))
+          .residueRule(ImmutableQuadruple.of(0, 1, 2, 3))
           .isPseudoTorsion(true)
           .build()),
   CHI1(Chi1.angleTypes()),
@@ -72,7 +72,7 @@ public enum AminoAcidTorsionAngle implements MasterTorsionAngleType {
 
   @Override
   public Range range(final Angle angle) {
-    return TorsionRange.getProvider().fromAngle(angle);
+    return TorsionRange.rangeProvider().fromAngle(angle);
   }
 
   @Override

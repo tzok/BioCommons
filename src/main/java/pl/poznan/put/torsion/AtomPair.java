@@ -1,42 +1,47 @@
 package pl.poznan.put.torsion;
 
-import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.atom.AtomType;
 import pl.poznan.put.atom.Bond;
 import pl.poznan.put.atom.BondLength;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.pdb.analysis.PdbResidue;
 
 import java.util.Locale;
 
+/** A pair of atoms. */
 @Value.Immutable
 public abstract class AtomPair implements Comparable<AtomPair> {
+  /** @return The first atom. */
   @Value.Parameter(order = 1)
-  public abstract PdbResidue leftResidue();
-
-  @Value.Parameter(order = 2)
-  public abstract PdbResidue rightResidue();
-
-  @Value.Parameter(order = 3)
   abstract PdbAtomLine leftAtom();
 
-  @Value.Parameter(order = 4)
+  /** @return The second atom. */
+  @Value.Parameter(order = 2)
   abstract PdbAtomLine rightAtom();
 
+  /**
+   * Generate a validation message if the distance between this atom pair is larger than 150% of the
+   * maximum expected bond length (see {@link Bond#length(AtomType, AtomType)}).
+   *
+   * @return A message detailing the invalid distance or empty string ("") if all is fine.
+   */
   public final String generateValidationMessage() {
     if (isValid()) {
       return "";
     }
 
-    if (leftResidue().equals(rightResidue())) {
+    final PdbResidueIdentifier leftIdentifier = PdbResidueIdentifier.from(leftAtom());
+    final PdbResidueIdentifier rightIdentifier = PdbResidueIdentifier.from(rightAtom());
+
+    if (leftIdentifier.equals(rightIdentifier)) {
       return String.format(
           Locale.US,
           "%s-%s distance in %s is %.2f but should be in range [%.2f; %.2f]",
           leftAtom().atomName(),
           rightAtom().atomName(),
-          PdbResidueIdentifier.from(leftResidue()),
+          leftIdentifier,
           distance(),
           bondLength().min(),
           bondLength().max());
@@ -47,8 +52,8 @@ public abstract class AtomPair implements Comparable<AtomPair> {
         "%s-%s distance between %s and %s is %.2f but should be in range [%.2f; %.2f]",
         leftAtom().atomName(),
         rightAtom().atomName(),
-        PdbResidueIdentifier.from(leftResidue()),
-        PdbResidueIdentifier.from(rightResidue()),
+        leftIdentifier,
+        rightIdentifier,
         distance(),
         bondLength().min(),
         bondLength().max());
@@ -72,22 +77,6 @@ public abstract class AtomPair implements Comparable<AtomPair> {
   }
 
   private boolean isValid() {
-    // skip check if any of the residues has icode
-    if (StringUtils.isNotBlank(leftResidue().insertionCode())
-        || StringUtils.isNotBlank(rightResidue().insertionCode())) {
-      return true;
-    }
-
-    // skip check if residues are in different chains
-    if (!leftResidue().chainIdentifier().equals(rightResidue().chainIdentifier())) {
-      return true;
-    }
-
-    // skip check if residues are not consecutive
-    if (Math.abs(leftResidue().residueNumber() - rightResidue().residueNumber()) > 1) {
-      return true;
-    }
-
     return distance() <= bondLength().max() * 1.5;
   }
 }

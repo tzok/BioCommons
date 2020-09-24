@@ -4,6 +4,7 @@ import org.immutables.value.Value;
 
 import java.util.List;
 
+/** A container for a list of residues. */
 @Value.Immutable
 public abstract class DefaultResidueCollection implements ResidueCollection {
   @Override

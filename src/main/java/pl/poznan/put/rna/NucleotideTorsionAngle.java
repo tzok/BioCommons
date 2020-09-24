@@ -10,7 +10,7 @@ import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.RangeProvider;
 import pl.poznan.put.torsion.range.TorsionRange;
-import pl.poznan.put.types.ImmutableQuadruplet;
+import pl.poznan.put.types.ImmutableQuadruple;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,85 +23,85 @@ public enum NucleotideTorsionAngle implements MasterTorsionAngleType {
           MoleculeType.RNA,
           Unicode.ALPHA,
           "alpha",
-          ImmutableQuadruplet.of(AtomName.O3p, AtomName.P, AtomName.O5p, AtomName.C5p),
-          ImmutableQuadruplet.of(-1, 0, 0, 0))),
+          ImmutableQuadruple.of(AtomName.O3p, AtomName.P, AtomName.O5p, AtomName.C5p),
+          ImmutableQuadruple.of(-1, 0, 0, 0))),
   BETA(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.RNA,
           Unicode.BETA,
           "beta",
-          ImmutableQuadruplet.of(AtomName.P, AtomName.O5p, AtomName.C5p, AtomName.C4p),
-          ImmutableQuadruplet.of(0, 0, 0, 0))),
+          ImmutableQuadruple.of(AtomName.P, AtomName.O5p, AtomName.C5p, AtomName.C4p),
+          ImmutableQuadruple.of(0, 0, 0, 0))),
   GAMMA(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.RNA,
           Unicode.GAMMA,
           "gamma",
-          ImmutableQuadruplet.of(AtomName.O5p, AtomName.C5p, AtomName.C4p, AtomName.C3p),
-          ImmutableQuadruplet.of(0, 0, 0, 0))),
+          ImmutableQuadruple.of(AtomName.O5p, AtomName.C5p, AtomName.C4p, AtomName.C3p),
+          ImmutableQuadruple.of(0, 0, 0, 0))),
   DELTA(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.RNA,
           Unicode.DELTA,
           "delta",
-          ImmutableQuadruplet.of(AtomName.C5p, AtomName.C4p, AtomName.C3p, AtomName.O3p),
-          ImmutableQuadruplet.of(0, 0, 0, 0))),
+          ImmutableQuadruple.of(AtomName.C5p, AtomName.C4p, AtomName.C3p, AtomName.O3p),
+          ImmutableQuadruple.of(0, 0, 0, 0))),
   EPSILON(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.RNA,
           Unicode.EPSILON,
           "epsilon",
-          ImmutableQuadruplet.of(AtomName.C4p, AtomName.C3p, AtomName.O3p, AtomName.P),
-          ImmutableQuadruplet.of(0, 0, 0, 1))),
+          ImmutableQuadruple.of(AtomName.C4p, AtomName.C3p, AtomName.O3p, AtomName.P),
+          ImmutableQuadruple.of(0, 0, 0, 1))),
   ZETA(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.RNA,
           Unicode.ZETA,
           "zeta",
-          ImmutableQuadruplet.of(AtomName.C3p, AtomName.O3p, AtomName.P, AtomName.O5p),
-          ImmutableQuadruplet.of(0, 0, 1, 1))),
+          ImmutableQuadruple.of(AtomName.C3p, AtomName.O3p, AtomName.P, AtomName.O5p),
+          ImmutableQuadruple.of(0, 0, 1, 1))),
   NU0(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.RNA,
           Unicode.NU0,
           "nu0",
-          ImmutableQuadruplet.of(AtomName.C4p, AtomName.O4p, AtomName.C1p, AtomName.C2p),
-          ImmutableQuadruplet.of(0, 0, 0, 0))),
+          ImmutableQuadruple.of(AtomName.C4p, AtomName.O4p, AtomName.C1p, AtomName.C2p),
+          ImmutableQuadruple.of(0, 0, 0, 0))),
   NU1(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.RNA,
           Unicode.NU1,
           "nu1",
-          ImmutableQuadruplet.of(AtomName.O4p, AtomName.C1p, AtomName.C2p, AtomName.C3p),
-          ImmutableQuadruplet.of(0, 0, 0, 0))),
+          ImmutableQuadruple.of(AtomName.O4p, AtomName.C1p, AtomName.C2p, AtomName.C3p),
+          ImmutableQuadruple.of(0, 0, 0, 0))),
   NU2(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.RNA,
           Unicode.NU2,
           "nu2",
-          ImmutableQuadruplet.of(AtomName.C1p, AtomName.C2p, AtomName.C3p, AtomName.C4p),
-          ImmutableQuadruplet.of(0, 0, 0, 0))),
+          ImmutableQuadruple.of(AtomName.C1p, AtomName.C2p, AtomName.C3p, AtomName.C4p),
+          ImmutableQuadruple.of(0, 0, 0, 0))),
   NU3(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.RNA,
           Unicode.NU3,
           "nu3",
-          ImmutableQuadruplet.of(AtomName.C2p, AtomName.C3p, AtomName.C4p, AtomName.O4p),
-          ImmutableQuadruplet.of(0, 0, 0, 0))),
+          ImmutableQuadruple.of(AtomName.C2p, AtomName.C3p, AtomName.C4p, AtomName.O4p),
+          ImmutableQuadruple.of(0, 0, 0, 0))),
   NU4(
       ImmutableAtomBasedTorsionAngleType.of(
           MoleculeType.RNA,
           Unicode.NU4,
           "nu4",
-          ImmutableQuadruplet.of(AtomName.C3p, AtomName.C4p, AtomName.O4p, AtomName.C1p),
-          ImmutableQuadruplet.of(0, 0, 0, 0))),
+          ImmutableQuadruple.of(AtomName.C3p, AtomName.C4p, AtomName.O4p, AtomName.C1p),
+          ImmutableQuadruple.of(0, 0, 0, 0))),
   ETA(
       ImmutableAtomBasedTorsionAngleType.builder()
           .moleculeType(MoleculeType.RNA)
           .shortDisplayName(Unicode.ETA)
           .exportName("eta")
-          .atoms(ImmutableQuadruplet.of(AtomName.C4p, AtomName.P, AtomName.C4p, AtomName.P))
-          .residueRule(ImmutableQuadruplet.of(-1, 0, 0, 1))
+          .atoms(ImmutableQuadruple.of(AtomName.C4p, AtomName.P, AtomName.C4p, AtomName.P))
+          .residueRule(ImmutableQuadruple.of(-1, 0, 0, 1))
           .isPseudoTorsion(true)
           .build()),
   THETA(
@@ -109,8 +109,8 @@ public enum NucleotideTorsionAngle implements MasterTorsionAngleType {
           .moleculeType(MoleculeType.RNA)
           .shortDisplayName(Unicode.THETA)
           .exportName("theta")
-          .atoms(ImmutableQuadruplet.of(AtomName.P, AtomName.C4p, AtomName.P, AtomName.C4p))
-          .residueRule(ImmutableQuadruplet.of(0, 0, 1, 1))
+          .atoms(ImmutableQuadruple.of(AtomName.P, AtomName.C4p, AtomName.P, AtomName.C4p))
+          .residueRule(ImmutableQuadruple.of(0, 0, 1, 1))
           .isPseudoTorsion(true)
           .build()),
   ETA_PRIM(
@@ -118,8 +118,8 @@ public enum NucleotideTorsionAngle implements MasterTorsionAngleType {
           .moleculeType(MoleculeType.RNA)
           .shortDisplayName(Unicode.ETA_PRIM)
           .exportName("eta-prim")
-          .atoms(ImmutableQuadruplet.of(AtomName.C1p, AtomName.P, AtomName.C1p, AtomName.P))
-          .residueRule(ImmutableQuadruplet.of(-1, 0, 0, 1))
+          .atoms(ImmutableQuadruple.of(AtomName.C1p, AtomName.P, AtomName.C1p, AtomName.P))
+          .residueRule(ImmutableQuadruple.of(-1, 0, 0, 1))
           .isPseudoTorsion(true)
           .build()),
   THETA_PRIM(
@@ -127,8 +127,8 @@ public enum NucleotideTorsionAngle implements MasterTorsionAngleType {
           .moleculeType(MoleculeType.RNA)
           .shortDisplayName(Unicode.THETA_PRIM)
           .exportName("theta-prim")
-          .atoms(ImmutableQuadruplet.of(AtomName.P, AtomName.C1p, AtomName.P, AtomName.C1p))
-          .residueRule(ImmutableQuadruplet.of(0, 0, 1, 1))
+          .atoms(ImmutableQuadruple.of(AtomName.P, AtomName.C1p, AtomName.P, AtomName.C1p))
+          .residueRule(ImmutableQuadruple.of(0, 0, 1, 1))
           .isPseudoTorsion(true)
           .build()),
   CHI(ChiRange.getProvider(), Chi.PURINE.angleType(), Chi.PYRIMIDINE.angleType()),
@@ -138,7 +138,7 @@ public enum NucleotideTorsionAngle implements MasterTorsionAngleType {
   private final List<TorsionAngleType> angleTypes;
 
   NucleotideTorsionAngle(final TorsionAngleType... angleTypes) {
-    this(TorsionRange.getProvider(), angleTypes);
+    this(TorsionRange.rangeProvider(), angleTypes);
   }
 
   NucleotideTorsionAngle(final RangeProvider rangeProvider, final TorsionAngleType... angleTypes) {

@@ -11,19 +11,16 @@ import java.io.Serializable;
  */
 @Value.Immutable
 public abstract class PdbNamedResidueIdentifier implements ChainNumberICode, Serializable {
-  /** @return The value of the {@code chainIdentifier} attribute */
   @Value.Parameter(order = 1)
   public abstract String chainIdentifier();
 
-  /** @return The value of the {@code residueNumber} attribute */
   @Value.Parameter(order = 2)
   public abstract int residueNumber();
 
-  /** @return The value of the {@code insertionCode} attribute */
   @Value.Parameter(order = 3)
   public abstract String insertionCode();
 
-  /** @return The value of the {@code oneLetterName} attribute */
+  /** @return The one letter name of the residue. */
   @Value.Parameter(order = 4)
   public abstract char oneLetterName();
 

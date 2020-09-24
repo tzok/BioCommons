@@ -10,10 +10,7 @@ import pl.poznan.put.torsion.range.RangeProvider;
 
 import java.util.Arrays;
 
-/**
- * A range description for chi torsion angle type as defined in Saenger's "Principles...".
- * http://jenalib.leibniz-fli.de/Piet/help/backbone.html
- */
+/** A range description for chi torsion angle type as defined in Saenger's "Principles...". */
 public enum ChiRange implements Range {
   HIGH_ANTI("high anti", -90.0, -15.0),
   SYN("syn", -15.0, 110.0),
