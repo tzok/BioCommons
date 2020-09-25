@@ -6,10 +6,10 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.Ct;
-import pl.poznan.put.structure.secondary.formats.DefaultDotBracket;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
+import pl.poznan.put.structure.formats.BpSeq;
+import pl.poznan.put.structure.formats.Ct;
+import pl.poznan.put.structure.formats.DefaultDotBracket;
+import pl.poznan.put.structure.formats.InvalidStructureException;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.io.IOException;

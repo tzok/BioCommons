@@ -1,11 +1,11 @@
 package pl.poznan.put;
 
 import org.junit.Test;
-import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.Converter;
-import pl.poznan.put.structure.secondary.formats.DefaultDotBracket;
-import pl.poznan.put.structure.secondary.formats.LevelByLevelConverter;
-import pl.poznan.put.structure.secondary.pseudoknots.elimination.MinGain;
+import pl.poznan.put.structure.formats.BpSeq;
+import pl.poznan.put.structure.formats.Converter;
+import pl.poznan.put.structure.formats.DefaultDotBracket;
+import pl.poznan.put.structure.formats.LevelByLevelConverter;
+import pl.poznan.put.structure.pseudoknots.elimination.MinGain;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import static org.hamcrest.CoreMatchers.is;

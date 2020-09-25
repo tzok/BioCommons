@@ -65,10 +65,10 @@ import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.rna.InteractionType;
-import pl.poznan.put.structure.secondary.BasePair;
-import pl.poznan.put.structure.secondary.HelixOrigin;
-import pl.poznan.put.structure.secondary.ModifiableQuantifiedBasePair;
-import pl.poznan.put.structure.secondary.QuantifiedBasePair;
+import pl.poznan.put.structure.BasePair;
+import pl.poznan.put.structure.HelixOrigin;
+import pl.poznan.put.structure.ModifiableQuantifiedBasePair;
+import pl.poznan.put.structure.QuantifiedBasePair;
 
 import javax.annotation.Nullable;
 import java.text.DateFormat;

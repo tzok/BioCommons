@@ -1,6 +1,6 @@
 package pl.poznan.put.notation;
 
-import pl.poznan.put.structure.secondary.BasePair;
+import pl.poznan.put.structure.BasePair;
 
 import java.util.Arrays;
 import java.util.Objects;

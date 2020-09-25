@@ -1,6 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
-import pl.poznan.put.structure.secondary.QuantifiedBasePair;
+import pl.poznan.put.structure.QuantifiedBasePair;
 
 import java.util.List;
 

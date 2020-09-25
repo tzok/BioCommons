@@ -3,7 +3,7 @@ package pl.poznan.put.notation;
 import org.junit.Test;
 import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
-import pl.poznan.put.structure.secondary.BasePair;
+import pl.poznan.put.structure.BasePair;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

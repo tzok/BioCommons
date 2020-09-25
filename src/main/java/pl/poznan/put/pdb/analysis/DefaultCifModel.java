@@ -8,7 +8,7 @@ import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.structure.secondary.QuantifiedBasePair;
+import pl.poznan.put.structure.QuantifiedBasePair;
 
 import java.util.List;
 import java.util.Set;

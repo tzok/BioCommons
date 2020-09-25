@@ -12,8 +12,8 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
-import pl.poznan.put.structure.secondary.BasePair;
-import pl.poznan.put.structure.secondary.QuantifiedBasePair;
+import pl.poznan.put.structure.BasePair;
+import pl.poznan.put.structure.QuantifiedBasePair;
 
 import java.io.File;
 import java.io.IOException;
