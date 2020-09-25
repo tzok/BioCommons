@@ -9,7 +9,6 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.rna.NucleotideTorsionAngle;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
-import pl.poznan.put.torsion.TorsionAnglesHelper;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,30 +45,44 @@ public class NucleotideTorsionAnglesTest {
     final PdbAtomLine a3 = PdbAtomLine.parse(NucleotideTorsionAnglesTest.ATOM_C5p);
     final PdbAtomLine a4 = PdbAtomLine.parse(NucleotideTorsionAnglesTest.ATOM_C4p);
 
-    final Vector3D v1 = TorsionAnglesHelper.atomDistance(a1, a2);
-    final Vector3D v2 = TorsionAnglesHelper.atomDistance(a2, a3);
-    final Vector3D v3 = TorsionAnglesHelper.atomDistance(a3, a4);
+    final Vector3D v1 = a2.toVector3D().subtract(a1.toVector3D());
+    final Vector3D v2 = a3.toVector3D().subtract(a2.toVector3D());
+    final Vector3D v3 = a4.toVector3D().subtract(a3.toVector3D());
 
-    assertThat(NucleotideTorsionAnglesTest.isBelowEpsilon(v1.distance(NucleotideTorsionAnglesTest.V1)), is(true));
-    assertThat(NucleotideTorsionAnglesTest.isBelowEpsilon(v2.distance(NucleotideTorsionAnglesTest.V2)), is(true));
-    assertThat(NucleotideTorsionAnglesTest.isBelowEpsilon(v3.distance(NucleotideTorsionAnglesTest.V3)), is(true));
+    assertThat(
+        NucleotideTorsionAnglesTest.isBelowEpsilon(v1.distance(NucleotideTorsionAnglesTest.V1)),
+        is(true));
+    assertThat(
+        NucleotideTorsionAnglesTest.isBelowEpsilon(v2.distance(NucleotideTorsionAnglesTest.V2)),
+        is(true));
+    assertThat(
+        NucleotideTorsionAnglesTest.isBelowEpsilon(v3.distance(NucleotideTorsionAnglesTest.V3)),
+        is(true));
 
     final Vector3D tmp1 = v1.crossProduct(v2);
     final Vector3D tmp2 = v2.crossProduct(v3);
     final Vector3D tmp3 = v1.scalarMultiply(v2.getNorm());
 
-    assertThat(NucleotideTorsionAnglesTest.isBelowEpsilon(tmp1.distance(NucleotideTorsionAnglesTest.TMP1)), is(true));
-    assertThat(NucleotideTorsionAnglesTest.isBelowEpsilon(tmp2.distance(NucleotideTorsionAnglesTest.TMP2)), is(true));
-    assertThat(NucleotideTorsionAnglesTest.isBelowEpsilon(tmp3.distance(NucleotideTorsionAnglesTest.TMP3)), is(true));
+    assertThat(
+        NucleotideTorsionAnglesTest.isBelowEpsilon(tmp1.distance(NucleotideTorsionAnglesTest.TMP1)),
+        is(true));
+    assertThat(
+        NucleotideTorsionAnglesTest.isBelowEpsilon(tmp2.distance(NucleotideTorsionAnglesTest.TMP2)),
+        is(true));
+    assertThat(
+        NucleotideTorsionAnglesTest.isBelowEpsilon(tmp3.distance(NucleotideTorsionAnglesTest.TMP3)),
+        is(true));
 
     final double torsionAngleRadians = FastMath.atan2(tmp3.dotProduct(tmp2), tmp1.dotProduct(tmp2));
     assertThat(
-        NucleotideTorsionAnglesTest.isBelowEpsilon(torsionAngleRadians - NucleotideTorsionAnglesTest.RADIANS),
+        NucleotideTorsionAnglesTest.isBelowEpsilon(
+            torsionAngleRadians - NucleotideTorsionAnglesTest.RADIANS),
         is(true));
 
     final double torsionAngleDegrees = Math.toDegrees(torsionAngleRadians);
     assertThat(
-        NucleotideTorsionAnglesTest.isBelowEpsilon(torsionAngleDegrees - NucleotideTorsionAnglesTest.DEGREES),
+        NucleotideTorsionAnglesTest.isBelowEpsilon(
+            torsionAngleDegrees - NucleotideTorsionAnglesTest.DEGREES),
         is(true));
 
     final AtomBasedTorsionAngleType beta =
@@ -78,10 +91,12 @@ public class NucleotideTorsionAnglesTest {
 
     assertThat(angleValue.value().isValid(), is(true));
     assertThat(
-        NucleotideTorsionAnglesTest.isBelowEpsilon(angleValue.value().radians() - NucleotideTorsionAnglesTest.RADIANS),
+        NucleotideTorsionAnglesTest.isBelowEpsilon(
+            angleValue.value().radians() - NucleotideTorsionAnglesTest.RADIANS),
         is(true));
     assertThat(
-        NucleotideTorsionAnglesTest.isBelowEpsilon(angleValue.value().degrees() - NucleotideTorsionAnglesTest.DEGREES),
+        NucleotideTorsionAnglesTest.isBelowEpsilon(
+            angleValue.value().degrees() - NucleotideTorsionAnglesTest.DEGREES),
         is(true));
   }
 }

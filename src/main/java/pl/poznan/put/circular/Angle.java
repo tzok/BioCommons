@@ -35,7 +35,30 @@ public abstract class Angle implements Comparable<Angle> {
   }
 
   /**
-   * Calculates torsion angle given four points.
+   * Calculates torsion angle given four points. Uses cos^-1 and a check for pseudovector.
+   *
+   * @param a1 Atom 1.
+   * @param a2 Atom 2.
+   * @param a3 Atom 3.
+   * @param a4 Atom 4.
+   * @return A torsion angle (rotation around vector B-C).
+   */
+  public static Angle torsionAngleByAcos(
+      final Vector3D a1, final Vector3D a2, final Vector3D a3, final Vector3D a4) {
+    final Vector3D d1 = a1.subtract(a2);
+    final Vector3D d2 = a2.subtract(a3);
+    final Vector3D d3 = a3.subtract(a4);
+
+    final Vector3D u1 = d1.crossProduct(d2);
+    final Vector3D u2 = d2.crossProduct(d3);
+
+    final double ctor = u1.dotProduct(u2) / FastMath.sqrt(u1.dotProduct(u1) * u2.dotProduct(u2));
+    final double torp = FastMath.acos(ctor < -1.0 ? -1.0 : Math.min(ctor, 1.0));
+    return ImmutableAngle.of(u1.dotProduct(u2.crossProduct(d2)) >= 0 ? torp : -torp);
+  }
+
+  /**
+   * Calculates torsion angle given four points. Uses atan2 method.
    *
    * @param coordA Coordinate of point A.
    * @param coordB Coordinate of point B.

@@ -3,6 +3,7 @@ package pl.poznan.put.torsion;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.MoleculeType;
@@ -23,9 +24,8 @@ public interface AtomBasedTorsionAngleType extends TorsionAngleType {
   MoleculeType moleculeType();
 
   /**
-   * Calculates the value of this torsion angle (see {@link
-   * TorsionAnglesHelper#calculateTorsionAngle(PdbAtomLine, PdbAtomLine, PdbAtomLine, PdbAtomLine)}
-   * and {@link pl.poznan.put.circular.Angle#torsionAngle(Vector3D, Vector3D, Vector3D, Vector3D)}).
+   * Calculates the value of this torsion angle (see {@link Angle#torsionAngle(Vector3D, Vector3D,
+   * Vector3D, Vector3D)}).
    *
    * @param residues The list of residues.
    * @param currentIndex The index of current residue.
@@ -35,18 +35,17 @@ public interface AtomBasedTorsionAngleType extends TorsionAngleType {
   default TorsionAngleValue calculate(final List<PdbResidue> residues, final int currentIndex) {
     final List<AtomPair> atomPairs = findAtomPairs(residues, currentIndex);
 
-    if (atomPairs.isEmpty()) {
+    if (atomPairs.size() != 3) {
       return ImmutableTorsionAngleValue.of(this, ImmutableAngle.of(Double.NaN));
     }
 
-    assert atomPairs.size() == 3;
     return ImmutableTorsionAngleValue.of(
         this,
-        TorsionAnglesHelper.calculateTorsionAngle(
-            atomPairs.get(0).leftAtom(),
-            atomPairs.get(1).leftAtom(),
-            atomPairs.get(2).leftAtom(),
-            atomPairs.get(2).rightAtom()));
+        Angle.torsionAngle(
+            atomPairs.get(0).leftAtom().toVector3D(),
+            atomPairs.get(1).leftAtom().toVector3D(),
+            atomPairs.get(2).leftAtom().toVector3D(),
+            atomPairs.get(2).rightAtom().toVector3D()));
   }
 
   @Override
@@ -99,7 +98,8 @@ public interface AtomBasedTorsionAngleType extends TorsionAngleType {
   default TorsionAngleValue calculate(
       final PdbAtomLine a1, final PdbAtomLine a2, final PdbAtomLine a3, final PdbAtomLine a4) {
     return ImmutableTorsionAngleValue.of(
-        this, TorsionAnglesHelper.calculateTorsionAngle(a1, a2, a3, a4));
+        this,
+        Angle.torsionAngle(a1.toVector3D(), a2.toVector3D(), a3.toVector3D(), a4.toVector3D()));
   }
 
   /**
