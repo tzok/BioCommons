@@ -1,6 +1,7 @@
 package pl.poznan.put.structure;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
@@ -65,7 +66,9 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     final PdbAtomLine n3 = uracil.findAtom(AtomName.N3);
     final double n1o2 = n1.distanceTo(o2);
     final double o6n3 = o6.distanceTo(n3);
-    return (n1o2 <= BasePair.GU_DISTANCE_N1_O2) && (o6n3 <= BasePair.GU_DISTANCE_O6_N3);
+    return (n1o2 <= BasePair.GU_DISTANCE_N1_O2)
+        && (o6n3 <= BasePair.GU_DISTANCE_O6_N3)
+        && BasePair.isFacingYR(uracil, guanine);
   }
 
   private static boolean isCanonicalAU(final PdbResidue adenine, final PdbResidue uracil) {
@@ -82,7 +85,9 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     final PdbAtomLine o4 = uracil.findAtom(AtomName.O4);
     final double n1n3 = n1.distanceTo(n3);
     final double n6o4 = n6.distanceTo(o4);
-    return (n1n3 <= BasePair.AU_DISTANCE_N1_N3) && (n6o4 <= BasePair.AU_DISTANCE_N6_O4);
+    return (n1n3 <= BasePair.AU_DISTANCE_N1_N3)
+        && (n6o4 <= BasePair.AU_DISTANCE_N6_O4)
+        && BasePair.isFacingYR(uracil, adenine);
   }
 
   private static boolean isCanonicalCG(final PdbResidue cytosine, final PdbResidue guanine) {
@@ -106,7 +111,27 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     final double n4o6 = n4.distanceTo(o6);
     return (n3n1 <= BasePair.CG_DISTANCE_N3_N1)
         && (o2n2 <= BasePair.CG_DISTANCE_O2_N2)
-        && (n4o6 <= BasePair.CG_DISTANCE_N4_O6);
+        && (n4o6 <= BasePair.CG_DISTANCE_N4_O6)
+        && BasePair.isFacingYR(cytosine, guanine);
+  }
+
+  private static boolean isFacingYR(final PdbResidue pyrimidine, final PdbResidue purine) {
+    if (Stream.of(AtomName.C6, AtomName.N3).anyMatch(atomName -> !pyrimidine.hasAtom(atomName))) {
+      return false;
+    }
+    if (Stream.of(AtomName.C8, AtomName.N1).anyMatch(atomName -> !purine.hasAtom(atomName))) {
+      return false;
+    }
+
+    final PdbAtomLine c6 = pyrimidine.findAtom(AtomName.C6);
+    final PdbAtomLine n3 = pyrimidine.findAtom(AtomName.N3);
+    final PdbAtomLine c8 = purine.findAtom(AtomName.C8);
+    final PdbAtomLine n1 = purine.findAtom(AtomName.N1);
+
+    final Vector3D v1 = n3.toVector3D().subtract(c6.toVector3D());
+    final Vector3D v2 = n1.toVector3D().subtract(c8.toVector3D());
+    final double dotProduct = v1.dotProduct(v2);
+    return dotProduct < 0.0;
   }
 
   public final PdbNamedResidueIdentifier getLeft() {
@@ -134,17 +159,17 @@ public class BasePair implements Serializable, Comparable<BasePair> {
   }
 
   @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
+  public final boolean equals(final Object obj) {
+    if (this == obj) {
       return true;
     }
-    if (o == null) {
+    if (obj == null) {
       return false;
     }
-    if (getClass() != o.getClass()) {
+    if (getClass() != obj.getClass()) {
       return false;
     }
-    final BasePair other = (BasePair) o;
+    final BasePair other = (BasePair) obj;
     return pair == null ? other.pair == null : Objects.equals(pair, other.pair);
   }
 
