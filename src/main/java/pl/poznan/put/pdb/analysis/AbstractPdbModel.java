@@ -62,9 +62,20 @@ public abstract class AbstractPdbModel implements PdbModel {
     final Stream<PdbResidue> missingResidueStream =
         missingResidues().stream().map(PdbRemark465Line::toResidue);
 
+    // maintain chain order from the input file
+    final List<String> order =
+        atoms().stream().map(PdbAtomLine::chainIdentifier).distinct().collect(Collectors.toList());
+
     // create a list of residues
+    // the comparator applies chain order, but within a chain it goes back to
+    // ChainNumberICode::compareTo in order to put missing residues in correct places
     return Stream.concat(existingResidueStream, missingResidueStream)
-        .sorted()
+        .sorted(
+            (t, t1) -> {
+              if (t.chainIdentifier().equals(t1.chainIdentifier())) return t.compareTo(t1);
+              return Integer.compare(
+                  order.indexOf(t.chainIdentifier()), order.indexOf(t1.chainIdentifier()));
+            })
         .collect(Collectors.toList());
   }
 
