@@ -2,73 +2,96 @@ package pl.poznan.put.structure.formats;
 
 import pl.poznan.put.structure.DotBracketSymbol;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/** An RNA structure encoded in dot-bracket format. */
 public interface DotBracket {
+  /** @return The sequence of nucleotides. */
   String sequence();
 
+  /** @return The sequence of dots and brackets representing paired and unpaired residues. */
   String structure();
 
+  /** @return The list of dot-bracket symbols. */
   List<DotBracketSymbol> symbols();
 
+  /** @return The list of strands. */
   List<Strand> strands();
 
+  /**
+   * Combines strands which share a base pair into a new dot-bracket instance and returns a list of
+   * those.
+   *
+   * @return The list of dot-bracket instances, each containing strands which only pair with each
+   *     other.
+   */
   List<DotBracket> combineStrands();
 
   /**
-   * Return *real* index of a dot-bracket symbol. The index can reflect PDB residue number or other
-   * data source.
+   * Returns the index of a dot-bracket symbol according to some external source like PDB numbering.
    *
-   * @param symbol Dot-bracket symbol for which a real index is sought.
+   * @param symbol Dot-bracket symbol for which the original index is sought.
    * @return An index which reflects the numbering in real structure (e.g. PDB).
    */
-  int getRealSymbolIndex(DotBracketSymbol symbol);
+  int originalIndex(DotBracketSymbol symbol);
 
+  /**
+   * @return A string representation of this dot-bracket, where every strand is written out
+   *     separately.
+   */
   default String toStringWithStrands() {
     return strands().stream().map(String::valueOf).collect(Collectors.joining("\n"));
   }
 
+  /** @return The number of nucleotides in this structure. */
   default int length() {
     return sequence().length();
   }
 
-  default boolean contains(final DotBracketSymbol symbol) {
-    return strands().stream().anyMatch(strand -> strand.symbols().contains(symbol));
-  }
-
-  default List<TerminalMissing> getTerminalMissing() {
+  /** @return The list of missing symbols at 5' and 3' ends of all strands. */
+  default List<TerminalMissing> missingTerminal() {
     return strands().stream()
         .flatMap(strand -> Stream.of(strand.missingBegin(), strand.missingEnd()))
         .collect(Collectors.toList());
   }
 
-  default List<DotBracketSymbol> getInternalMissing() {
+  /** @return The list of missing symbols which are not at 5' or 3' ends of any strand. */
+  default List<DotBracketSymbol> missingInternal() {
     // collect all missing from beginning and ends of strands
-    final Set<DotBracketSymbol> missingNonInternal =
-        strands().stream()
-            .flatMap(
-                strand ->
-                    Stream.concat(
-                        strand.missingBegin().symbols().stream(),
-                        strand.missingEnd().symbols().stream()))
+    final Set<DotBracketSymbol> missingTerminal =
+        missingTerminal().stream()
+            .map(TerminalMissing::symbols)
+            .flatMap(Collection::stream)
             .collect(Collectors.toSet());
 
     // get all missing symbols which are internal
     return strands().stream()
         .flatMap(strand -> strand.symbols().stream())
-        .filter(dotBracketSymbol -> !missingNonInternal.contains(dotBracketSymbol))
         .filter(DotBracketSymbol::isMissing)
+        .filter(dotBracketSymbol -> !missingTerminal.contains(dotBracketSymbol))
         .collect(Collectors.toList());
   }
 
-  default int getPseudoknotOrder() {
-    return strands().stream().map(Strand::pseudoknotOrder).max(Integer::compareTo).orElse(0);
+  /** @return The pseudoknot order of this structure. */
+  default int pseudoknotOrder() {
+    return symbols().stream()
+        .map(DotBracketSymbol::getOrder)
+        .max(Comparator.naturalOrder())
+        .orElse(0);
   }
 
-  default Strand getStrand(final DotBracketSymbol symbol) {
+  /**
+   * Finds a strand which contains the given symbol.
+   *
+   * @param symbol The symbol to look for.
+   * @return The strand containing the symbol.
+   */
+  default Strand findStrand(final DotBracketSymbol symbol) {
     return strands().stream()
         .filter(strand -> strand.symbols().contains(symbol))
         .findFirst()
@@ -77,7 +100,14 @@ public interface DotBracket {
                 new IllegalArgumentException("Failed to find strand containing symbol: " + symbol));
   }
 
-  default String getSequence(final boolean separateStrands) {
+  /**
+   * Creates a string representation of nucleotide sequence, where strands may be separated with
+   * ampersand {@code &amp;} or not.
+   *
+   * @param separateStrands If true, the result will contain ampersand between strands.
+   * @return The string representation of nucleotide sequence.
+   */
+  default String sequence(final boolean separateStrands) {
     final StringBuilder builder = new StringBuilder();
     for (final Strand strand : strands()) {
       builder.append(strand.sequence());
@@ -88,7 +118,14 @@ public interface DotBracket {
     return builder.toString();
   }
 
-  default String getStructure(final boolean separateStrands) {
+  /**
+   * Creates a string of dots and brackets which represents base pairing, where strands may be
+   * separated with ampersand {@code &amp;} or not.
+   *
+   * @param separateStrands If true, the result will contain ampersand between strands.
+   * @return The string representation of this structure.
+   */
+  default String structure(final boolean separateStrands) {
     final StringBuilder builder = new StringBuilder();
     for (final Strand strand : strands()) {
       builder.append(strand.structure());

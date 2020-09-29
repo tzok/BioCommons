@@ -41,7 +41,7 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
   }
 
   @Value.Parameter(order = 1)
-  public abstract DefaultDotBracket dotBracket();
+  public abstract DotBracket dotBracket();
 
   @Value.Parameter(order = 2)
   public abstract PdbModel model();
@@ -88,17 +88,17 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
   }
 
   @Override
-  public final int getRealSymbolIndex(final DotBracketSymbol symbol) {
+  public final int originalIndex(final DotBracketSymbol symbol) {
     return symbolToResidue().get(symbol).residueNumber();
   }
 
   @Override
-  public final PdbNamedResidueIdentifier getResidueIdentifier(final DotBracketSymbol symbol) {
+  public final PdbNamedResidueIdentifier identifier(final DotBracketSymbol symbol) {
     return symbolToResidue().get(symbol);
   }
 
   @Override
-  public final DotBracketSymbol getSymbol(final PdbNamedResidueIdentifier residueIdentifier) {
+  public final DotBracketSymbol symbol(final PdbNamedResidueIdentifier residueIdentifier) {
     return residueToSymbol().get(residueIdentifier);
   }
 
@@ -108,8 +108,7 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
   }
 
   @Override
-  public final List<CombinedStrandFromPdb> combineStrands(
-      final List<ClassifiedBasePair> availableNonCanonical) {
+  public final List<DotBracketFromPdb> combineStrands(final List<ClassifiedBasePair> nonCanonical) {
     // map containing links between strands
     final Map<Strand, Set<Strand>> strandMap = new LinkedHashMap<>();
 
@@ -134,7 +133,7 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
     }
 
     // link strands connected by non-canonical base pairs
-    for (final ClassifiedBasePair nonCanonicalPair : availableNonCanonical) {
+    for (final ClassifiedBasePair nonCanonicalPair : nonCanonical) {
       final DotBracketSymbol leftSymbol =
           residueToSymbol().get(nonCanonicalPair.basePair().getLeft());
       final DotBracketSymbol rightSymbol =
@@ -161,7 +160,7 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
     }
 
     // prepare the final result
-    final List<CombinedStrandFromPdb> result = new ArrayList<>(components.size());
+    final List<DotBracketFromPdb> result = new ArrayList<>(components.size());
     for (final Set<Strand> strandCluster : components) {
       final List<Strand> combinedStrands = new ArrayList<>(strandCluster);
       combinedStrands.sort(Comparator.comparingInt(strands()::indexOf));
@@ -223,9 +222,9 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
 
     for (final DotBracketSymbol symbol : symbols()) {
       if (symbol.isPairing()) {
-        final PdbNamedResidueIdentifier left = getResidueIdentifier(symbol);
+        final PdbNamedResidueIdentifier left = identifier(symbol);
         final PdbNamedResidueIdentifier right =
-            getResidueIdentifier(
+            identifier(
                 symbol
                     .pair()
                     .orElseThrow(
@@ -244,9 +243,9 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
 
         if (!cbp.isCanonical()) {
           final ModifiableDotBracketSymbol left =
-              (ModifiableDotBracketSymbol) getSymbol(basePair.getLeft());
+              (ModifiableDotBracketSymbol) symbol(basePair.getLeft());
           final ModifiableDotBracketSymbol right =
-              (ModifiableDotBracketSymbol) getSymbol(basePair.getRight());
+              (ModifiableDotBracketSymbol) symbol(basePair.getRight());
           left.setIsNonCanonical(true);
           right.setIsNonCanonical(true);
         }

@@ -1,11 +1,11 @@
 package pl.poznan.put.structure.formats;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.immutables.value.Value;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pl.poznan.put.pdb.PdbParsingException;
+import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.SingleTypedResidueCollection;
@@ -14,208 +14,163 @@ import pl.poznan.put.structure.pseudoknots.Region;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public final class Ct implements Serializable {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Ct.class);
-  private static final boolean FIX_LAST_ENTRY = true;
-  private static boolean printComments = true;
-  private final SortedSet<ExtendedEntry> entries;
-
-  private Ct(final List<ExtendedEntry> entries) {
-    super();
-    this.entries = new TreeSet<>(entries);
-    validate();
-  }
-
+/** An RNA secondary structure encoded in CT (connect) format. */
+@Value.Immutable
+public abstract class Ct implements Serializable {
+  /**
+   * Parses string into an instance of this class.
+   *
+   * @param data The string with CT data.
+   * @return An instance of this class with parsed data.
+   */
   public static Ct fromString(final String data) {
-    final List<ExtendedEntry> entries = new ArrayList<>();
-    boolean firstLine = true;
-
-    for (String line : data.split("\n")) {
-      line = line.trim();
-
-      final int hash = line.indexOf('#');
-      if (hash != -1) {
-        line = line.substring(0, hash);
-      }
-
-      if (line.isEmpty()) {
-        continue;
-      }
-
-      final String[] split = line.split("\\s+");
-
-      if (firstLine) {
-        try {
-          final int lineCount = Integer.parseInt(split[0]);
-          if (lineCount < 0) {
-            throw new InvalidStructureException(
-                "Invalid CT format. Line count < 0 detected: " + line);
-          }
-        } catch (final NumberFormatException e) {
-          throw new InvalidStructureException(
-              "Invalid CT format. Failed to parse line count: " + line, e);
-        }
-        firstLine = false;
-        continue;
-      }
-
-      if (split.length != 6) {
-        throw new InvalidStructureException(
-            "Invalid CT format. Six columns not found in line: " + line);
-      }
-
-      final int index;
-      final int pair;
-      final int before;
-      final int after;
-      final int original;
-      final char seq;
-
-      try {
-        index = Integer.parseInt(split[0]);
-        seq = split[1].charAt(0);
-        before = Integer.parseInt(split[2]);
-        after = Integer.parseInt(split[3]);
-        pair = Integer.parseInt(split[4]);
-        original = Integer.parseInt(split[5]);
-      } catch (final NumberFormatException e) {
-        throw new InvalidStructureException(
-            "Invalid CT format. Failed to parse column values: " + line, e);
-      }
-
-      entries.add(ImmutableExtendedEntry.of(index, pair, before, after, original, seq));
-    }
-
-    return new Ct(entries);
+    final List<ExtendedEntry> entries =
+        Arrays.stream(data.split("\n"))
+            .map(String::trim)
+            .map(line -> line.indexOf('#') == -1 ? line : line.substring(0, line.indexOf('#')))
+            .filter(StringUtils::isNotBlank)
+            .skip(1L)
+            .map(ExtendedEntry::fromString)
+            .collect(Collectors.toList());
+    return ImmutableCt.of(entries);
   }
 
+  /**
+   * Converts RNA secondary structure in BPSEQ format to CT format.
+   *
+   * @param bpSeq The data in BPSEQ format.
+   * @return An instance of this class with converted data.
+   */
   public static Ct fromBpSeq(final BpSeq bpSeq) {
-    final List<ExtendedEntry> ctEntries = new ArrayList<>();
-    final SortedSet<BpSeq.Entry> entries = bpSeq.entries();
-    final int size = entries.size();
-
-    for (final BpSeq.Entry entry : entries) {
-      final int index = entry.index();
-      final int pair = entry.pair();
-      final char seq = entry.seq();
-      final String comment = entry.comment();
-      ctEntries.add(
-          ImmutableExtendedEntry.builder()
-              .index(index)
-              .pair(pair)
-              .before(index - 1)
-              .after((index + 1) % (size + 1))
-              .original(index)
-              .seq(seq)
-              .comment(comment)
-              .build());
-    }
-
-    return new Ct(ctEntries);
+    final List<ExtendedEntry> entries =
+        bpSeq.entries().stream().map(ExtendedEntry::fromEntry).collect(Collectors.toList());
+    return ImmutableCt.of(entries);
   }
 
+  /**
+   * Converts RNA secondary structure in BPSEQ format to CT format, taking into account information
+   * from 3D coordinates (residue numbering, chain sizes).
+   *
+   * @param bpSeq The data in BPSEQ format.
+   * @param model The 3D data.
+   * @return An instance of this class with converted data.
+   */
   public static Ct fromBpSeqAndPdbModel(final BpSeq bpSeq, final PdbModel model) {
-    final PdbModel rna;
-    try {
-      rna = model.filteredNewInstance(MoleculeType.RNA);
-    } catch (final PdbParsingException e) {
-      throw new InvalidStructureException("Failed to filter RNA chains", e);
+    final List<PdbResidue> residues =
+        model.chains().stream()
+            .filter(chain -> chain.moleculeType() == MoleculeType.RNA)
+            .map(PdbChain::residues)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+    final List<BpSeq.Entry> entries = new ArrayList<>(bpSeq.entries());
+
+    if (residues.size() != entries.size()) {
+      throw new IllegalArgumentException(
+          String.format(
+              "Failed to create CT from BPSEQ and PDB data, because there are %d BPSEQ entries and %d residues",
+              entries.size(), residues.size()));
     }
 
-    final List<ExtendedEntry> ctEntries = new ArrayList<>();
-    final List<PdbResidue> residues = rna.residues();
-    final SortedSet<BpSeq.Entry> entries = bpSeq.entries();
-    int i = 0;
-
-    for (final BpSeq.Entry entry : entries) {
-      final PdbResidue residue = residues.get(i);
-      final SingleTypedResidueCollection chain = rna.findChainContainingResidue(residue);
-      final List<PdbResidue> chainResidues = chain.residues();
-
-      final int index = entry.index();
-      final int pair = entry.pair();
-      final int before = chainResidues.indexOf(residue);
-      final int after = (before + 2) % (chainResidues.size() + 1);
-      final int original = residue.residueNumber();
-      final char seq = entry.seq();
-      final String comment = entry.comment();
-      ctEntries.add(
-          ImmutableExtendedEntry.builder()
-              .index(index)
-              .pair(pair)
-              .before(before)
-              .after(after)
-              .original(original)
-              .seq(seq)
-              .comment(comment)
-              .build());
-
-      i += 1;
-    }
-
-    return new Ct(ctEntries);
+    final List<ExtendedEntry> extendedEntries =
+        IntStream.range(0, entries.size())
+            .mapToObj(
+                i -> ExtendedEntry.fromEntryAndPdbResidue(entries.get(i), residues.get(i), model))
+            .collect(Collectors.toList());
+    return ImmutableCt.of(extendedEntries);
   }
 
+  /**
+   * Converts RNA secondary structure in dot-bracket format to CT format.
+   *
+   * @param dotBracket The data in dot-bracket format.
+   * @return An instance of this class with converted data.
+   */
   public static Ct fromDotBracket(final DotBracket dotBracket) {
-    final List<ExtendedEntry> entries = new ArrayList<>();
+    final List<ExtendedEntry> entries =
+        dotBracket.strands().stream()
+            .map(Strand::symbols)
+            .flatMap(
+                symbols ->
+                    IntStream.range(0, symbols.size())
+                        .mapToObj(i -> ExtendedEntry.fromDotBracketSymbol(dotBracket, symbols, i)))
+            .collect(Collectors.toList());
+    return ImmutableCt.of(entries);
+  }
 
-    for (final Strand strand : dotBracket.strands()) {
-      final List<DotBracketSymbol> symbols = strand.symbols();
+  /** @return The list of CT entries. */
+  @Value.Parameter(order = 1)
+  @Value.NaturalOrder
+  public abstract SortedSet<ExtendedEntry> entries();
 
-      for (int i = 0, symbolsSize = symbols.size(); i < symbolsSize; i++) {
-        final DotBracketSymbol symbol = symbols.get(i);
-        final Optional<DotBracketSymbol> pair = symbol.pair();
+  /** @return The number of strands. */
+  public final int strandCount() {
+    return (int) entries().stream().filter(entry -> entry.after() == 0).count();
+  }
 
-        final int index = symbol.index() + 1;
-        final int pairIndex =
-            pair.map(dotBracketSymbol -> (dotBracketSymbol.index() + 1)).orElse(0);
-        final int after = (i == (symbolsSize - 1)) ? 0 : (i + 2);
-        final int original = dotBracket.getRealSymbolIndex(symbol);
-        final char seq = symbol.sequence();
+  /**
+   * Creates a copy of this instance, but with the given pair removed.
+   *
+   * @param entry The pair to remove.
+   * @return A copy of this instance without the given pair.
+   */
+  public final Ct withoutPair(final ExtendedEntry entry) {
+    if (!entry.isPaired()) {
+      return ImmutableCt.copyOf(this);
+    }
 
-        entries.add(ImmutableExtendedEntry.of(index, pairIndex, i, after, original, seq));
+    final SortedSet<ExtendedEntry> entrySet = new TreeSet<>(entries());
+    entrySet.remove(entry);
+    entrySet.add(ImmutableExtendedEntry.copyOf(entry).withPair(0));
+
+    final Optional<ExtendedEntry> paired =
+        entries().stream().filter(e -> e.pair() == entry.index()).findFirst();
+
+    if (paired.isPresent()) {
+      entrySet.remove(paired.get());
+      entrySet.add(ImmutableExtendedEntry.copyOf(paired.get()).withPair(0));
+    }
+
+    return ImmutableCt.of(entrySet);
+  }
+
+  /**
+   * Finds all isolated base pairs and creates a copy of this instance without them.
+   *
+   * @return A copy of this instance, but with all isolated base pairs removed.
+   */
+  public final Ct withoutIsolatedPairs() {
+    Ct copy = ImmutableCt.copyOf(this);
+    for (final Region region : Region.createRegions(BpSeq.fromCt(this))) {
+      if (region.getLength() == 1) {
+        final Optional<ExtendedEntry> entry =
+            entries().stream()
+                .filter(e -> e.index() == region.getEntries().get(0).index())
+                .findFirst();
+        if (entry.isPresent()) {
+          copy = copy.withoutPair(entry.get());
+        }
       }
     }
-
-    return new Ct(entries);
-  }
-
-  public static void setPrintComments(final boolean printComments) {
-    Ct.printComments = printComments;
-  }
-
-  public int getStrandCount() {
-    return (int) entries.stream().filter(entry -> entry.after() == 0).count();
-  }
-
-  public Iterable<ExtendedEntry> getEntries() {
-    return Collections.unmodifiableSortedSet(entries);
-  }
-
-  public void removeIsolatedPairs() {
-    final BpSeq bpSeq = BpSeq.fromCt(this);
-    final List<Region> regions = Region.createRegions(bpSeq);
-    regions.stream()
-        .filter(region -> region.getLength() == 1)
-        .mapToInt(region -> region.getEntries().get(0).index())
-        .forEach(this::removePair);
+    return copy;
   }
 
   @Override
-  public String toString() {
+  public final String toString() {
     final StringBuilder builder = new StringBuilder();
-    builder.append(entries.size());
+    builder.append(entries().size());
     builder.append('\n');
 
-    for (final ExtendedEntry e : entries) {
+    for (final ExtendedEntry e : entries()) {
       builder.append(e);
       builder.append('\n');
     }
@@ -223,156 +178,228 @@ public final class Ct implements Serializable {
     return builder.toString();
   }
 
-  /*
-   * Check if all pairs match.
-   */
-  private void validate() {
-    if (Ct.LOGGER.isTraceEnabled()) {
-      Ct.LOGGER.trace("CT to be validated:\n{}", this);
-    }
+  @Value.Check
+  protected Ct validate() {
+    final List<ExtendedEntry> list = new ArrayList<>(entries());
 
-    final Map<Integer, Integer> map = new HashMap<>();
-
-    for (final ExtendedEntry e : entries) {
-      map.put(e.index(), e.pair());
-    }
-
-    int previous = 0;
-
-    for (final ExtendedEntry e : entries) {
-      if ((e.index() - previous) != 1) {
-        throw new InvalidStructureException(
-            "Inconsistent numbering in CT format: previous=" + previous + ", current=" + e.index());
-      }
-
-      previous = e.index();
-      final int pair = map.get(e.index());
-
-      if (pair != 0) {
-        if (!map.containsKey(pair)) {
-          throw new InvalidStructureException(
-              "Inconsistency in CT format: (" + e.index() + " -> " + pair + ')');
-        }
-
-        if (map.get(pair) != e.index()) {
-          throw new InvalidStructureException(
-              String.format(
-                  "Inconsistency in CT format: (%d -> %d) and (%d -> %d)",
-                  e.index(), pair, pair, map.get(pair)));
-        }
-      }
-    }
-
-    // previous == maximum index
-
-    for (final ExtendedEntry e : entries) {
-      if ((e.before() < 0) || (e.before() >= previous)) {
-        throw new InvalidStructureException(
-            "Inconsistency in CT format. Third column has invalid" + " value in entry: " + e);
-      }
-
-      if ((e.after() == 1) || (e.after() < 0) || (e.after() > (previous + 1))) {
-        throw new InvalidStructureException(
-            "Inconsistency in CT format. Fourth column has " + "invalid value in entry: " + e);
-      }
-    }
-
-    /*
-     * Check if strands' ends are correct
-     */
-    boolean expectNewStrand = true;
-
-    for (final ExtendedEntry e : entries) {
-      if ((e.before() != 0) == expectNewStrand) {
-        throw new InvalidStructureException(
-            "Inconsistency in CT format. The field 'before' is "
-                + "non-zero for the first entry in a strand: "
-                + e);
-      }
-
-      expectNewStrand = e.after() == 0;
-    }
-
-    final ExtendedEntry lastEntry = entries.last();
-
+    // fix the last entry if required
+    final ExtendedEntry lastEntry = list.get(list.size() - 1);
     if (lastEntry.after() != 0) {
-      if (Ct.FIX_LAST_ENTRY) {
-        entries.remove(lastEntry);
-        entries.add(
-            ImmutableExtendedEntry.of(
-                lastEntry.index(),
-                lastEntry.pair(),
-                lastEntry.before(),
-                0,
-                lastEntry.original(),
-                lastEntry.seq()));
+      list.remove(list.size() - 1);
+      list.add(ImmutableExtendedEntry.copyOf(lastEntry).withAfter(0));
+      return ImmutableCt.of(list);
+    }
+
+    // check on the first entry
+    Validate.isTrue(
+        list.get(0).before() == 0,
+        "Invalid `before` column (expected value is 0 for the first entry):%n  %s",
+        list.get(0));
+
+    for (int i = 1; i < list.size(); i++) {
+      final ExtendedEntry previous = list.get(i - 1);
+      final ExtendedEntry current = list.get(i);
+
+      // sequential check on `index` column
+      Validate.isTrue(
+          current.index() - previous.index() == 1,
+          "Invalid `index` column (expected next value than its predecessor):%n  %s%n  %s",
+          previous,
+          current);
+
+      if (current.before() != 0) {
+        // sequential check on `before` column
+        Validate.isTrue(
+            current.before() - previous.before() == 1,
+            "Invalid `before` column (expected next value than its predecessor):%n  %s%n  %s",
+            previous,
+            current);
+      }
+
+      if (previous.after() == 0) {
+        // check on `before` column for new strands
+        Validate.isTrue(
+            current.before() == 0,
+            "Invalid `before` column (expected 0 for new strand):%n  %s%n  %s",
+            previous,
+            current);
+        // check on `after` column for new strands
+        Validate.isTrue(
+            current.after() == 0 || current.after() == 2,
+            "Invalid `after` column (expected 2 for new strand or 0 for a 1nt long strand):%n  %s%n  %s",
+            previous,
+            current);
       } else {
-        throw new InvalidStructureException(
-            "The field 'after' in the last entry is non-zero: " + lastEntry);
+        // sequential check on `after` column
+        Validate.isTrue(
+            current.after() == 0 || current.after() - previous.after() == 1,
+            "Invalid `after` column (expected next value than its predecessor):%n  %s%n  %s",
+            previous,
+            current);
       }
     }
-  }
 
-  private void removePair(final int index) {
-    final Optional<ExtendedEntry> entry =
-        entries.stream().filter(e -> e.index() == index).findFirst();
-    final Optional<ExtendedEntry> paired =
-        entries.stream().filter(e -> e.pair() == index).findFirst();
+    final Map<Integer, Integer> map =
+        entries().stream().collect(Collectors.toMap(ExtendedEntry::index, ExtendedEntry::pair));
+    final int lastIndex = lastEntry.index();
 
-    if (entry.isPresent()) {
-      final ExtendedEntry o = entry.get();
-      entries.remove(o);
-      entries.add(
-          ImmutableExtendedEntry.builder()
-              .index(o.index())
-              .pair(0)
-              .before(o.before())
-              .after(o.after())
-              .original(o.original())
-              .seq(o.seq())
-              .comment(o.comment())
-              .build());
+    for (final ExtendedEntry entry : list) {
+      if (entry.pair() != 0) {
+        // checks on `pair` column
+        Validate.isTrue(map.containsKey(entry.index()), "Missing mapping for:%n  %s", entry);
+        Validate.isTrue(map.containsKey(entry.pair()), "Missing mapping for:%n  %s", entry);
+        Validate.isTrue(
+            map.get(entry.index()) == entry.pair(),
+            "Incorrect mapping:%n  %s%n  mapping[entry.index]=%d",
+            entry,
+            map.get(entry.index()));
+        Validate.isTrue(
+            map.get(entry.pair()) == entry.index(),
+            "Incorrect mapping:%n  %s%n  mapping[entry.pair]=%d",
+            entry,
+            map.get(entry.pair()));
+      }
+
+      // checks on `before` column
+      Validate.isTrue(
+          entry.before() >= 0, "Invalid `before` column (expected positive value):%n  %s", entry);
+      Validate.isTrue(
+          entry.before() < lastIndex,
+          "Invalid `before` column (expected value less than %d):%n  %s",
+          lastIndex,
+          entry);
+
+      // checks on `after` columns
+      Validate.isTrue(
+          entry.after() == 0 || entry.after() >= 2,
+          "Invalid `after` column (expected value at least 2):%n  %s",
+          entry);
+      Validate.isTrue(
+          entry.after() <= lastIndex,
+          "Invalid `after` column (expected value at most %d):%n  %s",
+          lastIndex,
+          entry);
     }
 
-    if (paired.isPresent()) {
-      final ExtendedEntry o = paired.get();
-      entries.remove(o);
-      entries.add(
-          ImmutableExtendedEntry.builder()
-              .index(o.index())
-              .pair(0)
-              .before(o.before())
-              .after(o.after())
-              .original(o.original())
-              .seq(o.seq())
-              .comment(o.comment())
-              .build());
-    }
+    return this;
   }
 
+  /** A single entry in the CT formatted structure. */
   @Value.Immutable
   public abstract static class ExtendedEntry implements Comparable<ExtendedEntry> {
+    /**
+     * Creates an instance from a string in format: int string int int int int.
+     *
+     * @param line A line of text formatted as a CT content line.
+     * @return An instance of this class.
+     */
+    public static ExtendedEntry fromString(final String line) {
+      final String[] split = StringUtils.split(line);
+      if (split.length != 6) {
+        throw new IllegalArgumentException("Line does not conform to CT format: " + line);
+      }
+      try {
+        final int index = Integer.parseInt(split[0]);
+        final char seq = split[1].charAt(0);
+        final int before = Integer.parseInt(split[2]);
+        final int after = Integer.parseInt(split[3]);
+        final int pair = Integer.parseInt(split[4]);
+        final int original = Integer.parseInt(split[5]);
+        return ImmutableExtendedEntry.of(index, seq, before, after, pair, original);
+      } catch (final NumberFormatException e) {
+        throw new IllegalArgumentException(
+            "Invalid CT format. Failed to parse column values: " + line, e);
+      }
+    }
+
+    /**
+     * Converts a BPSEQ entry into an instance of this class.
+     *
+     * @param entry A BPSEQ entry to convert.
+     * @return An instance of this class.
+     */
+    public static ExtendedEntry fromEntry(final BpSeq.Entry entry) {
+      return ImmutableExtendedEntry.of(
+          entry.index(),
+          entry.seq(),
+          entry.index() - 1,
+          entry.index() + 1,
+          entry.pair(),
+          entry.index());
+    }
+
+    /**
+     * Converts a BPSEQ entry into an instance of this class using information from a parsed 3D
+     * data.
+     *
+     * @param entry A BPSEQ entry to convert.
+     * @param residue A PDB residue mapped to the BPSEQ entry.
+     * @param model The PDB model that contains the residue.
+     * @return An instance of this class.
+     */
+    public static ExtendedEntry fromEntryAndPdbResidue(
+        final BpSeq.Entry entry, final ChainNumberICode residue, final PdbModel model) {
+      final SingleTypedResidueCollection chain = model.findChainContainingResidue(residue);
+      final int before = chain.indexOf(residue);
+      final int after = (before + 2) % (chain.residues().size() + 1);
+      return ImmutableExtendedEntry.of(
+              entry.index(), entry.seq(), before, after, entry.pair(), residue.residueNumber())
+          .withComment(entry.comment());
+    }
+
+    /**
+     * Converts a dot-bracket symbol into an instance of this class.
+     *
+     * @param dotBracket The whole dot-bracket structure.
+     * @param symbols The list of symbols in the current strand.
+     * @param i The index of the current symbol.
+     * @return An instance of this class.
+     */
+    public static ExtendedEntry fromDotBracketSymbol(
+        final DotBracket dotBracket, final List<DotBracketSymbol> symbols, final int i) {
+      final DotBracketSymbol symbol = symbols.get(i);
+      return ImmutableExtendedEntry.of(
+          symbol.index() + 1,
+          symbol.sequence(),
+          i,
+          i == symbols.size() - 1 ? 0 : i + 2,
+          symbol.pair().map(pair -> pair.index() + 1).orElse(0),
+          dotBracket.originalIndex(symbol));
+    }
+
+    /** @return The value of `index` column. */
     @Value.Parameter(order = 1)
     public abstract int index();
 
+    /** @return The value of `seq` column. */
     @Value.Parameter(order = 2)
-    public abstract int pair();
+    public abstract char seq();
 
+    /** @return The value of `before` column. */
     @Value.Parameter(order = 3)
     public abstract int before();
 
+    /** @return The value of `after` column. */
     @Value.Parameter(order = 4)
     public abstract int after();
 
+    /** @return The value of `pair` column. */
     @Value.Parameter(order = 5)
+    public abstract int pair();
+
+    /** @return The value of `original` column. */
+    @Value.Parameter(order = 6)
     public abstract int original();
 
-    @Value.Parameter(order = 6)
-    public abstract char seq();
-
+    /** @return An optional comment. */
     @Value.Default
     public String comment() {
       return "";
+    }
+
+    /** @return True if `pair` column is non-zero. */
+    public boolean isPaired() {
+      return pair() != 0;
     }
 
     @Override
@@ -389,7 +416,7 @@ public final class Ct implements Serializable {
       builder.append(pair());
       builder.append(' ');
       builder.append(original());
-      if (Ct.printComments && !StringUtils.isBlank(comment())) {
+      if (!StringUtils.isBlank(comment())) {
         builder.append(" # ");
         builder.append(comment());
       }

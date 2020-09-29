@@ -66,7 +66,7 @@ public interface Strand {
         .noneMatch(
             symbol ->
                 symbol.isPairing()
-                    && symbols.contains(symbol.pair().orElseThrow(InvalidStructureException::new)));
+                    && symbols.contains(symbol.pair().orElseThrow(IllegalArgumentException::new)));
   }
 
   default String sequenceRY() {

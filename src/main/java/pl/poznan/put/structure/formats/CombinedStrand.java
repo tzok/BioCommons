@@ -12,25 +12,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/** A dot-bracket encoded structure made from combining one or more strands. */
 @Value.Immutable
 public abstract class CombinedStrand implements DotBracket {
+  /** @return The list of input strands. */
   @Value.Parameter(order = 1)
   protected abstract List<Strand> inputStrands();
 
   @Override
   public final String toString() {
     final String builder = strands().stream().map(Strand::name).collect(Collectors.joining());
-    return ">strand_" + builder + '\n' + getSequence(false) + '\n' + getStructure(false);
+    return ">strand_" + builder + '\n' + sequence(false) + '\n' + structure(false);
   }
 
   @Override
-  public String sequence() {
-    return getSequence(false);
+  public final String sequence() {
+    return sequence(false);
   }
 
   @Override
-  public String structure() {
-    return getStructure(false);
+  public final String structure() {
+    return structure(false);
   }
 
   @Value.Lazy
@@ -107,34 +109,7 @@ public abstract class CombinedStrand implements DotBracket {
   }
 
   @Override
-  public int getRealSymbolIndex(final DotBracketSymbol symbol) {
+  public final int originalIndex(final DotBracketSymbol symbol) {
     return symbol.index() + 1;
-  }
-
-  /**
-   * Check if the strand is invalid i.e. if it contains ONLY dots and minuses (no base-pairs).
-   *
-   * @return True if the strand contains only dots or minuses.
-   */
-  public final boolean isInvalid() {
-    for (final Strand strand : strands()) {
-      for (final char c : strand.structure().toCharArray()) {
-        if ((c != '.') && (c != '-')) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  public final int indexOfSymbol(final DotBracketSymbol symbol) {
-    int baseIndex = 0;
-    for (final Strand strand : strands()) {
-      if (strand.symbols().contains(symbol)) {
-        return baseIndex + strand.symbols().indexOf(symbol);
-      }
-      baseIndex += strand.length();
-    }
-    throw new IllegalArgumentException("Failed to find symbol " + symbol + " in strands:\n" + this);
   }
 }

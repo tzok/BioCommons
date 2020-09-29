@@ -45,9 +45,9 @@ public abstract class StrandView implements Strand {
     if (parent() instanceof DefaultDotBracketFromPdb) {
       final DefaultDotBracketFromPdb fromPdb = (DefaultDotBracketFromPdb) parent();
       final PdbNamedResidueIdentifier fromIdentifier =
-          fromPdb.getResidueIdentifier(fromPdb.symbols().get(begin()));
+          fromPdb.identifier(fromPdb.symbols().get(begin()));
       final PdbNamedResidueIdentifier toIdentifier =
-          fromPdb.getResidueIdentifier(fromPdb.symbols().get(end() - 1));
+          fromPdb.identifier(fromPdb.symbols().get(end() - 1));
 
       return String.format(
           "%s %s %s %s %s", fromIdentifier, toIdentifier, sequence(), structure(), sequenceRY());

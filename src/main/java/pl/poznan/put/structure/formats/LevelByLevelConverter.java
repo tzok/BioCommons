@@ -45,7 +45,7 @@ public class LevelByLevelConverter implements Converter {
     Optional<State> current = state.parent();
 
     while (current.isPresent()) {
-      for (final BpSeq.Entry pairs : current.get().bpSeq().getPaired()) {
+      for (final BpSeq.Entry pairs : current.get().bpSeq().paired()) {
         final int i = pairs.index();
         final int j = pairs.pair();
 
@@ -72,7 +72,7 @@ public class LevelByLevelConverter implements Converter {
 
     Collections.sort(states);
     final String structure = LevelByLevelConverter.traceback(states.get(0));
-    return ImmutableDefaultDotBracket.of(bpSeq.getSequence(), structure);
+    return ImmutableDefaultDotBracket.of(bpSeq.sequence(), structure);
   }
 
   private List<State> processStates(final Collection<State> states) {
@@ -103,7 +103,7 @@ public class LevelByLevelConverter implements Converter {
 
     @Value.Lazy
     public int score() {
-      return bpSeq().getPaired().size();
+      return bpSeq().paired().size();
     }
 
     @Override

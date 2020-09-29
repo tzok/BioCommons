@@ -20,7 +20,7 @@ public class CombinedStrandTest {
         ImmutableCombinedStrand.of(
             Collections.singletonList(
                 ImmutableStrandView.of("", dotBracket, 0, dotBracket.length())));
-    final List<DotBracketSymbol> internalMissing = combinedStrand.getInternalMissing();
+    final List<DotBracketSymbol> internalMissing = combinedStrand.missingInternal();
     assertThat(internalMissing.size(), is(6));
   }
 
@@ -42,15 +42,15 @@ public class CombinedStrandTest {
     // each strand has 0 internal missing residues
     final CombinedStrand combinedFirst =
         ImmutableCombinedStrand.of(Collections.singletonList(strandFirst));
-    assertThat(combinedFirst.getInternalMissing().size(), is(0));
+    assertThat(combinedFirst.missingInternal().size(), is(0));
     final CombinedStrand combinedSecond =
         ImmutableCombinedStrand.of(Collections.singletonList(strandSecond));
-    assertThat(combinedSecond.getInternalMissing().size(), is(0));
+    assertThat(combinedSecond.missingInternal().size(), is(0));
 
     // combined, the strands still have 0 internal missing residues, even though they form ".--."
     // structure
     final CombinedStrand combinedBoth =
         ImmutableCombinedStrand.of(Arrays.asList(strandFirst, strandSecond));
-    assertThat(combinedBoth.getInternalMissing().size(), is(0));
+    assertThat(combinedBoth.missingInternal().size(), is(0));
   }
 }

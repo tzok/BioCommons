@@ -27,7 +27,7 @@ public final class Region {
   public static List<Region> createRegions(final BpSeq bpSeq) {
     final List<Region> regions = new ArrayList<>();
     final List<BpSeq.Entry> regionEntries = new ArrayList<>();
-    final Iterable<BpSeq.Entry> allEntries = new ArrayList<>(bpSeq.getPaired());
+    final Iterable<BpSeq.Entry> allEntries = new ArrayList<>(bpSeq.paired());
     int id = 0;
 
     for (final BpSeq.Entry entry : allEntries) {

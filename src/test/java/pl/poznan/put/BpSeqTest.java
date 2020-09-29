@@ -55,19 +55,19 @@ public class BpSeqTest {
     BpSeq.fromString(BpSeqTest.INPUT_GOOD_2);
   }
 
-  @Test(expected = InvalidStructureException.class)
+  @Test(expected = IllegalArgumentException.class)
   public final void testFew() {
     BpSeq.fromString(BpSeqTest.INPUT_TOO_FEW);
   }
 
-  @Test(expected = InvalidStructureException.class)
+  @Test(expected = IllegalArgumentException.class)
   public final void testMany() {
     BpSeq.fromString(BpSeqTest.INPUT_TOO_MANY);
   }
 
-  @Test(expected = InvalidStructureException.class)
   public final void testLongSeq() {
-    BpSeq.fromString(BpSeqTest.INPUT_TOO_LONG_SEQ);
+    final BpSeq bpSeq = BpSeq.fromString(BpSeqTest.INPUT_TOO_LONG_SEQ);
+    assertThat(bpSeq.sequence(), is("ACGU"));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -75,7 +75,7 @@ public class BpSeqTest {
     BpSeq.fromString(BpSeqTest.INPUT_INDEX_1);
   }
 
-  @Test(expected = InvalidStructureException.class)
+  @Test(expected = IllegalArgumentException.class)
   public final void testIndex2() {
     BpSeq.fromString(BpSeqTest.INPUT_INDEX_2);
   }
@@ -85,7 +85,7 @@ public class BpSeqTest {
     BpSeq.fromString(BpSeqTest.INPUT_PAIR_1);
   }
 
-  @Test(expected = InvalidStructureException.class)
+  @Test(expected = IllegalArgumentException.class)
   public final void testPair2() {
     BpSeq.fromString(BpSeqTest.INPUT_PAIR_2);
   }

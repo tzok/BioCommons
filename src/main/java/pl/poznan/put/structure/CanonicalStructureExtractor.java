@@ -41,7 +41,7 @@ public final class CanonicalStructureExtractor {
    * This is just a simple implementation. For a robust solution, see RNApdbee
    * http://rnapdbee.cs.put.poznan.pl
    */
-  private static Collection<ClassifiedBasePair> basePairs(
+  public static Collection<ClassifiedBasePair> basePairs(
       final ResidueCollection residueCollection) {
     final List<PdbResidue> residues = residueCollection.residues();
     final Collection<ClassifiedBasePair> basePairs = new ArrayList<>();
@@ -51,7 +51,7 @@ public final class CanonicalStructureExtractor {
       final PdbResidue left = residues.get(i);
       final PdbNamedResidueIdentifier leftId = left.namedResidueIdentifer();
 
-      for (int j = i + 2; j < residues.size(); j++) {
+      for (int j = i + 1; j < residues.size(); j++) {
         final PdbResidue right = residues.get(j);
         final PdbNamedResidueIdentifier rightId = right.namedResidueIdentifer();
 

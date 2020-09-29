@@ -13,14 +13,12 @@ import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.rna.InteractionType;
 import pl.poznan.put.structure.formats.BpSeq;
 import pl.poznan.put.structure.formats.Converter;
-import pl.poznan.put.structure.formats.InvalidStructureException;
+import pl.poznan.put.structure.formats.DotBracket;
 import pl.poznan.put.structure.formats.LevelByLevelConverter;
 import pl.poznan.put.structure.pseudoknots.elimination.MinGain;
-import pl.poznan.put.structure.formats.DefaultDotBracket;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -189,7 +187,7 @@ public abstract class ExtendedSecondaryStructure {
 
     for (final LeontisWesthof leontisWesthof : LeontisWesthof.values()) {
       if ((leontisWesthof != LeontisWesthof.UNKNOWN) && set.contains(leontisWesthof)) {
-        for (final DefaultDotBracket dotBracket : dotBracketFromBasePairs(leontisWesthof)) {
+        for (final DotBracket dotBracket : dotBracketFromBasePairs(leontisWesthof)) {
           builder
               .append(leontisWesthof.shortName())
               .append(' ')
@@ -207,47 +205,40 @@ public abstract class ExtendedSecondaryStructure {
     return inputBasePairs().stream().filter(ClassifiedBasePair::is5to3).collect(Collectors.toSet());
   }
 
-  private List<DefaultDotBracket> dotBracketFromBasePairs(final LeontisWesthof leontisWesthof) {
-    try {
-      final List<ClassifiedBasePair> filteredBasePairs =
-          basePairs().stream()
-              .filter(cbp -> InteractionType.BASE_BASE.equals(cbp.interactionType()))
-              .filter(cbp -> leontisWesthof == cbp.leontisWesthof())
-              .sorted(Comparator.comparingInt(cbp -> cbp.basePair().getLeft().residueNumber()))
-              .collect(Collectors.toList());
+  private List<DotBracket> dotBracketFromBasePairs(final LeontisWesthof leontisWesthof) {
+    final List<ClassifiedBasePair> filteredBasePairs =
+        basePairs().stream()
+            .filter(cbp -> InteractionType.BASE_BASE.equals(cbp.interactionType()))
+            .filter(cbp -> leontisWesthof == cbp.leontisWesthof())
+            .sorted(Comparator.comparingInt(cbp -> cbp.basePair().getLeft().residueNumber()))
+            .collect(Collectors.toList());
 
-      final List<DefaultDotBracket> result = new ArrayList<>();
+    final List<DotBracket> result = new ArrayList<>();
 
-      do {
-        final Set<ClassifiedBasePair> layer = new LinkedHashSet<>();
-        final Set<Integer> usedIndices = new HashSet<>();
+    do {
+      final Set<ClassifiedBasePair> layer = new LinkedHashSet<>();
+      final Set<Integer> usedIndices = new HashSet<>();
 
-        for (final ClassifiedBasePair classifiedBasePair : filteredBasePairs) {
-          final BasePair basePair = classifiedBasePair.basePair();
-          final int left = basePair.getLeft().residueNumber();
-          final int right = basePair.getRight().residueNumber();
+      for (final ClassifiedBasePair classifiedBasePair : filteredBasePairs) {
+        final BasePair basePair = classifiedBasePair.basePair();
+        final int left = basePair.getLeft().residueNumber();
+        final int right = basePair.getRight().residueNumber();
 
-          if (!usedIndices.contains(left) && !usedIndices.contains(right)) {
-            layer.add(classifiedBasePair);
-            usedIndices.add(left);
-            usedIndices.add(right);
-          }
+        if (!usedIndices.contains(left) && !usedIndices.contains(right)) {
+          layer.add(classifiedBasePair);
+          usedIndices.add(left);
+          usedIndices.add(right);
         }
+      }
 
-        result.add(basePairsToDotBracket(layer));
-        filteredBasePairs.removeAll(layer);
-      } while (!filteredBasePairs.isEmpty());
+      result.add(basePairsToDotBracket(layer));
+      filteredBasePairs.removeAll(layer);
+    } while (!filteredBasePairs.isEmpty());
 
-      return result;
-    } catch (final InvalidStructureException e) {
-      ExtendedSecondaryStructure.LOGGER.error(
-          "Failed to generate dot-bracket from list of base pairs", e);
-      return Collections.emptyList();
-    }
+    return result;
   }
 
-  private DefaultDotBracket basePairsToDotBracket(
-      final Iterable<ClassifiedBasePair> filteredBasePairs) {
+  private DotBracket basePairsToDotBracket(final Collection<ClassifiedBasePair> filteredBasePairs) {
     final List<PdbNamedResidueIdentifier> identifiers = new ArrayList<>();
     final char[] array = sequence().toCharArray();
 

@@ -5,10 +5,10 @@ import pl.poznan.put.structure.formats.ImmutableBpSeq;
 import pl.poznan.put.structure.pseudoknots.ConflictMap;
 import pl.poznan.put.structure.pseudoknots.Region;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Java implementation of region removal algorithm as presented in: Smit, S. et al., 2008. From
@@ -50,16 +50,16 @@ public abstract class AbstractRegionRemover implements RegionRemover {
 
     AbstractRegionRemover.restoreNonConflicting(regions);
 
-    final Collection<BpSeq.Entry> validPairs = new ArrayList<>();
-    for (final Region region : regions) {
-      if (!region.isRemoved()) {
-        validPairs.addAll(region.getEntries());
-      }
-    }
+    final List<BpSeq.Entry> nonPseudoknotted =
+        regions.stream()
+            .filter(region -> !region.isRemoved())
+            .map(Region::getEntries)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
 
     BpSeq result = ImmutableBpSeq.copyOf(bpSeq);
-    for (final BpSeq.Entry validPair : validPairs) {
-      result = result.withoutPair(validPair);
+    for (final BpSeq.Entry entry : nonPseudoknotted) {
+      result = result.withoutPair(entry);
     }
     return Collections.singletonList(result);
   }

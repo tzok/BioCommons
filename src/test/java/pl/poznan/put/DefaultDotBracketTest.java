@@ -4,6 +4,7 @@ import org.junit.Test;
 import pl.poznan.put.structure.formats.BpSeq;
 import pl.poznan.put.structure.formats.Converter;
 import pl.poznan.put.structure.formats.DefaultDotBracket;
+import pl.poznan.put.structure.formats.DotBracket;
 import pl.poznan.put.structure.formats.LevelByLevelConverter;
 import pl.poznan.put.structure.pseudoknots.elimination.MinGain;
 import pl.poznan.put.utility.ResourcesHelper;
@@ -40,7 +41,8 @@ public class DefaultDotBracketTest {
 
   @Test
   public final void from2Z74() {
-    final DefaultDotBracket dotBracket = DefaultDotBracket.fromString(DefaultDotBracketTest.FROM_2Z74);
+    final DefaultDotBracket dotBracket =
+        DefaultDotBracket.fromString(DefaultDotBracketTest.FROM_2Z74);
     assertThat(dotBracket.strands().size(), is(2));
   }
 
@@ -48,8 +50,9 @@ public class DefaultDotBracketTest {
   public final void fromBpSeq() {
     final Converter converter = new LevelByLevelConverter(new MinGain(), 1);
     final BpSeq bpSeq = BpSeq.fromString(DefaultDotBracketTest.BPSEQ);
-    final DefaultDotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
-    final DefaultDotBracket dotBracketFromString = DefaultDotBracket.fromString(DefaultDotBracketTest.DOTBRACKET);
+    final DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
+    final DefaultDotBracket dotBracketFromString =
+        DefaultDotBracket.fromString(DefaultDotBracketTest.DOTBRACKET);
     assertThat(dotBracketFromBpSeq, is(dotBracketFromString));
   }
 
@@ -60,14 +63,15 @@ public class DefaultDotBracketTest {
 
     final Converter converter = new LevelByLevelConverter(new MinGain(), 1);
     final BpSeq bpSeq = BpSeq.fromString(bpseq1EHZ);
-    final DefaultDotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
+    final DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
     final DefaultDotBracket dotBracketFromString = DefaultDotBracket.fromString(dotBracket1EHZ);
     assertThat(dotBracketFromBpSeq, is(dotBracketFromString));
   }
 
   @Test
   public final void testWithWindowsNewline() {
-    final DefaultDotBracket dotBracket = DefaultDotBracket.fromString(DefaultDotBracketTest.WITH_WINDOWS_NEWLINE);
+    final DefaultDotBracket dotBracket =
+        DefaultDotBracket.fromString(DefaultDotBracketTest.WITH_WINDOWS_NEWLINE);
     assertThat(dotBracket.sequence(), is("ACAAGU"));
     assertThat(dotBracket.structure(), is("((..))"));
   }
