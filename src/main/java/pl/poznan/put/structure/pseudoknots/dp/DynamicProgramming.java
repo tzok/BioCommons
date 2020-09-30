@@ -2,7 +2,15 @@ package pl.poznan.put.structure.pseudoknots.dp;
 
 import pl.poznan.put.structure.pseudoknots.PseudoknotFinder;
 
-/** Interface for pseudoknot finders which work on a dynamic programming basis. */
+import java.util.List;
+
+/** A pseudoknot finder which works on a dynamic programming basis. */
 interface DynamicProgramming extends PseudoknotFinder {
-  SubSolution[] findOptimalSolutions(final Clique clique);
+  /**
+   * Solves a single conflict clique in an optimal way.
+   *
+   * @param conflictClique The conflict clique to solve.
+   * @return A list of subsolutions, each with an optimal score.
+   */
+  List<SubSolution> findOptimalSolutions(final ConflictClique conflictClique);
 }

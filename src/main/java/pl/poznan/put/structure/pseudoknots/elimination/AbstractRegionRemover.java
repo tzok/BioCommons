@@ -2,7 +2,9 @@ package pl.poznan.put.structure.pseudoknots.elimination;
 
 import pl.poznan.put.structure.formats.BpSeq;
 import pl.poznan.put.structure.formats.ImmutableBpSeq;
-import pl.poznan.put.structure.pseudoknots.ConflictMap;
+import pl.poznan.put.structure.pseudoknots.ConflictGraph;
+import pl.poznan.put.structure.pseudoknots.ImmutableConflictGraph;
+import pl.poznan.put.structure.pseudoknots.ModifiableRegion;
 import pl.poznan.put.structure.pseudoknots.Region;
 
 import java.util.Collection;
@@ -25,27 +27,36 @@ public abstract class AbstractRegionRemover implements RegionRemover {
 
       boolean nonConflicting = true;
       for (final Region rj : regions) {
-        if (!rj.isRemoved() && ConflictMap.isConflicting(ri, rj)) {
+        if (!rj.isRemoved() && ConflictGraph.isConflicting(ri, rj)) {
           nonConflicting = false;
           break;
         }
       }
 
       if (nonConflicting) {
-        ri.setRemoved(false);
+        ((ModifiableRegion) ri).setIsRemoved(false);
       }
     }
   }
 
+  /**
+   * Finds pseudoknots by removing one region at a time until there are any conflicts. The region to
+   * remove is selected according to a heuristic (see {@link MinGain} and {@link MaxConflicts}).
+   *
+   * @param bpSeq An input BPSEQ structure with all pairs.
+   * @return A list of BPSEQ structures where each contains only pairs considered to be pseudoknots.
+   *     Each BPSEQ is a full copy of original one, but contains zeroed 'pair' columns for entries
+   *     which are non-pseudoknots.
+   */
   @Override
   public final List<BpSeq> findPseudoknots(final BpSeq bpSeq) {
     final List<Region> regions = Region.createRegions(bpSeq);
-    final ConflictMap conflictMap = new ConflictMap(regions);
+    final ConflictGraph conflictGraph = ImmutableConflictGraph.of(regions);
 
-    while (conflictMap.hasAnyConflicts()) {
-      final Region region = selectRegionToRemove(conflictMap);
-      region.setRemoved(true);
-      conflictMap.remove(region);
+    while (conflictGraph.hasConflicts()) {
+      final Region region = selectRegionToRemove(conflictGraph);
+      ((ModifiableRegion) region).setIsRemoved(true);
+      conflictGraph.removeRegion(region);
     }
 
     AbstractRegionRemover.restoreNonConflicting(regions);
@@ -53,7 +64,7 @@ public abstract class AbstractRegionRemover implements RegionRemover {
     final List<BpSeq.Entry> nonPseudoknotted =
         regions.stream()
             .filter(region -> !region.isRemoved())
-            .map(Region::getEntries)
+            .map(Region::entries)
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
 

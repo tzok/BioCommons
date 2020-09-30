@@ -171,8 +171,8 @@ public abstract class BpSeq implements Serializable {
   public final BpSeq withoutIsolatedPairs() {
     final List<BpSeq.Entry> toRemove =
         Region.createRegions(this).stream()
-            .filter(region -> region.getLength() == 1)
-            .map(region -> region.getEntries().get(0))
+            .filter(region -> region.length() == 1)
+            .map(region -> region.entries().get(0))
             .collect(Collectors.toList());
 
     BpSeq result = ImmutableBpSeq.copyOf(this);

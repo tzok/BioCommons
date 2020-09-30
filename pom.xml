@@ -249,7 +249,6 @@
         <configuration>
           <usedDependencies>
             <dependency>org.apache.xmlgraphics:batik-codec</dependency>
-            <dependency>org.projectlombok:lombok</dependency>
             <dependency>ch.qos.logback:logback-classic</dependency>
           </usedDependencies>
         </configuration>

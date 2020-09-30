@@ -1,34 +1,29 @@
 package pl.poznan.put.structure.pseudoknots;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.immutables.value.Value;
 import pl.poznan.put.structure.formats.BpSeq;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-/** A region is a collection of pairs (BPSEQ entries) which are consecutive in sequence. */
-public final class Region {
-  private final int id;
-  private final List<BpSeq.Entry> entries;
-  private final int begin;
-  private final int end;
-  private boolean isRemoved;
-
-  private Region(final int id, final List<BpSeq.Entry> entries, final int begin, final int end) {
-    super();
-    this.id = id;
-    this.entries = new ArrayList<>(entries);
-    this.begin = begin;
-    this.end = end;
-    isRemoved = false;
-  }
-
-  // Create Array of Regions from connections stored in RNAStructure
+/** A collection of pairs (BPSEQ entries) which are consecutive in sequence. */
+@Value.Modifiable
+public abstract class Region implements Comparable<Region> {
+  /**
+   * Creates a list of regions from a secondary structure in BPSEQ format.
+   *
+   * @param bpSeq The input BPSEQ structure.
+   * @return A list of regions in the structure.
+   */
   public static List<Region> createRegions(final BpSeq bpSeq) {
     final List<Region> regions = new ArrayList<>();
     final List<BpSeq.Entry> regionEntries = new ArrayList<>();
     final Iterable<BpSeq.Entry> allEntries = new ArrayList<>(bpSeq.paired());
-    int id = 0;
 
     for (final BpSeq.Entry entry : allEntries) {
       if (regionEntries.isEmpty()) {
@@ -42,90 +37,74 @@ public final class Region {
         continue;
       }
 
-      final BpSeq.Entry first = regionEntries.get(0);
-      regions.add(new Region(id, regionEntries, first.index(), first.pair()));
+      regions.add(ModifiableRegion.create(regionEntries));
       regionEntries.clear();
       regionEntries.add(entry);
-
-      id++;
     }
 
     if (!regionEntries.isEmpty()) {
-      final BpSeq.Entry first = regionEntries.get(0);
-      regions.add(new Region(id, regionEntries, first.index(), first.pair()));
+      regions.add(ModifiableRegion.create(regionEntries));
     }
 
     return regions;
   }
 
+  /**
+   * Merges many regions into a new one.
+   *
+   * @param regions An array of regions to merge.
+   * @return A new intance of this class created by merging the input regions.
+   */
   public static Region merge(final Region... regions) {
-    final List<BpSeq.Entry> entries = new ArrayList<>();
-    int max = Integer.MIN_VALUE;
-    int min = Integer.MAX_VALUE;
-
-    for (final Region region : regions) {
-      for (final BpSeq.Entry entry : region.entries) {
-        if (entry.index() < min) {
-          min = entry.index();
-        }
-        if (entry.pair() > max) {
-          max = entry.pair();
-        }
-        entries.add(entry);
-      }
-    }
-
-    final int id = regions[0].id;
-    return new Region(id, entries, min, max);
+    final List<BpSeq.Entry> entries =
+        Arrays.stream(regions)
+            .map(Region::entries)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+    final int begin = entries.stream().map(BpSeq.Entry::index).min(Integer::compareTo).orElse(0);
+    final int end = entries.stream().map(BpSeq.Entry::pair).max(Integer::compareTo).orElse(0);
+    return ModifiableRegion.create(entries).setBegin(begin).setEnd(end);
   }
 
-  public int getId() {
-    return id;
+  /** @return The list of BPSEQ entries in this region. */
+  @Value.Parameter(order = 1)
+  public abstract List<BpSeq.Entry> entries();
+
+  /** @return The number of BPSEQ entries in this region. */
+  public final int length() {
+    return entries().size();
   }
 
-  public List<BpSeq.Entry> getEntries() {
-    return Collections.unmodifiableList(entries);
+  /** @return The first index of a region. */
+  @Value.Default
+  public int begin() {
+    return entries().get(0).index();
   }
 
+  /** @return The last index of a region. */
+  @Value.Default
+  public int end() {
+    return entries().get(0).pair();
+  }
+
+  /** @return True if this region was removed. */
+  @Value.Default
+  @Value.Auxiliary
   public boolean isRemoved() {
-    return isRemoved;
-  }
-
-  public void setRemoved(final boolean removed) {
-    isRemoved = removed;
-  }
-
-  public int getBegin() {
-    return begin;
-  }
-
-  public int getEnd() {
-    return end;
-  }
-
-  public int getLength() {
-    return entries.size();
+    return false;
   }
 
   @Override
-  public int hashCode() {
-    return id;
+  public final int compareTo(final Region t) {
+    return new CompareToBuilder().append(begin(), t.begin()).append(end(), t.end()).build();
   }
 
   @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-    final Region region = (Region) o;
-    return id == region.id;
-  }
-
-  @Override
-  public String toString() {
-    return String.format("%d[%d]", id, entries.size());
+  public final String toString() {
+    return new ToStringBuilder(this)
+        .append("begin", begin())
+        .append("end", end())
+        .append("length", length())
+        .toString();
   }
 }

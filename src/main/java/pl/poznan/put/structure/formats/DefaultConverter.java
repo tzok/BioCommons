@@ -3,6 +3,7 @@ package pl.poznan.put.structure.formats;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.immutables.value.Value;
 import pl.poznan.put.structure.pseudoknots.PseudoknotFinder;
+import pl.poznan.put.structure.pseudoknots.elimination.ImmutableMinGain;
 import pl.poznan.put.structure.pseudoknots.elimination.MinGain;
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public abstract class DefaultConverter implements Converter {
   /** @return The finder of pseudoknots ({@link MinGain} by default). */
   @Value.Default
   public PseudoknotFinder pseudoknotFinder() {
-    return new MinGain();
+    return ImmutableMinGain.of();
   }
 
   /** @return The number of solutions to return (1 by default). */

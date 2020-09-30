@@ -151,10 +151,10 @@ public abstract class Ct implements Serializable {
   public final Ct withoutIsolatedPairs() {
     Ct copy = ImmutableCt.copyOf(this);
     for (final Region region : Region.createRegions(BpSeq.fromCt(this))) {
-      if (region.getLength() == 1) {
+      if (region.length() == 1) {
         final Optional<ExtendedEntry> entry =
             entries().stream()
-                .filter(e -> e.index() == region.getEntries().get(0).index())
+                .filter(e -> e.index() == region.entries().get(0).index())
                 .findFirst();
         if (entry.isPresent()) {
           copy = copy.withoutPair(entry.get());
