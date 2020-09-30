@@ -1,21 +1,16 @@
-package pl.poznan.put.structure;
+package pl.poznan.put.structure.formats;
 
 import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pl.poznan.put.notation.BPh;
-import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
-import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.rna.InteractionType;
-import pl.poznan.put.structure.formats.BpSeq;
-import pl.poznan.put.structure.formats.Converter;
-import pl.poznan.put.structure.formats.DotBracket;
-import pl.poznan.put.structure.formats.LevelByLevelConverter;
-import pl.poznan.put.structure.pseudoknots.elimination.MinGain;
+import pl.poznan.put.structure.BasePair;
+import pl.poznan.put.structure.ClassifiedBasePair;
+import pl.poznan.put.structure.DotBracketSymbol;
+import pl.poznan.put.structure.ImmutableBasePair;
+import pl.poznan.put.structure.ModifiableAnalyzedBasePair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,33 +24,25 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+/** An extended secondary structure, which contains also non-canonical base pairs. */
 @Value.Immutable
-public abstract class ExtendedSecondaryStructure {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ExtendedSecondaryStructure.class);
-
-  public static void main(final String[] args) {
-    final String input = "seq ACGUACGUACGU\ncWH (([[..))]]..\ncWW ....((..))..";
-    final ExtendedSecondaryStructure secondaryStructure =
-        ExtendedSecondaryStructure.fromMultilineDotBracket(input);
-    System.out.println(secondaryStructure);
-  }
-
+public abstract class MultiLineDotBracket {
   /**
-   * Creates instance of by reading a set of lines in dot-bracket notation. Each line begins with a
+   * Creates an instance by reading a set of lines in dot-bracket notation. Each line begins with a
    * Leontis-Westhof notation shortand (e.g. cWW, tSH, etc.), a whitespace, and a dot-bracket. One
    * line contains 'seq' instead of LW notation and it is followed by the sequence. For example:
    *
-   * <p>seq AGGGCGGGU
-   *
-   * <p>cWW (.......)
-   *
-   * <p>cWH .([{.}]).
+   * <pre>
+   * seq AGGGCGGGU
+   * cWW (.......)
+   * cWH .([{.}]).
+   * </pre>
    *
    * @param input A string containing input in the format specified above.
-   * @return An instance of .
+   * @return An instance of this class.
    */
-  public static ExtendedSecondaryStructure fromMultilineDotBracket(final String input) {
-    final List<ClassifiedBasePair> basePairs = new ArrayList<>();
+  public static MultiLineDotBracket fromString(final String input) {
+    final Collection<ClassifiedBasePair> basePairs = new ArrayList<>();
 
     String sequence = "";
     int previousLength = -1;
@@ -107,7 +94,7 @@ public abstract class ExtendedSecondaryStructure {
           final Stack<Integer> stack = stackMap.get(c);
           stack.push(i);
         } else if (DotBracketSymbol.isClosing(c)) {
-          final char opening = DotBracketSymbol.getMatchingBracket(c);
+          final char opening = DotBracketSymbol.matchingBracket(c);
           if (!stackMap.containsKey(opening)) {
             throw new IllegalArgumentException(
                 String.format(
@@ -133,17 +120,9 @@ public abstract class ExtendedSecondaryStructure {
           final PdbNamedResidueIdentifier right =
               ImmutablePdbNamedResidueIdentifier.of(
                   "A", i + 1, " ", sequence.length() > i ? sequence.charAt(i) : 'N');
-          final BasePair basePair = new BasePair(left, right);
+          final BasePair basePair = ImmutableBasePair.of(left, right);
           final ClassifiedBasePair classifiedBasePair =
-              ModifiableAnalyzedBasePair.create(
-                  basePair,
-                  InteractionType.BASE_BASE,
-                  Saenger.UNKNOWN,
-                  leontisWesthof,
-                  BPh.UNKNOWN,
-                  BR.UNKNOWN,
-                  HelixOrigin.UNKNOWN,
-                  false);
+              ModifiableAnalyzedBasePair.create(basePair).setLeontisWesthof(leontisWesthof);
           basePairs.add(classifiedBasePair);
         } else if (c != '.') {
           throw new IllegalArgumentException(
@@ -163,27 +142,31 @@ public abstract class ExtendedSecondaryStructure {
     if (StringUtils.isBlank(sequence)) {
       int maxIndex = Integer.MIN_VALUE;
       for (final ClassifiedBasePair basePair : basePairs) {
-        maxIndex = Integer.max(maxIndex, basePair.basePair().getRight().residueNumber());
+        maxIndex = Integer.max(maxIndex, basePair.basePair().right().residueNumber());
       }
       sequence = StringUtils.repeat('N', maxIndex);
     }
 
-    return ImmutableExtendedSecondaryStructure.of(sequence, basePairs);
+    return ImmutableMultiLineDotBracket.of(sequence, basePairs);
   }
 
+  /** @return The sequence of nucleotides. */
   @Value.Parameter(order = 1)
   public abstract String sequence();
 
+  /** @return The list of base pairs. */
   @Value.Parameter(order = 2)
-  protected abstract Collection<? extends ClassifiedBasePair> inputBasePairs();
+  public abstract Collection<? extends ClassifiedBasePair> basePairs();
 
   @Override
-  public String toString() {
+  public final String toString() {
     final StringBuilder builder = new StringBuilder();
     builder.append("seq ").append(sequence()).append('\n');
 
     final Set<LeontisWesthof> set =
-        basePairs().stream().map(ClassifiedBasePair::leontisWesthof).collect(Collectors.toSet());
+        basePairs5to3().stream()
+            .map(ClassifiedBasePair::leontisWesthof)
+            .collect(Collectors.toSet());
 
     for (final LeontisWesthof leontisWesthof : LeontisWesthof.values()) {
       if ((leontisWesthof != LeontisWesthof.UNKNOWN) && set.contains(leontisWesthof)) {
@@ -201,28 +184,30 @@ public abstract class ExtendedSecondaryStructure {
   }
 
   @Value.Lazy
-  protected Collection<ClassifiedBasePair> basePairs() {
-    return inputBasePairs().stream().filter(ClassifiedBasePair::is5to3).collect(Collectors.toSet());
+  protected Collection<ClassifiedBasePair> basePairs5to3() {
+    return basePairs().stream()
+        .filter(basePair -> basePair.basePair().is5to3())
+        .collect(Collectors.toSet());
   }
 
   private List<DotBracket> dotBracketFromBasePairs(final LeontisWesthof leontisWesthof) {
     final List<ClassifiedBasePair> filteredBasePairs =
-        basePairs().stream()
+        basePairs5to3().stream()
             .filter(cbp -> InteractionType.BASE_BASE.equals(cbp.interactionType()))
             .filter(cbp -> leontisWesthof == cbp.leontisWesthof())
-            .sorted(Comparator.comparingInt(cbp -> cbp.basePair().getLeft().residueNumber()))
+            .sorted(Comparator.comparingInt(cbp -> cbp.basePair().left().residueNumber()))
             .collect(Collectors.toList());
 
     final List<DotBracket> result = new ArrayList<>();
 
     do {
-      final Set<ClassifiedBasePair> layer = new LinkedHashSet<>();
-      final Set<Integer> usedIndices = new HashSet<>();
+      final Collection<ClassifiedBasePair> layer = new LinkedHashSet<>();
+      final Collection<Integer> usedIndices = new HashSet<>();
 
       for (final ClassifiedBasePair classifiedBasePair : filteredBasePairs) {
         final BasePair basePair = classifiedBasePair.basePair();
-        final int left = basePair.getLeft().residueNumber();
-        final int right = basePair.getRight().residueNumber();
+        final int left = basePair.left().residueNumber();
+        final int right = basePair.right().residueNumber();
 
         if (!usedIndices.contains(left) && !usedIndices.contains(right)) {
           layer.add(classifiedBasePair);
@@ -248,8 +233,8 @@ public abstract class ExtendedSecondaryStructure {
       identifiers.add(identifier);
     }
 
-    final BpSeq bpSeq = BpSeq.fromResidueCollection(identifiers, filteredBasePairs);
-    final Converter converter = new LevelByLevelConverter(new MinGain(), 1);
+    final BpSeq bpSeq = BpSeq.fromBasePairs(identifiers, filteredBasePairs);
+    final Converter converter = ImmutableDefaultConverter.of();
     return converter.convert(bpSeq);
   }
 }

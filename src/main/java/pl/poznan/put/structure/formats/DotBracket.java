@@ -3,6 +3,7 @@ package pl.poznan.put.structure.formats;
 import pl.poznan.put.structure.DotBracketSymbol;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -11,17 +12,8 @@ import java.util.stream.Stream;
 
 /** An RNA structure encoded in dot-bracket format. */
 public interface DotBracket {
-  /** @return The sequence of nucleotides. */
-  String sequence();
-
-  /** @return The sequence of dots and brackets representing paired and unpaired residues. */
-  String structure();
-
   /** @return The list of dot-bracket symbols. */
   List<DotBracketSymbol> symbols();
-
-  /** @return The list of strands. */
-  List<Strand> strands();
 
   /**
    * Combines strands which share a base pair into a new dot-bracket instance and returns a list of
@@ -38,7 +30,30 @@ public interface DotBracket {
    * @param symbol Dot-bracket symbol for which the original index is sought.
    * @return An index which reflects the numbering in real structure (e.g. PDB).
    */
-  int originalIndex(DotBracketSymbol symbol);
+  default int originalIndex(final DotBracketSymbol symbol) {
+    return symbol.index() + 1;
+  }
+
+  /** @return The list of strands. */
+  default List<Strand> strands() {
+    return Collections.singletonList(ImmutableStrandView.of("", this, 0, structure().length()));
+  }
+
+  /** @return The sequence of nucleotides. */
+  default String sequence() {
+    return symbols().stream()
+        .map(DotBracketSymbol::sequence)
+        .map(c -> Character.toString(c))
+        .collect(Collectors.joining());
+  }
+
+  /** @return The sequence of dots and brackets representing paired and unpaired residues. */
+  default String structure() {
+    return symbols().stream()
+        .map(DotBracketSymbol::structure)
+        .map(c -> Character.toString(c))
+        .collect(Collectors.joining());
+  }
 
   /**
    * @return A string representation of this dot-bracket, where every strand is written out
@@ -50,7 +65,12 @@ public interface DotBracket {
 
   /** @return The number of nucleotides in this structure. */
   default int length() {
-    return sequence().length();
+    return symbols().size();
+  }
+
+  /** @return True, if at least one symbol represents a missing residue. */
+  default boolean containsMissing() {
+    return symbols().stream().anyMatch(DotBracketSymbol::isMissing);
   }
 
   /** @return The list of missing symbols at 5' and 3' ends of all strands. */
@@ -80,7 +100,7 @@ public interface DotBracket {
   /** @return The pseudoknot order of this structure. */
   default int pseudoknotOrder() {
     return symbols().stream()
-        .map(DotBracketSymbol::getOrder)
+        .map(DotBracketSymbol::order)
         .max(Comparator.naturalOrder())
         .orElse(0);
   }

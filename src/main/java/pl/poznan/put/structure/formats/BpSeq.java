@@ -84,7 +84,7 @@ public abstract class BpSeq implements Serializable {
    * @param basePairs The list of base pairs.
    * @return An instance of this class.
    */
-  public static BpSeq fromResidueCollection(
+  public static BpSeq fromBasePairs(
       final List<PdbNamedResidueIdentifier> residues,
       final Collection<? extends ClassifiedBasePair> basePairs) {
     final List<Entry> entries =
@@ -112,9 +112,9 @@ public abstract class BpSeq implements Serializable {
         .map(
             basePair ->
                 ImmutableEntry.of(
-                        residues.indexOf(basePair.getLeft()) + 1,
-                        basePair.getLeft().oneLetterName(),
-                        residues.indexOf(basePair.getRight()) + 1)
+                        residues.indexOf(basePair.left()) + 1,
+                        basePair.left().oneLetterName(),
+                        residues.indexOf(basePair.right()) + 1)
                     .withComment(comments.getOrDefault(basePair, "")))
         .collect(Collectors.toList());
   }
@@ -125,7 +125,7 @@ public abstract class BpSeq implements Serializable {
     final Set<PdbNamedResidueIdentifier> paired =
         basePairs.stream()
             .map(ClassifiedBasePair::basePair)
-            .flatMap(basePair -> Stream.of(basePair.getLeft(), basePair.getRight()))
+            .flatMap(basePair -> Stream.of(basePair.left(), basePair.right()))
             .collect(Collectors.toSet());
     return IntStream.range(0, residues.size())
         .filter(i -> !paired.contains(residues.get(i)))

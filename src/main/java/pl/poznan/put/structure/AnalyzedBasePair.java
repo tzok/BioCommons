@@ -7,60 +7,63 @@ import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.InteractionType;
 
+/** A pair of residues with metadata taken from analysis tool. */
 @Value.Modifiable
 public abstract class AnalyzedBasePair implements ClassifiedBasePair {
-  public static ModifiableAnalyzedBasePair assumeCanonical(final BasePair pair) {
-    return ModifiableAnalyzedBasePair.create(
-        pair,
-        InteractionType.BASE_BASE,
-        Saenger.assumeCanonical(pair),
-        LeontisWesthof.CWW,
-        BPh.UNKNOWN,
-        BR.UNKNOWN,
-        HelixOrigin.UNKNOWN,
-        false);
-  }
-
   @Value.Parameter(order = 1)
   public abstract BasePair basePair();
 
-  @Value.Parameter(order = 2)
-  public abstract InteractionType interactionType();
+  @Value.Default
+  public InteractionType interactionType() {
+    return ClassifiedBasePair.super.interactionType();
+  }
 
-  @Value.Parameter(order = 3)
-  public abstract Saenger saenger();
+  @Value.Default
+  public Saenger saenger() {
+    return ClassifiedBasePair.super.saenger();
+  }
 
-  @Value.Parameter(order = 4)
-  public abstract LeontisWesthof leontisWesthof();
+  @Value.Default
+  public LeontisWesthof leontisWesthof() {
+    return ClassifiedBasePair.super.leontisWesthof();
+  }
 
-  @Value.Parameter(order = 5)
-  public abstract BPh bph();
+  @Value.Default
+  public BPh bph() {
+    return ClassifiedBasePair.super.bph();
+  }
 
-  @Value.Parameter(order = 6)
-  public abstract BR br();
+  @Value.Default
+  public BR br() {
+    return ClassifiedBasePair.super.br();
+  }
 
-  @Value.Parameter(order = 7)
   @Value.Auxiliary
-  public abstract HelixOrigin helixOrigin();
+  @Value.Default
+  public HelixOrigin helixOrigin() {
+    return ClassifiedBasePair.super.helixOrigin();
+  }
 
-  @Value.Parameter(order = 8)
   @Value.Auxiliary
-  public abstract boolean isRepresented();
+  @Value.Default
+  public boolean isRepresented() {
+    return ClassifiedBasePair.super.isRepresented();
+  }
 
   @Override
   public final ClassifiedBasePair invert() {
-    return ModifiableAnalyzedBasePair.create(
-        basePair().invert(),
-        interactionType().invert(),
-        saenger(),
-        leontisWesthof().invert(),
-        bph(),
-        br(),
-        helixOrigin(),
-        isRepresented());
+    return ModifiableAnalyzedBasePair.create()
+        .from(this)
+        .setBasePair(basePair().invert())
+        .setInteractionType(interactionType().invert())
+        .setLeontisWesthof(leontisWesthof().invert());
   }
 
-  // required for Spring to get "isRepresented" field
+  /**
+   * Returns the value of {@code isRepresented()}, but this naming is required by Spring.
+   *
+   * @return The value of isRepresented();
+   */
   public final Boolean getIsRepresented() {
     return isRepresented();
   }

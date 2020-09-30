@@ -1,17 +1,19 @@
 package pl.poznan.put.structure;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.stream.Stream;
 
-public class BasePair implements Serializable, Comparable<BasePair> {
+/** A pairing between two nucleotides' bases. */
+@Value.Immutable
+public abstract class BasePair implements Serializable, Comparable<BasePair> {
   private static final double GU_DISTANCE_O6_N3 = 2.83 + (0.13 * 3.0);
   private static final double GU_DISTANCE_N1_O2 = 2.79 + (0.13 * 3.0);
   private static final double AU_DISTANCE_N6_O4 = 3.00 + (0.17 * 3.0);
@@ -19,21 +21,14 @@ public class BasePair implements Serializable, Comparable<BasePair> {
   private static final double CG_DISTANCE_N4_O6 = 2.96 + (0.17 * 3.0);
   private static final double CG_DISTANCE_O2_N2 = 2.77 + (0.15 * 3.0);
   private static final double CG_DISTANCE_N3_N1 = 2.89 + (0.11 * 3.0);
-  private final Pair<PdbNamedResidueIdentifier, PdbNamedResidueIdentifier> pair;
-
-  public BasePair(final PdbNamedResidueIdentifier left, final PdbNamedResidueIdentifier right) {
-    super();
-    pair = Pair.of(left, right);
-  }
 
   /**
-   * Check if two residues are canonical base pairs by means of simple distance between atoms which
-   * form hydrogen bond. Data taken from http://bps.rutgers.edu.
+   * Checks if two residues are canonical base pairs by means of (1) distance between atoms which
+   * form hydrogen bonds and (2) checking if two bases face each other.
    *
    * @param left First residue.
    * @param right Second residue.
-   * @return True if we have a pair of C-G, A-U or G-U and atoms' distances are within limits to
-   *     form hydrogen bonds.
+   * @return True if there is a pair of C-G, A-U or G-U.
    */
   public static boolean isCanonicalPair(final PdbResidue left, final PdbResidue right) {
     final char leftName = Character.toUpperCase(left.oneLetterName());
@@ -134,52 +129,30 @@ public class BasePair implements Serializable, Comparable<BasePair> {
     return dotProduct < 0.0;
   }
 
-  public final PdbNamedResidueIdentifier getLeft() {
-    return pair.getLeft();
-  }
+  /** @return The first residue. */
+  @Value.Parameter(order = 1)
+  public abstract PdbNamedResidueIdentifier left();
 
-  public final PdbNamedResidueIdentifier getRight() {
-    return pair.getRight();
-  }
+  /** @return The second residue. */
+  @Value.Parameter(order = 2)
+  public abstract PdbNamedResidueIdentifier right();
 
   public final BasePair invert() {
-    return new BasePair(pair.getRight(), pair.getLeft());
+    return ImmutableBasePair.of(right(), left());
   }
 
+  /** @return True if the first residue is before the second one in 5'-3' order. */
   public final boolean is5to3() {
-    return pair.getLeft().residueNumber() < pair.getRight().residueNumber();
-  }
-
-  @Override
-  public final int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = (prime * result) + ((pair == null) ? 0 : pair.hashCode());
-    return result;
-  }
-
-  @Override
-  public final boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final BasePair other = (BasePair) obj;
-    return pair == null ? other.pair == null : Objects.equals(pair, other.pair);
+    return left().compareTo(right()) < 0;
   }
 
   @Override
   public final String toString() {
-    return pair.getLeft() + " - " + pair.getRight();
+    return left() + " - " + right();
   }
 
   @Override
   public final int compareTo(final BasePair t) {
-    return pair.compareTo(t.pair);
+    return new CompareToBuilder().append(left(), t.left()).append(right(), t.right()).build();
   }
 }

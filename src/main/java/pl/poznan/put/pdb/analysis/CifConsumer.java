@@ -45,8 +45,6 @@ import org.biojava.nbio.structure.io.mmcif.model.StructSiteGen;
 import org.biojava.nbio.structure.io.mmcif.model.Symmetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.poznan.put.notation.BPh;
-import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.pdb.ExperimentalTechnique;
@@ -64,9 +62,8 @@ import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
-import pl.poznan.put.rna.InteractionType;
 import pl.poznan.put.structure.BasePair;
-import pl.poznan.put.structure.HelixOrigin;
+import pl.poznan.put.structure.ImmutableBasePair;
 import pl.poznan.put.structure.ModifiableQuantifiedBasePair;
 import pl.poznan.put.structure.QuantifiedBasePair;
 
@@ -514,7 +511,7 @@ class CifConsumer implements MMcifConsumer {
           ResidueTypeDetector.detectResidueType(resnR, Collections.emptySet()).oneLetterName();
       final PdbNamedResidueIdentifier right =
           ImmutablePdbNamedResidueIdentifier.of(chainR, resiR, icodeR, oneLetterR);
-      final BasePair basePair = new BasePair(left, right);
+      final BasePair basePair = ImmutableBasePair.of(left, right);
 
       final String saengerString = map.get("hbond_type_28");
       Saenger saenger = Saenger.UNKNOWN;
@@ -536,20 +533,9 @@ class CifConsumer implements MMcifConsumer {
       final double opening = CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.OPENING);
       final QuantifiedBasePair quantifiedBasePair =
           ModifiableQuantifiedBasePair.create(
-              basePair,
-              InteractionType.BASE_BASE,
-              saenger,
-              leontisWesthof,
-              BPh.UNKNOWN,
-              BR.UNKNOWN,
-              HelixOrigin.UNKNOWN,
-              false,
-              shear,
-              stretch,
-              stagger,
-              buckle,
-              propeller,
-              opening);
+                  basePair, shear, stretch, stagger, buckle, propeller, opening)
+              .setSaenger(saenger)
+              .setLeontisWesthof(leontisWesthof);
       basePairs.add(quantifiedBasePair);
     }
   }

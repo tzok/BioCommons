@@ -1,8 +1,10 @@
 package pl.poznan.put.structure.formats;
 
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
+import pl.poznan.put.structure.BasePair;
 import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.DotBracketSymbol;
+import pl.poznan.put.structure.ImmutableBasePair;
 
 import java.util.List;
 import java.util.Set;
@@ -43,4 +45,18 @@ public interface DotBracketFromPdb extends DotBracket {
 
   /** @return The set of residue identifiers used in this structure. */
   Set<PdbNamedResidueIdentifier> identifierSet();
+
+  /**
+   * Maps a dot-bracket symbol to an instance of base pair.
+   *
+   * @param symbol A dot-bracket symbol.
+   * @return An instance of base pair.
+   */
+  default BasePair basePair(final DotBracketSymbol symbol) {
+    if (symbol.isPairing() && symbol.pair().isPresent()) {
+      return ImmutableBasePair.of(identifier(symbol), identifier(symbol.pair().get()));
+    }
+    throw new IllegalArgumentException(
+        "Cannot create base pair from unpaired nucleotide: " + symbol);
+  }
 }

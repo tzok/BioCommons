@@ -9,7 +9,7 @@ import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.structure.CanonicalStructureExtractor;
 import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.formats.Converter;
-import pl.poznan.put.structure.formats.LevelByLevelConverter;
+import pl.poznan.put.structure.formats.ImmutableDefaultConverter;
 import pl.poznan.put.structure.pseudoknots.elimination.MinGain;
 import pl.poznan.put.utility.ResourcesHelper;
 
@@ -27,7 +27,7 @@ public class ChainReordererTest {
 
   @Before
   public final void setUp() {
-    converter = new LevelByLevelConverter(new MinGain(), 1);
+    converter = ImmutableDefaultConverter.of();
   }
 
   @Test

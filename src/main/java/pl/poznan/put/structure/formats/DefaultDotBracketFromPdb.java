@@ -1,5 +1,6 @@
 package pl.poznan.put.structure.formats;
 
+import org.apache.commons.lang3.Validate;
 import org.immutables.value.Value;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbChain;
@@ -7,6 +8,7 @@ import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.structure.BasePair;
 import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.DotBracketSymbol;
+import pl.poznan.put.structure.ImmutableBasePair;
 import pl.poznan.put.structure.ModifiableAnalyzedBasePair;
 import pl.poznan.put.structure.ModifiableDotBracketSymbol;
 
@@ -22,9 +24,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+/**
+ * A default implementation of a dot-bracket structure which is mapped to data from 3D coordinates.
+ */
 @Value.Immutable
-public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
+public abstract class DefaultDotBracketFromPdb extends AbstractDotBracket
+    implements DotBracketFromPdb {
   private static void depthFirstSearch(
       final Strand u,
       final Map<Strand, Set<Strand>> graph,
@@ -40,27 +47,22 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
     }
   }
 
-  @Value.Parameter(order = 1)
-  public abstract DotBracket dotBracket();
-
-  @Value.Parameter(order = 2)
+  @Value.Parameter(order = 3)
   public abstract PdbModel model();
 
   @Override
-  public final String sequence() {
-    return dotBracket().sequence();
+  public final List<DotBracket> combineStrands() {
+    return candidatesToCombine().stream()
+        .map(strands -> ImmutableCombinedStrandFromPdb.of(strands, symbolToResidue()))
+        .collect(Collectors.toList());
   }
 
   @Override
-  public final String structure() {
-    return dotBracket().structure();
+  public final int originalIndex(final DotBracketSymbol symbol) {
+    return symbolToResidue().get(symbol).residueNumber();
   }
 
   @Override
-  public final List<DotBracketSymbol> symbols() {
-    return dotBracket().symbols();
-  }
-
   @Value.Default
   @Value.Auxiliary
   public List<Strand> strands() {
@@ -78,19 +80,12 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
   }
 
   @Override
-  public final List<DotBracket> combineStrands() {
-    return DefaultDotBracket.candidatesToCombine(strands()).stream()
-        .map(
-            strands ->
-                ImmutableCombinedStrandFromPdb.of(
-                    ImmutableCombinedStrand.of(strands), symbolToResidue()))
-        .collect(Collectors.toList());
-  }
+  @Value.Parameter(order = 1)
+  public abstract String sequence();
 
   @Override
-  public final int originalIndex(final DotBracketSymbol symbol) {
-    return symbolToResidue().get(symbol).residueNumber();
-  }
+  @Value.Parameter(order = 2)
+  public abstract String structure();
 
   @Override
   public final PdbNamedResidueIdentifier identifier(final DotBracketSymbol symbol) {
@@ -134,10 +129,9 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
 
     // link strands connected by non-canonical base pairs
     for (final ClassifiedBasePair nonCanonicalPair : nonCanonical) {
-      final DotBracketSymbol leftSymbol =
-          residueToSymbol().get(nonCanonicalPair.basePair().getLeft());
+      final DotBracketSymbol leftSymbol = residueToSymbol().get(nonCanonicalPair.basePair().left());
       final DotBracketSymbol rightSymbol =
-          residueToSymbol().get(nonCanonicalPair.basePair().getRight());
+          residueToSymbol().get(nonCanonicalPair.basePair().right());
 
       for (final Strand strand : strands()) {
         final List<DotBracketSymbol> strandSymbols = strand.symbols();
@@ -164,51 +158,42 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
     for (final Set<Strand> strandCluster : components) {
       final List<Strand> combinedStrands = new ArrayList<>(strandCluster);
       combinedStrands.sort(Comparator.comparingInt(strands()::indexOf));
-      result.add(
-          ImmutableCombinedStrandFromPdb.of(
-              ImmutableCombinedStrand.of(combinedStrands), symbolToResidue()));
+      result.add(ImmutableCombinedStrandFromPdb.of(combinedStrands, symbolToResidue()));
     }
 
     return result;
   }
 
-  public final Map<DotBracketSymbol, PdbNamedResidueIdentifier> getSymbolToResidue() {
-    return Collections.unmodifiableMap(symbolToResidue());
-  }
+  /**
+   * Sets {@link ClassifiedBasePair#isRepresented()} to true for all base pairs which have a pairing
+   * brackets in this structure and sets {@link DotBracketSymbol#isNonCanonical()} to true if the
+   * base pair classification says so.
+   *
+   * @param nonCanonical The list of non-canonical base pairs.
+   */
+  public final void markRepresentedNonCanonicals(
+      final Collection<ModifiableAnalyzedBasePair> nonCanonical) {
+    final Collection<BasePair> representedSet =
+        symbols().stream()
+            .filter(DotBracketSymbol::isPairing)
+            .filter(symbol -> symbol.pair().isPresent())
+            .map(
+                symbol -> ImmutableBasePair.of(identifier(symbol), identifier(symbol.pair().get())))
+            .collect(Collectors.toSet());
 
-  public final Map<PdbNamedResidueIdentifier, DotBracketSymbol> getResidueToSymbol() {
-    return Collections.unmodifiableMap(residueToSymbol());
-  }
-
-  public final BasePair basePair(final DotBracketSymbol symbol) {
-    if (symbol.isPairing()) {
-      return new BasePair(
-          symbolToResidue().get(symbol),
-          symbolToResidue()
-              .get(
-                  symbol
-                      .pair()
-                      .orElseThrow(
-                          () ->
-                              new IllegalArgumentException(
-                                  "Failed to find a pair for seemingly pairing dot-bracket symbol: "
-                                      + symbol))));
-    }
-    throw new IllegalArgumentException(
-        "Cannot create base pair from unpaired nucleotide: " + symbol);
-  }
-
-  @Value.Lazy
-  public Map<DotBracketSymbol, PdbNamedResidueIdentifier> symbolToResidue() {
-    return IntStream.range(0, symbols().size())
-        .boxed()
-        .collect(
-            Collectors.toMap(
-                i -> symbols().get(i), i -> model().residues().get(i).namedResidueIdentifer()));
+    nonCanonical.stream()
+        .filter(basePair -> representedSet.contains(basePair.basePair()))
+        .peek(basePair -> basePair.setIsRepresented(true))
+        .filter(ClassifiedBasePair::isNonCanonical)
+        .map(ModifiableAnalyzedBasePair::basePair)
+        .flatMap(basePair -> Stream.of(basePair.left(), basePair.right()))
+        .map(this::symbol)
+        .map(symbol -> (ModifiableDotBracketSymbol) symbol)
+        .forEach(symbol -> symbol.setIsNonCanonical(true));
   }
 
   @Value.Lazy
-  public Map<PdbNamedResidueIdentifier, DotBracketSymbol> residueToSymbol() {
+  protected Map<PdbNamedResidueIdentifier, DotBracketSymbol> residueToSymbol() {
     return IntStream.range(0, symbols().size())
         .boxed()
         .collect(
@@ -216,51 +201,29 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
                 i -> model().residues().get(i).namedResidueIdentifer(), i -> symbols().get(i)));
   }
 
-  public final void markRepresentedNonCanonicals(
-      final Iterable<ModifiableAnalyzedBasePair> nonCanonical) {
-    final Collection<BasePair> representedSet = new HashSet<>();
-
-    for (final DotBracketSymbol symbol : symbols()) {
-      if (symbol.isPairing()) {
-        final PdbNamedResidueIdentifier left = identifier(symbol);
-        final PdbNamedResidueIdentifier right =
-            identifier(
-                symbol
-                    .pair()
-                    .orElseThrow(
-                        () ->
-                            new IllegalArgumentException(
-                                "Failed to find a pair for seemingly pairing dot-bracket symbol: "
-                                    + symbol)));
-        representedSet.add(new BasePair(left, right));
-      }
-    }
-
-    for (final ModifiableAnalyzedBasePair cbp : nonCanonical) {
-      final BasePair basePair = cbp.basePair();
-      if (representedSet.contains(basePair)) {
-        cbp.setIsRepresented(true);
-
-        if (!cbp.isCanonical()) {
-          final ModifiableDotBracketSymbol left =
-              (ModifiableDotBracketSymbol) symbol(basePair.getLeft());
-          final ModifiableDotBracketSymbol right =
-              (ModifiableDotBracketSymbol) symbol(basePair.getRight());
-          left.setIsNonCanonical(true);
-          right.setIsNonCanonical(true);
-        }
-      }
-    }
+  @Value.Lazy
+  protected Map<DotBracketSymbol, PdbNamedResidueIdentifier> symbolToResidue() {
+    return IntStream.range(0, symbols().size())
+        .boxed()
+        .collect(
+            Collectors.toMap(
+                i -> symbols().get(i), i -> model().residues().get(i).namedResidueIdentifer()));
   }
 
   @Value.Check
-  protected DefaultDotBracketFromPdb useMinusForMissingResidues() {
+  protected DefaultDotBracketFromPdb validate() {
+    Validate.matchesPattern(sequence(), DefaultDotBracket.SEQUENCE_PATTERN);
+    Validate.matchesPattern(structure(), DefaultDotBracket.STRUCTURE_PATTERN);
+
+    Validate.isTrue(
+        sequence().length() == structure().length(),
+        "Sequence and structure must be of the same length");
+
     final List<Integer> positionsToModify =
         IntStream.range(0, model().residues().size())
             .filter(i -> model().residues().get(i).isMissing() && structure().charAt(i) != '-')
             .boxed()
             .collect(Collectors.toList());
-
     if (positionsToModify.isEmpty()) {
       return this;
     }
@@ -268,8 +231,7 @@ public abstract class DefaultDotBracketFromPdb implements DotBracketFromPdb {
     final char[] chars = structure().toCharArray();
     positionsToModify.forEach(i -> chars[i] = '-');
 
-    return ImmutableDefaultDotBracketFromPdb.of(
-        ImmutableDefaultDotBracket.of(sequence(), String.valueOf(chars)), model());
+    return ImmutableDefaultDotBracketFromPdb.of(sequence(), String.valueOf(chars), model());
   }
 
   private void linkStrands(

@@ -1,26 +1,26 @@
 package pl.poznan.put.structure;
 
 import org.junit.Test;
+import pl.poznan.put.structure.formats.MultiLineDotBracket;
 
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class ExtendedSecondaryStructureTest {
+public class MultiLineDotBracketTest {
   // @formatter:on
 
   @Test
   public final void simple() {
     final String simple = "seq ACGUACGUACGU\n" + "cWW ....((..))..\n" + "cWH (([[..))]]..\n";
-    final ExtendedSecondaryStructure secondaryStructure =
-        ExtendedSecondaryStructure.fromMultilineDotBracket(simple);
+    final MultiLineDotBracket secondaryStructure = MultiLineDotBracket.fromString(simple);
     assertThat(secondaryStructure.toString(), is(simple));
 
     final String sequence = secondaryStructure.sequence();
     assertThat(sequence, is("ACGUACGUACGU"));
 
-    final Collection<ClassifiedBasePair> basePairs = secondaryStructure.basePairs();
+    final Collection<? extends ClassifiedBasePair> basePairs = secondaryStructure.basePairs();
     assertThat(basePairs.size(), is(6));
   }
 
@@ -32,14 +32,13 @@ public class ExtendedSecondaryStructureTest {
             + "cWH ..([{...)]}...([{...)]}.\n"
             + "cWH ........([{...)]}.......\n"
             + "cHW ..([{...............)]}.\n";
-    final ExtendedSecondaryStructure secondaryStructure =
-        ExtendedSecondaryStructure.fromMultilineDotBracket(quadruplex);
+    final MultiLineDotBracket secondaryStructure = MultiLineDotBracket.fromString(quadruplex);
     assertThat(secondaryStructure.toString(), is(quadruplex));
 
     final String sequence = secondaryStructure.sequence();
     assertThat(sequence, is("uAGGGUUAGGGUuAGGGUUAGGGU"));
 
-    final Collection<ClassifiedBasePair> basePairs = secondaryStructure.basePairs();
+    final Collection<? extends ClassifiedBasePair> basePairs = secondaryStructure.basePairs();
     assertThat(basePairs.size(), is(12));
   }
 }

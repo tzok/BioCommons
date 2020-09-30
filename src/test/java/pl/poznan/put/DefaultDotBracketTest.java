@@ -5,7 +5,7 @@ import pl.poznan.put.structure.formats.BpSeq;
 import pl.poznan.put.structure.formats.Converter;
 import pl.poznan.put.structure.formats.DefaultDotBracket;
 import pl.poznan.put.structure.formats.DotBracket;
-import pl.poznan.put.structure.formats.LevelByLevelConverter;
+import pl.poznan.put.structure.formats.ImmutableDefaultConverter;
 import pl.poznan.put.structure.pseudoknots.elimination.MinGain;
 import pl.poznan.put.utility.ResourcesHelper;
 
@@ -48,7 +48,7 @@ public class DefaultDotBracketTest {
 
   @Test
   public final void fromBpSeq() {
-    final Converter converter = new LevelByLevelConverter(new MinGain(), 1);
+    final Converter converter = ImmutableDefaultConverter.of();
     final BpSeq bpSeq = BpSeq.fromString(DefaultDotBracketTest.BPSEQ);
     final DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
     final DefaultDotBracket dotBracketFromString =
@@ -61,7 +61,7 @@ public class DefaultDotBracketTest {
     final String bpseq1EHZ = ResourcesHelper.loadResource("1EHZ-2D-bpseq.txt");
     final String dotBracket1EHZ = ResourcesHelper.loadResource("1EHZ-2D-dotbracket.txt");
 
-    final Converter converter = new LevelByLevelConverter(new MinGain(), 1);
+    final Converter converter = ImmutableDefaultConverter.of();
     final BpSeq bpSeq = BpSeq.fromString(bpseq1EHZ);
     final DotBracket dotBracketFromBpSeq = converter.convert(bpSeq);
     final DefaultDotBracket dotBracketFromString = DefaultDotBracket.fromString(dotBracket1EHZ);

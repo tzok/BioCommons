@@ -1,5 +1,6 @@
 package pl.poznan.put.structure;
 
+/** An information whether a base pair originated from a helix. */
 public enum HelixOrigin {
   UNKNOWN,
   TRUE,
@@ -18,6 +19,7 @@ public enum HelixOrigin {
     }
   }
 
+  /** @return A one letter representation of this instance. */
   public String toOneLetter() {
     switch (this) {
       case FALSE:

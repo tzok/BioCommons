@@ -1,7 +1,9 @@
 package pl.poznan.put.structure.formats;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.immutables.value.Value;
 import pl.poznan.put.structure.pseudoknots.PseudoknotFinder;
+import pl.poznan.put.structure.pseudoknots.elimination.MinGain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,25 +12,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class LevelByLevelConverter implements Converter {
+/**
+ * A default converter from BPSEQ to dot-bracket which iteratively (1) finds non-pseudoknots and
+ * assigns the current lowest level, then (2) increases level and (3) treats pseudoknots as the next
+ * input to (1) until there are base pairs without level assigned.
+ */
+@Value.Immutable(singleton = true)
+public abstract class DefaultConverter implements Converter {
   private static final char[] BRACKETS_OPENING = "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
   private static final char[] BRACKETS_CLOSING = ")]}>abcdefghijklmnopqrstuvwxyz".toCharArray();
-
-  private final PseudoknotFinder pkRemover;
-  private final int maxSolutions;
-
-  /**
-   * Construct an instance of converter from BPSEQ to dot-bracket.
-   *
-   * @param pkRemover An instance of algorithm to find which pairs are pseudoknots.
-   * @param maxSolutions Maximum number of solutions to be considered in a single step of the
-   *     algorithm.
-   */
-  public LevelByLevelConverter(final PseudoknotFinder pkRemover, final int maxSolutions) {
-    super();
-    this.pkRemover = pkRemover;
-    this.maxSolutions = maxSolutions;
-  }
 
   private static boolean isProcessingNeeded(final Iterable<State> states) {
     for (final State state : states) {
@@ -50,8 +42,8 @@ public class LevelByLevelConverter implements Converter {
         final int j = pairs.pair();
 
         if (structure[i - 1] == '.') {
-          structure[i - 1] = LevelByLevelConverter.BRACKETS_OPENING[current.get().level()];
-          structure[j - 1] = LevelByLevelConverter.BRACKETS_CLOSING[current.get().level()];
+          structure[i - 1] = DefaultConverter.BRACKETS_OPENING[current.get().level()];
+          structure[j - 1] = DefaultConverter.BRACKETS_CLOSING[current.get().level()];
         }
       }
 
@@ -61,28 +53,47 @@ public class LevelByLevelConverter implements Converter {
     return new String(structure);
   }
 
+  /** @return The finder of pseudoknots ({@link MinGain} by default). */
+  @Value.Default
+  public PseudoknotFinder pseudoknotFinder() {
+    return new MinGain();
+  }
+
+  /** @return The number of solutions to return (1 by default). */
+  @Value.Default
+  public int maxSolutions() {
+    return 1;
+  }
+
+  /**
+   * Converts the secondary structure in BPSEQ format to dot-bracket. Works level-by-level, see
+   * class description.
+   *
+   * @param bpSeq The data in BPSEQ format.
+   * @return The converted dot-bracket.
+   */
   @Override
-  public final DefaultDotBracket convert(final BpSeq bpSeq) {
+  public final DotBracket convert(final BpSeq bpSeq) {
     List<State> states = new ArrayList<>();
     states.add(ImmutableState.of(Optional.empty(), bpSeq, 0));
 
-    while (LevelByLevelConverter.isProcessingNeeded(states)) {
+    while (DefaultConverter.isProcessingNeeded(states)) {
       states = processStates(states);
     }
 
     Collections.sort(states);
-    final String structure = LevelByLevelConverter.traceback(states.get(0));
+    final String structure = DefaultConverter.traceback(states.get(0));
     return ImmutableDefaultDotBracket.of(bpSeq.sequence(), structure);
   }
 
   private List<State> processStates(final Collection<State> states) {
     final List<State> nextStates = new ArrayList<>(states.size());
     for (final State state : states) {
-      for (final BpSeq bpSeq : pkRemover.findPseudoknots(state.bpSeq())) {
+      for (final BpSeq bpSeq : pseudoknotFinder().findPseudoknots(state.bpSeq())) {
         final State nextState = ImmutableState.of(Optional.of(state), bpSeq, state.level() + 1);
         nextStates.add(nextState);
 
-        if (nextStates.size() > maxSolutions) {
+        if (nextStates.size() > maxSolutions()) {
           return nextStates;
         }
       }
@@ -107,25 +118,8 @@ public class LevelByLevelConverter implements Converter {
     }
 
     @Override
-    public int compareTo(final State t) {
-      if (level() < t.level()) {
-        return -1;
-      }
-      if (level() > t.level()) {
-        return 1;
-      }
-      if (score() < t.score()) {
-        return -1;
-      }
-      if (score() > t.score()) {
-        return 1;
-      }
-      if (level() != 0) {
-        if (parent().isPresent() && t.parent().isPresent()) {
-          return parent().get().compareTo(t.parent().get());
-        }
-      }
-      return 0;
+    public final int compareTo(final State t) {
+      return new CompareToBuilder().append(level(), t.level()).append(score(), t.score()).build();
     }
 
     private boolean isFinal() {

@@ -76,8 +76,8 @@ public enum Saenger {
    *     all others.
    */
   public static Saenger assumeCanonical(final BasePair basePair) {
-    final char l = Character.toUpperCase(basePair.getLeft().oneLetterName());
-    final char r = Character.toUpperCase(basePair.getRight().oneLetterName());
+    final char l = Character.toUpperCase(basePair.left().oneLetterName());
+    final char r = Character.toUpperCase(basePair.right().oneLetterName());
     final String pair = String.format("%c%c", l, r);
 
     if ("CG".equals(pair) || "GC".equals(pair)) {
@@ -93,7 +93,7 @@ public enum Saenger {
   }
 
   /**
-   * Checks if instance of {@link Saenger} represents a canonical base pair (XIX, XX and XXVIII).
+   * Checks if instance of Saenger represents a canonical base pair (XIX, XX and XXVIII).
    *
    * @param saenger An instance to be checked.
    * @return True if {@code saenger} is either XIX, XX or XXVIII.

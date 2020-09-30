@@ -223,8 +223,8 @@ public final class CifConverter {
 
     for (final QuantifiedBasePair quantifiedBasePair : model.basePairs()) {
       final BasePair basePair = quantifiedBasePair.basePair();
-      final String left = basePair.getLeft().chainIdentifier();
-      final String right = basePair.getRight().chainIdentifier();
+      final String left = basePair.left().chainIdentifier();
+      final String right = basePair.right().chainIdentifier();
 
       if (!chainContacts.containsKey(left)) {
         chainContacts.put(left, new HashSet<>());

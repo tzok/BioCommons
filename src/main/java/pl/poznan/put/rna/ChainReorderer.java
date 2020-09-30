@@ -12,8 +12,7 @@ import pl.poznan.put.structure.CanonicalStructureExtractor;
 import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.formats.BpSeq;
 import pl.poznan.put.structure.formats.Converter;
-import pl.poznan.put.structure.formats.LevelByLevelConverter;
-import pl.poznan.put.structure.pseudoknots.elimination.MinGain;
+import pl.poznan.put.structure.formats.ImmutableDefaultConverter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -135,14 +134,12 @@ public final class ChainReorderer {
     final List<? extends ClassifiedBasePair> filteredBasePairs =
         basePairs.stream()
             .filter(
-                basePair ->
-                    candidateOrder.contains(basePair.basePair().getLeft().chainIdentifier()))
+                basePair -> candidateOrder.contains(basePair.basePair().left().chainIdentifier()))
             .filter(
-                basePair ->
-                    candidateOrder.contains(basePair.basePair().getRight().chainIdentifier()))
+                basePair -> candidateOrder.contains(basePair.basePair().right().chainIdentifier()))
             .collect(Collectors.toList());
-    final BpSeq bpSeq = BpSeq.fromResidueCollection(reordered, filteredBasePairs);
-    final Converter converter = new LevelByLevelConverter(new MinGain(), 1);
+    final BpSeq bpSeq = BpSeq.fromBasePairs(reordered, filteredBasePairs);
+    final Converter converter = ImmutableDefaultConverter.of();
     return converter.convert(bpSeq).pseudoknotOrder();
   }
 
@@ -150,12 +147,11 @@ public final class ChainReorderer {
       final Collection<? extends ClassifiedBasePair> basePairs) {
     return basePairs.stream()
         .map(ClassifiedBasePair::basePair)
+        .flatMap(basePair -> Stream.of(basePair, basePair.invert()))
         .map(
             basePair ->
-                Pair.of(
-                    basePair.getLeft().chainIdentifier(), basePair.getRight().chainIdentifier()))
+                Pair.of(basePair.left().chainIdentifier(), basePair.right().chainIdentifier()))
         .filter(pair -> !pair.getLeft().equals(pair.getRight()))
-        .flatMap(pair -> Stream.of(pair, Pair.of(pair.getRight(), pair.getLeft())))
         .distinct()
         .collect(
             Collectors.toMap(

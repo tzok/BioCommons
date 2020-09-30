@@ -3,7 +3,7 @@ package pl.poznan.put.notation;
 import org.junit.Test;
 import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
-import pl.poznan.put.structure.BasePair;
+import pl.poznan.put.structure.ImmutableBasePair;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,9 +25,10 @@ public class SaengerTest {
     final PdbNamedResidueIdentifier uracil =
         ImmutablePdbNamedResidueIdentifier.of("A", 4, " ", 'U');
 
-    assertThat(Saenger.assumeCanonical(new BasePair(guanine, cytosine)), is(Saenger.XIX));
-    assertThat(Saenger.assumeCanonical(new BasePair(adenine, uracil)), is(Saenger.XX));
-    assertThat(Saenger.assumeCanonical(new BasePair(guanine, uracil)), is(Saenger.XXVIII));
-    assertThat(Saenger.assumeCanonical(new BasePair(guanine, guanine)), is(Saenger.UNKNOWN));
+    assertThat(Saenger.assumeCanonical(ImmutableBasePair.of(guanine, cytosine)), is(Saenger.XIX));
+    assertThat(Saenger.assumeCanonical(ImmutableBasePair.of(adenine, uracil)), is(Saenger.XX));
+    assertThat(Saenger.assumeCanonical(ImmutableBasePair.of(guanine, uracil)), is(Saenger.XXVIII));
+    assertThat(
+        Saenger.assumeCanonical(ImmutableBasePair.of(guanine, guanine)), is(Saenger.UNKNOWN));
   }
 }

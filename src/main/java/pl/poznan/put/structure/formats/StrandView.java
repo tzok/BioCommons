@@ -6,65 +6,43 @@ import pl.poznan.put.structure.DotBracketSymbol;
 
 import java.util.List;
 
+/** A strand which is defined as a fragment of a dot-bracket structure. */
 @Value.Immutable
 public abstract class StrandView implements Strand {
+  @Override
   @Value.Parameter(order = 1)
   public abstract String name();
 
   @Override
-  public final TerminalMissing missingBegin() {
-    int i = begin();
-    for (; i < end(); i++) {
-      final DotBracketSymbol symbol = parent().symbols().get(i);
-      if (!symbol.isMissing()) {
-        break;
-      }
-    }
-    return ImmutableTerminalMissing.of(parent().symbols().subList(begin(), i));
-  }
-
-  @Override
-  public final TerminalMissing missingEnd() {
-    int i = end() - 1;
-    for (; i >= begin(); i--) {
-      final DotBracketSymbol symbol = parent().symbols().get(i);
-      if (!symbol.isMissing()) {
-        break;
-      }
-    }
-    return ImmutableTerminalMissing.of(parent().symbols().subList(i + 1, end()));
-  }
-
-  @Value.Lazy
-  public List<DotBracketSymbol> symbols() {
-    return parent().symbols().subList(begin(), end());
-  }
-
-  @Override
   public final String description() {
-    if (parent() instanceof DefaultDotBracketFromPdb) {
-      final DefaultDotBracketFromPdb fromPdb = (DefaultDotBracketFromPdb) parent();
-      final PdbNamedResidueIdentifier fromIdentifier =
-          fromPdb.identifier(fromPdb.symbols().get(begin()));
-      final PdbNamedResidueIdentifier toIdentifier =
-          fromPdb.identifier(fromPdb.symbols().get(end() - 1));
-
-      return String.format(
-          "%s %s %s %s %s", fromIdentifier, toIdentifier, sequence(), structure(), sequenceRY());
+    if (parent() instanceof DotBracketFromPdb) {
+      final DotBracketFromPdb fromPdb = (DotBracketFromPdb) parent();
+      final PdbNamedResidueIdentifier from = fromPdb.identifier(fromPdb.symbols().get(begin()));
+      final PdbNamedResidueIdentifier to = fromPdb.identifier(fromPdb.symbols().get(end() - 1));
+      return String.format("%s %s %s %s %s", from, to, sequence(), structure(), sequenceRY());
     }
 
     return String.format(
         "%d %d %s %s %s", begin() + 1, end(), sequence(), structure(), sequenceRY());
   }
 
+  @Override
   @Value.Parameter(order = 3)
   public abstract int begin();
 
+  @Override
   @Value.Parameter(order = 4)
   public abstract int end();
 
+  /** @return The parent dot-bracket structure of this strand. */
   @Value.Parameter(order = 2)
   public abstract DotBracket parent();
+
+  @Override
+  @Value.Lazy
+  public List<DotBracketSymbol> symbols() {
+    return parent().symbols().subList(begin(), end());
+  }
 
   @Override
   public final String toString() {

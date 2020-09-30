@@ -7,74 +7,85 @@ import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.InteractionType;
 
+/** A base pair which is classified and quantified with numerical parameters. */
 @Value.Modifiable
 public abstract class QuantifiedBasePair implements ClassifiedBasePair {
   @Value.Parameter(order = 1)
   public abstract BasePair basePair();
 
-  @Value.Parameter(order = 2)
-  public abstract InteractionType interactionType();
+  @Value.Default
+  public InteractionType interactionType() {
+    return ClassifiedBasePair.super.interactionType();
+  }
 
-  @Value.Parameter(order = 3)
-  public abstract Saenger saenger();
+  @Value.Default
+  public Saenger saenger() {
+    return ClassifiedBasePair.super.saenger();
+  }
 
-  @Value.Parameter(order = 4)
-  public abstract LeontisWesthof leontisWesthof();
+  @Value.Default
+  public LeontisWesthof leontisWesthof() {
+    return ClassifiedBasePair.super.leontisWesthof();
+  }
 
-  @Value.Parameter(order = 5)
-  public abstract BPh bph();
+  @Value.Default
+  public BPh bph() {
+    return ClassifiedBasePair.super.bph();
+  }
 
-  @Value.Parameter(order = 6)
-  public abstract BR br();
+  @Value.Default
+  public BR br() {
+    return ClassifiedBasePair.super.br();
+  }
 
-  @Value.Parameter(order = 7)
+  @Value.Default
   @Value.Auxiliary
-  public abstract HelixOrigin helixOrigin();
+  public HelixOrigin helixOrigin() {
+    return ClassifiedBasePair.super.helixOrigin();
+  }
 
-  @Value.Parameter(order = 8)
+  @Value.Default
   @Value.Auxiliary
-  public abstract boolean isRepresented();
+  public boolean isRepresented() {
+    return ClassifiedBasePair.super.isRepresented();
+  }
 
   @Override
   public ClassifiedBasePair invert() {
-    return ModifiableQuantifiedBasePair.create(
-        basePair().invert(),
-        interactionType().invert(),
-        saenger(),
-        leontisWesthof().invert(),
-        bph(),
-        br(),
-        helixOrigin(),
-        isRepresented(),
-        shear(),
-        stretch(),
-        stagger(),
-        buckle(),
-        propeller(),
-        opening());
+    return ModifiableQuantifiedBasePair.create()
+        .from(this)
+        .setBasePair(basePair().invert())
+        .setInteractionType(interactionType().invert())
+        .setLeontisWesthof(leontisWesthof().invert());
   }
 
-  @Value.Parameter(order = 9)
+  /** @return The value of shear parameter. */
+  @Value.Parameter(order = 2)
   @Value.Auxiliary
   public abstract double shear();
 
-  @Value.Parameter(order = 10)
+  /** @return The value of stretch parameter. */
+  @Value.Parameter(order = 3)
   @Value.Auxiliary
   public abstract double stretch();
 
-  @Value.Parameter(order = 11)
+  /** @return The value of stagger parameter. */
+  @Value.Parameter(order = 4)
   @Value.Auxiliary
   public abstract double stagger();
 
-  @Value.Parameter(order = 12)
+  /** @return The value of buckle parameter. */
+  @Value.Parameter(order = 5)
   @Value.Auxiliary
   public abstract double buckle();
 
-  @Value.Parameter(order = 13)
+  /** @return The value of propeller parameter. */
+  @Value.Parameter(order = 6)
   @Value.Auxiliary
   public abstract double propeller();
 
-  @Value.Parameter(order = 14)
+  /** @return The value of opening parameter. */
+  @Value.Parameter(order = 7)
   @Value.Auxiliary
   public abstract double opening();
 }

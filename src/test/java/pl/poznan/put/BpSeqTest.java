@@ -9,7 +9,6 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.structure.formats.BpSeq;
 import pl.poznan.put.structure.formats.Ct;
 import pl.poznan.put.structure.formats.DefaultDotBracket;
-import pl.poznan.put.structure.formats.InvalidStructureException;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.io.IOException;

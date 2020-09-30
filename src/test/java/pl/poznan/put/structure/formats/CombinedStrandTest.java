@@ -27,13 +27,13 @@ public class CombinedStrandTest {
   @Test
   public final void getInternalMissingTwoStrands() {
     final Strand strandFirst =
-        ImmutableStrandDirect.of(
+        ImmutableDefaultStrand.of(
             "A",
             Arrays.asList(
                 ModifiableDotBracketSymbol.create('A', '.', 1),
                 ModifiableDotBracketSymbol.create('A', '-', 2)));
     final Strand strandSecond =
-        ImmutableStrandDirect.of(
+        ImmutableDefaultStrand.of(
             "B",
             Arrays.asList(
                 ModifiableDotBracketSymbol.create('A', '-', 1),

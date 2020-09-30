@@ -8,7 +8,6 @@ import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.DotBracketSymbol;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,24 +19,15 @@ import java.util.stream.Collectors;
  * one-to-one correspondence with a 3D structure.
  */
 @Value.Immutable
-public abstract class CombinedStrandFromPdb implements DotBracketFromPdb {
-  /** @return The input combined strand. */
+public abstract class CombinedStrandFromPdb extends AbstractCombinedStrand
+    implements DotBracketFromPdb {
+  /** @return The list of input strands. */
   @Value.Parameter(order = 1)
-  protected abstract CombinedStrand combinedStrand();
+  protected abstract List<Strand> inputStrands();
 
   /** @return The mapping of dot-bracket symbols with corresponding PDB identifiers. */
   @Value.Parameter(order = 2)
   protected abstract Map<DotBracketSymbol, PdbNamedResidueIdentifier> inputSymbolToResidue();
-
-  @Override
-  public final String sequence() {
-    return combinedStrand().sequence();
-  }
-
-  @Override
-  public final String structure() {
-    return combinedStrand().structure();
-  }
 
   @Override
   public final int originalIndex(final DotBracketSymbol symbol) {
@@ -72,10 +62,8 @@ public abstract class CombinedStrandFromPdb implements DotBracketFromPdb {
   @Value.Lazy
   @Value.Auxiliary
   protected BidiMap<DotBracketSymbol, PdbNamedResidueIdentifier> mapping() {
-    final Set<DotBracketSymbol> symbols = new HashSet<>(combinedStrand().symbols());
     return new DualHashBidiMap<>(
         symbols().stream()
-            .filter(symbols::contains)
             .collect(Collectors.toMap(Function.identity(), inputSymbolToResidue()::get)));
   }
 }

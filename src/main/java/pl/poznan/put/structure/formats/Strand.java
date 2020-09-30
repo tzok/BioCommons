@@ -2,89 +2,86 @@ package pl.poznan.put.structure.formats;
 
 import pl.poznan.put.structure.DotBracketSymbol;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public interface Strand {
+/** A continuous segment of residues. It might span the whole chain in PDB or just its fragments. */
+public interface Strand extends DotBracket {
+  /** @return The name of the strand. */
   String name();
 
-  TerminalMissing missingBegin();
+  /** @return The missing residues at 5' end. */
+  default TerminalMissing missingBegin() {
+    final List<DotBracketSymbol> missing = new ArrayList<>();
+    for (final DotBracketSymbol symbol : symbols()) {
+      if (!symbol.isMissing()) {
+        break;
+      }
+      missing.add(symbol);
+    }
+    return ImmutableTerminalMissing.of(missing);
+  }
 
-  TerminalMissing missingEnd();
-
-  List<DotBracketSymbol> symbols();
+  /** @return The missing residues at 3' end. */
+  default TerminalMissing missingEnd() {
+    final List<DotBracketSymbol> missing = new ArrayList<>();
+    for (int i = symbols().size() - 1; i >= 0; i--) {
+      final DotBracketSymbol symbol = symbols().get(i);
+      if (!symbol.isMissing()) {
+        break;
+      }
+      missing.add(symbol);
+    }
+    return ImmutableTerminalMissing.of(missing);
+  }
 
   /**
-   * Prepare description of strand in RNAComposer format i.e. 5 elements: index-from, index-to,
-   * sequence, structure, RY-sequence.
+   * Prepares description of strand in RNAComposer format. The format has 5 elements: index-from,
+   * index-to, sequence, structure, RY-sequence.
    *
    * @return A description of strand in RNAComposer format.
    */
-  String description();
-
-  default String structure() {
-    final List<DotBracketSymbol> symbols = symbols();
-    return symbols.stream()
-        .map(symbol -> String.valueOf(symbol.structure()))
-        .collect(Collectors.joining());
+  default String description() {
+    return String.format(
+        "%d %d %s %s %s",
+        symbols().get(0).index(),
+        symbols().get(symbols().size() - 1).index(),
+        sequence(),
+        structure(),
+        sequenceRY());
   }
 
-  default int length() {
-    return end() - begin();
-  }
-
+  /** @return The index of the first residue in this strand. */
   default int begin() {
-    final List<DotBracketSymbol> symbols = symbols();
-    return symbols.isEmpty() ? 1 : symbols.get(0).index();
+    return symbols().isEmpty() ? 1 : symbols().get(0).index();
   }
 
+  /** @return The index of the last residue in this strand. */
   default int end() {
-    final List<DotBracketSymbol> symbols = symbols();
-    return symbols.isEmpty() ? 1 : symbols.get(symbols.size() - 1).index();
-  }
-
-  default int pseudoknotOrder() {
-    return symbols().stream()
-        .map(DotBracketSymbol::getOrder)
-        .max(Comparator.naturalOrder())
-        .orElse(0);
+    return symbols().isEmpty() ? 1 : symbols().get(symbols().size() - 1).index();
   }
 
   /**
-   * Check if this strand is "single strand" which means that it does not have any base-pair
-   * embedded inside its structure.
+   * Checks if this strand is "single strand" which means that it neither of its base pairs starts
+   * and ends in this strand.
    *
    * @return True if there is no base-pair inside of this strand. An opening or closing bracket is
    *     allowed as long as it points somewhere outside this strand.
    */
   default boolean isSingleStrand() {
-    final List<DotBracketSymbol> symbols = symbols();
-    return IntStream.range(1, (symbols.size() - 1))
-        .mapToObj(symbols::get)
-        .noneMatch(
-            symbol ->
-                symbol.isPairing()
-                    && symbols.contains(symbol.pair().orElseThrow(IllegalArgumentException::new)));
+    return symbols().stream()
+        .filter(DotBracketSymbol::isPairing)
+        .map(DotBracketSymbol::pair)
+        .noneMatch(symbol -> symbol.isPresent() && symbols().contains(symbol.get()));
   }
 
+  /** @return A sequence of R (instead of A and G) and Y (instead of C, U or T). */
   default String sequenceRY() {
-    final char[] cs = sequence().toCharArray();
-    for (int i = 0; i < cs.length; i++) {
-      cs[i] = ((cs[i] == 'A') || (cs[i] == 'G')) ? 'R' : 'Y';
-    }
-    return new String(cs);
-  }
-
-  default String sequence() {
-    final List<DotBracketSymbol> symbols = symbols();
-    return symbols.stream()
-        .map(symbol -> String.valueOf(symbol.sequence()))
+    return sequence()
+        .chars()
+        .mapToObj(i -> (char) i)
+        .map(character -> character == 'A' || character == 'G' ? "R" : "Y")
         .collect(Collectors.joining());
-  }
-
-  default boolean containsMissing() {
-    return symbols().stream().anyMatch(DotBracketSymbol::isMissing);
   }
 }
