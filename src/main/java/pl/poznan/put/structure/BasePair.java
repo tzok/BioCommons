@@ -41,7 +41,7 @@ public abstract class BasePair implements Serializable, Comparable<BasePair> {
     if ((leftName == 'C') && (rightName == 'G')) {
       return BasePair.isCanonicalCG(left, right);
     }
-    if ((leftName == 'A') && (rightName == 'U')) {
+    if ((leftName == 'A') && (rightName == 'U' || rightName == 'T')) {
       return BasePair.isCanonicalAU(left, right);
     }
     return (leftName == 'G') && (rightName == 'U') && BasePair.isCanonicalGU(left, right);

@@ -1,7 +1,9 @@
 package pl.poznan.put.rna;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.iterators.PermutationIterator;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.ImmutableDefaultPdbModel;
@@ -18,13 +20,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -100,9 +106,9 @@ public final class ChainReorderer {
 
     for (final String chain : distinct) {
       if (!visited.contains(chain)) {
-        final Set<String> component = new LinkedHashSet<>();
+        final List<String> component = new ArrayList<>();
         ChainReorderer.depthFirstSearch(chain, graph, visited, component);
-        order.addAll(ChainReorderer.componentOrder(component, residues, basePairs));
+        order.addAll(ChainReorderer.componentOrder(component, distinct, residues, basePairs));
       }
     }
 
@@ -110,16 +116,32 @@ public final class ChainReorderer {
   }
 
   private static List<String> componentOrder(
-      final Set<String> component,
+      final List<String> component,
+      final List<String> originalChainOrder,
       final Collection<PdbNamedResidueIdentifier> residues,
       final Collection<? extends ClassifiedBasePair> basePairs) {
-    final Iterator<List<String>> iterator = new PermutationIterator<>(component);
-    final Iterable<List<String>> iterable = () -> iterator;
-    return StreamSupport.stream(iterable.spliterator(), false)
-        .min(
-            Comparator.comparingInt(
-                order -> ChainReorderer.countPseudoknots(order, residues, basePairs)))
-        .orElse(new ArrayList<>(component));
+    final SortedMap<Integer, List<List<String>>> map = new TreeMap<>();
+    CollectionUtils.permutations(component)
+        .forEach(
+            order -> {
+              final int pseudoknots = ChainReorderer.countPseudoknots(order, residues, basePairs);
+              map.putIfAbsent(pseudoknots, new ArrayList<>());
+              map.get(pseudoknots).add(order);
+            });
+
+    final SpearmansCorrelation spearman = new SpearmansCorrelation();
+    final double[] yArray =
+        component.stream().map(originalChainOrder::indexOf).mapToDouble(i -> i).toArray();
+
+    return map.get(map.firstKey()).stream()
+        .max(
+            Comparator.comparingDouble(
+                (Collection<String> order) -> {
+                  final double[] xArray =
+                      order.stream().map(originalChainOrder::indexOf).mapToDouble(i -> i).toArray();
+                  return spearman.correlation(xArray, yArray);
+                }))
+        .orElse(component);
   }
 
   private static int countPseudoknots(
@@ -145,7 +167,8 @@ public final class ChainReorderer {
 
   private static Map<String, Set<String>> buildGraph(
       final Collection<? extends ClassifiedBasePair> basePairs) {
-    return basePairs.stream()
+    final Map<String, Set<String>> map = new HashMap<>();
+    basePairs.stream()
         .map(ClassifiedBasePair::basePair)
         .flatMap(basePair -> Stream.of(basePair, basePair.invert()))
         .map(
@@ -153,20 +176,19 @@ public final class ChainReorderer {
                 Pair.of(basePair.left().chainIdentifier(), basePair.right().chainIdentifier()))
         .filter(pair -> !pair.getLeft().equals(pair.getRight()))
         .distinct()
-        .collect(
-            Collectors.toMap(
-                Pair::getLeft,
-                pair -> Collections.singleton(pair.getRight()),
-                (s1, s2) ->
-                    new LinkedHashSet<>(
-                        Stream.concat(s1.stream(), s2.stream()).collect(Collectors.toList()))));
+        .forEach(
+            pair -> {
+              map.putIfAbsent(pair.getLeft(), new HashSet<>());
+              map.get(pair.getLeft()).add(pair.getRight());
+            });
+    return map;
   }
 
   private static void depthFirstSearch(
       final String u,
       final Map<String, Set<String>> graph,
-      final Set<String> visited,
-      final Set<String> component) {
+      final Collection<String> visited,
+      final Collection<String> component) {
     visited.add(u);
     component.add(u);
 

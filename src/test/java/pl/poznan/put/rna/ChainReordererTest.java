@@ -3,6 +3,8 @@ package pl.poznan.put.rna;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
+import pl.poznan.put.pdb.analysis.CifParser;
+import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
@@ -64,5 +66,33 @@ public class ChainReordererTest {
     assertThat(
         converter.convert(CanonicalStructureExtractor.bpSeq(reorderedModel)).pseudoknotOrder(),
         is(1));
+  }
+
+  @Test
+  public final void test1A73() throws IOException {
+    final PdbModel originalModel =
+        CifParser.parse(ResourcesHelper.loadResource("1a73-assembly-1.cif"))
+            .get(0)
+            .filteredNewInstance(MoleculeType.RNA);
+    final List<String> originalChains =
+        originalModel.chains().stream().map(PdbChain::identifier).collect(Collectors.toList());
+    assertThat(originalChains, is(Arrays.asList("A", "B", "C", "D")));
+    assertThat(
+        converter.convert(CanonicalStructureExtractor.bpSeq(originalModel)).pseudoknotOrder(),
+        is(0));
+
+    final PdbModel reorderedModel = ChainReorderer.reorderAtoms(originalModel);
+    final List<String> reorderedChains =
+        reorderedModel.chains().stream().map(PdbChain::identifier).collect(Collectors.toList());
+    assertThat(reorderedChains, is(Arrays.asList("A", "B", "C", "D")));
+    assertThat(
+        converter.convert(CanonicalStructureExtractor.bpSeq(reorderedModel)).pseudoknotOrder(),
+        is(0));
+
+    final Collection<ClassifiedBasePair> originalBasePairs =
+        CanonicalStructureExtractor.basePairs(originalModel);
+    final Collection<ClassifiedBasePair> reorderedBasePairs =
+        CanonicalStructureExtractor.basePairs(reorderedModel);
+    assertThat(CollectionUtils.isEqualCollection(originalBasePairs, reorderedBasePairs), is(true));
   }
 }
