@@ -65,7 +65,7 @@ public abstract class DefaultDotBracket extends AbstractDotBracket implements Se
    * Parses a string into an instance of this class. The string must be in format:
    *
    * <pre>
-   *     >strand_name
+   *     &gt;strand_name
    *     ACGU
    *     .().
    * </pre>

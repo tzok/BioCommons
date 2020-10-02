@@ -39,7 +39,7 @@ public abstract class DotBracketSymbol implements Comparable<DotBracketSymbol>, 
    * Checks if the given character is a closing character in dot-bracket format.
    *
    * @param c The character to check
-   * @return True if {@code c} is one of: )]}>abcdefghijklmnopqrstuvwxyz}
+   * @return True if {@code c} is one of: )]}&gt;abcdefghijklmnopqrstuvwxyz.
    */
   public static boolean isClosing(final char c) {
     return DotBracketSymbol.CLOSING.contains(c);
@@ -122,7 +122,7 @@ public abstract class DotBracketSymbol implements Comparable<DotBracketSymbol>, 
     return DotBracketSymbol.order(structure());
   }
 
-  @Override
+    @Override
   public final String toString() {
     return index() + " " + sequence() + ' ' + structure();
   }

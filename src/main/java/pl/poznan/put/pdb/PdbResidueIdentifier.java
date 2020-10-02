@@ -13,6 +13,7 @@ public abstract class PdbResidueIdentifier implements ChainNumberICode {
   /**
    * Creates an instance of this class from any implementation of {@link ChainNumberICode}.
    *
+   * @param chainNumberICode The instance of (chain, number, icode) to convert.
    * @return An object that can be used to address specific residue.
    */
   public static PdbResidueIdentifier from(final ChainNumberICode chainNumberICode) {

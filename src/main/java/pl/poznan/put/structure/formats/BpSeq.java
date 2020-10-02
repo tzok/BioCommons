@@ -300,7 +300,7 @@ public abstract class BpSeq implements Serializable {
     }
 
     /**
-     * Checks for a paired BPSEQ entry (i, j) if a given index k lies between them: i < k < j.
+     * Checks for a paired BPSEQ entry (i, j) if a given index k lies between them: i &lt; k &lt; j.
      *
      * @param index The index to check
      * @return True if index lies between this entry and its pair.
