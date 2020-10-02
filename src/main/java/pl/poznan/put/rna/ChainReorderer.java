@@ -1,7 +1,6 @@
 package pl.poznan.put.rna;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.iterators.PermutationIterator;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
 import pl.poznan.put.pdb.PdbAtomLine;
@@ -22,8 +21,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +29,6 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * A set of methods to reorder chains in an RNA structure. The order is derived from base pairing
@@ -41,6 +37,8 @@ import java.util.stream.StreamSupport;
  * find one which minimizes the pseudoknot order.
  */
 public final class ChainReorderer {
+  private static final SpearmansCorrelation SPEARMAN = new SpearmansCorrelation();
+
   private ChainReorderer() {
     super();
   }
@@ -101,7 +99,7 @@ public final class ChainReorderer {
     }
 
     final Map<String, Set<String>> graph = ChainReorderer.buildGraph(basePairs);
-    final Set<String> visited = new HashSet<>();
+    final Collection<String> visited = new HashSet<>();
     final List<String> order = new ArrayList<>();
 
     for (final String chain : distinct) {
@@ -120,6 +118,7 @@ public final class ChainReorderer {
       final List<String> originalChainOrder,
       final Collection<PdbNamedResidueIdentifier> residues,
       final Collection<? extends ClassifiedBasePair> basePairs) {
+    // gather all permutations of chains which have the minimal pseudoknot order
     final SortedMap<Integer, List<List<String>>> map = new TreeMap<>();
     CollectionUtils.permutations(component)
         .forEach(
@@ -129,19 +128,32 @@ public final class ChainReorderer {
               map.get(pseudoknots).add(order);
             });
 
-    final SpearmansCorrelation spearman = new SpearmansCorrelation();
+    // return one of the selected permutations which is the most similar to the input chain order
+    // (i.e. introduce the minimal number of changes).
     final double[] yArray =
-        component.stream().map(originalChainOrder::indexOf).mapToDouble(i -> i).toArray();
+        IntStream.range(0, originalChainOrder.size())
+            .filter(i -> component.contains(originalChainOrder.get(i)))
+            .mapToDouble(i -> i)
+            .toArray();
 
     return map.get(map.firstKey()).stream()
-        .max(
-            Comparator.comparingDouble(
-                (Collection<String> order) -> {
-                  final double[] xArray =
-                      order.stream().map(originalChainOrder::indexOf).mapToDouble(i -> i).toArray();
-                  return spearman.correlation(xArray, yArray);
-                }))
+        .map(
+            candidate ->
+                Pair.of(
+                    candidate,
+                    ChainReorderer.spearmanCorrelation(originalChainOrder, yArray, candidate)))
+        .max(Comparator.comparingDouble(Pair::getValue))
+        .map(Pair::getKey)
         .orElse(component);
+  }
+
+  private static double spearmanCorrelation(
+      final List<String> originalChainOrder,
+      final double[] yArray,
+      final Collection<String> candidate) {
+    final double[] xArray =
+        candidate.stream().map(originalChainOrder::indexOf).mapToDouble(i -> i).toArray();
+    return ChainReorderer.SPEARMAN.correlation(xArray, yArray);
   }
 
   private static int countPseudoknots(
