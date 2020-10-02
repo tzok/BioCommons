@@ -7,6 +7,33 @@
   <version>2.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
+  <name>BioCommons</name>
+  <description>The BioCommons library contains classes to work with 2D and 3D structural bioinformatics data. There
+        are parsers for PDB and mmCIF files and many formats of 2D structure with classifications and notations used in
+        the literature, as well as algorithms implementations.</description>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Tomasz Zok</name>
+      <email>tomasz.zok@cs.put.poznan.pl</email>
+      <organization>Poznan University of Technology</organization>
+      <organizationUrl>https://www.cs.put.poznan.pl/tzok/</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/tzok/BioCommons.git</connection>
+    <developerConnection>scm:git:ssh://github.com:tzok/BioCommons.git</developerConnection>
+    <url>https://github.com/tzok/BioCommons/tree/master</url>
+  </scm>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -258,9 +285,31 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
           <sourcepath>${project.basedir}/src/main/java;${project.basedir}/target/generated-sources/annotations</sourcepath>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
