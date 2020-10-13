@@ -1,96 +1,105 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.collections4.Predicate;
-import org.apache.commons.collections4.PredicateUtils;
+import org.apache.commons.collections4.SetUtils;
 import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.atom.AtomType;
-import pl.poznan.put.protein.aminoacid.AminoAcidType;
-import pl.poznan.put.rna.base.NucleobaseType;
+import pl.poznan.put.protein.AminoAcid;
+import pl.poznan.put.protein.ImmutableBackbone;
+import pl.poznan.put.rna.ImmutableRibose;
+import pl.poznan.put.rna.Nucleotide;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+/** A detector of residue type based on its name and atom content. */
 public final class ResidueTypeDetector {
-  private static final Collection<ResidueInformationProvider> PROVIDERS = new LinkedHashSet<>();
-
-  static {
-    Collections.addAll(ResidueTypeDetector.PROVIDERS, NucleobaseType.values());
-    Collections.addAll(ResidueTypeDetector.PROVIDERS, AminoAcidType.values());
-  }
+  private static final Set<AtomName> RIBOSE_HEAVY_ATOMS =
+      ImmutableRibose.of().requiredAtoms().stream()
+          .filter(AtomName::isHeavy)
+          .collect(Collectors.toSet());
+  private static final Set<AtomName> BACKBONE_HEAVY_ATOMS =
+      ImmutableBackbone.of().requiredAtoms().stream()
+          .filter(AtomName::isHeavy)
+          .collect(Collectors.toSet());
 
   private ResidueTypeDetector() {
     super();
   }
 
+  /**
+   * Detects the type of residue by its name or atom content. Works by checking if there is a ribose
+   * or protein backbone among the atoms. Then it finds the most similar nucleobase or protein
+   * sidechain respectively.
+   *
+   * @param residueName The name of the residue.
+   * @param atomNames The names of atoms in the residue.
+   * @return An instance of class with all details about the residue type.
+   */
   public static ResidueInformationProvider detectResidueType(
-      final String residueName, final Collection<AtomName> atomNames) {
+      final String residueName, final Set<AtomName> atomNames) {
     final ResidueInformationProvider provider =
         ResidueTypeDetector.detectResidueTypeFromResidueName(residueName);
-    if (provider.getMoleculeType() != MoleculeType.UNKNOWN) {
+    if (provider.moleculeType() != MoleculeType.UNKNOWN) {
       return provider;
     }
     return ResidueTypeDetector.detectResidueTypeFromAtoms(atomNames, residueName);
   }
 
-  public static ResidueInformationProvider detectResidueTypeFromResidueName(
+  private static ResidueInformationProvider detectResidueTypeFromResidueName(
       final String residueName) {
-    for (final ResidueInformationProvider provider : ResidueTypeDetector.PROVIDERS) {
-      if (provider.getPdbNames().contains(residueName)) {
-        return provider;
-      }
-    }
-    return new InvalidResidueInformationProvider(residueName);
+    final Stream<ResidueInformationProvider> stream =
+        Stream.concat(Arrays.stream(Nucleotide.values()), Arrays.stream(AminoAcid.values()));
+    return stream
+        .filter(provider -> provider.aliases().contains(residueName))
+        .findFirst()
+        .orElse(ImmutableInvalidResidueInformationProvider.of(residueName));
   }
 
-  public static ResidueInformationProvider detectResidueTypeFromAtoms(
-      final Collection<AtomName> atomNames, final String residueName) {
-    final boolean hasHydrogen = ResidueTypeDetector.hasHydrogen(atomNames);
-    final Predicate<AtomName> isHeavyAtomPredicate = PredicateUtils.invokerPredicate("isHeavy");
-
-    final Iterable<AtomName> actual = EnumSet.copyOf(atomNames);
-    if (!hasHydrogen) {
-      CollectionUtils.filter(actual, isHeavyAtomPredicate);
-    }
-
-    double bestScore = Double.POSITIVE_INFINITY;
-    ResidueInformationProvider bestProvider = null;
-
-    for (final ResidueInformationProvider provider : ResidueTypeDetector.PROVIDERS) {
-      final Collection<AtomName> expected = EnumSet.noneOf(AtomName.class);
-
-      for (final ResidueComponent component : provider.getAllMoleculeComponents()) {
-        for (final AtomName atomName : component.getAtoms()) {
-          if (!hasHydrogen && (atomName.getType() == AtomType.H)) {
-            continue;
-          }
-          expected.add(atomName);
-        }
+  private static ResidueInformationProvider detectResidueTypeFromAtoms(
+      final Set<AtomName> actual, final String residueName) {
+    if (actual.size() > 1) {
+      if (ResidueTypeDetector.isNucleotide(actual)) {
+        return Arrays.stream(Nucleotide.values())
+            .map(Nucleotide::nucleobase)
+            .max(
+                Comparator.comparingDouble(
+                    base -> ResidueTypeDetector.intersectionRatio(actual, base.requiredAtoms())))
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        "Failed to match any nucleobase to provided atom names"));
       }
 
-      final Collection<AtomName> disjunction = CollectionUtils.disjunction(expected, actual);
-      final Collection<AtomName> union = CollectionUtils.union(expected, actual);
-      final double score = disjunction.size() / (double) union.size();
-
-      if (score < bestScore) {
-        bestScore = score;
-        bestProvider = provider;
+      if (ResidueTypeDetector.isAminoAcid(actual)) {
+        return Arrays.stream(AminoAcid.values())
+            .map(AminoAcid::sidechain)
+            .max(
+                Comparator.comparingDouble(
+                    sidechain ->
+                        ResidueTypeDetector.intersectionRatio(actual, sidechain.requiredAtoms())))
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        "Failed to match any sidechain to provided atom names"));
       }
     }
-
-    // value 0.5 found empirically
-    if (bestScore < 0.5) {
-      return bestProvider;
-    }
-    return new InvalidResidueInformationProvider(residueName);
+    return ImmutableInvalidResidueInformationProvider.of(residueName);
   }
 
-  private static boolean hasHydrogen(final Iterable<AtomName> atomNames) {
-    final Predicate<AtomName> notIsHeavyPredicate =
-        PredicateUtils.notPredicate(PredicateUtils.invokerPredicate("isHeavy")); // NON-NLS
-    return IterableUtils.matchesAny(atomNames, notIsHeavyPredicate);
+  private static boolean isNucleotide(final Set<AtomName> actual) {
+    return ResidueTypeDetector.intersectionRatio(actual, ResidueTypeDetector.RIBOSE_HEAVY_ATOMS)
+        >= 0.5;
+  }
+
+  private static double intersectionRatio(
+      final Set<AtomName> actual, final Set<AtomName> expected) {
+    return (double) SetUtils.intersection(actual, expected).size() / expected.size();
+  }
+
+  private static boolean isAminoAcid(final Set<AtomName> actual) {
+    return ResidueTypeDetector.intersectionRatio(actual, ResidueTypeDetector.BACKBONE_HEAVY_ATOMS)
+        >= 0.5;
   }
 }

@@ -2,72 +2,64 @@ package pl.poznan.put.pdb.analysis;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.io.FileUtils;
+import org.immutables.value.Value;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * An implementation of {@link ModelContainer} which is created from mmCIF file and its possible
- * split into multiple PDB files.
- */
-public class CifContainer implements ModelContainer {
-  private final File cifFile;
-  private final Map<File, BidiMap<String, String>> fileChainMap;
+/** A container of one or more PDB files converted from a single mmCIF file. */
+@Value.Immutable
+public abstract class CifContainer implements ModelContainer {
+  /**
+   * Creates an empty instance (without any chain mapping).
+   *
+   * @param cifFile Path to the mmCIF file.
+   * @return An instance without any chain mapping.
+   */
+  public static ModelContainer emptyInstance(final File cifFile) {
+    return ImmutableCifContainer.of(cifFile, Collections.emptyMap());
+  }
 
-  CifContainer(final File cifFile, final Map<File, BidiMap<String, String>> fileChainMap) {
-    super();
-    this.cifFile = cifFile;
-    this.fileChainMap = new HashMap<>(fileChainMap);
+  /** @return The mapping of chain name in PDB and mmCIF for a specific file. */
+  @Value.Parameter(order = 2)
+  public abstract Map<File, BidiMap<String, String>> fileChainMap();
+
+  /** @return The value of the {@code cifFile} attribute, */
+  @Value.Parameter(order = 1)
+  public abstract File cifFile();
+
+  @Override
+  public final List<File> pdbFiles() {
+    return new ArrayList<>(fileChainMap().keySet());
   }
 
   @Override
-  public final boolean isCif() {
-    return true;
-  }
-
-  @Override
-  public final File getCifFile() {
-    return cifFile;
-  }
-
-  @Override
-  public final List<File> getPdbFiles() {
-    return new ArrayList<>(fileChainMap.keySet());
-  }
-
-  @Override
-  public final String getCifChain(final File pdbFile, final String pdbChain) {
-    if (!fileChainMap.containsKey(pdbFile)) {
+  public final String originalCifChainName(final File pdbFile, final String pdbChain) {
+    if (!fileChainMap().containsKey(pdbFile)) {
       throw new IllegalArgumentException(
           "Failed to find PDBx/mmCIF chain name, missing data for file: " + pdbFile);
     }
-    return fileChainMap.get(pdbFile).getKey(pdbChain);
+    return fileChainMap().get(pdbFile).getKey(pdbChain);
   }
 
   @Override
-  public final String getPdbChain(final File pdbFile, final String cifChain) {
-    if (!fileChainMap.containsKey(pdbFile)) {
+  public final String convertedPdbChainName(final File pdbFile, final String cifChain) {
+    if (!fileChainMap().containsKey(pdbFile)) {
       throw new IllegalArgumentException(
           "Failed to find PDB chain name, missing data for file: " + pdbFile);
     }
-    return fileChainMap.get(pdbFile).get(cifChain);
+    return fileChainMap().get(pdbFile).get(cifChain);
   }
 
-  /**
-   * This class is {@link AutoCloseable} and upon closing, all files (PDB and PDBx/mmCIF) will be
-   * deleted.
-   *
-   * @throws IOException When file removal could not be done.
-   */
+  /** Deletes all files (PDB and mmCIF) maintained by this instance. */
   @Override
-  public void close() throws IOException {
-    FileUtils.forceDelete(cifFile);
-    for (final File file : fileChainMap.keySet()) {
-      FileUtils.forceDelete(file);
+  public final void close() {
+    FileUtils.deleteQuietly(cifFile());
+    for (final File file : fileChainMap().keySet()) {
+      FileUtils.deleteQuietly(file);
     }
   }
 }

@@ -1,42 +1,55 @@
 package pl.poznan.put.torsion.range;
 
-import lombok.Getter;
+import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.ImmutableAngle;
 
-/** Torsion angle ranges as defined in Saenger's "Principles...". */
-@Getter
+import java.util.Arrays;
+
+/** A default torsion angle range as defined in Saenger's "Principles...". */
 public enum TorsionRange implements Range {
-  SYN_CIS("sp", -30, 30),
-  ANTI_TRANS("ap", 150, -150),
-  SYNCLINAL_GAUCHE_PLUS("+sc", 30, 90),
-  SYNCLINAL_GAUCHE_MINUS("-sc", -90, -30),
-  ANTICLINAL_PLUS("+ac", 90, 150),
-  ANTICLINAL_MINUS("-ac", -150, -90),
+  SYN_CIS("sp", -30.0, 30.0),
+  ANTI_TRANS("ap", 150.0, -150.0),
+  SYNCLINAL_GAUCHE_PLUS("+sc", 30.0, 90.0),
+  SYNCLINAL_GAUCHE_MINUS("-sc", -90.0, -30.0),
+  ANTICLINAL_PLUS("+ac", 90.0, 150.0),
+  ANTICLINAL_MINUS("-ac", -150.0, -90.0),
   INVALID("invalid", Double.NaN, Double.NaN);
 
-  private static final RangeProvider PROVIDER =
-      angle -> {
-        if (angle.isValid()) {
-          for (final TorsionRange torsionRange : TorsionRange.values()) {
-            if (angle.isBetween(torsionRange.begin, torsionRange.end)) {
-              return torsionRange;
-            }
-          }
-        }
-        return TorsionRange.INVALID;
-      };
   private final String displayName;
   private final Angle begin;
   private final Angle end;
+
   TorsionRange(final String displayName, final double begin, final double end) {
     this.displayName = displayName;
-    this.begin = new Angle(begin, ValueType.DEGREES);
-    this.end = new Angle(end, ValueType.DEGREES);
+    this.begin = ImmutableAngle.of(FastMath.toRadians(begin));
+    this.end = ImmutableAngle.of(FastMath.toRadians(end));
   }
 
-  public static RangeProvider getProvider() {
-    return TorsionRange.PROVIDER;
+  /**
+   * @return An instance of {@link RangeProvider} which will provide this ranges for angle values.
+   */
+  public static RangeProvider rangeProvider() {
+    return angle ->
+        Arrays.stream(TorsionRange.values())
+            .filter(torsionRange -> angle.isBetween(torsionRange.begin, torsionRange.end))
+            .findFirst()
+            .orElse(TorsionRange.INVALID);
+  }
+
+  @Override
+  public String displayName() {
+    return displayName;
+  }
+
+  @Override
+  public Angle begin() {
+    return begin;
+  }
+
+  @Override
+  public Angle end() {
+    return end;
   }
 
   /**
@@ -58,7 +71,7 @@ public enum TorsionRange implements Range {
       return RangeDifference.INVALID;
     }
 
-    final int delta = (int) Math.round(begin.subtract(other.getBegin()).getDegrees360());
+    final int delta = (int) Math.round(begin.subtract(other.begin()).degrees360());
     return RangeDifference.fromValue(delta / 60);
   }
 }

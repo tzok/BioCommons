@@ -1,46 +1,37 @@
 package pl.poznan.put.torsion;
 
-import lombok.Data;
+import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.interfaces.DisplayableExportable;
 import pl.poznan.put.utility.AngleFormat;
 
-@Data
-public class TorsionAngleValue implements DisplayableExportable {
-  private TorsionAngleType angleType;
-  private Angle value;
-  public TorsionAngleValue(final TorsionAngleType angleType, final Angle value) {
-    super();
-    this.angleType = angleType;
-    this.value = value;
-  }
+/** A torsion angle with its value calculated. */
+@Value.Immutable
+public abstract class TorsionAngleValue implements DisplayableExportable {
+  /** @return The type of this torsion angle. */
+  @Value.Parameter(order = 1)
+  public abstract TorsionAngleType angleType();
 
-  public static TorsionAngleValue invalidInstance(final TorsionAngleType type) {
-    return new TorsionAngleValue(type, Angle.invalidInstance());
-  }
+  /** @return The value of this torsion angle. */
+  @Value.Parameter(order = 2)
+  public abstract Angle value();
 
   @Override
-  public final String toString() {
-    return getLongDisplayName();
-  }
-
-  @Override
-  public final String getLongDisplayName() {
+  public final String shortDisplayName() {
     return String.format(
         "%s %s",
-        angleType.getLongDisplayName(), AngleFormat.degreesRoundedToHundredth(value.getRadians()));
+        angleType().shortDisplayName(), AngleFormat.degreesRoundedToOne(value().radians()));
   }
 
   @Override
-  public final String getShortDisplayName() {
+  public final String longDisplayName() {
     return String.format(
         "%s %s",
-        angleType.getShortDisplayName(), AngleFormat.degreesRoundedToOne(value.getRadians()));
+        angleType().longDisplayName(), AngleFormat.degreesRoundedToHundredth(value().radians()));
   }
 
   @Override
-  public final String getExportName() {
-    return String.format(
-        "%s %s", angleType.getExportName(), AngleFormat.degrees(value.getRadians()));
+  public final String exportName() {
+    return String.format("%s %s", angleType().exportName(), AngleFormat.degrees(value().radians()));
   }
 }

@@ -1,9 +1,13 @@
 package pl.poznan.put.notation;
 
-import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
-@Getter
+import java.util.Arrays;
+
+/**
+ * A classification of RNA base pairs described in: Geometric Nomenclature and Classification of RNA
+ * Base Pairs. N.B. Leontis, E. Westhof. RNA. 2001. 7(4):499–512. doi:10.1017/S1355838201002515
+ */
 public enum LeontisWesthof {
   CWW(Stericity.CIS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.WATSON_CRICK),
   CWH(Stericity.CIS, NucleobaseEdge.WATSON_CRICK, NucleobaseEdge.HOOGSTEEN),
@@ -36,24 +40,15 @@ public enum LeontisWesthof {
     this.edge3 = edge3;
   }
 
-  public static LeontisWesthof fromString(final CharSequence input) {
-    for (final LeontisWesthof leontisWesthof : LeontisWesthof.values()) {
-      if (StringUtils.equalsIgnoreCase(leontisWesthof.name(), input)) {
-        return leontisWesthof;
-      }
-    }
-    return LeontisWesthof.UNKNOWN;
-  }
-
   /**
-   * This is not a "real" enum's ordinal, but a numeric index of Leontis-Westhof pair as used by
-   * other tools.
+   * Matches a number in range 1-12 to one of the constants. This is useful to parse mmCIF format,
+   * which contains {@code hbond_12} field.
    *
-   * @param ordinal Value between 1-12.
+   * @param number A value between 1-12.
    * @return Enum value represented by the ordinal value.
    */
-  public static LeontisWesthof fromOrdinal(final int ordinal) {
-    switch (ordinal) {
+  public static LeontisWesthof fromNumber(final int number) {
+    switch (number) {
       case 1:
         return LeontisWesthof.CWW;
       case 2:
@@ -83,18 +78,87 @@ public enum LeontisWesthof {
     }
   }
 
+  /**
+   * Finds a constant that matches a given name in case-insensitive manner or return UNKNOWN
+   * otherwise. For example, cww is the same as cWW.
+   *
+   * @param input A string representing LW notation.
+   * @return An instance of this class that matches the given name or UNKNONW if none does.
+   */
+  public static LeontisWesthof fromString(final CharSequence input) {
+    return Arrays.stream(LeontisWesthof.values())
+        .filter(leontisWesthof -> StringUtils.equalsIgnoreCase(leontisWesthof.name(), input))
+        .findFirst()
+        .orElse(LeontisWesthof.UNKNOWN);
+  }
+
+  private static String edgeName(final char c) {
+    switch (Character.toLowerCase(c)) {
+      case 'c':
+        return "cis";
+      case 't':
+        return "trans";
+      case 'w':
+        return "Watson-Crick";
+      case 'h':
+        return "Hoogsteen";
+      case 's':
+        return "Sugar";
+      default:
+        throw new IllegalArgumentException(
+            String.format("Letter %s is not recognized in Leontis-Westhof notation", c));
+    }
+  }
+
+  /**
+   * Generates a value in range 1-12 (or {@code Integer.MAX_VALUE}) which corresponds to this
+   * instance. The value is consistent with mmCIF format and its {@code hbond_12} field.
+   *
+   * @return A value between 1-12 or Integer.MAX_VALUE for unknown LW.
+   */
+  public int toNumber() {
+    switch (this) {
+      case CWW:
+        return 1;
+      case TWW:
+        return 2;
+      case CWH:
+        return 3;
+      case TWH:
+        return 4;
+      case CWS:
+        return 5;
+      case TWS:
+        return 6;
+      case CHH:
+        return 7;
+      case THH:
+        return 8;
+      case CHS:
+        return 9;
+      case THS:
+        return 10;
+      case CSS:
+        return 11;
+      case TSS:
+        return 12;
+      default:
+        return Integer.MAX_VALUE;
+    }
+  }
+
   @Override
   public String toString() {
-    return getShortName();
+    return shortName();
   }
 
   /**
    * Generates a three letter representation. "c" for cis, "t" for trans. Next, "W" for
-   * Watson-Crick, "H" for Hoogsteen and "S" for sugar.
+   * Watson-Crick, "H" for Hoogsteen and "S" for sugar. This method returns "n/a" for UNKNOWN.
    *
    * @return A three letter representation.
    */
-  public String getShortName() {
+  public String shortName() {
     if (this == LeontisWesthof.UNKNOWN) {
       return "n/a";
     }
@@ -104,18 +168,23 @@ public enum LeontisWesthof {
     return new String(chars);
   }
 
-  public String getFullName() {
+  /**
+   * Generates a full name representation. It consists of words "cis" or "trans", then
+   * "Watson-Crick", "Hoogsteen" or "Sugar". This method returns "n/a" for UNKNOWN.
+   *
+   * @return A long representation.
+   */
+  public String fullName() {
     if (this == LeontisWesthof.UNKNOWN) {
       return "n/a";
     }
 
     final char[] cs = name().toCharArray();
-
     return String.format(
         "%s%s/%s",
-        cs[0] == 'C' ? "cis " : "trans ",
-        cs[1] == 'W' ? "Watson-Crick" : cs[1] == 'H' ? "Hoogsteen" : "Sugar Edge",
-        cs[2] == 'W' ? "Watson-Crick" : cs[2] == 'H' ? "Hoogsteen" : "Sugar Edge");
+        LeontisWesthof.edgeName(cs[0]),
+        LeontisWesthof.edgeName(cs[1]),
+        LeontisWesthof.edgeName(cs[2]));
   }
 
   /**
@@ -133,5 +202,20 @@ public enum LeontisWesthof {
     chars[1] = chars[2];
     chars[2] = tmp;
     return LeontisWesthof.fromString(new String(chars));
+  }
+
+  /** @return Stericity i.e. cis, trans or unknown. */
+  public Stericity stericity() {
+    return stericity;
+  }
+
+  /** @return Edge of the 5' partner i.e. Watson-Crick, Hoogsteen, sugar or unknown. */
+  public NucleobaseEdge edge5() {
+    return edge5;
+  }
+
+  /** @return Edge of the 3' partner i.e. Watson-Crick, Hoogsteen, sugar or unknown. */
+  public NucleobaseEdge edge3() {
+    return edge3;
   }
 }

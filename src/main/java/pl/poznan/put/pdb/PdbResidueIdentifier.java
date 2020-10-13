@@ -1,107 +1,41 @@
 package pl.poznan.put.pdb;
 
 import org.apache.commons.lang3.StringUtils;
+import org.immutables.value.Value;
+import pl.poznan.put.pdb.analysis.DefaultPdbResidue;
 
-import javax.annotation.Nonnull;
-import java.io.Serializable;
-import java.util.Objects;
-
-public class PdbResidueIdentifier implements Comparable<PdbResidueIdentifier>, Serializable {
-  private static final long serialVersionUID = -573135765487167710L;
-
-  private static final PdbResidueIdentifier INVALID =
-      new PdbResidueIdentifier("", Integer.MIN_VALUE, "");
-
-  private final String chainIdentifier;
-  private final int residueNumber;
-  private final String insertionCode;
-  private char residueOneLetterName = ' ';
-
-  public PdbResidueIdentifier(
-      final String chainIdentifier, final int residueNumber, final String insertionCode) {
-    super();
-    this.chainIdentifier = chainIdentifier;
-    this.residueNumber = residueNumber;
-    this.insertionCode = insertionCode;
+/**
+ * A residue identifier is used only to address a residue in the structure. To work with residue
+ * content, see {@link DefaultPdbResidue}.
+ */
+@Value.Immutable
+public abstract class PdbResidueIdentifier implements ChainNumberICode {
+  /**
+   * Creates an instance of this class from any implementation of {@link ChainNumberICode}.
+   *
+   * @param chainNumberICode The instance of (chain, number, icode) to convert.
+   * @return An object that can be used to address specific residue.
+   */
+  public static PdbResidueIdentifier from(final ChainNumberICode chainNumberICode) {
+    return ImmutablePdbResidueIdentifier.of(
+        chainNumberICode.chainIdentifier(),
+        chainNumberICode.residueNumber(),
+        chainNumberICode.insertionCode());
   }
 
-  public static PdbResidueIdentifier fromChainNumberICode(final ChainNumberICode chainNumberICode) {
-    return new PdbResidueIdentifier(
-        chainNumberICode.getChainIdentifier(),
-        chainNumberICode.getResidueNumber(),
-        chainNumberICode.getInsertionCode());
-  }
+  @Value.Parameter(order = 1)
+  public abstract String chainIdentifier();
 
-  public static PdbResidueIdentifier invalid() {
-    return PdbResidueIdentifier.INVALID;
-  }
+  @Value.Parameter(order = 2)
+  public abstract int residueNumber();
 
-  public final String getChainIdentifier() {
-    return chainIdentifier;
-  }
-
-  public final int getResidueNumber() {
-    return residueNumber;
-  }
-
-  public final String getInsertionCode() {
-    return insertionCode;
-  }
-
-  public final char getResidueOneLetterName() {
-    return residueOneLetterName;
-  }
-
-  public final void setResidueOneLetterName(final char residueOneLetterName) {
-    this.residueOneLetterName = residueOneLetterName;
-  }
-
-  @Override
-  public final int hashCode() {
-    int result = chainIdentifier.hashCode();
-    result = (31 * result) + residueNumber;
-    result = (31 * result) + insertionCode.hashCode();
-    return result;
-  }
-
-  @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
-
-    final PdbResidueIdentifier other = (PdbResidueIdentifier) o;
-    return (residueNumber == other.residueNumber)
-        && Objects.equals(chainIdentifier, other.chainIdentifier)
-        && Objects.equals(insertionCode, other.insertionCode);
-  }
+  @Value.Parameter(order = 3)
+  public abstract String insertionCode();
 
   @Override
   public final String toString() {
-    final String chain = StringUtils.isBlank(chainIdentifier) ? "" : (chainIdentifier + '.');
-    final String icode = StringUtils.isBlank(insertionCode) ? "" : insertionCode;
-    final String name =
-        (residueOneLetterName == ' ') ? "" : Character.toString(residueOneLetterName);
-    return chain + name + residueNumber + icode;
-  }
-
-  @Override
-  public final int compareTo(@Nonnull final PdbResidueIdentifier t) {
-    if (!Objects.equals(chainIdentifier, t.chainIdentifier)) {
-      return chainIdentifier.compareTo(t.chainIdentifier);
-    }
-
-    if (residueNumber != t.residueNumber) {
-      return (residueNumber < t.residueNumber) ? -1 : 1;
-    }
-
-    return insertionCode.compareTo(t.insertionCode);
-  }
-
-  public final PdbResidueIdentifier replaceChainIdentifier(final String chain) {
-    return new PdbResidueIdentifier(chain, residueNumber, insertionCode);
+    final String chain = StringUtils.isBlank(chainIdentifier()) ? "" : (chainIdentifier() + '.');
+    final String icode = StringUtils.isBlank(insertionCode()) ? "" : insertionCode();
+    return chain + residueNumber() + icode;
   }
 }

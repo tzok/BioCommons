@@ -1,72 +1,76 @@
 package pl.poznan.put;
 
-import java.util.List;
-import org.junit.Assert;
 import org.junit.Test;
 import pl.poznan.put.pdb.ExperimentalTechnique;
+import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
+import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.utility.ResourcesHelper;
 
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 public class CifParserTest {
   @Test
   public final void test100D() throws Exception {
     final String cif100D = ResourcesHelper.loadResource("100D.cif");
-    final CifParser parser = new CifParser();
-    final List<PdbModel> models = parser.parse(cif100D);
-    Assert.assertEquals(1, models.size());
+    final List<CifModel> models = CifParser.parse(cif100D);
+    assertThat(models.size(), is(1));
 
     final PdbModel model = models.get(0);
-    final List<PdbChain> chains = model.getChains();
-    Assert.assertEquals(2, chains.size());
+    final List<PdbChain> chains = model.chains();
+    assertThat(chains.size(), is(2));
 
     final List<ExperimentalTechnique> experimentalTechniques =
-        model.getExperimentalDataLine().getExperimentalTechniques();
-    Assert.assertEquals(1, experimentalTechniques.size());
-    Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION, experimentalTechniques.get(0));
-    Assert.assertEquals(1.9, model.getResolutionLine().getResolution(), 0.001);
+        model.experimentalData().experimentalTechniques();
+    assertThat(experimentalTechniques.size(), is(1));
+    assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
+    assertThat(model.resolution().resolution(), is(1.9));
   }
 
   @Test
   public final void test148L() throws Exception {
     final String cif148L = ResourcesHelper.loadResource("148L.cif");
-    final CifParser parser = new CifParser();
-    final List<PdbModel> models = parser.parse(cif148L);
-    Assert.assertEquals(1, models.size());
+    final List<CifModel> models = CifParser.parse(cif148L);
+    assertThat(models.size(), is(1));
     final PdbModel model = models.get(0);
 
-    PdbResidue residue = model.findResidue("E", 164, " ");
-    Assert.assertTrue(residue.isMissing());
+    final PdbResidue residueE164 =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("E", 164, " "));
+    assertThat(residueE164.isMissing(), is(true));
 
-    residue = model.findResidue("S", 169, " ");
-    Assert.assertEquals("API", residue.getOriginalResidueName());
-    Assert.assertEquals("LYS", residue.getModifiedResidueName());
+    final PdbResidue residueS169 =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("S", 169, " "));
+    assertThat(residueS169.standardResidueName(), is("API"));
+    assertThat(residueS169.modifiedResidueName(), is("LYS"));
 
     final List<ExperimentalTechnique> experimentalTechniques =
-        model.getExperimentalDataLine().getExperimentalTechniques();
-    Assert.assertEquals(1, experimentalTechniques.size());
-    Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION, experimentalTechniques.get(0));
-    Assert.assertEquals(1.9, model.getResolutionLine().getResolution(), 0.001);
+        model.experimentalData().experimentalTechniques();
+    assertThat(experimentalTechniques.size(), is(1));
+    assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
+    assertThat(model.resolution().resolution(), is(1.9));
   }
 
   @Test
   public final void test5A93() throws Exception {
     final String cif5A93 = ResourcesHelper.loadResource("5A93.cif");
-    final CifParser parser = new CifParser();
-    final List<PdbModel> models = parser.parse(cif5A93);
-    Assert.assertEquals(1, models.size());
+    final List<CifModel> models = CifParser.parse(cif5A93);
+    assertThat(models.size(), is(1));
 
     final PdbModel model = models.get(0);
-    final List<PdbChain> chains = model.getChains();
-    Assert.assertEquals(1, chains.size());
+    final List<PdbChain> chains = model.chains();
+    assertThat(chains.size(), is(1));
 
     final List<ExperimentalTechnique> experimentalTechniques =
-        model.getExperimentalDataLine().getExperimentalTechniques();
-    Assert.assertEquals(2, experimentalTechniques.size());
-    Assert.assertEquals(ExperimentalTechnique.X_RAY_DIFFRACTION, experimentalTechniques.get(0));
-    Assert.assertEquals(ExperimentalTechnique.NEUTRON_DIFFRACTION, experimentalTechniques.get(1));
-    Assert.assertEquals(2.2, model.getResolutionLine().getResolution(), 0.001);
+        model.experimentalData().experimentalTechniques();
+    assertThat(experimentalTechniques.size(), is(2));
+    assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.X_RAY_DIFFRACTION));
+    assertThat(experimentalTechniques.get(1), is(ExperimentalTechnique.NEUTRON_DIFFRACTION));
+    assertThat(model.resolution().resolution(), is(2.2));
   }
 }

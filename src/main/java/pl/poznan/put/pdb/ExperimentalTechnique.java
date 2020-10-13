@@ -1,8 +1,8 @@
 package pl.poznan.put.pdb;
 
-/**
- * Lists all experimental techniques a structure can be solved with (according to the PDB sources).
- */
+import java.util.Arrays;
+
+/** An experimental technique used to solve a structure (according to the PDB sources). */
 public enum ExperimentalTechnique {
   ELECTRON_CRYSTALLOGRAPHY("ELECTRON CRYSTALLOGRAPHY"),
   ELECTRON_MICROSCOPY("ELECTRON MICROSCOPY"),
@@ -25,15 +25,20 @@ public enum ExperimentalTechnique {
     this.pdbName = pdbName;
   }
 
-  public static ExperimentalTechnique fromFullName(final String fullName) {
-    for (final ExperimentalTechnique technique : ExperimentalTechnique.values()) {
-      if (technique.pdbName.equalsIgnoreCase(fullName)) {
-        return technique;
-      }
-    }
-    return ExperimentalTechnique.UNKNOWN;
+  /**
+   * Finds a matching instance of this enum in case-insensitive manner.
+   *
+   * @param pdbName A string representation of an experimental technique.
+   * @return An instance of this class that matches {@code fullName} or UNKNOWN if none does.
+   */
+  public static ExperimentalTechnique fromFullName(final String pdbName) {
+    return Arrays.stream(ExperimentalTechnique.values())
+        .filter(technique -> technique.pdbName.equalsIgnoreCase(pdbName))
+        .findFirst()
+        .orElse(ExperimentalTechnique.UNKNOWN);
   }
 
+  /** @return The name as used in PDB files. */
   public String getPdbName() {
     return pdbName;
   }

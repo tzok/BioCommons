@@ -1,12 +1,12 @@
 package pl.poznan.put;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbParsingException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PdbAtomLineTest {
   // @formatter:off
@@ -26,36 +26,36 @@ public class PdbAtomLineTest {
       StringUtils.normalizeSpace(PdbAtomLineTest.VALID_LINE);
 
   @Test
-  public final void testParseToString() throws PdbParsingException {
+  public final void testParseToString() {
     final PdbAtomLine atomLine = PdbAtomLine.parse(PdbAtomLineTest.VALID_LINE);
     final String atomLineString = atomLine.toString();
     assertThat(PdbAtomLineTest.VALID_LINE, is(atomLineString));
   }
 
   @Test
-  public final void testParseToStringOneLetterAtom() throws PdbParsingException {
+  public final void testParseToStringOneLetterAtom() {
     final PdbAtomLine atomLine = PdbAtomLine.parse(PdbAtomLineTest.VALID_LINE_WITH_ONE_LETTER_ATOM);
     final String atomLineString = atomLine.toString();
     assertThat(PdbAtomLineTest.VALID_LINE_WITH_ONE_LETTER_ATOM, is(atomLineString));
   }
 
   @Test(expected = PdbParsingException.class)
-  public final void testShortLine() throws PdbParsingException {
+  public final void testShortLine() {
     PdbAtomLine.parse(PdbAtomLineTest.TOO_SHORT_LINE);
   }
 
   @Test(expected = PdbParsingException.class)
-  public final void testMisalignedLine() throws PdbParsingException {
+  public final void testMisalignedLine() {
     PdbAtomLine.parse(PdbAtomLineTest.MISALIGNED_LINE);
   }
 
   @Test(expected = PdbParsingException.class)
-  public final void testMissingTempFactor() throws PdbParsingException {
+  public final void testMissingTempFactor() {
     PdbAtomLine.parse(PdbAtomLineTest.MISSING_TEMP_FACTOR);
   }
 
   @Test
-  public final void testParseToStringFourLetterAtom() throws PdbParsingException {
+  public final void testParseToStringFourLetterAtom() {
     final PdbAtomLine atomLine =
         PdbAtomLine.parse(PdbAtomLineTest.VALID_LINE_WITH_FOUR_LETTER_ATOM);
     final String atomLineString = atomLine.toString();

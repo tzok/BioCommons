@@ -1,18 +1,21 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbParser;
+import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.structure.formats.BpSeq;
+import pl.poznan.put.structure.formats.Ct;
+import pl.poznan.put.structure.formats.DefaultDotBracket;
+import pl.poznan.put.utility.ResourcesHelper;
 
 import java.io.IOException;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.pdb.analysis.PdbParser;
-import pl.poznan.put.structure.secondary.formats.BpSeq;
-import pl.poznan.put.structure.secondary.formats.Ct;
-import pl.poznan.put.structure.secondary.formats.DotBracket;
-import pl.poznan.put.structure.secondary.formats.InvalidStructureException;
-import pl.poznan.put.utility.ResourcesHelper;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class BpSeqTest {
   // @formatter:off
@@ -46,94 +49,101 @@ public class BpSeqTest {
   }
 
   @Test
-  public final void testGood() throws InvalidStructureException {
+  public final void testGood() {
     BpSeq.fromString(BpSeqTest.INPUT_GOOD_1);
     BpSeq.fromString(BpSeqTest.INPUT_GOOD_2);
   }
 
-  @Test(expected = InvalidStructureException.class)
-  public final void testFew() throws InvalidStructureException {
+  @Test(expected = IllegalArgumentException.class)
+  public final void testFew() {
     BpSeq.fromString(BpSeqTest.INPUT_TOO_FEW);
   }
 
-  @Test(expected = InvalidStructureException.class)
-  public final void testMany() throws InvalidStructureException {
+  @Test(expected = IllegalArgumentException.class)
+  public final void testMany() {
     BpSeq.fromString(BpSeqTest.INPUT_TOO_MANY);
   }
 
-  @Test(expected = InvalidStructureException.class)
-  public final void testLongSeq() throws InvalidStructureException {
-    BpSeq.fromString(BpSeqTest.INPUT_TOO_LONG_SEQ);
+  public final void testLongSeq() {
+    final BpSeq bpSeq = BpSeq.fromString(BpSeqTest.INPUT_TOO_LONG_SEQ);
+    assertThat(bpSeq.sequence(), is("ACGU"));
   }
 
-  @Test(expected = InvalidStructureException.class)
-  public final void testIndex1() throws InvalidStructureException {
+  @Test(expected = IllegalArgumentException.class)
+  public final void testIndex1() {
     BpSeq.fromString(BpSeqTest.INPUT_INDEX_1);
   }
 
-  @Test(expected = InvalidStructureException.class)
-  public final void testIndex2() throws InvalidStructureException {
+  @Test(expected = IllegalArgumentException.class)
+  public final void testIndex2() {
     BpSeq.fromString(BpSeqTest.INPUT_INDEX_2);
   }
 
-  @Test(expected = InvalidStructureException.class)
-  public final void testPair1() throws InvalidStructureException {
+  @Test(expected = IllegalArgumentException.class)
+  public final void testPair1() {
     BpSeq.fromString(BpSeqTest.INPUT_PAIR_1);
   }
 
-  @Test(expected = InvalidStructureException.class)
-  public final void testPair2() throws InvalidStructureException {
+  @Test(expected = IllegalArgumentException.class)
+  public final void testPair2() {
     BpSeq.fromString(BpSeqTest.INPUT_PAIR_2);
   }
 
-  @Test(expected = InvalidStructureException.class)
-  public final void testNumbering() throws InvalidStructureException {
+  @Test(expected = IllegalArgumentException.class)
+  public final void testNumbering() {
     BpSeq.fromString(BpSeqTest.INPUT_NUMBERING);
   }
 
-  @Test(expected = InvalidStructureException.class)
-  public final void testSelfPaired() throws InvalidStructureException {
+  @Test(expected = IllegalArgumentException.class)
+  public final void testSelfPaired() {
     BpSeq.fromString(BpSeqTest.INPUT_SELF_PAIRED);
   }
 
-  @Test(expected = InvalidStructureException.class)
-  public final void testMapping1() throws InvalidStructureException {
+  @Test(expected = IllegalArgumentException.class)
+  public final void testMapping1() {
     BpSeq.fromString(BpSeqTest.INPUT_MAPPING_1);
   }
 
-  @Test(expected = InvalidStructureException.class)
-  public final void testMapping2() throws InvalidStructureException {
+  @Test(expected = IllegalArgumentException.class)
+  public final void testMapping2() {
     BpSeq.fromString(BpSeqTest.INPUT_MAPPING_2);
   }
 
   @Test
-  public final void fromDotBracket() throws InvalidStructureException {
-    final DotBracket db = DotBracket.fromString(DotBracketTest.FROM_2Z74);
+  public final void fromDotBracket() {
+    final DefaultDotBracket db = DefaultDotBracket.fromString(DefaultDotBracketTest.FROM_2Z74);
     BpSeq.fromDotBracket(db);
   }
 
   @Test
-  public final void testManyChainsWithMissingResidues() throws Exception {
+  public final void testManyChainsWithMissingResidues() {
     final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb1XPO);
-    assertEquals(1, models.size());
+    assertThat(models.size(), is(1));
     final PdbModel model = models.get(0);
 
+    assertThat(
+        model.residues().stream().filter(PdbResidue::isMissing).count(),
+        is((long)model.missingResidues().size()));
+
+    final PdbModel rna = model.filteredNewInstance(MoleculeType.RNA);
+    assertThat(model.missingResidues().size(), is(103));
+    assertThat(rna.missingResidues().size(), is(36));
+
     final BpSeq bpSeq = BpSeq.fromString(bpseq1XPO);
-    Ct.fromBpSeqAndPdbModel(bpSeq, model);
+    Ct.fromBpSeqAndPdbModel(bpSeq, rna);
   }
 
   @Test
-  public final void testRemovalOfIsolatedBasePairs() throws InvalidStructureException {
+  public final void testRemovalOfIsolatedBasePairs() {
     final BpSeq all = BpSeq.fromString(bpseq1DDYall);
     final BpSeq nonIsolated = BpSeq.fromString(bpseq1DDYnonisolated);
-    assertTrue(all.removeIsolatedPairs());
-    assertEquals(nonIsolated, all);
+    assertThat(all.withoutIsolatedPairs(), is(nonIsolated));
   }
 
   @Test
-  public final void testUnsucessfulRemovalOfIsolatedBasePairs() throws InvalidStructureException {
+  public final void testUnsucessfulRemovalOfIsolatedBasePairs() {
     final BpSeq nonIsolated = BpSeq.fromString(bpseq1DDYnonisolated);
-    assertFalse(nonIsolated.removeIsolatedPairs());
+    assertThat(nonIsolated.withoutIsolatedPairs(), is(nonIsolated));
   }
 }

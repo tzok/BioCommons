@@ -1,35 +1,34 @@
 package pl.poznan.put.pdb;
 
-import lombok.Getter;
+import org.immutables.value.Value;
 
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 
-public final class PdbTitleLine implements Serializable {
-  private static final long serialVersionUID = 6843804077423547537L;
+/** A representation of TITLE line in PDB format. */
+@Value.Immutable
+public abstract class PdbTitleLine implements Serializable {
   // @formatter:off
   /*
    *  COLUMNS       DATA  TYPE     FIELD             DEFINITION
    *  ------------------------------------------------------------------------------------
    *   1 -  6       Record name    "TITLE "
    *   9 - 10       Continuation   continuation      Allows concatenation of multiple records.
-   *  11 - 80       String         title             Title of the  experiment.
+   *  11 - 80       String         title             Title of the experiment.
    */
   // @formatter:on
+
   private static final String FORMAT = "TITLE   %2s%70s"; // NON-NLS
   private static final String RECORD_NAME = "TITLE"; // NON-NLS
-  private static final PdbTitleLine EMPTY_INSTANCE = new PdbTitleLine("", "");
-  @Getter private final String continuation;
-  @Getter private final String title;
 
-  private PdbTitleLine(final String continuation, final String title) {
-    super();
-    this.continuation = continuation;
-    this.title = title;
-  }
-
-  public static PdbTitleLine parse(final String line) throws PdbParsingException {
+  /**
+   * Parses a line of text as TITLE in PDB format.
+   *
+   * @param line A TITLE line.
+   * @return An instance of this class.
+   */
+  public static PdbTitleLine parse(final String line) {
     if (line.length() < 80) {
       throw new PdbParsingException(
           String.format(
@@ -45,19 +44,24 @@ public final class PdbTitleLine implements Serializable {
 
     final String continuation = line.substring(8, 10).trim();
     final String title = line.substring(10, 80).trim();
-    return new PdbTitleLine(continuation, title);
+    return ImmutablePdbTitleLine.of(continuation, title);
   }
 
-  public static PdbTitleLine emptyInstance() {
-    return PdbTitleLine.EMPTY_INSTANCE;
-  }
+  /** @return The value of the {@code continuation} attribute */
+  @Value.Parameter(order = 1)
+  public abstract String continuation();
 
-  public static String getRecordName() {
-    return PdbTitleLine.RECORD_NAME;
-  }
+  /** @return The value of the {@code title} attribute */
+  @Value.Parameter(order = 2)
+  public abstract String title();
 
   @Override
-  public String toString() {
-    return String.format(Locale.US, PdbTitleLine.FORMAT, continuation, title);
+  public final String toString() {
+    return toPdb();
+  }
+
+  /** @return A line in PDB format. */
+  public final String toPdb() {
+    return String.format(Locale.US, PdbTitleLine.FORMAT, continuation(), title());
   }
 }

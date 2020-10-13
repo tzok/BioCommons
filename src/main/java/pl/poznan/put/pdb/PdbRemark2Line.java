@@ -1,13 +1,14 @@
 package pl.poznan.put.pdb;
 
+import org.immutables.value.Value;
+
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 
-public class PdbRemark2Line implements Serializable {
-  public static final String PROLOGUE =
-      "REMARK   2                                                      " + "                ";
-  private static final long serialVersionUID = -4818750947185900609L;
+/** A representation of REMARK 2 line which describes experimental resolution. */
+@Value.Immutable
+public abstract class PdbRemark2Line implements Serializable {
   // @formatter:off
   // COLUMNS        DATA TYPE     FIELD          DEFINITION
   // --------------------------------------------------------------------------------
@@ -18,8 +19,6 @@ public class PdbRemark2Line implements Serializable {
   // 32 - 41        LString(10)   "ANGSTROMS."
   //
   // @formatter:on
-  private static final String FORMAT =
-      "REMARK   2 RESOLUTION. %7.2f ANGSTROMS.                         " + "              ";
 
   // @formatter:off
   // COLUMNS        DATA TYPE     FIELD          DEFINITION
@@ -28,22 +27,21 @@ public class PdbRemark2Line implements Serializable {
   // 10             LString(1)    "2"
   // 12 - 38        LString(28)   "RESOLUTION.  NOT APPLICABLE."
   // @formatter:on
+
+  public static final String PROLOGUE =
+      "REMARK   2                                                                      ";
+  private static final String FORMAT =
+      "REMARK   2 RESOLUTION. %7.2f ANGSTROMS.                                       ";
   private static final String NOT_APPLICABLE =
-      "REMARK   2 RESOLUTION. NOT APPLICABLE.                          " + "                ";
+      "REMARK   2 RESOLUTION. NOT APPLICABLE.                                          ";
 
-  private static final PdbRemark2Line EMPTY_INSTANCE = new PdbRemark2Line(Double.NaN);
-  private final double resolution;
-
-  public PdbRemark2Line(final double resolution) {
-    super();
-    this.resolution = resolution;
-  }
-
-  public static PdbRemark2Line emptyInstance() {
-    return PdbRemark2Line.EMPTY_INSTANCE;
-  }
-
-  public static PdbRemark2Line parse(final String line) throws PdbParsingException {
+  /**
+   * Parses the text in REMARK 2 of PDB format.
+   *
+   * @param line A REMARK 2 line.
+   * @return An instance of this class with experimental resolution parsed from {@code line}.
+   */
+  public static PdbRemark2Line parse(final String line) {
     if (!line.startsWith("REMARK   2 RESOLUTION.")) {
       throw new PdbParsingException("Failed to parse REMARK   2 RESOLUTION. line: " + line);
     }
@@ -56,22 +54,25 @@ public class PdbRemark2Line implements Serializable {
         resolution = Double.parseDouble(line.substring(23, 30).trim());
       }
 
-      return new PdbRemark2Line(resolution);
+      return ImmutablePdbRemark2Line.of(resolution);
     } catch (final NumberFormatException e) {
       throw new PdbParsingException("Failed to parse REMARK   2 RESOLUTION. line", e);
     }
   }
 
-  public final double getResolution() {
-    return resolution;
-  }
+  /** @return The value of the {@code resolution} attribute */
+  @Value.Parameter(order = 1)
+  public abstract double resolution();
 
   @Override
   public final String toString() {
-    if (Double.isNaN(resolution)) {
-      return PdbRemark2Line.NOT_APPLICABLE;
-    }
+    return toPdb();
+  }
 
-    return String.format(Locale.US, PdbRemark2Line.FORMAT, resolution);
+  /** @return A line in PDB format. */
+  public final String toPdb() {
+    return Double.isNaN(resolution())
+        ? PdbRemark2Line.NOT_APPLICABLE
+        : String.format(Locale.US, PdbRemark2Line.FORMAT, resolution());
   }
 }

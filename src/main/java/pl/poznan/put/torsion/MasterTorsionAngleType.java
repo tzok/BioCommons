@@ -2,21 +2,25 @@ package pl.poznan.put.torsion;
 
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.interfaces.DisplayableExportable;
-import pl.poznan.put.rna.torsion.Chi;
-import pl.poznan.put.rna.torsion.RNATorsionAngleType;
+import pl.poznan.put.rna.NucleotideTorsionAngle;
 import pl.poznan.put.torsion.range.Range;
 
 import java.util.List;
 
 /**
- * This is to gather under one interface every "master" torsion angle type. A {@link
- * RNATorsionAngleType#CHI} is a master torsion angle type, and {@link Chi#getPurineInstance()} is a
- * non-master instance.
- *
- * @author tzok
+ * The main torsion angle type, which may consist of one or more basic angle types. For example,
+ * {@link NucleotideTorsionAngle#CHI} is a master torsion angle type consisting of {@link
+ * pl.poznan.put.rna.Chi#PURINE} amd {@link pl.poznan.put.rna.Chi#PYRIMIDINE}.
  */
 public interface MasterTorsionAngleType extends DisplayableExportable {
-  List<TorsionAngleType> getAngleTypes();
+  /** @return The list of basic angle types this type consists of. */
+  List<TorsionAngleType> angleTypes();
 
-  Range getRange(Angle angle);
+  /**
+   * Finds a matching range for the given angle value.
+   *
+   * @param angle The angle value to find the range for.
+   * @return An instance of {@link Range} which incorporates this angle.
+   */
+  Range range(Angle angle);
 }

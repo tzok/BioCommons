@@ -4,18 +4,28 @@ import pl.poznan.put.torsion.TorsionAngleType;
 
 import java.util.List;
 
+/**
+ * A provider of detailed information about a residue (its type, expected atoms, torsion angles
+ * etc).
+ */
 public interface ResidueInformationProvider {
-  MoleculeType getMoleculeType();
+  /** @return The type of molecule of this residue (RNA or protein). */
+  MoleculeType moleculeType();
 
-  List<ResidueComponent> getAllMoleculeComponents();
+  /** @return The list of components this residue consists of. */
+  List<ResidueComponent> moleculeComponents();
 
-  String getDescription();
+  /** @return A one letter name to describe this type of residue. */
+  char oneLetterName();
 
-  char getOneLetterName();
+  /** @return The list of all names this residues may be found in PDB and mmCIF files. */
+  List<String> aliases();
 
-  String getDefaultPdbName();
+  /** @return The list of torsion angle types defined for this residue. */
+  List<TorsionAngleType> torsionAngleTypes();
 
-  List<String> getPdbNames();
-
-  List<TorsionAngleType> getTorsionAngleTypes();
+  /** @return The default name of this residue. */
+  default String defaultName() {
+    return aliases().stream().findFirst().orElse("UNK");
+  }
 }

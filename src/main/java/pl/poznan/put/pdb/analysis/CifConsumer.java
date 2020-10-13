@@ -3,24 +3,87 @@ package pl.poznan.put.pdb.analysis;
 import org.apache.commons.lang3.StringUtils;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.structure.io.mmcif.MMcifConsumer;
-import org.biojava.nbio.structure.io.mmcif.model.*;
+import org.biojava.nbio.structure.io.mmcif.model.AtomSite;
+import org.biojava.nbio.structure.io.mmcif.model.AtomSites;
+import org.biojava.nbio.structure.io.mmcif.model.AuditAuthor;
+import org.biojava.nbio.structure.io.mmcif.model.Cell;
+import org.biojava.nbio.structure.io.mmcif.model.ChemComp;
+import org.biojava.nbio.structure.io.mmcif.model.ChemCompAtom;
+import org.biojava.nbio.structure.io.mmcif.model.ChemCompBond;
+import org.biojava.nbio.structure.io.mmcif.model.ChemCompDescriptor;
+import org.biojava.nbio.structure.io.mmcif.model.DatabasePDBremark;
+import org.biojava.nbio.structure.io.mmcif.model.DatabasePDBrev;
+import org.biojava.nbio.structure.io.mmcif.model.DatabasePdbrevRecord;
+import org.biojava.nbio.structure.io.mmcif.model.Entity;
+import org.biojava.nbio.structure.io.mmcif.model.EntityPoly;
+import org.biojava.nbio.structure.io.mmcif.model.EntityPolySeq;
+import org.biojava.nbio.structure.io.mmcif.model.EntitySrcGen;
+import org.biojava.nbio.structure.io.mmcif.model.EntitySrcNat;
+import org.biojava.nbio.structure.io.mmcif.model.EntitySrcSyn;
+import org.biojava.nbio.structure.io.mmcif.model.Exptl;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxAuditRevisionHistory;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxChemCompDescriptor;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxChemCompIdentifier;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxDatabaseStatus;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxEntityNonPoly;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxNonPolyScheme;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxPolySeqScheme;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxStructAssembly;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxStructAssemblyGen;
+import org.biojava.nbio.structure.io.mmcif.model.PdbxStructOperList;
+import org.biojava.nbio.structure.io.mmcif.model.Refine;
+import org.biojava.nbio.structure.io.mmcif.model.Struct;
+import org.biojava.nbio.structure.io.mmcif.model.StructAsym;
+import org.biojava.nbio.structure.io.mmcif.model.StructConn;
+import org.biojava.nbio.structure.io.mmcif.model.StructKeywords;
+import org.biojava.nbio.structure.io.mmcif.model.StructNcsOper;
+import org.biojava.nbio.structure.io.mmcif.model.StructRef;
+import org.biojava.nbio.structure.io.mmcif.model.StructRefSeq;
+import org.biojava.nbio.structure.io.mmcif.model.StructRefSeqDif;
+import org.biojava.nbio.structure.io.mmcif.model.StructSite;
+import org.biojava.nbio.structure.io.mmcif.model.StructSiteGen;
+import org.biojava.nbio.structure.io.mmcif.model.Symmetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.poznan.put.notation.BPh;
-import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
-import pl.poznan.put.pdb.*;
-import pl.poznan.put.structure.secondary.BasePair;
-import pl.poznan.put.structure.secondary.QuantifiedBasePair;
+import pl.poznan.put.pdb.ExperimentalTechnique;
+import pl.poznan.put.pdb.ImmutablePdbAtomLine;
+import pl.poznan.put.pdb.ImmutablePdbExpdtaLine;
+import pl.poznan.put.pdb.ImmutablePdbHeaderLine;
+import pl.poznan.put.pdb.ImmutablePdbModresLine;
+import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.ImmutablePdbRemark2Line;
+import pl.poznan.put.pdb.ImmutablePdbRemark465Line;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbExpdtaLine;
+import pl.poznan.put.pdb.PdbHeaderLine;
+import pl.poznan.put.pdb.PdbModresLine;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.PdbRemark2Line;
+import pl.poznan.put.pdb.PdbRemark465Line;
+import pl.poznan.put.structure.BasePair;
+import pl.poznan.put.structure.ImmutableBasePair;
+import pl.poznan.put.structure.ModifiableQuantifiedBasePair;
+import pl.poznan.put.structure.QuantifiedBasePair;
 
 import javax.annotation.Nullable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public class CifConsumer implements MMcifConsumer {
+class CifConsumer implements MMcifConsumer {
   private static final Logger LOGGER = LoggerFactory.getLogger(CifConsumer.class);
 
   private static final String PDBX_STRUCT_MOD_RESIDUE = "_pdbx_struct_mod_residue"; // NON-NLS
@@ -35,36 +98,34 @@ public class CifConsumer implements MMcifConsumer {
   private static final String OPENING = "opening"; // NON-NLS
 
   private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
-  private final List<PdbRemark465Line> missingResidues = new ArrayList<>();
-  private final List<PdbModresLine> modifiedResidues = new ArrayList<>();
+  private final Collection<PdbRemark465Line> missingResidues = new ArrayList<>();
+  private final Collection<PdbModresLine> modifiedResidues = new ArrayList<>();
   private final List<ExperimentalTechnique> experimentalTechniques = new ArrayList<>();
-  private final List<QuantifiedBasePair> basePairs = new ArrayList<>();
+  private final Collection<QuantifiedBasePair> basePairs = new ArrayList<>();
   private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
   @Nullable private Date depositionDate;
   @Nullable private String classification;
   @Nullable private String idCode;
   @Nullable private String title;
-  private double resolution;
+  private double resolution = Double.NaN;
 
-  private FileParsingParameters parameters;
+  private FileParsingParameters parameters = new FileParsingParameters();
 
-  public CifConsumer(final FileParsingParameters parameters) {
+  private CifConsumer(final FileParsingParameters parameters) {
     super();
     this.parameters = parameters;
   }
 
-  public CifConsumer() {
+  CifConsumer() {
     super();
   }
 
   private static Map<String, String> convertToMap(
       final List<String> loopFields, final List<String> lineData) {
-    final Map<String, String> map = new HashMap<>();
-    for (int i = 0; i < loopFields.size(); i++) {
-      map.put(loopFields.get(i), lineData.get(i));
-    }
-    return map;
+    return IntStream.range(0, loopFields.size())
+        .boxed()
+        .collect(Collectors.toMap(loopFields::get, lineData::get, (a, b) -> b));
   }
 
   private static double getDoubleWithDefaultNaN(final Map<String, String> map, final String key) {
@@ -132,7 +193,7 @@ public class CifConsumer implements MMcifConsumer {
       }
 
       final PdbAtomLine atomLine =
-          new PdbAtomLine(
+          ImmutablePdbAtomLine.of(
               serialNumber,
               atomName,
               alternateLocation,
@@ -186,7 +247,7 @@ public class CifConsumer implements MMcifConsumer {
   }
 
   @Override
-  public void setStruct(final Struct struct) {
+  public final void setStruct(final Struct struct) {
     title = StringUtils.upperCase(struct.getTitle());
   }
 
@@ -398,7 +459,7 @@ public class CifConsumer implements MMcifConsumer {
       }
 
       final PdbModresLine modresLine =
-          new PdbModresLine(
+          ImmutablePdbModresLine.of(
               idCode,
               residueName,
               chainIdentifier,
@@ -421,7 +482,7 @@ public class CifConsumer implements MMcifConsumer {
       }
 
       final PdbRemark465Line remark465Line =
-          new PdbRemark465Line(
+          ImmutablePdbRemark465Line.of(
               modelNumber, residueName, chainIdentifier, residueNumber, insertionCode);
       missingResidues.add(remark465Line);
     } else if (Objects.equals(CifConsumer.NDB_STRUCT_NA_BASE_PAIR, s)) {
@@ -433,7 +494,11 @@ public class CifConsumer implements MMcifConsumer {
       if (Objects.equals("?", icodeL)) {
         icodeL = " ";
       }
-      final PdbResidueIdentifier left = new PdbResidueIdentifier(chainL, resiL, icodeL);
+      final String resnL = map.get("i_label_comp_id");
+      final char oneLetterL =
+          ResidueTypeDetector.detectResidueType(resnL, Collections.emptySet()).oneLetterName();
+      final PdbNamedResidueIdentifier left =
+          ImmutablePdbNamedResidueIdentifier.of(chainL, resiL, icodeL, oneLetterL);
 
       final String chainR = map.get("j_auth_asym_id");
       final int resiR = Integer.parseInt(map.get("j_auth_seq_id"));
@@ -441,20 +506,24 @@ public class CifConsumer implements MMcifConsumer {
       if (Objects.equals("?", icodeR)) {
         icodeR = " ";
       }
-      final PdbResidueIdentifier right = new PdbResidueIdentifier(chainR, resiR, icodeR);
-      final BasePair basePair = new BasePair(left, right);
+      final String resnR = map.get("j_label_comp_id");
+      final char oneLetterR =
+          ResidueTypeDetector.detectResidueType(resnR, Collections.emptySet()).oneLetterName();
+      final PdbNamedResidueIdentifier right =
+          ImmutablePdbNamedResidueIdentifier.of(chainR, resiR, icodeR, oneLetterR);
+      final BasePair basePair = ImmutableBasePair.of(left, right);
 
       final String saengerString = map.get("hbond_type_28");
       Saenger saenger = Saenger.UNKNOWN;
       if (!Objects.equals("?", saengerString)) {
-        saenger = Saenger.fromOrdinal(Integer.parseInt(saengerString));
+        saenger = Saenger.fromNumber(Integer.parseInt(saengerString));
       }
 
       final String leontisWesthofString = map.get("hbond_type_12");
       final LeontisWesthof leontisWesthof =
           Objects.equals("?", leontisWesthofString)
               ? LeontisWesthof.UNKNOWN
-              : LeontisWesthof.fromOrdinal(Integer.parseInt(leontisWesthofString));
+              : LeontisWesthof.fromNumber(Integer.parseInt(leontisWesthofString));
 
       final double shear = CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.SHEAR);
       final double stretch = CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.STRETCH);
@@ -463,53 +532,17 @@ public class CifConsumer implements MMcifConsumer {
       final double propeller = CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.PROPELLER);
       final double opening = CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.OPENING);
       final QuantifiedBasePair quantifiedBasePair =
-          new QuantifiedBasePair(
-              basePair,
-              saenger,
-              leontisWesthof,
-              BPh.UNKNOWN,
-              BR.UNKNOWN,
-              shear,
-              stretch,
-              stagger,
-              buckle,
-              propeller,
-              opening);
+          ModifiableQuantifiedBasePair.create(
+                  basePair, shear, stretch, stagger, buckle, propeller, opening)
+              .setSaenger(saenger)
+              .setLeontisWesthof(leontisWesthof);
       basePairs.add(quantifiedBasePair);
     }
   }
 
-  public final List<PdbModel> getModels() throws PdbParsingException {
-    final Date date = (depositionDate == null) ? new Date(0) : depositionDate;
-    final PdbHeaderLine headerLine = new PdbHeaderLine(classification, date, idCode);
-
-    final List<ExperimentalTechnique> techniques =
-        experimentalTechniques.isEmpty()
-            ? Collections.singletonList(ExperimentalTechnique.UNKNOWN)
-            : experimentalTechniques;
-    final PdbExpdtaLine experimentalDataLine = new PdbExpdtaLine(techniques);
-
-    final PdbRemark2Line resolutionLine = new PdbRemark2Line(resolution);
-    final List<PdbModel> result = new ArrayList<>();
-
-    for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
-      final int modelNumber = entry.getKey();
-      final List<PdbAtomLine> atoms = entry.getValue();
-      final CifModel pdbModel =
-          new CifModel(
-              headerLine,
-              experimentalDataLine,
-              resolutionLine,
-              modelNumber,
-              atoms,
-              modifiedResidues,
-              missingResidues,
-              basePairs,
-              title);
-      result.add(pdbModel);
-    }
-
-    return result;
+  @Override
+  public final void setFileParsingParameters(final FileParsingParameters fileParsingParameters) {
+    parameters = fileParsingParameters;
   }
 
   @Override
@@ -517,8 +550,40 @@ public class CifConsumer implements MMcifConsumer {
     return parameters;
   }
 
-  @Override
-  public final void setFileParsingParameters(final FileParsingParameters fileParsingParameters) {
-    parameters = fileParsingParameters;
+  public final List<CifModel> getModels() {
+    final PdbHeaderLine headerLine =
+        ImmutablePdbHeaderLine.of(
+            classification != null ? classification : "",
+            depositionDate != null ? depositionDate : new Date(0L),
+            idCode != null ? idCode : "");
+
+    final List<ExperimentalTechnique> techniques =
+        experimentalTechniques.isEmpty()
+            ? Collections.singletonList(ExperimentalTechnique.UNKNOWN)
+            : experimentalTechniques;
+    final PdbExpdtaLine experimentalDataLine = ImmutablePdbExpdtaLine.of(techniques);
+
+    final PdbRemark2Line resolutionLine = ImmutablePdbRemark2Line.of(resolution);
+    final List<CifModel> result = new ArrayList<>();
+
+    for (final Map.Entry<Integer, List<PdbAtomLine>> entry : modelAtoms.entrySet()) {
+      final int modelNumber = entry.getKey();
+      final List<PdbAtomLine> atoms = entry.getValue();
+      final CifModel pdbModel =
+          ImmutableDefaultCifModel.of(
+              headerLine,
+              experimentalDataLine,
+              resolutionLine,
+              modelNumber,
+              atoms,
+              modifiedResidues,
+              missingResidues,
+              title != null ? title : "",
+              Collections.emptyList(),
+              basePairs);
+      result.add(pdbModel);
+    }
+
+    return result;
   }
 }

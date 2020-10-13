@@ -1,11 +1,11 @@
 package pl.poznan.put.notation;
 
-import java.util.Objects;
+import java.util.Arrays;
 
 /**
- * Base-phosphate notation. Zirbel, C. L., et al (2009). Classification and energetics of the
- * base-phosphate interactions in RNA. Nucleic Acids Research, 37(15), 4898–4918.
- * http://doi.org/10.1093/nar/gkp468
+ * A base-phosphate notation described in: Classification and Energetics of the Base-Phosphate
+ * Interactions in RNA. C.L. Zirbel, J.E. Šponer, J. Šponer, J. Stombaugh, N.B. Leontis. Nucleic
+ * Acids Research. 2009. 37(15):4898–4918. doi:10.1093/nar/gkp468
  */
 public enum BPh {
   _0("0BPh", "n0BPh", "0PhB", "n0PhB"),
@@ -26,18 +26,21 @@ public enum BPh {
     this.displayNames = displayNames;
   }
 
+  /**
+   * Finds an enum constant that matches the given one or return a predefined UNKNOWN value.
+   *
+   * @param candidate A string representing a BPh value.
+   * @return An instance of this class that matches given name or UNKNOWN if none does.
+   */
   public static BPh fromString(final String candidate) {
-    for (final BPh bph : BPh.values()) {
-      for (final String displayName : bph.displayNames) {
-        if (Objects.equals(displayName, candidate)) {
-          return bph;
-        }
-      }
-    }
-    return BPh.UNKNOWN;
+    return Arrays.stream(BPh.values())
+        .filter(bph -> Arrays.asList(bph.displayNames).contains(candidate))
+        .findFirst()
+        .orElse(BPh.UNKNOWN);
   }
 
-  public String getDisplayName() {
+  /** @return The default display name. */
+  public String displayName() {
     return displayNames[0];
   }
 }

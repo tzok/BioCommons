@@ -1,145 +1,151 @@
 package pl.poznan.put;
 
-import static org.junit.Assert.assertEquals;
-
+import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
-import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.enums.ValueType;
+import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.torsion.range.TorsionRange;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 public class TorsionRangeTest {
   @Test
-  public void fromAngle() throws Exception {
-    // @formatter:off
-    assertEquals(
-        TorsionRange.SYN_CIS,
-        TorsionRange.getProvider().fromAngle(new Angle(15, ValueType.DEGREES)));
-    assertEquals(
-        TorsionRange.SYNCLINAL_GAUCHE_PLUS,
-        TorsionRange.getProvider().fromAngle(new Angle(60, ValueType.DEGREES)));
-    assertEquals(
-        TorsionRange.ANTICLINAL_PLUS,
-        TorsionRange.getProvider().fromAngle(new Angle(120, ValueType.DEGREES)));
-    assertEquals(
-        TorsionRange.ANTI_TRANS,
-        TorsionRange.getProvider().fromAngle(new Angle(180, ValueType.DEGREES)));
-    assertEquals(
-        TorsionRange.ANTICLINAL_MINUS,
-        TorsionRange.getProvider().fromAngle(new Angle(-120, ValueType.DEGREES)));
-    assertEquals(
-        TorsionRange.ANTICLINAL_MINUS,
-        TorsionRange.getProvider().fromAngle(new Angle(240, ValueType.DEGREES)));
-    assertEquals(
-        TorsionRange.SYNCLINAL_GAUCHE_MINUS,
-        TorsionRange.getProvider().fromAngle(new Angle(-60, ValueType.DEGREES)));
-    assertEquals(
-        TorsionRange.SYNCLINAL_GAUCHE_MINUS,
-        TorsionRange.getProvider().fromAngle(new Angle(300, ValueType.DEGREES)));
-    assertEquals(
-        TorsionRange.SYN_CIS,
-        TorsionRange.getProvider().fromAngle(new Angle(-15, ValueType.DEGREES)));
-    assertEquals(
-        TorsionRange.SYN_CIS,
-        TorsionRange.getProvider().fromAngle(new Angle(345, ValueType.DEGREES)));
-    // @formatter:on
+  public final void fromAngle() {
+    assertThat(
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(15.0))),
+        is(TorsionRange.SYN_CIS));
+    assertThat(
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(60.0))),
+        is(TorsionRange.SYNCLINAL_GAUCHE_PLUS));
+    assertThat(
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(120.0))),
+        is(TorsionRange.ANTICLINAL_PLUS));
+    assertThat(
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(180.0))),
+        is(TorsionRange.ANTI_TRANS));
+    assertThat(
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(-120.0))),
+        is(TorsionRange.ANTICLINAL_MINUS));
+    assertThat(
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(240.0))),
+        is(TorsionRange.ANTICLINAL_MINUS));
+    assertThat(
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(-60.0))),
+        is(TorsionRange.SYNCLINAL_GAUCHE_MINUS));
+    assertThat(
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(300.0))),
+        is(TorsionRange.SYNCLINAL_GAUCHE_MINUS));
+    assertThat(
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(-15.0))),
+        is(TorsionRange.SYN_CIS));
+    assertThat(
+        TorsionRange.rangeProvider().fromAngle(ImmutableAngle.of(FastMath.toRadians(345.0))),
+        is(TorsionRange.SYN_CIS));
   }
 
   @Test
-  public void testDistance() {
+  public final void testDistance() {
     // @formatter:off
-    assertEquals(RangeDifference.EQUAL, TorsionRange.SYN_CIS.compare(TorsionRange.SYN_CIS));
-    assertEquals(
-        RangeDifference.SIMILAR, TorsionRange.SYN_CIS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS));
-    assertEquals(
-        RangeDifference.DIFFERENT, TorsionRange.SYN_CIS.compare(TorsionRange.ANTICLINAL_PLUS));
-    assertEquals(RangeDifference.OPPOSITE, TorsionRange.SYN_CIS.compare(TorsionRange.ANTI_TRANS));
-    assertEquals(
-        RangeDifference.DIFFERENT, TorsionRange.SYN_CIS.compare(TorsionRange.ANTICLINAL_MINUS));
-    assertEquals(
-        RangeDifference.SIMILAR, TorsionRange.SYN_CIS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS));
+    assertThat(TorsionRange.SYN_CIS.compare(TorsionRange.SYN_CIS), is(RangeDifference.EQUAL));
+    assertThat(
+        TorsionRange.SYN_CIS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS),
+        is(RangeDifference.SIMILAR));
+    assertThat(
+        TorsionRange.SYN_CIS.compare(TorsionRange.ANTICLINAL_PLUS), is(RangeDifference.DIFFERENT));
+    assertThat(TorsionRange.SYN_CIS.compare(TorsionRange.ANTI_TRANS), is(RangeDifference.OPPOSITE));
+    assertThat(
+        TorsionRange.SYN_CIS.compare(TorsionRange.ANTICLINAL_MINUS), is(RangeDifference.DIFFERENT));
+    assertThat(
+        TorsionRange.SYN_CIS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS),
+        is(RangeDifference.SIMILAR));
 
-    assertEquals(
-        RangeDifference.EQUAL,
-        TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS));
-    assertEquals(
-        RangeDifference.SIMILAR,
-        TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.ANTICLINAL_PLUS));
-    assertEquals(
-        RangeDifference.DIFFERENT,
-        TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.ANTI_TRANS));
-    assertEquals(
-        RangeDifference.OPPOSITE,
-        TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.ANTICLINAL_MINUS));
-    assertEquals(
-        RangeDifference.DIFFERENT,
-        TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS));
-    assertEquals(
-        RangeDifference.SIMILAR, TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.SYN_CIS));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS),
+        is(RangeDifference.EQUAL));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.ANTICLINAL_PLUS),
+        is(RangeDifference.SIMILAR));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.ANTI_TRANS),
+        is(RangeDifference.DIFFERENT));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.ANTICLINAL_MINUS),
+        is(RangeDifference.OPPOSITE));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS),
+        is(RangeDifference.DIFFERENT));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_PLUS.compare(TorsionRange.SYN_CIS),
+        is(RangeDifference.SIMILAR));
 
-    assertEquals(
-        RangeDifference.EQUAL, TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.ANTICLINAL_PLUS));
-    assertEquals(
-        RangeDifference.SIMILAR, TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.ANTI_TRANS));
-    assertEquals(
-        RangeDifference.DIFFERENT,
-        TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.ANTICLINAL_MINUS));
-    assertEquals(
-        RangeDifference.OPPOSITE,
-        TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS));
-    assertEquals(
-        RangeDifference.DIFFERENT, TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.SYN_CIS));
-    assertEquals(
-        RangeDifference.SIMILAR,
-        TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS));
+    assertThat(
+        TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.ANTICLINAL_PLUS),
+        is(RangeDifference.EQUAL));
+    assertThat(
+        TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.ANTI_TRANS), is(RangeDifference.SIMILAR));
+    assertThat(
+        TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.ANTICLINAL_MINUS),
+        is(RangeDifference.DIFFERENT));
+    assertThat(
+        TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS),
+        is(RangeDifference.OPPOSITE));
+    assertThat(
+        TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.SYN_CIS), is(RangeDifference.DIFFERENT));
+    assertThat(
+        TorsionRange.ANTICLINAL_PLUS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS),
+        is(RangeDifference.SIMILAR));
 
-    assertEquals(RangeDifference.EQUAL, TorsionRange.ANTI_TRANS.compare(TorsionRange.ANTI_TRANS));
-    assertEquals(
-        RangeDifference.SIMILAR, TorsionRange.ANTI_TRANS.compare(TorsionRange.ANTICLINAL_MINUS));
-    assertEquals(
-        RangeDifference.DIFFERENT,
-        TorsionRange.ANTI_TRANS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS));
-    assertEquals(RangeDifference.OPPOSITE, TorsionRange.ANTI_TRANS.compare(TorsionRange.SYN_CIS));
-    assertEquals(
-        RangeDifference.DIFFERENT,
-        TorsionRange.ANTI_TRANS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS));
-    assertEquals(
-        RangeDifference.SIMILAR, TorsionRange.ANTI_TRANS.compare(TorsionRange.ANTICLINAL_PLUS));
+    assertThat(TorsionRange.ANTI_TRANS.compare(TorsionRange.ANTI_TRANS), is(RangeDifference.EQUAL));
+    assertThat(
+        TorsionRange.ANTI_TRANS.compare(TorsionRange.ANTICLINAL_MINUS),
+        is(RangeDifference.SIMILAR));
+    assertThat(
+        TorsionRange.ANTI_TRANS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS),
+        is(RangeDifference.DIFFERENT));
+    assertThat(TorsionRange.ANTI_TRANS.compare(TorsionRange.SYN_CIS), is(RangeDifference.OPPOSITE));
+    assertThat(
+        TorsionRange.ANTI_TRANS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS),
+        is(RangeDifference.DIFFERENT));
+    assertThat(
+        TorsionRange.ANTI_TRANS.compare(TorsionRange.ANTICLINAL_PLUS), is(RangeDifference.SIMILAR));
 
-    assertEquals(
-        RangeDifference.EQUAL,
-        TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.ANTICLINAL_MINUS));
-    assertEquals(
-        RangeDifference.SIMILAR,
-        TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS));
-    assertEquals(
-        RangeDifference.DIFFERENT, TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.SYN_CIS));
-    assertEquals(
-        RangeDifference.OPPOSITE,
-        TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS));
-    assertEquals(
-        RangeDifference.DIFFERENT,
-        TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.ANTICLINAL_PLUS));
-    assertEquals(
-        RangeDifference.SIMILAR, TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.ANTI_TRANS));
+    assertThat(
+        TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.ANTICLINAL_MINUS),
+        is(RangeDifference.EQUAL));
+    assertThat(
+        TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS),
+        is(RangeDifference.SIMILAR));
+    assertThat(
+        TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.SYN_CIS), is(RangeDifference.DIFFERENT));
+    assertThat(
+        TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS),
+        is(RangeDifference.OPPOSITE));
+    assertThat(
+        TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.ANTICLINAL_PLUS),
+        is(RangeDifference.DIFFERENT));
+    assertThat(
+        TorsionRange.ANTICLINAL_MINUS.compare(TorsionRange.ANTI_TRANS),
+        is(RangeDifference.SIMILAR));
 
-    assertEquals(
-        RangeDifference.EQUAL,
-        TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS));
-    assertEquals(
-        RangeDifference.SIMILAR, TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.SYN_CIS));
-    assertEquals(
-        RangeDifference.DIFFERENT,
-        TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS));
-    assertEquals(
-        RangeDifference.OPPOSITE,
-        TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.ANTICLINAL_PLUS));
-    assertEquals(
-        RangeDifference.DIFFERENT,
-        TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.ANTI_TRANS));
-    assertEquals(
-        RangeDifference.SIMILAR,
-        TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.ANTICLINAL_MINUS));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.SYNCLINAL_GAUCHE_MINUS),
+        is(RangeDifference.EQUAL));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.SYN_CIS),
+        is(RangeDifference.SIMILAR));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.SYNCLINAL_GAUCHE_PLUS),
+        is(RangeDifference.DIFFERENT));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.ANTICLINAL_PLUS),
+        is(RangeDifference.OPPOSITE));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.ANTI_TRANS),
+        is(RangeDifference.DIFFERENT));
+    assertThat(
+        TorsionRange.SYNCLINAL_GAUCHE_MINUS.compare(TorsionRange.ANTICLINAL_MINUS),
+        is(RangeDifference.SIMILAR));
     // @formatter:on
   }
 }

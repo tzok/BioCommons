@@ -1,15 +1,18 @@
 package pl.poznan.put.rna;
 
+import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
 
-import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public final class Ribose extends Sugar {
-  private static final Ribose INSTANCE = new Ribose();
-
-  private Ribose() {
-    super(
-        Arrays.asList(
+/** A ribose, part of RNA backbone. */
+@Value.Immutable(singleton = true)
+public abstract class Ribose implements Sugar {
+  @Override
+  public final Set<AtomName> requiredAtoms() {
+    return Stream.of(
             AtomName.C5p,
             AtomName.H5p,
             AtomName.H5pp,
@@ -23,10 +26,7 @@ public final class Ribose extends Sugar {
             AtomName.H2p,
             AtomName.H2pp,
             AtomName.C1p,
-            AtomName.H1p));
-  }
-
-  public static Ribose getInstance() {
-    return Ribose.INSTANCE;
+            AtomName.H1p)
+        .collect(Collectors.toSet());
   }
 }

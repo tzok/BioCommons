@@ -1,15 +1,14 @@
 package pl.poznan.put.atom;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Getter
-@Slf4j
+/** A unified atom name found in PDB and mmCIF files with a list of alternative names. */
 public enum AtomName {
   C(AtomType.C, "C"),
   C1(AtomType.C, "C1"),
@@ -241,6 +240,7 @@ public enum AtomName {
   UNKNOWN(AtomType.OTHER, "");
 
   private static final Map<String, AtomName> LOOKUP_TABLE = new HashMap<>();
+  private static final Logger LOGGER = LoggerFactory.getLogger(AtomName.class);
 
   static {
     for (final AtomName atomName : AtomName.values()) {
@@ -271,22 +271,48 @@ public enum AtomName {
     }
 
     if (!AtomName.LOOKUP_TABLE.containsKey(pdbName)) {
-      AtomName.log.trace("Unknown atom name: {}", pdbName);
+      AtomName.LOGGER.trace("Unknown atom name: {}", pdbName);
       return AtomName.UNKNOWN;
     }
 
     return AtomName.LOOKUP_TABLE.get(pdbName);
   }
 
+  /**
+   * Checks if this constant matches a name found in PDB or mmCIF file. Certain atom names have more
+   * than one matching PDB names e.g. O2P/OP2.
+   *
+   * @param pdbName Name found in PDB or mmCIF file.
+   * @return True if this constant matches pdbName.
+   */
   public boolean matchesName(final String pdbName) {
     return names.contains(pdbName.trim());
   }
 
+  /**
+   * Gets the default atom name (if more than one is configured).
+   *
+   * @return The default name for this constant.
+   */
   public String getName() {
     return names.get(0);
   }
 
+  /**
+   * Checks if atom is heavy (i.e. not a hydrogen).
+   *
+   * @return True if this constant describes an atom which is not a hydrogen.
+   */
   public boolean isHeavy() {
     return type.isHeavy();
+  }
+
+  /**
+   * Gets enum describing the type of atom that this constant represents.
+   *
+   * @return {{@link AtomType}} object representing the atom type.
+   */
+  public AtomType getType() {
+    return type;
   }
 }

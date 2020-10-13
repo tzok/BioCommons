@@ -2,20 +2,20 @@ package pl.poznan.put.atom;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class BondTest {
   @Test
   public final void length() {
-    final Bond.Length infinite = Bond.length(AtomType.H, AtomType.H);
-    assertTrue(Double.isInfinite(infinite.getMin()));
-    assertTrue(Double.isInfinite(infinite.getMax()));
-    assertTrue(Double.isInfinite(infinite.getAvg()));
+    final BondLength infinite = Bond.length(AtomType.H, AtomType.H);
+    assertThat(Double.isInfinite(infinite.min()), is(true));
+    assertThat(Double.isInfinite(infinite.max()), is(true));
+    assertThat(Double.isInfinite(infinite.avg()), is(true));
 
-    final Bond.Length carbonHydrogen = Bond.length(AtomType.H, AtomType.C);
-    assertEquals(1.07, carbonHydrogen.getMin(), 1.0e-3);
-    assertEquals(1.111, carbonHydrogen.getMax(), 1.0e-3);
-    assertEquals(1.098, carbonHydrogen.getAvg(), 1.0e-3);
+    final BondLength carbonHydrogen = Bond.length(AtomType.H, AtomType.C);
+    assertThat(carbonHydrogen.min(), is(1.07));
+    assertThat(carbonHydrogen.max(), is(1.111));
+    assertThat(carbonHydrogen.avg(), is(1.098));
   }
 }

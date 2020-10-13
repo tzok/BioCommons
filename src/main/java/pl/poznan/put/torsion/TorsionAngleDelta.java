@@ -1,121 +1,70 @@
 package pl.poznan.put.torsion;
 
+import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
-import pl.poznan.put.torsion.range.Range;
+import pl.poznan.put.circular.ImmutableAngle;
+import pl.poznan.put.interfaces.DisplayableExportable;
 import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.utility.AngleFormat;
 
-public class TorsionAngleDelta {
-  private final MasterTorsionAngleType masterTorsionAngleType;
-  private final State state;
-  private final Angle target;
-  private final Angle model;
-  private final Angle delta;
-  private final RangeDifference rangeDifference;
-
-  public TorsionAngleDelta(
-      final MasterTorsionAngleType masterTorsionAngleType,
-      final State state,
-      final Angle target,
-      final Angle model,
-      final Angle delta,
-      final RangeDifference rangeDifference) {
-    super();
-    this.masterTorsionAngleType = masterTorsionAngleType;
-    this.state = state;
-    this.target = target;
-    this.model = model;
-    this.delta = delta;
-    this.rangeDifference = rangeDifference;
-  }
-
+/** A result of subtracting of two torsion angles. */
+@Value.Immutable
+public abstract class TorsionAngleDelta implements DisplayableExportable {
+  /**
+   * Creates an instance of torsion angle delta, where both input angles were invalid.
+   *
+   * @param masterType The type of torsion angle.
+   * @return An instance indicating that both input angles were invalid.
+   */
   public static TorsionAngleDelta bothInvalidInstance(final MasterTorsionAngleType masterType) {
-    return new TorsionAngleDelta(
-        masterType,
-        State.BOTH_INVALID,
-        Angle.invalidInstance(),
-        Angle.invalidInstance(),
-        Angle.invalidInstance(),
-        RangeDifference.INVALID);
-  }
-
-  public static TorsionAngleDelta subtractTorsionAngleValues(
-      final MasterTorsionAngleType masterType,
-      final TorsionAngleValue targetValue,
-      final TorsionAngleValue modelValue) {
-    Angle delta = Angle.invalidInstance();
-    RangeDifference rangeDifference = RangeDifference.INVALID;
-    final Angle target = targetValue.getValue();
-    final Angle model = modelValue.getValue();
-    final State state;
-
-    if (!target.isValid() && !model.isValid()) {
-      state = State.BOTH_INVALID;
-    } else if (!target.isValid()) {
-      state = State.TARGET_INVALID;
-    } else if (!model.isValid()) {
-      state = State.MODEL_INVALID;
-    } else {
-      state = State.BOTH_VALID;
-      delta = target.subtract(model);
-
-      final Range targetRange = masterType.getRange(target);
-      final Range modelRange = masterType.getRange(model);
-      rangeDifference = targetRange.compare(modelRange);
-    }
-
-    return new TorsionAngleDelta(masterType, state, target, model, delta, rangeDifference);
-  }
-
-  public final Angle getTarget() {
-    return target;
-  }
-
-  public final Angle getModel() {
-    return model;
-  }
-
-  public final State getState() {
-    return state;
-  }
-
-  public final Angle getDelta() {
-    return delta;
-  }
-
-  public final RangeDifference getRangeDifference() {
-    return rangeDifference;
-  }
-
-  public final MasterTorsionAngleType getMasterTorsionAngleType() {
-    return masterTorsionAngleType;
-  }
-
-  @Override
-  public final String toString() {
-    return String.format(
-        "TorsionAngleDelta [state=%s, delta=%s, " + "rangeDifference=%s]",
-        state, delta, rangeDifference);
+    return ImmutableTorsionAngleDelta.of(
+        masterType, State.BOTH_INVALID, ImmutableAngle.of(Double.NaN), RangeDifference.INVALID);
   }
 
   /**
-   * Represent numeric value in a way external tools understand (dot as fraction point and no
-   * UNICODE_DEGREE sign).
+   * Subtracts torsion angle values and creates an instance of this class.
    *
-   * @return String representation of this delta object understandable by external tools.
+   * @param masterType The type of torsion angle.
+   * @param target The value of the first torsion angle.
+   * @param model The value of the second torsion angle.
+   * @return An instance of this class containing the result of subtraction.
    */
-  public final String toExportString() {
-    return toString(false);
+  public static TorsionAngleDelta subtractTorsionAngleValues(
+      final MasterTorsionAngleType masterType, final Angle target, final Angle model) {
+    final State state = State.fromAngles(target, model);
+    final Angle delta =
+        state == State.BOTH_VALID ? target.subtract(model) : ImmutableAngle.of(Double.NaN);
+    final RangeDifference rangeDifference =
+        state == State.BOTH_VALID
+            ? masterType.range(target).compare(masterType.range(model))
+            : RangeDifference.INVALID;
+    return ImmutableTorsionAngleDelta.of(masterType, state, delta, rangeDifference);
   }
 
+  /** @return The type of torsion angle. */
+  @Value.Parameter(order = 1)
+  public abstract MasterTorsionAngleType angleType();
+
+  /** @return The state of comparison depending on whether the inputs were valid or not. */
+  @Value.Parameter(order = 2)
+  public abstract State state();
+
+  /** @return The actual result of subtraction. */
+  @Value.Parameter(order = 3)
+  public abstract Angle delta();
+
+  /** @return The difference in terms of ranges the angles belong to. */
+  @Value.Parameter(order = 4)
+  public abstract RangeDifference rangeDifference();
+
   public final String toString(final boolean isDisplayable) {
-    switch (state) {
+    switch (state()) {
       case BOTH_INVALID:
-        return isDisplayable ? "" : null;
+        return "Missing atoms both in target and model";
       case BOTH_VALID:
         return isDisplayable
-            ? AngleFormat.degreesRoundedToHundredth(delta.getRadians())
-            : AngleFormat.degrees(delta.getRadians());
+            ? AngleFormat.degreesRoundedToHundredth(delta().radians())
+            : AngleFormat.degrees(delta().radians());
       case TARGET_INVALID:
         return "Missing atoms in target";
       case MODEL_INVALID:
@@ -125,19 +74,39 @@ public class TorsionAngleDelta {
     }
   }
 
-  /**
-   * Represent object as a String which will be displayed to user in the GUI.
-   *
-   * @return String representation of object to be shown in the GUI.
-   */
-  public final String toDisplayString() {
+  @Override
+  public final String shortDisplayName() {
     return toString(true);
   }
 
+  @Override
+  public final String longDisplayName() {
+    return shortDisplayName();
+  }
+
+  @Override
+  public final String exportName() {
+    return toString(false);
+  }
+
+  /** A state of comparison of two torsion angle values. */
   public enum State {
     TARGET_INVALID,
     MODEL_INVALID,
     BOTH_INVALID,
-    BOTH_VALID
+    BOTH_VALID;
+
+    static State fromAngles(final Angle target, final Angle model) {
+      if (!target.isValid() && !model.isValid()) {
+        return State.BOTH_INVALID;
+      }
+      if (!target.isValid()) {
+        return State.TARGET_INVALID;
+      }
+      if (!model.isValid()) {
+        return State.MODEL_INVALID;
+      }
+      return State.BOTH_VALID;
+    }
   }
 }

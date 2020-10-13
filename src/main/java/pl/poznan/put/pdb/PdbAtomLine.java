@@ -1,18 +1,31 @@
 package pl.poznan.put.pdb;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.geometry.Vector;
+import org.apache.commons.math3.geometry.euclidean.threed.Euclidean3D;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.biojava.nbio.structure.*;
+import org.biojava.nbio.structure.Atom;
+import org.biojava.nbio.structure.AtomImpl;
+import org.biojava.nbio.structure.Element;
+import org.biojava.nbio.structure.Group;
+import org.biojava.nbio.structure.HetatomImpl;
+import org.biojava.nbio.structure.ResidueNumber;
+import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.atom.AtomName;
 
-import javax.vecmath.Point3d;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 
-public class PdbAtomLine implements Serializable, ChainNumberICode {
+/** Representation of ATOM and HETATM lines in both PDB and mmCIF files. */
+@Value.Immutable
+public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
+  /**
+   * A constant required by mmCIF format which also documents the order of fields that {@link
+   * PdbAtomLine#toCif()} follows.
+   */
   public static final String CIF_LOOP =
       "loop_\n"
           + "_atom_site.group_PDB\n"
@@ -30,8 +43,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
           + "_atom_site.B_iso_or_equiv\n"
           + "_atom_site.type_symbol\n"
           + "_atom_site.pdbx_formal_charge";
-  private static final long serialVersionUID = -6626889209014265608L;
-  private static final Logger LOGGER = LoggerFactory.getLogger(PdbAtomLine.class);
+
   // @formatter:off
   /*
      COLUMNS        DATA  TYPE    FIELD        DEFINITION
@@ -58,53 +70,14 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
       "ATOM  %5d  %-3s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s";
   // @formatter:on
   private static final String RECORD_NAME = "ATOM";
-  private final int serialNumber;
-  private final String atomName;
-  private final String alternateLocation;
-  private final String residueName;
-  private final String chainIdentifier;
-  private final int residueNumber;
-  private final String insertionCode;
-  private final double x;
-  private final double y;
-  private final double z;
-  private final double occupancy;
-  private final double temperatureFactor;
-  private final String elementSymbol;
-  private final String charge;
+  private static final Logger LOGGER = LoggerFactory.getLogger(PdbAtomLine.class);
 
-  public PdbAtomLine(
-      final int serialNumber,
-      final String atomName,
-      final String alternateLocation,
-      final String residueName,
-      final String chainIdentifier,
-      final int residueNumber,
-      final String insertionCode,
-      final double x,
-      final double y,
-      final double z,
-      final double occupancy,
-      final double temperatureFactor,
-      final String elementSymbol,
-      final String charge) {
-    super();
-    this.serialNumber = serialNumber;
-    this.atomName = atomName;
-    this.alternateLocation = alternateLocation;
-    this.residueName = residueName;
-    this.chainIdentifier = chainIdentifier;
-    this.residueNumber = residueNumber;
-    this.insertionCode = insertionCode;
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.occupancy = occupancy;
-    this.temperatureFactor = temperatureFactor;
-    this.elementSymbol = elementSymbol;
-    this.charge = charge;
-  }
-
+  /**
+   * Creates an instance of this class from {@link Atom} object.
+   *
+   * @param atom An instance of BioJava object.
+   * @return An instance of this class with fields values equal to those in {@code atom} object.
+   */
   public static PdbAtomLine fromBioJavaAtom(final Atom atom) {
     final Group group = atom.getGroup();
     final String residueName = group.getPDBName();
@@ -127,7 +100,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     final double temperatureFactor = atom.getTempFactor();
     final String elementSymbol = atom.getElement().name();
     final String charge = "";
-    return new PdbAtomLine(
+    return ImmutablePdbAtomLine.of(
         serialNumber,
         atomName,
         alternateLocation,
@@ -144,12 +117,25 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
         charge);
   }
 
-  public static PdbAtomLine parse(final String line) throws PdbParsingException {
+  /**
+   * Parses text as ATOM or HETATM line in strict mode (all 80 characters in the line are required).
+   *
+   * @param line A text in PDB format (ATOM or HETATM).
+   * @return An instance of this class with fields containing values parsed from the text.
+   */
+  public static PdbAtomLine parse(final String line) {
     return PdbAtomLine.parse(line, true);
   }
 
-  public static PdbAtomLine parse(final String line, final boolean strictMode)
-      throws PdbParsingException {
+  /**
+   * Parses text as ATOM or HETATM line in a strict or non-strict mode.
+   *
+   * @param line A text in PDB format (ATOM or HETATM).
+   * @param strictMode If true, then all 80 characters are required, otherwise the "bare minimum" of
+   *     54 characters.
+   * @return An instance of this class with fields containing values parsed from the text.
+   */
+  public static PdbAtomLine parse(final String line, final boolean strictMode) {
     // in non-strict mode, only up to X, Y, Z fields are required, rest is
     // optional
     final int minLineLenth = strictMode ? 80 : 54;
@@ -187,7 +173,7 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
       final String elementSymbol = (line.length() >= 78) ? line.substring(76, 78).trim() : "";
       final String charge = (line.length() >= 80) ? line.substring(78, 80).trim() : "";
 
-      return new PdbAtomLine(
+      return ImmutablePdbAtomLine.of(
           serialNumber,
           atomName,
           alternateLocation,
@@ -207,308 +193,213 @@ public class PdbAtomLine implements Serializable, ChainNumberICode {
     }
   }
 
-  public static String getRecordName() {
-    return PdbAtomLine.RECORD_NAME;
-  }
+  /** @return The value of the {@code serialNumber} attribute */
+  @Value.Parameter(order = 1)
+  @Value.Auxiliary
+  public abstract int serialNumber();
 
-  public final int getSerialNumber() {
-    return serialNumber;
-  }
+  /** @return The value of the {@code atomName} attribute */
+  @Value.Parameter(order = 2)
+  public abstract String atomName();
 
-  public final String getAtomName() {
-    return atomName;
-  }
+  /** @return The value of the {@code alternateLocation} attribute */
+  @Value.Parameter(order = 3)
+  @Value.Auxiliary
+  public abstract String alternateLocation();
 
-  public final String getAlternateLocation() {
-    return alternateLocation;
-  }
+  /** @return The value of the {@code residueName} attribute */
+  @Value.Parameter(order = 4)
+  public abstract String residueName();
 
-  public final String getResidueName() {
-    return residueName;
-  }
-
+  /** @return The value of the {@code chainIdentifier} attribute */
   @Override
-  public final String getChainIdentifier() {
-    return chainIdentifier;
-  }
+  @Value.Parameter(order = 5)
+  public abstract String chainIdentifier();
 
+  /** @return The value of the {@code residueNumber} attribute */
   @Override
-  public final int getResidueNumber() {
-    return residueNumber;
-  }
+  @Value.Parameter(order = 6)
+  public abstract int residueNumber();
 
+  /** @return The value of the {@code insertionCode} attribute */
   @Override
-  public final String getInsertionCode() {
-    return insertionCode;
-  }
+  @Value.Parameter(order = 7)
+  public abstract String insertionCode();
 
-  @Override
-  public final PdbResidueIdentifier getResidueIdentifier() {
-    return new PdbResidueIdentifier(chainIdentifier, residueNumber, insertionCode);
-  }
+  /** @return The value of the {@code x} attribute */
+  @Value.Parameter(order = 8)
+  public abstract double x();
 
-  public final double getX() {
-    return x;
-  }
+  /** @return The value of the {@code y} attribute */
+  @Value.Parameter(order = 9)
+  public abstract double y();
 
-  public final double getY() {
-    return y;
-  }
+  /** @return The value of the {@code z} attribute */
+  @Value.Parameter(order = 10)
+  public abstract double z();
 
-  public final double getZ() {
-    return z;
-  }
+  /** @return The value of the {@code occupancy} attribute */
+  @Value.Parameter(order = 11)
+  @Value.Auxiliary
+  public abstract double occupancy();
 
-  public final double getOccupancy() {
-    return occupancy;
-  }
+  /** @return The value of the {@code temperatureFactor} attribute */
+  @Value.Parameter(order = 12)
+  @Value.Auxiliary
+  public abstract double temperatureFactor();
 
-  public final double getTemperatureFactor() {
-    return temperatureFactor;
-  }
+  /** @return The value of the {@code elementSymbol} attribute */
+  @Value.Parameter(order = 13)
+  @Value.Auxiliary
+  public abstract String elementSymbol();
 
-  public final String getElementSymbol() {
-    return elementSymbol;
-  }
-
-  public final String getCharge() {
-    return charge;
-  }
+  /** @return The value of the {@code charge} attribute */
+  @Value.Parameter(order = 14)
+  @Value.Auxiliary
+  public abstract String charge();
 
   @Override
   public final String toString() {
-    if (alternateLocation.length() != 1) {
-      PdbAtomLine.LOGGER.error(
-          "Field 'alternateLocation' is longer than 1 char. Only first letter will be taken");
-    }
-    if (chainIdentifier.length() != 1) {
-      PdbAtomLine.LOGGER.error(
-          "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
-    }
-    if (insertionCode.length() != 1) {
-      PdbAtomLine.LOGGER.error(
-          "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
-    }
-
-    final String format =
-        (atomName.length() == 4) ? PdbAtomLine.FORMAT_ATOM_4_CHARACTER : PdbAtomLine.FORMAT;
-    return String.format(
-        Locale.US,
-        format,
-        serialNumber,
-        atomName,
-        alternateLocation.charAt(0),
-        residueName,
-        chainIdentifier.charAt(0),
-        residueNumber,
-        insertionCode.charAt(0),
-        x,
-        y,
-        z,
-        occupancy,
-        temperatureFactor,
-        elementSymbol,
-        charge);
+    return toPdb();
   }
 
-  public final PdbAtomLine replaceSerialNumber(final int serialNumberNew) {
-    return new PdbAtomLine(
-        serialNumberNew,
-        atomName,
-        alternateLocation,
-        residueName,
-        chainIdentifier,
-        residueNumber,
-        insertionCode,
-        x,
-        y,
-        z,
-        occupancy,
-        temperatureFactor,
-        elementSymbol,
-        charge);
-  }
-
-  public final PdbAtomLine replaceChainIdentifier(final String chainIdentifierNew) {
-    return new PdbAtomLine(
-        serialNumber,
-        atomName,
-        alternateLocation,
-        residueName,
-        chainIdentifierNew,
-        residueNumber,
-        insertionCode,
-        x,
-        y,
-        z,
-        occupancy,
-        temperatureFactor,
-        elementSymbol,
-        charge);
-  }
-
-  public final PdbAtomLine replaceResidueNumber(final int residueNumberNew) {
-    return new PdbAtomLine(
-        serialNumber,
-        atomName,
-        alternateLocation,
-        residueName,
-        chainIdentifier,
-        residueNumberNew,
-        insertionCode,
-        x,
-        y,
-        z,
-        occupancy,
-        temperatureFactor,
-        elementSymbol,
-        charge);
-  }
-
-  public final PdbAtomLine replaceAlternateLocation(final String alternateLocationNew) {
-    return new PdbAtomLine(
-        serialNumber,
-        atomName,
-        alternateLocationNew,
-        residueName,
-        chainIdentifier,
-        residueNumber,
-        insertionCode,
-        x,
-        y,
-        z,
-        occupancy,
-        temperatureFactor,
-        elementSymbol,
-        charge);
-  }
-
-  public final PdbAtomLine replaceCoordinates(
-      final double xNew, final double yNew, final double zNew) {
-    return new PdbAtomLine(
-        serialNumber,
-        atomName,
-        alternateLocation,
-        residueName,
-        chainIdentifier,
-        residueNumber,
-        insertionCode,
-        xNew,
-        yNew,
-        zNew,
-        occupancy,
-        temperatureFactor,
-        elementSymbol,
-        charge);
-  }
-
+  /** @return An instance of {@link AtomName} enum that matches this object. */
   public final AtomName detectAtomName() {
-    return AtomName.fromString(atomName);
+    return AtomName.fromString(atomName());
   }
 
+  /**
+   * Calculates the euclidean distance to another atom.
+   *
+   * @param other Another instance of this class.
+   * @return Euclidean distance in 3D between two atoms.
+   */
   public final double distanceTo(final PdbAtomLine other) {
-    final Vector3D v1 = new Vector3D(x, y, z);
-    final Vector3D v2 = new Vector3D(other.x, other.y, other.z);
+    final Vector<Euclidean3D> v1 = new Vector3D(x(), y(), z());
+    final Vector<Euclidean3D> v2 = new Vector3D(other.x(), other.y(), other.z());
     return v1.distance(v2);
   }
 
-  public final Atom toBioJavaAtom() throws CifPdbIncompatibilityException {
-    if (alternateLocation.length() != 1) {
+  /**
+   * Creates an instance of BioJava {@link Atom} with fields having the same values as this object.
+   *
+   * @return An instance of {@link Atom} with the same values as this object.
+   */
+  public final Atom toBioJavaAtom() {
+    if (alternateLocation().length() != 1) {
       throw new CifPdbIncompatibilityException(
-          "Cannot convert to PDB. Field 'alternateLocation' is " + "longer than 1 char");
+          "Cannot convert to PDB. Field 'alternateLocation' is longer than 1 char");
     }
-    if (insertionCode.length() != 1) {
+    if (insertionCode().length() != 1) {
       throw new CifPdbIncompatibilityException(
-          "Cannot convert to PDB. Field 'insertionCode' is longer " + "than 1 char");
+          "Cannot convert to PDB. Field 'insertionCode' is longer than 1 char");
     }
 
     final Group group = new HetatomImpl();
-    final Character icode = Objects.equals(" ", insertionCode) ? null : insertionCode.charAt(0);
-    group.setResidueNumber(String.valueOf(chainIdentifier), residueNumber, icode);
-    group.setPDBName(residueName);
+    final Character icode = Objects.equals(" ", insertionCode()) ? null : insertionCode().charAt(0);
+    group.setResidueNumber(String.valueOf(chainIdentifier()), residueNumber(), icode);
+    group.setPDBName(residueName());
 
-    final String name = (atomName.length() == 4) ? atomName : String.format(" %-3s", atomName);
+    final String name =
+        (atomName().length() == 4) ? atomName() : String.format(" %-3s", atomName());
 
     final Atom atom = new AtomImpl();
-    atom.setPDBserial(serialNumber);
+    atom.setPDBserial(serialNumber());
     atom.setName(name);
-    atom.setAltLoc(alternateLocation.charAt(0));
-    atom.setX(x);
-    atom.setY(y);
-    atom.setZ(z);
-    atom.setOccupancy((float) occupancy);
-    atom.setTempFactor((float) temperatureFactor);
-    atom.setElement(Element.valueOfIgnoreCase(elementSymbol));
+    atom.setAltLoc(alternateLocation().charAt(0));
+    atom.setX(x());
+    atom.setY(y());
+    atom.setZ(z());
+    atom.setOccupancy((float) occupancy());
+    atom.setTempFactor((float) temperatureFactor());
+    atom.setElement(Element.valueOfIgnoreCase(elementSymbol()));
     atom.setGroup(group);
     return atom;
   }
 
+  /**
+   * Creates an ATOM line in mmCIF format (according to format: {@link PdbAtomLine#CIF_LOOP}).
+   *
+   * @return A string representation of the ATOM line in mmCIF format.
+   */
   public final String toCif() {
     final StringBuilder builder = new StringBuilder();
     builder.append("ATOM ");
-    builder.append(serialNumber).append(' ');
-    if (atomName.contains("'")) {
-      builder.append('"').append(atomName).append("\" ");
+    builder.append(serialNumber()).append(' ');
+    if (atomName().contains("'")) {
+      builder.append('"').append(atomName()).append("\" ");
     } else {
-      builder.append(atomName).append(' ');
+      builder.append(atomName()).append(' ');
     }
-    if (StringUtils.isNotBlank(alternateLocation)) {
-      builder.append(alternateLocation).append(' ');
+    if (StringUtils.isNotBlank(alternateLocation())) {
+      builder.append(alternateLocation()).append(' ');
     } else {
       builder.append(". ");
     }
-    builder.append(residueName).append(' ');
-    builder.append(chainIdentifier).append(' ');
-    builder.append(residueNumber).append(' ');
-    if (StringUtils.isNotBlank(insertionCode)) {
-      builder.append(insertionCode).append(' ');
+    builder.append(residueName()).append(' ');
+    builder.append(chainIdentifier()).append(' ');
+    builder.append(residueNumber()).append(' ');
+    if (StringUtils.isNotBlank(insertionCode())) {
+      builder.append(insertionCode()).append(' ');
     } else {
       builder.append("? ");
     }
-    builder.append(x).append(' ');
-    builder.append(y).append(' ');
-    builder.append(z).append(' ');
-    builder.append(occupancy).append(' ');
-    builder.append(temperatureFactor).append(' ');
-    builder.append(elementSymbol).append(' ');
-    if (StringUtils.isNotBlank(charge)) {
-      builder.append(charge).append(' ');
+    builder.append(x()).append(' ');
+    builder.append(y()).append(' ');
+    builder.append(z()).append(' ');
+    builder.append(occupancy()).append(' ');
+    builder.append(temperatureFactor()).append(' ');
+    builder.append(elementSymbol()).append(' ');
+    if (StringUtils.isNotBlank(charge())) {
+      builder.append(charge()).append(' ');
     } else {
       builder.append('?');
     }
     return builder.toString();
   }
 
-  public final Point3d toPoint3d() {
-    return new Point3d(x, y, z);
-  }
-
-  @Override
-  public final boolean equals(final Object o) {
-    if (this == o) {
-      return true;
+  /**
+   * Creates an ATOM line in PDB format.
+   *
+   * @return A string representation of the ATOM line in PDB format.
+   */
+  public final String toPdb() {
+    if (alternateLocation().length() != 1) {
+      PdbAtomLine.LOGGER.error(
+          "Field 'alternateLocation' is longer than 1 char. Only first letter will be taken");
     }
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
+    if (chainIdentifier().length() != 1) {
+      PdbAtomLine.LOGGER.error(
+          "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
     }
-    final PdbAtomLine other = (PdbAtomLine) o;
-    return (residueNumber == other.residueNumber)
-        && (Double.compare(other.x, x) == 0)
-        && (Double.compare(other.y, y) == 0)
-        && (Double.compare(other.z, z) == 0)
-        && Objects.equals(atomName, other.atomName)
-        && Objects.equals(residueName, other.residueName)
-        && Objects.equals(chainIdentifier, other.chainIdentifier)
-        && Objects.equals(insertionCode, other.insertionCode);
+    if (insertionCode().length() != 1) {
+      PdbAtomLine.LOGGER.error(
+          "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
+    }
+
+    final String format =
+        (atomName().length() == 4) ? PdbAtomLine.FORMAT_ATOM_4_CHARACTER : PdbAtomLine.FORMAT;
+    return String.format(
+        Locale.US,
+        format,
+        serialNumber(),
+        atomName(),
+        alternateLocation().charAt(0),
+        residueName(),
+        chainIdentifier().charAt(0),
+        residueNumber(),
+        insertionCode().charAt(0),
+        x(),
+        y(),
+        z(),
+        occupancy(),
+        temperatureFactor(),
+        elementSymbol(),
+        charge());
   }
 
-  @Override
-  public final int hashCode() {
-    return Objects.hash(
-        atomName, residueName, chainIdentifier, residueNumber, insertionCode, x, y, z);
-  }
-
+  /** @return An instance of {@link Vector3D} with (x, y, z) coordinates of this instance. */
   public final Vector3D toVector3D() {
-    return new Vector3D(x, y, z);
+    return new Vector3D(x(), y(), z());
   }
 }
