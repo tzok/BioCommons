@@ -1,4 +1,4 @@
-package pl.poznan.put;
+package pl.poznan.put.rna;
 
 import org.apache.commons.math3.geometry.Vector;
 import org.apache.commons.math3.geometry.euclidean.threed.Euclidean3D;
@@ -6,7 +6,6 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
 import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.rna.NucleotideTorsionAngle;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
 

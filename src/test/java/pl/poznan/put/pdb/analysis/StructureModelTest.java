@@ -1,4 +1,4 @@
-package pl.poznan.put;
+package pl.poznan.put.pdb.analysis;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -8,14 +8,6 @@ import org.junit.Test;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.analysis.CifModel;
-import pl.poznan.put.pdb.analysis.CifParser;
-import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.pdb.analysis.PdbChain;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.pdb.analysis.PdbParser;
-import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.SingleTypedResidueCollection;
 import pl.poznan.put.structure.CanonicalStructureExtractor;
 import pl.poznan.put.structure.formats.BpSeq;
 import pl.poznan.put.utility.ResourcesHelper;

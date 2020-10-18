@@ -1,8 +1,6 @@
-package pl.poznan.put;
+package pl.poznan.put.structure.formats;
 
 import org.junit.Test;
-import pl.poznan.put.structure.formats.Ct;
-import pl.poznan.put.structure.formats.DefaultDotBracket;
 import pl.poznan.put.utility.ResourcesHelper;
 
 public class CtTest {
