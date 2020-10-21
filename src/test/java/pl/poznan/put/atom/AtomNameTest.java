@@ -1,4 +1,4 @@
-package pl.poznan.put;
+package pl.poznan.put.atom;
 
 import org.junit.Test;
 import pl.poznan.put.atom.AtomName;

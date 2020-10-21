@@ -1,9 +1,7 @@
-package pl.poznan.put;
+package pl.poznan.put.pdb;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import pl.poznan.put.pdb.PdbHeaderLine;
-import pl.poznan.put.pdb.PdbParsingException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

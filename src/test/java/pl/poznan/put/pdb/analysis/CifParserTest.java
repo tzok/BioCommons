@@ -1,4 +1,4 @@
-package pl.poznan.put;
+package pl.poznan.put.pdb.analysis;
 
 import org.junit.Test;
 import pl.poznan.put.pdb.ExperimentalTechnique;

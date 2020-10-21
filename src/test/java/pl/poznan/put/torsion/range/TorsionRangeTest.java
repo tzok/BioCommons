@@ -1,4 +1,4 @@
-package pl.poznan.put;
+package pl.poznan.put.torsion.range;
 
 import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;

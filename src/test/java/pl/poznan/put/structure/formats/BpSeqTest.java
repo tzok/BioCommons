@@ -1,4 +1,4 @@
-package pl.poznan.put;
+package pl.poznan.put.structure.formats;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,9 +6,6 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.structure.formats.BpSeq;
-import pl.poznan.put.structure.formats.Ct;
-import pl.poznan.put.structure.formats.DefaultDotBracket;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.io.IOException;

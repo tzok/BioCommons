@@ -1,12 +1,6 @@
-package pl.poznan.put;
+package pl.poznan.put.structure.formats;
 
 import org.junit.Test;
-import pl.poznan.put.structure.formats.BpSeq;
-import pl.poznan.put.structure.formats.Converter;
-import pl.poznan.put.structure.formats.DefaultDotBracket;
-import pl.poznan.put.structure.formats.DotBracket;
-import pl.poznan.put.structure.formats.ImmutableDefaultConverter;
-import pl.poznan.put.structure.pseudoknots.elimination.MinGain;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import static org.hamcrest.CoreMatchers.is;

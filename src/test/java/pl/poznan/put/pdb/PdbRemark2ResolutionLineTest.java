@@ -1,7 +1,6 @@
-package pl.poznan.put;
+package pl.poznan.put.pdb;
 
 import org.junit.Test;
-import pl.poznan.put.pdb.PdbRemark2Line;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
