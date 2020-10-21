@@ -11,6 +11,7 @@
   <description>The BioCommons library contains classes to work with 2D and 3D structural bioinformatics data. There
         are parsers for PDB and mmCIF files and many formats of 2D structure with classifications and notations used in
         the literature, as well as algorithms implementations.</description>
+  <url>https://github.com/tzok/BioCommons</url>
 
   <licenses>
     <license>
