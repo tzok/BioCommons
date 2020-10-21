@@ -43,12 +43,14 @@ Functionality
 Used in
 =======
 
--   MCQ4Structures (Zok *et al.*, 2014; Wiedemann *et al.*, 2017; Magnus
-    *et al.*, 2020)
--   RNApdbee (Antczak *et al.*, 2014; Antczak *et al.*, 2018; Zok *et
-    al.*, 2018)
--   RNAvista (Rybarczyk *et al.*, 2015; Antczak *et al.*, 2019)
--   RNAfitme (Zok *et al.*, 2015; Antczak *et al.*, 2018)
+-   [MCQ4Structures](https://github.com/tzok/mcq4structures) (Zok *et
+    al.*, 2014; Wiedemann *et al.*, 2017; Magnus *et al.*, 2020)
+-   [RNApdbee](http://rnapdbee.cs.put.poznan.pl/) (Antczak *et al.*,
+    2014; Antczak *et al.*, 2018; Zok *et al.*, 2018)
+-   [RNAvista](http://rnavista.cs.put.poznan.pl/) (Rybarczyk *et al.*,
+    2015; Antczak *et al.*, 2019)
+-   [RNAfitme](http://rnafitme.cs.put.poznan.pl/) (Zok *et al.*, 2015;
+    Antczak *et al.*, 2018)
 
 Bibliography
 ============
