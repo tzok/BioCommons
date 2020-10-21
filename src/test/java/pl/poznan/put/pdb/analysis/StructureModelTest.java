@@ -71,6 +71,7 @@ public class StructureModelTest {
     assertThat(residue.standardResidueName(), is("2MG"));
     assertThat(residue.modifiedResidueName(), is("G"));
     assertThat(residue.residueInformationProvider().defaultName(), is("G"));
+    assertThat(!residue.hasAllHeavyAtoms(), is(true));
   }
 
   @Test
