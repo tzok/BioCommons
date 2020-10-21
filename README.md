@@ -6,6 +6,17 @@ Project description
 BioCommons is a Java library with classes, data structures and embedded
 static knowledge useful in structural bioinformatics.
 
+Maven
+=====
+
+You can use BioCommons by adding the following to your `pom.xml`:
+
+    <dependency>
+      <groupId>pl.poznan.put</groupId>
+      <artifactId>BioCommons</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency>
+
 Functionality
 =============
 
