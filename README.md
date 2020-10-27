@@ -17,6 +17,12 @@ You can use BioCommons by adding the following to your `pom.xml`:
       <version>3.0.1</version>
     </dependency>
 
+Documentation
+=============
+
+You can find the documentation
+[here](http://www.cs.put.poznan.pl/tzok/public/static/biocommons/)
+
 Functionality
 =============
 
