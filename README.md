@@ -23,6 +23,12 @@ Documentation
 You can find the documentation
 [here](http://www.cs.put.poznan.pl/tzok/public/static/biocommons/)
 
+Examples
+========
+
+You can find examples and HOWTOs in the
+[wiki](https://github.com/tzok/BioCommons/wiki)
+
 Functionality
 =============
 
