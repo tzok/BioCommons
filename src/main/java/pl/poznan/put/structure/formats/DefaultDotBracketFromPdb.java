@@ -119,14 +119,13 @@ public abstract class DefaultDotBracketFromPdb extends AbstractDotBracket
 
     // link strands connected by non-canonical base pairs
     for (final ClassifiedBasePair nonCanonicalPair : nonCanonical) {
-      final DotBracketSymbol leftSymbol = residueToSymbol().get(nonCanonicalPair.basePair().left());
-      final DotBracketSymbol rightSymbol =
-          residueToSymbol().get(nonCanonicalPair.basePair().right());
+      final DotBracketSymbol left = residueToSymbol().get(nonCanonicalPair.basePair().left());
+      final DotBracketSymbol right = residueToSymbol().get(nonCanonicalPair.basePair().right());
 
       for (final Strand strand : strands()) {
         final List<DotBracketSymbol> strandSymbols = strand.symbols();
-        if (strandSymbols.contains(leftSymbol) && !strandSymbols.contains(rightSymbol)) {
-          linkStrands(strand, rightSymbol, strandMap);
+        if (strandSymbols.contains(left) && !strandSymbols.contains(right)) {
+          linkStrands(strand, right, strandMap);
         }
       }
     }
@@ -146,8 +145,10 @@ public abstract class DefaultDotBracketFromPdb extends AbstractDotBracket
     // prepare the final result
     final List<DotBracketFromPdb> result = new ArrayList<>(components.size());
     for (final Set<Strand> strandCluster : components) {
-      final List<Strand> combinedStrands = new ArrayList<>(strandCluster);
-      combinedStrands.sort(Comparator.comparingInt(strands()::indexOf));
+      final List<Strand> combinedStrands =
+          strandCluster.stream()
+              .sorted(Comparator.comparingInt(strands()::indexOf))
+              .collect(Collectors.toList());
       result.add(ImmutableCombinedStrandFromPdb.of(combinedStrands, symbolToResidue()));
     }
 
