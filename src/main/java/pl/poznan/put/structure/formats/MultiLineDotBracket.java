@@ -9,8 +9,8 @@ import pl.poznan.put.rna.InteractionType;
 import pl.poznan.put.structure.BasePair;
 import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.DotBracketSymbol;
+import pl.poznan.put.structure.ImmutableAnalyzedBasePair;
 import pl.poznan.put.structure.ImmutableBasePair;
-import pl.poznan.put.structure.ModifiableAnalyzedBasePair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,7 +122,7 @@ public abstract class MultiLineDotBracket {
                   "A", i + 1, " ", sequence.length() > i ? sequence.charAt(i) : 'N');
           final BasePair basePair = ImmutableBasePair.of(left, right);
           final ClassifiedBasePair classifiedBasePair =
-              ModifiableAnalyzedBasePair.create(basePair).setLeontisWesthof(leontisWesthof);
+              ImmutableAnalyzedBasePair.of(basePair).withLeontisWesthof(leontisWesthof);
           basePairs.add(classifiedBasePair);
         } else if (c != '.') {
           throw new IllegalArgumentException(

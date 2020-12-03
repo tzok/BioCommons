@@ -357,13 +357,14 @@ public abstract class Ct implements Serializable {
      */
     public static ExtendedEntry fromDotBracketSymbol(
         final DotBracket dotBracket, final List<DotBracketSymbol> symbols, final int i) {
+      final Map<DotBracketSymbol, DotBracketSymbol> pairs = dotBracket.pairs();
       final DotBracketSymbol symbol = symbols.get(i);
       return ImmutableExtendedEntry.of(
           symbol.index() + 1,
           symbol.sequence(),
           i,
           i == symbols.size() - 1 ? 0 : i + 2,
-          symbol.pair().map(pair -> pair.index() + 1).orElse(0),
+          pairs.containsKey(symbol) ? pairs.get(symbol).index() + 1 : 0,
           dotBracket.originalIndex(symbol));
     }
 

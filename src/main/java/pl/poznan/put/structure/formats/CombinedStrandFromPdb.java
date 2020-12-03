@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public abstract class CombinedStrandFromPdb extends AbstractCombinedStrand
     implements DotBracketFromPdb {
   /** @return The list of input strands. */
+  @Override
   @Value.Parameter(order = 1)
   protected abstract List<Strand> inputStrands();
 
@@ -32,6 +33,13 @@ public abstract class CombinedStrandFromPdb extends AbstractCombinedStrand
   @Override
   public final int originalIndex(final DotBracketSymbol symbol) {
     return mapping().get(symbol).residueNumber();
+  }
+
+  @Override
+  @Value.Lazy
+  @Value.Auxiliary
+  public Map<DotBracketSymbol, DotBracketSymbol> pairs() {
+    return super.pairs();
   }
 
   @Override

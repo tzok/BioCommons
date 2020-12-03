@@ -59,7 +59,7 @@ public final class CanonicalStructureExtractor {
           final PdbNamedResidueIdentifier rightId = right.namedResidueIdentifer();
 
           if (!paired.contains(leftId) && !paired.contains(rightId)) {
-            basePairs.add(ModifiableAnalyzedBasePair.create(ImmutableBasePair.of(leftId, rightId)));
+            basePairs.add(ImmutableAnalyzedBasePair.of(ImmutableBasePair.of(leftId, rightId)));
             paired.add(leftId);
             paired.add(rightId);
           }

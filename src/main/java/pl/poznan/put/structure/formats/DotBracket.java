@@ -1,13 +1,21 @@
 package pl.poznan.put.structure.formats;
 
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import pl.poznan.put.structure.DotBracketSymbol;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /** An RNA structure encoded in dot-bracket format. */
@@ -55,6 +63,39 @@ public interface DotBracket {
         .collect(Collectors.joining());
   }
 
+  default Map<DotBracketSymbol, DotBracketSymbol> pairs() {
+    final String opening = "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    final String closing = ")]}>abcdefghijklmnopqrstuvwxyz";
+
+    final BidiMap<Character, Character> parentheses =
+        new DualHashBidiMap<>(
+            IntStream.range(0, opening.length())
+                .boxed()
+                .collect(Collectors.toMap(opening::charAt, closing::charAt)));
+
+    final Map<Character, Deque<DotBracketSymbol>> parenthesesStacks =
+        parentheses.keySet().stream()
+            .collect(Collectors.toMap(Function.identity(), ignored -> new ArrayDeque<>()));
+
+    final Map<DotBracketSymbol, DotBracketSymbol> result = new HashMap<>();
+
+    for (final DotBracketSymbol symbol : symbols()) {
+      final char structure = symbol.structure();
+
+      if (parentheses.containsKey(structure)) {
+        // catch opening '(', '[', etc.
+        parenthesesStacks.get(structure).push(symbol);
+      } else if (parentheses.containsValue(structure)) {
+        // catch closing ')', ']', etc.
+        final DotBracketSymbol pair = parenthesesStacks.get(parentheses.getKey(structure)).pop();
+        result.put(symbol, pair);
+        result.put(pair, symbol);
+      }
+    }
+
+    return result;
+  }
+
   /**
    * @return A string representation of this dot-bracket, where every strand is written out
    *     separately.
@@ -99,10 +140,7 @@ public interface DotBracket {
 
   /** @return The pseudoknot order of this structure. */
   default int pseudoknotOrder() {
-    return symbols().stream()
-        .map(DotBracketSymbol::order)
-        .max(Comparator.naturalOrder())
-        .orElse(0);
+    return symbols().stream().map(DotBracketSymbol::order).max(Comparator.naturalOrder()).orElse(0);
   }
 
   /**

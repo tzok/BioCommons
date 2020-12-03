@@ -8,7 +8,7 @@ import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.InteractionType;
 
 /** A base pair which is classified and quantified with numerical parameters. */
-@Value.Modifiable
+@Value.Immutable
 public abstract class QuantifiedBasePair implements ClassifiedBasePair {
   @Value.Parameter(order = 1)
   public abstract BasePair basePair();
@@ -40,23 +40,16 @@ public abstract class QuantifiedBasePair implements ClassifiedBasePair {
 
   @Value.Default
   @Value.Auxiliary
-  public HelixOrigin helixOrigin() {
-    return ClassifiedBasePair.super.helixOrigin();
-  }
-
-  @Value.Default
-  @Value.Auxiliary
   public boolean isRepresented() {
     return ClassifiedBasePair.super.isRepresented();
   }
 
   @Override
   public ClassifiedBasePair invert() {
-    return ModifiableQuantifiedBasePair.create()
-        .from(this)
-        .setBasePair(basePair().invert())
-        .setInteractionType(interactionType().invert())
-        .setLeontisWesthof(leontisWesthof().invert());
+    return ImmutableQuantifiedBasePair.copyOf(this)
+        .withBasePair(basePair().invert())
+        .withInteractionType(interactionType().invert())
+        .withLeontisWesthof(leontisWesthof().invert());
   }
 
   /** @return The value of shear parameter. */

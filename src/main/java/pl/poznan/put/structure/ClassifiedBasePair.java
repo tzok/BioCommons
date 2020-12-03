@@ -40,11 +40,6 @@ public interface ClassifiedBasePair extends Serializable, Comparable<ClassifiedB
     return BR.UNKNOWN;
   }
 
-  /** @return Information about origination of this pair from helical analysis (if applicable). */
-  default HelixOrigin helixOrigin() {
-    return HelixOrigin.UNKNOWN;
-  }
-
   /** @return True if this interaction is represented in secondary structure. */
   default boolean isRepresented() {
     return false;

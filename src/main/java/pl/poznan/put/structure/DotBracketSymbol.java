@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** A single symbol in a dot-bracket structure. */
-@Value.Modifiable
+@Value.Immutable
 public abstract class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializable {
   private static final List<Character> OPENING =
       "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars().mapToObj(c -> (char) c).collect(Collectors.toList());
@@ -80,22 +80,6 @@ public abstract class DotBracketSymbol implements Comparable<DotBracketSymbol>, 
   /** @return The index of this symbol. */
   @Value.Parameter(order = 3)
   public abstract int index();
-
-  /** @return The reference to the previous symbol in the dot-bracket structure. */
-  @Value.Auxiliary
-  public abstract Optional<DotBracketSymbol> previous();
-
-  /** @return The reference to the next symbol in the dot-bracket structure. */
-  @Value.Auxiliary
-  public abstract Optional<DotBracketSymbol> next();
-
-  /** @return The reference to the paired symbol in the dot-bracket structure. */
-  @Value.Auxiliary
-  public abstract Optional<DotBracketSymbol> pair();
-
-  /** @return True if this symbol represents a non-canonical base pair. */
-  @Value.Auxiliary
-  public abstract Optional<Boolean> isNonCanonical();
 
   /** @return True if this symbol is a minus '-'. */
   public final boolean isMissing() {

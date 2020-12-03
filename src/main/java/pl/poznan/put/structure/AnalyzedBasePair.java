@@ -8,7 +8,7 @@ import pl.poznan.put.notation.Saenger;
 import pl.poznan.put.rna.InteractionType;
 
 /** A pair of residues with metadata taken from analysis tool. */
-@Value.Modifiable
+@Value.Immutable
 public abstract class AnalyzedBasePair implements ClassifiedBasePair {
   @Value.Parameter(order = 1)
   public abstract BasePair basePair();
@@ -40,23 +40,16 @@ public abstract class AnalyzedBasePair implements ClassifiedBasePair {
 
   @Value.Auxiliary
   @Value.Default
-  public HelixOrigin helixOrigin() {
-    return ClassifiedBasePair.super.helixOrigin();
-  }
-
-  @Value.Auxiliary
-  @Value.Default
   public boolean isRepresented() {
     return ClassifiedBasePair.super.isRepresented();
   }
 
   @Override
   public final ClassifiedBasePair invert() {
-    return ModifiableAnalyzedBasePair.create()
-        .from(this)
-        .setBasePair(basePair().invert())
-        .setInteractionType(interactionType().invert())
-        .setLeontisWesthof(leontisWesthof().invert());
+    return ImmutableAnalyzedBasePair.copyOf(this)
+        .withBasePair(basePair().invert())
+        .withInteractionType(interactionType().invert())
+        .withLeontisWesthof(leontisWesthof().invert());
   }
 
   /**

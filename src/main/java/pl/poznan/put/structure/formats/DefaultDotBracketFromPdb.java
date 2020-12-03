@@ -5,12 +5,8 @@ import org.immutables.value.Value;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.structure.BasePair;
 import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.DotBracketSymbol;
-import pl.poznan.put.structure.ImmutableBasePair;
-import pl.poznan.put.structure.ModifiableAnalyzedBasePair;
-import pl.poznan.put.structure.ModifiableDotBracketSymbol;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * A default implementation of a dot-bracket structure which is mapped to data from 3D coordinates.
@@ -88,6 +83,13 @@ public abstract class DefaultDotBracketFromPdb extends AbstractDotBracket
   public abstract String structure();
 
   @Override
+  @Value.Lazy
+  @Value.Auxiliary
+  public Map<DotBracketSymbol, DotBracketSymbol> pairs() {
+    return super.pairs();
+  }
+
+  @Override
   public final PdbNamedResidueIdentifier identifier(final DotBracketSymbol symbol) {
     return symbolToResidue().get(symbol);
   }
@@ -108,24 +110,12 @@ public abstract class DefaultDotBracketFromPdb extends AbstractDotBracket
     final Map<Strand, Set<Strand>> strandMap = new LinkedHashMap<>();
 
     // link strands connected by canonical base pairs
-    for (final Strand strand : strands()) {
-      final List<DotBracketSymbol> strandSymbols = strand.symbols();
-      for (final DotBracketSymbol symbol : strandSymbols) {
-        if (symbol.isPairing()) {
-          final DotBracketSymbol pair =
-              symbol
-                  .pair()
-                  .orElseThrow(
-                      () ->
-                          new IllegalArgumentException(
-                              "Failed to find a pair for seemingly pairing dot-bracket symbol: "
-                                  + symbol));
-          if (!strandSymbols.contains(pair)) {
-            linkStrands(strand, pair, strandMap);
-          }
-        }
-      }
-    }
+    strands()
+        .forEach(
+            strand ->
+                pairs().keySet().stream()
+                    .filter(symbol -> strand.symbols().contains(symbol))
+                    .forEach(symbol -> linkStrands(strand, pairs().get(symbol), strandMap)));
 
     // link strands connected by non-canonical base pairs
     for (final ClassifiedBasePair nonCanonicalPair : nonCanonical) {
@@ -162,34 +152,6 @@ public abstract class DefaultDotBracketFromPdb extends AbstractDotBracket
     }
 
     return result;
-  }
-
-  /**
-   * Sets {@link ClassifiedBasePair#isRepresented()} to true for all base pairs which have a pairing
-   * brackets in this structure and sets {@link DotBracketSymbol#isNonCanonical()} to true if the
-   * base pair classification says so.
-   *
-   * @param nonCanonical The list of non-canonical base pairs.
-   */
-  public final void markRepresentedNonCanonicals(
-      final Collection<ModifiableAnalyzedBasePair> nonCanonical) {
-    final Collection<BasePair> representedSet =
-        symbols().stream()
-            .filter(DotBracketSymbol::isPairing)
-            .filter(symbol -> symbol.pair().isPresent())
-            .map(
-                symbol -> ImmutableBasePair.of(identifier(symbol), identifier(symbol.pair().get())))
-            .collect(Collectors.toSet());
-
-    nonCanonical.stream()
-        .filter(basePair -> representedSet.contains(basePair.basePair()))
-        .peek(basePair -> basePair.setIsRepresented(true))
-        .filter(ClassifiedBasePair::isNonCanonical)
-        .map(ModifiableAnalyzedBasePair::basePair)
-        .flatMap(basePair -> Stream.of(basePair.left(), basePair.right()))
-        .map(this::symbol)
-        .map(symbol -> (ModifiableDotBracketSymbol) symbol)
-        .forEach(symbol -> symbol.setIsNonCanonical(true));
   }
 
   @Value.Lazy

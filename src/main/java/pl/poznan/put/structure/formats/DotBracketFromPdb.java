@@ -53,8 +53,8 @@ public interface DotBracketFromPdb extends DotBracket {
    * @return An instance of base pair.
    */
   default BasePair basePair(final DotBracketSymbol symbol) {
-    if (symbol.isPairing() && symbol.pair().isPresent()) {
-      return ImmutableBasePair.of(identifier(symbol), identifier(symbol.pair().get()));
+    if (pairs().containsKey(symbol)) {
+      return ImmutableBasePair.of(identifier(symbol), identifier(pairs().get(symbol)));
     }
     throw new IllegalArgumentException(
         "Cannot create base pair from unpaired nucleotide: " + symbol);
