@@ -177,8 +177,14 @@ class CifConsumer implements MMcifConsumer {
       final double x = Double.parseDouble(atomSite.getCartn_x());
       final double y = Double.parseDouble(atomSite.getCartn_y());
       final double z = Double.parseDouble(atomSite.getCartn_z());
-      final double occupancy = Double.parseDouble(atomSite.getOccupancy());
-      final double temperatureFactor = Double.parseDouble(atomSite.getB_iso_or_equiv());
+      final double occupancy =
+          Objects.equals(".", atomSite.getOccupancy())
+              ? Double.NaN
+              : Double.parseDouble(atomSite.getOccupancy());
+      final double temperatureFactor =
+          Objects.equals(".", atomSite.getB_iso_or_equiv())
+              ? Double.NaN
+              : Double.parseDouble(atomSite.getB_iso_or_equiv());
       final String elementSymbol = atomSite.getType_symbol();
       String charge = atomSite.getPdbx_formal_charge();
 
