@@ -4,7 +4,7 @@
 
   <groupId>pl.poznan.put</groupId>
   <artifactId>BioCommons</artifactId>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.0.2</version>
   <packaging>jar</packaging>
 
   <name>BioCommons</name>
