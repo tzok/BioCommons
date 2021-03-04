@@ -4,6 +4,7 @@ import pl.poznan.put.structure.DotBracketSymbol;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /** A continuous segment of residues. It might span the whole chain in PDB or just its fragments. */
@@ -63,17 +64,18 @@ public interface Strand extends DotBracket {
   }
 
   /**
-   * Checks if this strand is "single strand" which means that it neither of its base pairs starts
-   * and ends in this strand.
+   * Checks if this strand is "single strand" which means that neither of its base pairs starts and
+   * ends in this strand.
    *
    * @return True if there is no base-pair inside of this strand. An opening or closing bracket is
    *     allowed as long as it points somewhere outside this strand.
    */
   default boolean isSingleStrand() {
+    final Map<DotBracketSymbol, DotBracketSymbol> pairs = pairs();
     return symbols().stream()
         .filter(DotBracketSymbol::isPairing)
-        .map(DotBracketSymbol::pair)
-        .noneMatch(symbol -> symbol.isPresent() && symbols().contains(symbol.get()));
+        .map(pairs::get)
+        .noneMatch(symbol -> symbols().contains(symbol));
   }
 
   /** @return A sequence of R (instead of A and G) and Y (instead of C, U or T). */

@@ -4,12 +4,13 @@ import pl.poznan.put.structure.formats.BpSeq;
 import pl.poznan.put.structure.formats.ImmutableBpSeq;
 import pl.poznan.put.structure.pseudoknots.ConflictGraph;
 import pl.poznan.put.structure.pseudoknots.ImmutableConflictGraph;
-import pl.poznan.put.structure.pseudoknots.ModifiableRegion;
 import pl.poznan.put.structure.pseudoknots.Region;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -19,22 +20,23 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractRegionRemover implements RegionRemover {
   // Unremove all Regions that were removed but are no longer in conflict
-  private static void restoreNonConflicting(final Iterable<Region> regions) {
+  private static void restoreNonConflicting(
+      final Iterable<Region> regions, final Collection<Region> removedRegions) {
     for (final Region ri : regions) {
-      if (!ri.isRemoved()) {
+      if (!removedRegions.contains(ri)) {
         continue;
       }
 
       boolean nonConflicting = true;
       for (final Region rj : regions) {
-        if (!rj.isRemoved() && ConflictGraph.isConflicting(ri, rj)) {
+        if (!removedRegions.contains(rj) && ConflictGraph.isConflicting(ri, rj)) {
           nonConflicting = false;
           break;
         }
       }
 
       if (nonConflicting) {
-        ((ModifiableRegion) ri).setIsRemoved(false);
+        removedRegions.remove(ri);
       }
     }
   }
@@ -52,18 +54,19 @@ public abstract class AbstractRegionRemover implements RegionRemover {
   public final List<BpSeq> findPseudoknots(final BpSeq bpSeq) {
     final List<Region> regions = Region.createRegions(bpSeq);
     final ConflictGraph conflictGraph = ImmutableConflictGraph.of(regions);
+    final Collection<Region> removedRegions = new HashSet<>();
 
     while (conflictGraph.hasConflicts()) {
       final Region region = selectRegionToRemove(conflictGraph);
-      ((ModifiableRegion) region).setIsRemoved(true);
+      removedRegions.add(region);
       conflictGraph.removeRegion(region);
     }
 
-    AbstractRegionRemover.restoreNonConflicting(regions);
+    AbstractRegionRemover.restoreNonConflicting(regions, removedRegions);
 
     final List<BpSeq.Entry> nonPseudoknotted =
         regions.stream()
-            .filter(region -> !region.isRemoved())
+            .filter(region -> !removedRegions.contains(region))
             .map(Region::entries)
             .flatMap(Collection::stream)
             .collect(Collectors.toList());

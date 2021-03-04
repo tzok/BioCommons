@@ -7,6 +7,7 @@ import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.ResidueTypeDetector;
 import pl.poznan.put.structure.BasePair;
 import pl.poznan.put.structure.ClassifiedBasePair;
+import pl.poznan.put.structure.DotBracketSymbol;
 import pl.poznan.put.structure.pseudoknots.Region;
 
 import java.io.Serializable;
@@ -64,6 +65,8 @@ public abstract class BpSeq implements Serializable {
    * @return An instance of this class with converted data.
    */
   public static BpSeq fromDotBracket(final DotBracket db) {
+    final Map<DotBracketSymbol, DotBracketSymbol> pairs = db.pairs();
+
     final List<Entry> entries =
         db.symbols().stream()
             .map(
@@ -71,7 +74,7 @@ public abstract class BpSeq implements Serializable {
                     ImmutableEntry.of(
                         symbol.index() + 1,
                         symbol.sequence(),
-                        symbol.pair().map(pair -> pair.index() + 1).orElse(0)))
+                        pairs.containsKey(symbol) ? pairs.get(symbol).index() + 1 : 0))
             .collect(Collectors.toList());
     return ImmutableBpSeq.of(entries);
   }

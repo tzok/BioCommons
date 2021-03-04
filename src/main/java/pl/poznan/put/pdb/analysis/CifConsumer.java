@@ -64,7 +64,7 @@ import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.structure.BasePair;
 import pl.poznan.put.structure.ImmutableBasePair;
-import pl.poznan.put.structure.ModifiableQuantifiedBasePair;
+import pl.poznan.put.structure.ImmutableQuantifiedBasePair;
 import pl.poznan.put.structure.QuantifiedBasePair;
 
 import javax.annotation.Nullable;
@@ -177,8 +177,14 @@ class CifConsumer implements MMcifConsumer {
       final double x = Double.parseDouble(atomSite.getCartn_x());
       final double y = Double.parseDouble(atomSite.getCartn_y());
       final double z = Double.parseDouble(atomSite.getCartn_z());
-      final double occupancy = Double.parseDouble(atomSite.getOccupancy());
-      final double temperatureFactor = Double.parseDouble(atomSite.getB_iso_or_equiv());
+      final double occupancy =
+          Objects.equals(".", atomSite.getOccupancy())
+              ? Double.NaN
+              : Double.parseDouble(atomSite.getOccupancy());
+      final double temperatureFactor =
+          Objects.equals(".", atomSite.getB_iso_or_equiv())
+              ? Double.NaN
+              : Double.parseDouble(atomSite.getB_iso_or_equiv());
       final String elementSymbol = atomSite.getType_symbol();
       String charge = atomSite.getPdbx_formal_charge();
 
@@ -532,10 +538,10 @@ class CifConsumer implements MMcifConsumer {
       final double propeller = CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.PROPELLER);
       final double opening = CifConsumer.getDoubleWithDefaultNaN(map, CifConsumer.OPENING);
       final QuantifiedBasePair quantifiedBasePair =
-          ModifiableQuantifiedBasePair.create(
+          ImmutableQuantifiedBasePair.of(
                   basePair, shear, stretch, stagger, buckle, propeller, opening)
-              .setSaenger(saenger)
-              .setLeontisWesthof(leontisWesthof);
+              .withSaenger(saenger)
+              .withLeontisWesthof(leontisWesthof);
       basePairs.add(quantifiedBasePair);
     }
   }

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** A collection of pairs (BPSEQ entries) which are consecutive in sequence. */
-@Value.Modifiable
+@Value.Immutable
 public abstract class Region implements Comparable<Region> {
   /**
    * Creates a list of regions from a secondary structure in BPSEQ format.
@@ -37,13 +37,13 @@ public abstract class Region implements Comparable<Region> {
         continue;
       }
 
-      regions.add(ModifiableRegion.create(regionEntries));
+      regions.add(ImmutableRegion.of(regionEntries));
       regionEntries.clear();
       regionEntries.add(entry);
     }
 
     if (!regionEntries.isEmpty()) {
-      regions.add(ModifiableRegion.create(regionEntries));
+      regions.add(ImmutableRegion.of(regionEntries));
     }
 
     return regions;
@@ -63,7 +63,7 @@ public abstract class Region implements Comparable<Region> {
             .collect(Collectors.toList());
     final int begin = entries.stream().map(BpSeq.Entry::index).min(Integer::compareTo).orElse(0);
     final int end = entries.stream().map(BpSeq.Entry::pair).max(Integer::compareTo).orElse(0);
-    return ModifiableRegion.create(entries).setBegin(begin).setEnd(end);
+    return ImmutableRegion.of(entries).withBegin(begin).withEnd(end);
   }
 
   /** @return The list of BPSEQ entries in this region. */
