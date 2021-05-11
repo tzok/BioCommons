@@ -1,0 +1,113 @@
+additionalProperties: false
+default: {}
+properties:
+  pairs:
+    $id: '#/properties/pairs'
+    additionalItems: false
+    default: []
+    items:
+      $id: '#/properties/pairs/items'
+      additionalItems: false
+      default: {}
+      existingJavaType: 'Pair'
+    title: The pairs schema
+    type: array
+  multiplets:
+    $id: '#/properties/multiplets'
+    additionalItems: false
+    default: []
+    items:
+      $id: '#/properties/multiplets/items'
+      additionalProperties: false
+      default: {}
+      existingJavaType: 'Multiplet'
+    title: The multiplets schema
+    type: array
+  helices:
+    $id: '#/properties/helices'
+    additionalItems: false
+    default: []
+    items:
+      $id: '#/properties/helices/items'
+      additionalProperties: false
+      default: {}
+      existingJavaType: 'Helix'
+    title: The helices schema
+    type: array
+  stacks:
+    $id: '#/properties/stacks'
+    additionalItems: false
+    default: []
+    items:
+      $id: '#/properties/stacks/items'
+      additionalProperties: false
+      default: {}
+      existingJavaType: 'Stack'
+    title: The stacks schema
+    type: array
+  ssSegments:
+    $id: '#/properties/ssSegments'
+    additionalItems: false
+    default: []
+    items:
+      $id: '#/properties/ssSegments/items'
+      additionalProperties: false
+      default: {}
+      existingJavaType: 'SsSegment'
+    title: The ssSegments schema
+    type: array
+  G4tetrads:
+    $id: '#/properties/G4tetrads'
+    additionalItems: false
+    default: []
+    items:
+      $id: '#/properties/G4tetrads/items'
+      additionalProperties: false
+      default: {}
+      existingJavaType: 'G4tetrad'
+    title: The G4tetrads schema
+    type: array
+  dbn:
+    $id: '#/properties/dbn'
+    type: object
+    default: {}
+    existingJavaType: 'java.util.Map<String,M1ChainDbn>'
+    title: The dbn schema
+  chains:
+    $id: '#/properties/chains'
+    additionalProperties: false
+    default: {}
+    existingJavaType: 'java.util.Map<String,M1ChainChains>'
+    title: The chains schema
+    type: object
+  nts:
+    $id: '#/properties/nts'
+    additionalItems: false
+    default: []
+    items:
+      $id: '#/properties/nts/items'
+      additionalProperties: false
+      default: {}
+      existingJavaType: 'Nt'
+    title: The nts schema
+    type: array
+  hbonds:
+    $id: '#/properties/hbonds'
+    additionalItems: false
+    default: []
+    items:
+      $id: '#/properties/hbonds/items'
+      additionalProperties: false
+      default: {}
+      existingJavaType: 'Hbond'
+    title: The hbonds schema
+    type: array
+  metadata:
+    $id: '#/properties/metadata'
+    additionalItems: false
+    default: {}
+    existingJavaType: 'Metadata'
+    title: The metadata schema
+    type: object
+title: The root schema
+type: object

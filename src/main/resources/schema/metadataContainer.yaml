@@ -1,0 +1,36 @@
+$schema: http://json-schema.org/draft-07/schema
+additionalProperties: false
+default: {}
+properties:
+  metadata:
+    $id: '#/properties/metadata'
+    additionalItems: false
+    default: {}
+    properties:
+      naChains:
+        $id: '#/properties/metadata/properties/naChains'
+        default: ''
+        title: The naChains schema
+        type: string
+      num_atoms:
+        $id: '#/properties/metadata/properties/num_atoms'
+        default: 0
+        title: The num_atoms schema
+        type: integer
+      num_naChains:
+        $id: '#/properties/metadata/properties/num_naChains'
+        default: 0
+        title: The num_naChains schema
+        type: integer
+      num_notes:
+        $id: '#/properties/metadata/properties/num_notes'
+        default: 0
+        title: The num_notes schema
+        type: integer
+      num_waters:
+        $id: '#/properties/metadata/properties/num_waters'
+        default: 0
+        title: The num_waters schema
+        type: integer
+title: The root schema
+type: object

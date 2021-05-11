@@ -1,0 +1,80 @@
+additionalProperties: false
+default: {}
+$id: '#/properties/m1_chain_chains'
+properties:
+      bseq:
+        $id: '#/properties/m1_chain_chains/properties/bseq'
+        default: ''
+        title: The bseq schema
+        type: string
+      form:
+        $id: '#/properties/m1_chain_chains/properties/form'
+        default: ''
+        title: The form schema
+        type: string
+      helical_axis:
+        $id: '#/properties/m1_chain_chains/properties/helical_axis'
+        additionalItems: false
+        default: []
+        items:
+          $id: '#/properties/m1_chain_chains/properties/helical_axis/items'
+          default: 0.0
+          title: The items schema
+          type: number
+        title: The helical_axis schema
+        type: array
+      helical_rise:
+        $id: '#/properties/m1_chain_chains/properties/helical_rise'
+        default: 0.0
+        title: The helical_rise schema
+        type: number
+      helical_rise_std:
+        $id: '#/properties/m1_chain_chains/properties/helical_rise_std'
+        default: 0.0
+        title: The helical_rise_std schema
+        type: number
+      num_chars:
+        $id: '#/properties/m1_chain_chains/properties/num_chars'
+        default: 0
+        title: The num_chars schema
+        type: integer
+      num_nts:
+        $id: '#/properties/m1_chain_chains/properties/num_nts'
+        default: 0
+        title: The num_nts schema
+        type: integer
+      point1:
+        $id: '#/properties/m1_chain_chains/properties/point1'
+        additionalItems: false
+        default: []
+        items:
+          $id: '#/properties/m1_chain_chains/properties/point1/items'
+          default: 0.0
+          title: The items schema
+          type: number
+        title: The point1 schema
+        type: array
+      point2:
+        $id: '#/properties/m1_chain_chains/properties/point2'
+        additionalItems: false
+        default: []
+        items:
+          $id: '#/properties/m1_chain_chains/properties/point2/items'
+          default: 0.0
+          title: The items schema
+          type: number
+        title: The point2 schema
+        type: array
+      sstr:
+        $id: '#/properties/m1_chain_chains/properties/sstr'
+        default: ''
+        title: The sstr schema
+        type: string
+      suite:
+        $id: '#/properties/m1_chain_chains/properties/suite'
+        default: ''
+        title: The suite schema
+        type: string
+title: The root schema
+type: object
+

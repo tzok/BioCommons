@@ -1,0 +1,12 @@
+"$schema": http://json-schema.org/draft-07/schema#
+additionalProperties: false
+default: {}
+properties:
+  dbn:
+    $id: '#/properties/dbn'
+    type: object
+    default: {}
+    existingJavaType: 'java.util.Map<String,M1ChainDbn>'
+    title: The dbn schema
+title: The root schema
+type: object

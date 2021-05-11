@@ -1,0 +1,65 @@
+$id: http://example.com/example.json
+$schema: http://json-schema.org/draft-07/schema
+additionalProperties: false
+default: {}
+properties:
+  helices:
+    $id: '#/properties/helices'
+    additionalItems: false
+    default: []
+    items:
+      $id: '#/properties/helices/items'
+      additionalProperties: false
+      default: {}
+      javaType: 'Helix'
+      properties:
+        bp_type:
+          $id: '#/properties/helices/items/properties/bp_type'
+          default: ''
+          title: The bp_type schema
+          type: string
+        helix_form:
+          $id: '#/properties/helices/items/properties/helix_form'
+          default: ''
+          title: The helix_form schema
+          type: string
+        index:
+          $id: '#/properties/helices/items/properties/index'
+          default: 0
+          title: The index schema
+          type: integer
+        num_pairs:
+          $id: '#/properties/helices/items/properties/num_pairs'
+          default: 0
+          title: The num_pairs schema
+          type: integer
+        num_stems:
+          $id: '#/properties/helices/items/properties/num_stems'
+          default: 0
+          title: The num_stems schema
+          type: integer
+        pairs:
+          $id: '#/properties/helices/items/properties/pairs'
+          additionalItems: false
+          default: []
+          items:
+            $id: '#/properties/helices/items/properties/pairs/items'
+            $ref: 'pair.yaml'
+          title: The pairs schema
+          type: array
+        strand1:
+          $id: '#/properties/helices/items/properties/strand1'
+          default: ''
+          title: The strand1 schema
+          type: string
+        strand2:
+          $id: '#/properties/helices/items/properties/strand2'
+          default: ''
+          title: The strand2 schema
+          type: string
+      title: The items schema
+      type: object
+    title: The helices schema
+    type: array
+title: The root schema
+type: object

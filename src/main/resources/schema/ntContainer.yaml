@@ -1,0 +1,320 @@
+$schema: http://json-schema.org/draft-07/schema
+additionalProperties: false
+default: {}
+properties:
+  nts:
+    $id: '#/properties/nts'
+    additionalItems: false
+    default: []
+    items:
+      $id: '#/properties/nts/items'
+      additionalProperties: false
+      default: {}
+      properties:
+        C5prime_xyz:
+          $id: '#/properties/nts/items/properties/C5prime_xyz'
+          additionalItems: false
+          default: []
+          items:
+            $id: '#/properties/nts/items/properties/C5prime_xyz/items'
+            default: 0.0
+            title: The items schema
+            type: number
+          title: The C5prime_xyz schema
+          type: array
+        Dp:
+          $id: '#/properties/nts/items/properties/Dp'
+          default: 0.0
+          title: The Dp schema
+          type: number
+        P_xyz:
+          $id: '#/properties/nts/items/properties/P_xyz'
+          additionalItems: false
+          default: []
+          items:
+            $id: '#/properties/nts/items/properties/P_xyz/items'
+            default: null
+            title: The items schema
+            type: 'null'
+          title: The P_xyz schema
+          type: array
+        alpha:
+          $id: '#/properties/nts/items/properties/alpha'
+          default: null
+          title: The alpha schema
+          type: 'null'
+        amplitude:
+          $id: '#/properties/nts/items/properties/amplitude'
+          default: 0.0
+          title: The amplitude schema
+          type: number
+        bb_type:
+          $id: '#/properties/nts/items/properties/bb_type'
+          default: ''
+          title: The bb_type schema
+          type: string
+        beta:
+          $id: '#/properties/nts/items/properties/beta'
+          default: null
+          title: The beta schema
+          type: 'null'
+        bin:
+          $id: '#/properties/nts/items/properties/bin'
+          default: ''
+          title: The bin schema
+          type: string
+        chain_name:
+          $id: '#/properties/nts/items/properties/chain_name'
+          default: ''
+          title: The chain_name schema
+          type: string
+        chi:
+          $id: '#/properties/nts/items/properties/chi'
+          default: 0.0
+          title: The chi schema
+          type: number
+        cluster:
+          $id: '#/properties/nts/items/properties/cluster'
+          default: ''
+          title: The cluster schema
+          type: string
+        dbn:
+          $id: '#/properties/nts/items/properties/dbn'
+          default: ''
+          title: The dbn schema
+          type: string
+        delta:
+          $id: '#/properties/nts/items/properties/delta'
+          default: 0.0
+          title: The delta schema
+          type: number
+        epsilon:
+          $id: '#/properties/nts/items/properties/epsilon'
+          default: 0.0
+          title: The epsilon schema
+          type: number
+        epsilon_zeta:
+          $id: '#/properties/nts/items/properties/epsilon_zeta'
+          default: 0.0
+          title: The epsilon_zeta schema
+          type: number
+        eta:
+          $id: '#/properties/nts/items/properties/eta'
+          default: null
+          title: The eta schema
+          type: 'null'
+        eta_base:
+          $id: '#/properties/nts/items/properties/eta_base'
+          default: null
+          title: The eta_base schema
+          type: 'null'
+        eta_prime:
+          $id: '#/properties/nts/items/properties/eta_prime'
+          default: null
+          title: The eta_prime schema
+          type: 'null'
+        filter_rmsd:
+          $id: '#/properties/nts/items/properties/filter_rmsd'
+          default: 0.0
+          title: The filter_rmsd schema
+          type: number
+        form:
+          $id: '#/properties/nts/items/properties/form'
+          default: ''
+          title: The form schema
+          type: string
+        frame:
+          $id: '#/properties/nts/items/properties/frame'
+          $ref: 'frame.yaml'
+        gamma:
+          $id: '#/properties/nts/items/properties/gamma'
+          default: 0.0
+          title: The gamma schema
+          type: number
+        glyco_bond:
+          $id: '#/properties/nts/items/properties/glyco_bond'
+          default: ''
+          title: The glyco_bond schema
+          type: string
+        index:
+          $id: '#/properties/nts/items/properties/index'
+          default: 0
+          title: The index schema
+          type: integer
+        index_chain:
+          $id: '#/properties/nts/items/properties/index_chain'
+          default: 0
+          title: The index_chain schema
+          type: integer
+        nt_code:
+          $id: '#/properties/nts/items/properties/nt_code'
+          default: ''
+          title: The nt_code schema
+          type: string
+        nt_id:
+          $id: '#/properties/nts/items/properties/nt_id'
+          default: ''
+          title: The nt_id schema
+          type: string
+        nt_name:
+          $id: '#/properties/nts/items/properties/nt_name'
+          default: ''
+          title: The nt_name schema
+          type: string
+        nt_resnum:
+          $id: '#/properties/nts/items/properties/nt_resnum'
+          default: 0
+          title: The nt_resnum schema
+          type: integer
+        nt_type:
+          $id: '#/properties/nts/items/properties/nt_type'
+          default: ''
+          title: The nt_type schema
+          type: string
+        phase_angle:
+          $id: '#/properties/nts/items/properties/phase_angle'
+          default: 0.0
+          title: The phase_angle schema
+          type: number
+        puckering:
+          $id: '#/properties/nts/items/properties/puckering'
+          default: ''
+          title: The puckering schema
+          type: string
+        splay_angle:
+          $id: '#/properties/nts/items/properties/splay_angle'
+          default: 0.0
+          title: The splay_angle schema
+          type: number
+        splay_distance:
+          $id: '#/properties/nts/items/properties/splay_distance'
+          default: 0.0
+          title: The splay_distance schema
+          type: number
+        splay_ratio:
+          $id: '#/properties/nts/items/properties/splay_ratio'
+          default: 0.0
+          title: The splay_ratio schema
+          type: number
+        ssZp:
+          $id: '#/properties/nts/items/properties/ssZp'
+          default: 0.0
+          title: The ssZp schema
+          type: number
+        sugar_class:
+          $id: '#/properties/nts/items/properties/sugar_class'
+          default: ''
+          title: The sugar_class schema
+          type: string
+        suiteness:
+          $id: '#/properties/nts/items/properties/suiteness'
+          default: 0.0
+          title: The suiteness schema
+          type: number
+        summary:
+          $id: '#/properties/nts/items/properties/summary'
+          default: ''
+          title: The summary schema
+          type: string
+        theta:
+          $id: '#/properties/nts/items/properties/theta'
+          default: null
+          title: The theta schema
+          type: 'null'
+        theta_base:
+          $id: '#/properties/nts/items/properties/theta_base'
+          default: null
+          title: The theta_base schema
+          type: 'null'
+        theta_prime:
+          $id: '#/properties/nts/items/properties/theta_prime'
+          default: null
+          title: The theta_prime schema
+          type: 'null'
+        v0:
+          $id: '#/properties/nts/items/properties/v0'
+          default: 0.0
+          title: The v0 schema
+          type: number
+        v1:
+          $id: '#/properties/nts/items/properties/v1'
+          default: 0.0
+          title: The v1 schema
+          type: number
+        v2:
+          $id: '#/properties/nts/items/properties/v2'
+          default: 0.0
+          title: The v2 schema
+          type: number
+        v3:
+          $id: '#/properties/nts/items/properties/v3'
+          default: 0.0
+          title: The v3 schema
+          type: number
+        v4:
+          $id: '#/properties/nts/items/properties/v4'
+          default: 0.0
+          title: The v4 schema
+          type: number
+        zeta:
+          $id: '#/properties/nts/items/properties/zeta'
+          default: 0.0
+          title: The zeta schema
+          type: number
+      required:
+        - index
+        - index_chain
+        - chain_name
+        - nt_resnum
+        - nt_name
+        - nt_code
+        - nt_id
+        - nt_type
+        - dbn
+        - summary
+        - alpha
+        - beta
+        - gamma
+        - delta
+        - epsilon
+        - zeta
+        - epsilon_zeta
+        - bb_type
+        - chi
+        - glyco_bond
+        - C5prime_xyz
+        - P_xyz
+        - form
+        - ssZp
+        - Dp
+        - splay_angle
+        - splay_distance
+        - splay_ratio
+        - eta
+        - theta
+        - eta_prime
+        - theta_prime
+        - eta_base
+        - theta_base
+        - v0
+        - v1
+        - v2
+        - v3
+        - v4
+        - amplitude
+        - phase_angle
+        - puckering
+        - sugar_class
+        - bin
+        - cluster
+        - suiteness
+        - filter_rmsd
+        - frame
+      title: The items schema
+      type: object
+    title: The nts schema
+    type: array
+required:
+  - nts
+title: The root schema
+type: object

@@ -1,0 +1,13 @@
+$schema: http://json-schema.org/draft-07/schema
+additionalProperties: false
+default: {}
+properties:
+  chains:
+    $id: '#/properties/chains'
+    additionalProperties: false
+    default: {}
+    existingJavaType: 'java.util.Map<String,M1ChainChains>'
+    title: The chains schema
+    type: object
+title: The root schema
+type: object
