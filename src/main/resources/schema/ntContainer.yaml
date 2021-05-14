@@ -33,16 +33,16 @@ properties:
           default: []
           items:
             $id: '#/properties/nts/items/properties/P_xyz/items'
-            default: null
+            default: 0.0
             title: The items schema
-            type: 'null'
+            type: number
           title: The P_xyz schema
           type: array
         alpha:
           $id: '#/properties/nts/items/properties/alpha'
-          default: null
+          default: 0.0
           title: The alpha schema
-          type: 'null'
+          type: number
         amplitude:
           $id: '#/properties/nts/items/properties/amplitude'
           default: 0.0
@@ -55,9 +55,9 @@ properties:
           type: string
         beta:
           $id: '#/properties/nts/items/properties/beta'
-          default: null
+          default: 0.0
           title: The beta schema
-          type: 'null'
+          type: number
         bin:
           $id: '#/properties/nts/items/properties/bin'
           default: ''
@@ -100,19 +100,19 @@ properties:
           type: number
         eta:
           $id: '#/properties/nts/items/properties/eta'
-          default: null
+          default: 0.0
           title: The eta schema
-          type: 'null'
+          type: number
         eta_base:
           $id: '#/properties/nts/items/properties/eta_base'
-          default: null
+          default: 0.0
           title: The eta_base schema
-          type: 'null'
+          type: number
         eta_prime:
           $id: '#/properties/nts/items/properties/eta_prime'
-          default: null
+          default: 0.0
           title: The eta_prime schema
-          type: 'null'
+          type: number
         filter_rmsd:
           $id: '#/properties/nts/items/properties/filter_rmsd'
           default: 0.0
@@ -218,19 +218,19 @@ properties:
           type: string
         theta:
           $id: '#/properties/nts/items/properties/theta'
-          default: null
+          default: 0.0
           title: The theta schema
-          type: 'null'
+          type: number
         theta_base:
           $id: '#/properties/nts/items/properties/theta_base'
-          default: null
+          default: 0.0
           title: The theta_base schema
-          type: 'null'
+          type: number
         theta_prime:
           $id: '#/properties/nts/items/properties/theta_prime'
-          default: null
+          default: 0.0
           title: The theta_prime schema
-          type: 'null'
+          type: 'number'
         v0:
           $id: '#/properties/nts/items/properties/v0'
           default: 0.0
@@ -261,55 +261,6 @@ properties:
           default: 0.0
           title: The zeta schema
           type: number
-      required:
-        - index
-        - index_chain
-        - chain_name
-        - nt_resnum
-        - nt_name
-        - nt_code
-        - nt_id
-        - nt_type
-        - dbn
-        - summary
-        - alpha
-        - beta
-        - gamma
-        - delta
-        - epsilon
-        - zeta
-        - epsilon_zeta
-        - bb_type
-        - chi
-        - glyco_bond
-        - C5prime_xyz
-        - P_xyz
-        - form
-        - ssZp
-        - Dp
-        - splay_angle
-        - splay_distance
-        - splay_ratio
-        - eta
-        - theta
-        - eta_prime
-        - theta_prime
-        - eta_base
-        - theta_base
-        - v0
-        - v1
-        - v2
-        - v3
-        - v4
-        - amplitude
-        - phase_angle
-        - puckering
-        - sugar_class
-        - bin
-        - cluster
-        - suiteness
-        - filter_rmsd
-        - frame
       title: The items schema
       type: object
     title: The nts schema

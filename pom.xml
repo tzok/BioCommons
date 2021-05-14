@@ -48,7 +48,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jsonschema2pojo.sourceType>yamlschema</jsonschema2pojo.sourceType>
   </properties>
 
   <dependencies>
@@ -252,6 +251,12 @@
       <artifactId>jackson-databind</artifactId>
       <version>2.12.3</version>
     </dependency>
+
+    <dependency>
+    <groupId>javax.validation</groupId>
+    <artifactId>validation-api</artifactId>
+    <version>2.0.1.Final</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -375,6 +380,11 @@
         <configuration>
           <sourceDirectory>${basedir}/src/main/resources/schema</sourceDirectory>
           <targetPackage>pl.poznan.put.schema</targetPackage>
+          <sourceType>yamlschema</sourceType>
+          <includeJsr303Annotations>true</includeJsr303Annotations>
+          <useCommonsLang3>true</useCommonsLang3>
+          <useOptionalForGetters>true</useOptionalForGetters>
+          <usePrimitives>true</usePrimitives>
         </configuration>
         <executions>
           <execution>
