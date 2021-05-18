@@ -382,7 +382,6 @@
           <targetPackage>pl.poznan.put.schema</targetPackage>
           <sourceType>yamlschema</sourceType>
           <includeJsr303Annotations>true</includeJsr303Annotations>
-          <useCommonsLang3>true</useCommonsLang3>
           <useOptionalForGetters>true</useOptionalForGetters>
           <usePrimitives>true</usePrimitives>
         </configuration>
