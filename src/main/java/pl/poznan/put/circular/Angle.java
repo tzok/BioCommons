@@ -71,10 +71,21 @@ public abstract class Angle implements Comparable<Angle> {
     final Vector3D v1 = coordB.subtract(coordA);
     final Vector3D v2 = coordC.subtract(coordB);
     final Vector3D v3 = coordD.subtract(coordC);
+    return Angle.torsionAngle(v1, v2, v3);
+  }
 
-    final Vector3D tmp1 = v1.crossProduct(v2);
-    final Vector3D tmp2 = v2.crossProduct(v3);
-    final Vector3D tmp3 = v1.scalarMultiply(v2.getNorm());
+  /**
+   * Calculates torsion angle given three vectors. Uses atan2 method.
+   *
+   * @param vec1 The first vector.
+   * @param vec2 The second vector.
+   * @param vec3 The third vector.
+   * @return A torsion angle (rotation around vector vec2).
+   */
+  public static Angle torsionAngle(final Vector3D vec1, final Vector3D vec2, final Vector3D vec3) {
+    final Vector3D tmp1 = vec1.crossProduct(vec2);
+    final Vector3D tmp2 = vec2.crossProduct(vec3);
+    final Vector3D tmp3 = vec1.scalarMultiply(vec2.getNorm());
     return ImmutableAngle.of(FastMath.atan2(tmp3.dotProduct(tmp2), tmp1.dotProduct(tmp2)));
   }
 

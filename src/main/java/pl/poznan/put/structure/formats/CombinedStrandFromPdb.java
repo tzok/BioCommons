@@ -3,7 +3,7 @@ package pl.poznan.put.structure.formats;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.immutables.value.Value;
-import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.DotBracketSymbol;
 
@@ -42,7 +42,7 @@ public abstract class CombinedStrandFromPdb extends AbstractCombinedStrand
 
   /** @return The mapping of dot-bracket symbols with corresponding PDB identifiers. */
   @Value.Parameter(order = 2)
-  protected abstract Map<DotBracketSymbol, PdbNamedResidueIdentifier> inputSymbolToResidue();
+  protected abstract Map<DotBracketSymbol, PdbResidueIdentifier> inputSymbolToResidue();
 
   @Override
   public final int originalIndex(final DotBracketSymbol symbol) {
@@ -57,17 +57,17 @@ public abstract class CombinedStrandFromPdb extends AbstractCombinedStrand
   }
 
   @Override
-  public final PdbNamedResidueIdentifier identifier(final DotBracketSymbol symbol) {
+  public final PdbResidueIdentifier identifier(final DotBracketSymbol symbol) {
     return mapping().get(symbol);
   }
 
   @Override
-  public final DotBracketSymbol symbol(final PdbNamedResidueIdentifier residueIdentifier) {
+  public final DotBracketSymbol symbol(final PdbResidueIdentifier residueIdentifier) {
     return mapping().getKey(residueIdentifier);
   }
 
   @Override
-  public final boolean contains(final PdbNamedResidueIdentifier residueIdentifier) {
+  public final boolean contains(final PdbResidueIdentifier residueIdentifier) {
     return mapping().containsValue(residueIdentifier);
   }
 
@@ -77,13 +77,13 @@ public abstract class CombinedStrandFromPdb extends AbstractCombinedStrand
   }
 
   @Override
-  public final Set<PdbNamedResidueIdentifier> identifierSet() {
+  public final Set<PdbResidueIdentifier> identifierSet() {
     return mapping().values();
   }
 
   @Value.Lazy
   @Value.Auxiliary
-  protected Map<DotBracketSymbol, PdbNamedResidueIdentifier> symbolToResidue() {
+  protected Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue() {
     final List<DotBracketSymbol> inputSymbols =
         inputStrands().stream()
             .map(DotBracket::symbols)
@@ -98,7 +98,7 @@ public abstract class CombinedStrandFromPdb extends AbstractCombinedStrand
 
   @Value.Lazy
   @Value.Auxiliary
-  protected BidiMap<DotBracketSymbol, PdbNamedResidueIdentifier> mapping() {
+  protected BidiMap<DotBracketSymbol, PdbResidueIdentifier> mapping() {
     return new DualHashBidiMap<>(
         symbols().stream().collect(Collectors.toMap(Function.identity(), symbolToResidue()::get)));
   }

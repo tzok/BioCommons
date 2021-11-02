@@ -168,7 +168,7 @@ public interface ResidueCollection extends Serializable {
 
   /** @return A list of named residue identifiers. */
   default List<PdbNamedResidueIdentifier> namedResidueIdentifiers() {
-    return residues().stream().map(PdbResidue::namedResidueIdentifer).collect(Collectors.toList());
+    return residues().stream().map(PdbResidue::namedResidueIdentifier).collect(Collectors.toList());
   }
 
   /**

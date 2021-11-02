@@ -137,7 +137,7 @@ public interface PdbResidue extends ChainNumberICode {
   }
 
   /** @return The instance of named identifier. */
-  default PdbNamedResidueIdentifier namedResidueIdentifer() {
+  default PdbNamedResidueIdentifier namedResidueIdentifier() {
     return ImmutablePdbNamedResidueIdentifier.of(
         identifier().chainIdentifier(),
         identifier().residueNumber(),

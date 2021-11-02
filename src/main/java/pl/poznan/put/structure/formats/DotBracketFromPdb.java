@@ -1,10 +1,8 @@
 package pl.poznan.put.structure.formats;
 
-import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
-import pl.poznan.put.structure.BasePair;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.DotBracketSymbol;
-import pl.poznan.put.structure.ImmutableBasePair;
 
 import java.util.List;
 import java.util.Set;
@@ -15,9 +13,9 @@ public interface DotBracketFromPdb extends DotBracket {
    * Maps the given dot-bracket symbol to its corresponding residue identifier.
    *
    * @param symbol The symbol to look for.
-   * @return The named PDB residue identifier.
+   * @return The PDB residue identifier.
    */
-  PdbNamedResidueIdentifier identifier(final DotBracketSymbol symbol);
+  PdbResidueIdentifier identifier(final DotBracketSymbol symbol);
 
   /**
    * Maps the given residue identifier to its corresponding dot-bracket symbol.
@@ -25,7 +23,7 @@ public interface DotBracketFromPdb extends DotBracket {
    * @param residueIdentifier The residue identifier to look for.
    * @return The dot-bracket symbol.
    */
-  DotBracketSymbol symbol(final PdbNamedResidueIdentifier residueIdentifier);
+  DotBracketSymbol symbol(final PdbResidueIdentifier residueIdentifier);
 
   /**
    * Checks if this structure contains a mapping for the given residue identifier.
@@ -33,7 +31,7 @@ public interface DotBracketFromPdb extends DotBracket {
    * @param residueIdentifier The residue identifier to check.
    * @return True, if there is a mapping for the given residue identifier.
    */
-  boolean contains(final PdbNamedResidueIdentifier residueIdentifier);
+  boolean contains(final PdbResidueIdentifier residueIdentifier);
 
   /**
    * Combines strands which are connected via canonical or non-canonical base pairs.
@@ -44,19 +42,5 @@ public interface DotBracketFromPdb extends DotBracket {
   List<DotBracketFromPdb> combineStrands(List<ClassifiedBasePair> nonCanonical);
 
   /** @return The set of residue identifiers used in this structure. */
-  Set<PdbNamedResidueIdentifier> identifierSet();
-
-  /**
-   * Maps a dot-bracket symbol to an instance of base pair.
-   *
-   * @param symbol A dot-bracket symbol.
-   * @return An instance of base pair.
-   */
-  default BasePair basePair(final DotBracketSymbol symbol) {
-    if (pairs().containsKey(symbol)) {
-      return ImmutableBasePair.of(identifier(symbol), identifier(pairs().get(symbol)));
-    }
-    throw new IllegalArgumentException(
-        "Cannot create base pair from unpaired nucleotide: " + symbol);
-  }
+  Set<PdbResidueIdentifier> identifierSet();
 }

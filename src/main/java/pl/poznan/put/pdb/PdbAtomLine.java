@@ -275,9 +275,7 @@ public abstract class PdbAtomLine implements Serializable, ChainNumberICode {
    * @return Euclidean distance in 3D between two atoms.
    */
   public final double distanceTo(final PdbAtomLine other) {
-    final Vector<Euclidean3D> v1 = new Vector3D(x(), y(), z());
-    final Vector<Euclidean3D> v2 = new Vector3D(other.x(), other.y(), other.z());
-    return v1.distance(v2);
+    return toVector3D().distance(other.toVector3D());
   }
 
   /**

@@ -62,10 +62,11 @@ public final class ResidueTypeDetector {
     if (actual.size() > 1) {
       if (ResidueTypeDetector.isNucleotide(actual)) {
         return Arrays.stream(Nucleotide.values())
-            .map(Nucleotide::nucleobase)
             .max(
                 Comparator.comparingDouble(
-                    base -> ResidueTypeDetector.intersectionRatio(actual, base.requiredAtoms())))
+                    nucleotide ->
+                        ResidueTypeDetector.intersectionRatio(
+                            actual, nucleotide.nucleobase().requiredAtoms())))
             .orElseThrow(
                 () ->
                     new IllegalArgumentException(
@@ -74,11 +75,11 @@ public final class ResidueTypeDetector {
 
       if (ResidueTypeDetector.isAminoAcid(actual)) {
         return Arrays.stream(AminoAcid.values())
-            .map(AminoAcid::sidechain)
             .max(
                 Comparator.comparingDouble(
-                    sidechain ->
-                        ResidueTypeDetector.intersectionRatio(actual, sidechain.requiredAtoms())))
+                    aminoAcid ->
+                        ResidueTypeDetector.intersectionRatio(
+                            actual, aminoAcid.sidechain().requiredAtoms())))
             .orElseThrow(
                 () ->
                     new IllegalArgumentException(
