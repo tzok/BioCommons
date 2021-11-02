@@ -1,5 +1,8 @@
 package pl.poznan.put.rna;
 
+import org.apache.commons.lang3.tuple.Pair;
+import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.notation.NucleobaseEdge;
 import pl.poznan.put.torsion.TorsionAngleType;
 
 import java.util.List;
@@ -8,6 +11,21 @@ import java.util.stream.Stream;
 
 /** A purine (adenine or guanine). */
 public interface Purine extends Nucleobase {
+  @Override
+  default Pair<AtomName, AtomName> edgeVectorAtoms(final NucleobaseEdge edge) {
+    switch (edge) {
+      case WATSON_CRICK:
+        return Pair.of(AtomName.C4, AtomName.N1);
+      case HOOGSTEEN:
+        return Pair.of(AtomName.N3, AtomName.C5);
+      case SUGAR:
+        return Pair.of(AtomName.C5, AtomName.C4);
+      case UNKNOWN:
+      default:
+        throw new IllegalArgumentException("Invalid nucleobase edge: " + edge);
+    }
+  }
+
   @Override
   default List<TorsionAngleType> torsionAngleTypes() {
     return Stream.of(

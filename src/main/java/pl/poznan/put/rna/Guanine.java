@@ -12,6 +12,23 @@ import java.util.stream.Stream;
 @Value.Immutable(singleton = true)
 abstract class Guanine implements Purine {
   @Override
+  public final String standardReferenceFrameString() {
+    // source: http://ndbserver.rutgers.edu/ndbmodule/archives/reports/tsukuba/tsukuba.pdf
+    return "ATOM 1 C1' G -2.477 5.399 0.000\n"
+        + "ATOM 2 N9 G -1.289 4.551 0.000\n"
+        + "ATOM 3 C8 G 0.023 4.962 0.000\n"
+        + "ATOM 4 N7 G 0.870 3.969 0.000\n"
+        + "ATOM 5 C5 G 0.071 2.833 0.000\n"
+        + "ATOM 6 C6 G 0.424 1.460 0.000\n"
+        + "ATOM 7 O6 G 1.554 0.955 0.000\n"
+        + "ATOM 8 N1 G -0.700 0.641 0.000\n"
+        + "ATOM 9 C2 G -1.999 1.087 0.000\n"
+        + "ATOM 10 N2 G -2.949 0.139 -0.001\n"
+        + "ATOM 11 N3 G -2.342 2.364 0.001\n"
+        + "ATOM 12 C4 G -1.265 3.177 0.000";
+  }
+
+  @Override
   public final Set<AtomName> requiredAtoms() {
     return Stream.of(
             AtomName.N9,
