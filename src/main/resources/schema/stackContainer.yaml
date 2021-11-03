@@ -1,0 +1,39 @@
+$schema: http://json-schema.org/draft-07/schema
+additionalProperties: false
+default: {}
+properties:
+  stacks:
+    $id: '#/properties/stacks'
+    additionalItems: false
+    default: []
+    items:
+      $id: '#/properties/stacks/items'
+      additionalProperties: false
+      default: {}
+      properties:
+        index:
+          $id: '#/properties/stacks/items/properties/index'
+          default: 0
+          title: The index schema
+          type: integer
+        nts_long:
+          $id: '#/properties/stacks/items/properties/nts_long'
+          default: ''
+          title: The nts_long schema
+          type: string
+        nts_short:
+          $id: '#/properties/stacks/items/properties/nts_short'
+          default: ''
+          title: The nts_short schema
+          type: string
+        num_nts:
+          $id: '#/properties/stacks/items/properties/num_nts'
+          default: 0
+          title: The num_nts schema
+          type: integer
+      title: The items schema
+      type: object
+    title: The stacks schema
+    type: array
+title: The root schema
+type: object
