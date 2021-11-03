@@ -3,6 +3,7 @@ package pl.poznan.put.structure.formats;
 import org.apache.commons.lang3.Validate;
 import org.immutables.value.Value;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.structure.ClassifiedBasePair;
@@ -90,17 +91,17 @@ public abstract class DefaultDotBracketFromPdb extends AbstractDotBracket
   }
 
   @Override
-  public final PdbNamedResidueIdentifier identifier(final DotBracketSymbol symbol) {
+  public final PdbResidueIdentifier identifier(final DotBracketSymbol symbol) {
     return symbolToResidue().get(symbol);
   }
 
   @Override
-  public final DotBracketSymbol symbol(final PdbNamedResidueIdentifier residueIdentifier) {
+  public final DotBracketSymbol symbol(final PdbResidueIdentifier residueIdentifier) {
     return residueToSymbol().get(residueIdentifier);
   }
 
   @Override
-  public final boolean contains(final PdbNamedResidueIdentifier residueIdentifier) {
+  public final boolean contains(final PdbResidueIdentifier residueIdentifier) {
     return residueToSymbol().containsKey(residueIdentifier);
   }
 
@@ -119,8 +120,10 @@ public abstract class DefaultDotBracketFromPdb extends AbstractDotBracket
 
     // link strands connected by non-canonical base pairs
     for (final ClassifiedBasePair nonCanonicalPair : nonCanonical) {
-      final DotBracketSymbol left = residueToSymbol().get(nonCanonicalPair.basePair().left());
-      final DotBracketSymbol right = residueToSymbol().get(nonCanonicalPair.basePair().right());
+      final PdbNamedResidueIdentifier l = nonCanonicalPair.basePair().left();
+      final PdbNamedResidueIdentifier r = nonCanonicalPair.basePair().right();
+      final DotBracketSymbol left = residueToSymbol().get(PdbResidueIdentifier.from(l));
+      final DotBracketSymbol right = residueToSymbol().get(PdbResidueIdentifier.from(r));
 
       for (final Strand strand : strands()) {
         final List<DotBracketSymbol> strandSymbols = strand.symbols();
@@ -156,21 +159,19 @@ public abstract class DefaultDotBracketFromPdb extends AbstractDotBracket
   }
 
   @Value.Lazy
-  protected Map<PdbNamedResidueIdentifier, DotBracketSymbol> residueToSymbol() {
+  protected Map<PdbResidueIdentifier, DotBracketSymbol> residueToSymbol() {
     return IntStream.range(0, symbols().size())
         .boxed()
         .collect(
-            Collectors.toMap(
-                i -> model().residues().get(i).namedResidueIdentifer(), i -> symbols().get(i)));
+            Collectors.toMap(i -> model().residues().get(i).identifier(), i -> symbols().get(i)));
   }
 
   @Value.Lazy
-  protected Map<DotBracketSymbol, PdbNamedResidueIdentifier> symbolToResidue() {
+  protected Map<DotBracketSymbol, PdbResidueIdentifier> symbolToResidue() {
     return IntStream.range(0, symbols().size())
         .boxed()
         .collect(
-            Collectors.toMap(
-                i -> symbols().get(i), i -> model().residues().get(i).namedResidueIdentifer()));
+            Collectors.toMap(i -> symbols().get(i), i -> model().residues().get(i).identifier()));
   }
 
   @Value.Check

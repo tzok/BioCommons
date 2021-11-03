@@ -12,6 +12,21 @@ import java.util.stream.Stream;
 @Value.Immutable(singleton = true)
 abstract class Thymine implements Pyrimidine {
   @Override
+  public final String standardReferenceFrameString() {
+    // source: http://ndbserver.rutgers.edu/ndbmodule/archives/reports/tsukuba/tsukuba.pdf
+    return "ATOM 1 C1' T -2.481 5.354 0.000\n"
+        + "ATOM 2 N1 T -1.284 4.500 0.000\n"
+        + "ATOM 3 C2 T -1.462 3.135 0.000\n"
+        + "ATOM 4 O2 T -2.562 2.608 0.000\n"
+        + "ATOM 5 N3 T -0.298 2.407 0.000\n"
+        + "ATOM 6 C4 T 0.994 2.897 0.000\n"
+        + "ATOM 7 O4 T 1.944 2.119 0.000\n"
+        + "ATOM 8 C5 T 1.106 4.338 0.000\n"
+        + "ATOM 9 C5M T 2.466 4.961 0.001\n"
+        + "ATOM 10 C6 T -0.024 5.057 0.000";
+  }
+
+  @Override
   public final Set<AtomName> requiredAtoms() {
     return Stream.of(
             AtomName.N1,

@@ -1,7 +1,7 @@
 package pl.poznan.put.structure.formats;
 
 import org.immutables.value.Value;
-import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.DotBracketSymbol;
 
 import java.util.List;
@@ -17,8 +17,8 @@ public abstract class StrandView implements Strand {
   public final String description() {
     if (parent() instanceof DotBracketFromPdb) {
       final DotBracketFromPdb fromPdb = (DotBracketFromPdb) parent();
-      final PdbNamedResidueIdentifier from = fromPdb.identifier(fromPdb.symbols().get(begin()));
-      final PdbNamedResidueIdentifier to = fromPdb.identifier(fromPdb.symbols().get(end() - 1));
+      final PdbResidueIdentifier from = fromPdb.identifier(fromPdb.symbols().get(begin()));
+      final PdbResidueIdentifier to = fromPdb.identifier(fromPdb.symbols().get(end() - 1));
       return String.format("%s %s %s %s %s", from, to, sequence(), structure(), sequenceRY());
     }
 

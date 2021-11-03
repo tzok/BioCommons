@@ -4,7 +4,7 @@
 
   <groupId>pl.poznan.put</groupId>
   <artifactId>BioCommons</artifactId>
-  <version>3.0.2</version>
+  <version>3.0.3</version>
   <packaging>jar</packaging>
 
   <name>BioCommons</name>
@@ -51,6 +51,18 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.11.4</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.11.4</version>
+    </dependency>
+
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
@@ -143,18 +155,6 @@
 
     <dependency>
       <groupId>org.biojava</groupId>
-      <artifactId>biojava-alignment</artifactId>
-      <version>5.4.0</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>log4j-slf4j-impl</artifactId>
-          <groupId>org.apache.logging.log4j</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.biojava</groupId>
       <artifactId>biojava-core</artifactId>
       <version>5.4.0</version>
       <exclusions>
@@ -181,6 +181,10 @@
         <exclusion>
           <artifactId>commons-lang</artifactId>
           <groupId>commons-lang</groupId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.biojava.thirdparty</groupId>
+          <artifactId>forester</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -321,7 +325,9 @@
           </execution>
         </executions>
         <configuration>
+          <source>8</source>
           <sourcepath>${project.basedir}/src/main/java;${project.basedir}/target/generated-sources/annotations</sourcepath>
+          <failOnError>false</failOnError>
         </configuration>
       </plugin>
 

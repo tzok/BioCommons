@@ -12,6 +12,20 @@ import java.util.stream.Stream;
 @Value.Immutable(singleton = true)
 abstract class Uracil implements Pyrimidine {
   @Override
+  public final String standardReferenceFrameString() {
+    // source: http://ndbserver.rutgers.edu/ndbmodule/archives/reports/tsukuba/tsukuba.pdf
+    return "ATOM 1 C1' U -2.481 5.354 0.000\n"
+        + "ATOM 2 N1 U -1.284 4.500 0.000\n"
+        + "ATOM 3 C2 U -1.462 3.131 0.000\n"
+        + "ATOM 4 O2 U -2.563 2.608 0.000\n"
+        + "ATOM 5 N3 U -0.302 2.397 0.000\n"
+        + "ATOM 6 C4 U 0.989 2.884 0.000\n"
+        + "ATOM 7 O4 U 1.935 2.094 -0.001\n"
+        + "ATOM 8 C5 U 1.089 4.311 0.000\n"
+        + "ATOM 9 C6 U -0.024 5.053 0.000";
+  }
+
+  @Override
   public final Set<AtomName> requiredAtoms() {
     return Stream.of(
             AtomName.N1,
