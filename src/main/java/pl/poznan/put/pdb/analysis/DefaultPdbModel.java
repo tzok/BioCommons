@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /** A default implementation of a structure parsed from a PDB file. */
 @Value.Immutable
@@ -113,7 +114,27 @@ public abstract class DefaultPdbModel extends AbstractPdbModel {
   }
 
   @Value.Check
-  protected void check() {
+  protected DefaultPdbModel normalize() {
     Validate.notEmpty(atoms());
+
+    final List<PdbRemark465Line> filteredMissingResidues =
+        missingResidues().stream()
+            .filter(missing -> missing.modelNumber() == modelNumber())
+            .collect(Collectors.toList());
+
+    if (filteredMissingResidues.size() == missingResidues().size()) {
+      return this;
+    }
+
+    return ImmutableDefaultPdbModel.of(
+        header(),
+        experimentalData(),
+        resolution(),
+        modelNumber(),
+        atoms(),
+        modifiedResidues(),
+        filteredMissingResidues,
+        title(),
+        chainTerminatedAfter());
   }
 }

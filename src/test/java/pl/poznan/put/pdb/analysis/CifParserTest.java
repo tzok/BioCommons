@@ -73,4 +73,15 @@ public class CifParserTest {
     assertThat(experimentalTechniques.get(1), is(ExperimentalTechnique.NEUTRON_DIFFRACTION));
     assertThat(model.resolution().resolution(), is(2.2));
   }
+
+  @Test
+  public final void test1AM0() throws Exception {
+    final String cif1AM0 = ResourcesHelper.loadResource("1am0-assembly-1.cif");
+    final List<CifModel> models = CifParser.parse(cif1AM0);
+    assertThat(models.size(), is(8));
+
+    final PdbModel model = models.get(0);
+    assertThat(model.missingResidues().size(), is(24));
+    assertThat(model.residues().size(), is(41));
+  }
 }

@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
+import org.apache.commons.lang3.Validate;
 import org.immutables.value.Value;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbExpdtaLine;
@@ -12,6 +13,7 @@ import pl.poznan.put.structure.QuantifiedBasePair;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /** A default implementation of a structure parsed from an mmCIF file. */
 @Value.Immutable
@@ -90,5 +92,31 @@ public abstract class DefaultCifModel extends AbstractPdbModel implements CifMod
   @Value.Lazy
   public List<PdbResidue> residues() {
     return super.residues();
+  }
+
+  @Value.Check
+  public DefaultCifModel normalize() {
+    Validate.notEmpty(atoms());
+
+    final List<PdbRemark465Line> filteredMissingResidues =
+        missingResidues().stream()
+            .filter(missing -> missing.modelNumber() == modelNumber())
+            .collect(Collectors.toList());
+
+    if (filteredMissingResidues.size() == missingResidues().size()) {
+      return this;
+    }
+
+    return ImmutableDefaultCifModel.of(
+        header(),
+        experimentalData(),
+        resolution(),
+        modelNumber(),
+        atoms(),
+        modifiedResidues(),
+        filteredMissingResidues,
+        title(),
+        chainTerminatedAfter(),
+        basePairs());
   }
 }
