@@ -4,10 +4,7 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -51,17 +48,23 @@ public abstract class AbstractPdbModel implements PdbModel {
 
     // create residues out of atom groups and leave only those detected as nucleotides or amino
     // acids
-    final Stream<PdbResidue> existingResidueStream =
+    final List<PdbResidue> existingResidues =
         atomGroups.values().stream()
             .map(this::atomGroupToResidue)
             .filter(
                 residue ->
-                    residue.residueInformationProvider().moleculeType() != MoleculeType.UNKNOWN);
+                    residue.residueInformationProvider().moleculeType() != MoleculeType.UNKNOWN)
+            .collect(Collectors.toList());
+
+    // construct a set of non-missing residue identifiers
+    final Set<PdbResidueIdentifier> existingIdentifiers =
+        existingResidues.stream().map(PdbResidueIdentifier::from).collect(Collectors.toSet());
 
     // create residues out of information about missing residues in the headers
     final Stream<PdbResidue> missingResidueStream =
         missingResidues().stream()
             .filter(missing -> missing.modelNumber() == modelNumber())
+            .filter(missing -> !existingIdentifiers.contains(PdbResidueIdentifier.from(missing)))
             .map(PdbRemark465Line::toResidue);
 
     // maintain chain order from the input file
@@ -71,7 +74,7 @@ public abstract class AbstractPdbModel implements PdbModel {
     // create a list of residues
     // the comparator applies chain order, but within a chain it goes back to
     // ChainNumberICode::compareTo in order to put missing residues in correct places
-    return Stream.concat(existingResidueStream, missingResidueStream)
+    return Stream.concat(existingResidues.stream(), missingResidueStream)
         .sorted(
             (t, t1) -> {
               if (t.chainIdentifier().equals(t1.chainIdentifier())) return t.compareTo(t1);
