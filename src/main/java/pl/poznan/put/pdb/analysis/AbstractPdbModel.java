@@ -60,7 +60,9 @@ public abstract class AbstractPdbModel implements PdbModel {
 
     // create residues out of information about missing residues in the headers
     final Stream<PdbResidue> missingResidueStream =
-        missingResidues().stream().map(PdbRemark465Line::toResidue);
+        missingResidues().stream()
+            .filter(missing -> missing.modelNumber() == modelNumber())
+            .map(PdbRemark465Line::toResidue);
 
     // maintain chain order from the input file
     final List<String> order =
