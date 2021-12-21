@@ -4,7 +4,7 @@
 
   <groupId>pl.poznan.put</groupId>
   <artifactId>BioCommons</artifactId>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.0.5</version>
   <packaging>jar</packaging>
 
   <name>BioCommons</name>
@@ -54,13 +54,13 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.13.0</version>
+      <version>2.13.1</version>
     </dependency>
 
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.13.0</version>
+      <version>2.13.1</version>
     </dependency>
 
     <dependency>
@@ -223,7 +223,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.2.6</version>
+      <version>1.2.9</version>
       <scope>test</scope>
     </dependency>
 
