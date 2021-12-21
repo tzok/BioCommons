@@ -3,6 +3,7 @@ package pl.poznan.put.pdb.analysis;
 import org.junit.Test;
 import pl.poznan.put.pdb.ExperimentalTechnique;
 import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.CifModel;
 import pl.poznan.put.pdb.analysis.CifParser;
 import pl.poznan.put.pdb.analysis.PdbChain;
@@ -11,6 +12,8 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -83,5 +86,17 @@ public class CifParserTest {
     final PdbModel model = models.get(0);
     assertThat(model.missingResidues().size(), is(24));
     assertThat(model.residues().size(), is(41));
+  }
+
+  @Test
+  public final void test1K9W() throws Exception {
+    final String cif1K9W = ResourcesHelper.loadResource("1k9w-assembly-2.cif");
+    final List<CifModel> models = CifParser.parse(cif1K9W);
+    assertThat(models.size(), is(1));
+
+    final CifModel model = models.get(0);
+    final Set<PdbResidueIdentifier> unique =
+        model.residues().stream().map(PdbResidueIdentifier::from).collect(Collectors.toSet());
+    assertThat(model.residues().size(), is(unique.size()));
   }
 }
