@@ -38,25 +38,25 @@ public abstract class AbstractPdbModel implements PdbModel {
 
       final PdbResidue previous = group.get(group.size() - 1);
 
-      // a new chain is when one of the following happens:
-      // a different molecule type
+      // check if two residues are of a different molecule type
       boolean isNewChain =
           previous.residueInformationProvider().moleculeType()
               != current.residueInformationProvider().moleculeType();
-      // or a different chain name
+
+      // check if they have a different chain name
       isNewChain = isNewChain || !previous.chainIdentifier().equals(current.chainIdentifier());
-      // or the residue number difference is greater than 1 (without insertion codes)
-      isNewChain =
-          isNewChain
-              || ((current.residueNumber() - previous.residueNumber() != 1)
-                  && StringUtils.isBlank(previous.insertionCode())
-                  && StringUtils.isBlank(current.insertionCode()));
-      // or the distance between connecting atoms is too big (but both residues are not missing)
-      isNewChain =
-          isNewChain
-              || (!previous.isConnectedTo(current)
-                  && !previous.isMissing()
-                  && !current.isMissing());
+
+      if (previous.isMissing() || current.isMissing()) {
+        // if either residue is missing, check only their relative residue numbers
+        isNewChain =
+            isNewChain
+                || ((current.residueNumber() - previous.residueNumber() != 1)
+                    && StringUtils.isBlank(previous.insertionCode())
+                    && StringUtils.isBlank(current.insertionCode()));
+      } else {
+        // otherwise, check the distance between connecting atoms
+        isNewChain = isNewChain || !previous.isConnectedTo(current);
+      }
 
       if (isNewChain) {
         chains.addAll(residueGroupToChains(group));

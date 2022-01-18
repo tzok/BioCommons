@@ -10,6 +10,8 @@ import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.structure.CanonicalStructureExtractor;
 import pl.poznan.put.structure.formats.BpSeq;
+import pl.poznan.put.structure.formats.DotBracket;
+import pl.poznan.put.structure.formats.ImmutableDefaultConverter;
 import pl.poznan.put.utility.ResourcesHelper;
 
 import java.nio.charset.Charset;
@@ -356,7 +358,7 @@ public class StructureModelTest {
     final List<PdbChain> chains0 = model0.chains();
     final List<PdbResidue> residues0 = model0.residues();
     final List<PdbAtomLine> atoms0 = model0.atoms();
-    assertThat(chains0.size(), is(1));
+    assertThat(chains0.size(), is(2));
     assertThat(residues0.size(), is(7));
     assertThat(atoms0.size(), is(150));
 
@@ -364,7 +366,7 @@ public class StructureModelTest {
     final List<PdbChain> chains1 = model1.chains();
     final List<PdbResidue> residues1 = model1.residues();
     final List<PdbAtomLine> atoms1 = model1.atoms();
-    assertThat(chains1.size(), is(1));
+    assertThat(chains1.size(), is(2));
     assertThat(residues1.size(), is(7));
     assertThat(atoms1.size(), is(150));
   }
@@ -377,7 +379,7 @@ public class StructureModelTest {
     assertThat(models.size(), is(1));
 
     final PdbModel model = models.get(0);
-    assertThat(model.chains().size(), is(14));
+    assertThat(model.chains().size(), is(24));
 
     final PdbModel rna = model.filteredNewInstance(MoleculeType.RNA);
     assertThat(rna.chains().size(), is(4));
