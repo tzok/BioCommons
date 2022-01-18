@@ -1,10 +1,15 @@
 package pl.poznan.put.pdb.analysis;
 
+import org.apache.commons.lang3.StringUtils;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -18,16 +23,54 @@ public abstract class AbstractPdbModel implements PdbModel {
    */
   @Override
   public List<PdbChain> chains() {
-    final Map<String, List<PdbResidue>> chainResidues = new LinkedHashMap<>();
-    residues()
-        .forEach(
-            residue -> {
-              chainResidues.putIfAbsent(residue.chainIdentifier(), new ArrayList<>());
-              chainResidues.get(residue.chainIdentifier()).add(residue);
-            });
-    return chainResidues.values().stream()
-        .flatMap(residueGroup -> residueGroupToChains(residueGroup).stream())
-        .collect(Collectors.toList());
+    final List<PdbResidue> residues = residues();
+    final List<PdbChain> chains = new ArrayList<>();
+
+    List<PdbResidue> group = new ArrayList<>();
+
+    for (int i = 0, size = residues.size(); i < size; i++) {
+      final PdbResidue current = residues.get(i);
+
+      if (group.isEmpty()) {
+        group.add(current);
+        continue;
+      }
+
+      final PdbResidue previous = group.get(group.size() - 1);
+
+      // check if two residues are of a different molecule type
+      boolean isNewChain =
+          previous.residueInformationProvider().moleculeType()
+              != current.residueInformationProvider().moleculeType();
+
+      // check if they have a different chain name
+      isNewChain = isNewChain || !previous.chainIdentifier().equals(current.chainIdentifier());
+
+      if (previous.isMissing() || current.isMissing()) {
+        // if either residue is missing, check only their relative residue numbers
+        isNewChain =
+            isNewChain
+                || ((current.residueNumber() - previous.residueNumber() != 1)
+                    && StringUtils.isBlank(previous.insertionCode())
+                    && StringUtils.isBlank(current.insertionCode()));
+      } else {
+        // otherwise, check the distance between connecting atoms
+        isNewChain = isNewChain || !previous.isConnectedTo(current);
+      }
+
+      if (isNewChain) {
+        chains.addAll(residueGroupToChains(group));
+        group = new ArrayList<>();
+      }
+
+      group.add(current);
+    }
+
+    if (!group.isEmpty()) {
+      chains.addAll(residueGroupToChains(group));
+    }
+
+    return chains;
   }
 
   /**
