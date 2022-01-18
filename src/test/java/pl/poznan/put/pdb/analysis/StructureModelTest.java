@@ -21,18 +21,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class StructureModelTest {
-  private static void assertBpSeqEquals(final String pdbString, final String bpSeqString) {
-    final PdbParser parser = new PdbParser(false);
-    final List<PdbModel> models = parser.parse(pdbString);
-    final PdbModel model = models.get(0);
-
-    final BpSeq bpSeqFromModel = CanonicalStructureExtractor.bpSeq(model);
-    assertThat(bpSeqFromModel.toString(), is(bpSeqString));
-
-    final BpSeq bpSeqFromString = BpSeq.fromString(bpSeqString);
-    assertThat(bpSeqFromModel, is(bpSeqFromString));
-  }
-
   @Test
   public final void testParsing() throws Exception {
     final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
@@ -154,7 +142,8 @@ public class StructureModelTest {
       if (residue.hasAtom(AtomName.O3P)) {
         assertThat(residue.isModified(), is(true));
         assertThat(residue.hasAllHeavyAtoms(), is(false));
-      } else if ("H2U".equals(residue.standardResidueName()) || "PSU".equals(residue.standardResidueName())) {
+      } else if ("H2U".equals(residue.standardResidueName())
+          || "PSU".equals(residue.standardResidueName())) {
         assertThat(residue.isModified(), is(true));
         assertThat(residue.hasAllHeavyAtoms(), is(true));
       } else if ("5MU".equals(residue.standardResidueName())) {
@@ -167,7 +156,9 @@ public class StructureModelTest {
         assertThat(
             String.format(
                 "Detected %s for %s/%s",
-                residue.residueInformationProvider().defaultName(), residue.standardResidueName(), residue.modifiedResidueName()),
+                residue.residueInformationProvider().defaultName(),
+                residue.standardResidueName(),
+                residue.modifiedResidueName()),
             residue.residueInformationProvider().defaultName(),
             is(residue.modifiedResidueName()));
         assertThat(!residue.hasAllHeavyAtoms(), is(residue.isModified()));
@@ -342,6 +333,18 @@ public class StructureModelTest {
     StructureModelTest.assertBpSeqEquals(pdb2MIY, bpseq2MIY);
   }
 
+  private static void assertBpSeqEquals(final String pdbString, final String bpSeqString) {
+    final PdbParser parser = new PdbParser(false);
+    final List<PdbModel> models = parser.parse(pdbString);
+    final PdbModel model = models.get(0);
+
+    final BpSeq bpSeqFromModel = CanonicalStructureExtractor.bpSeq(model);
+    assertThat(bpSeqFromModel.toString(), is(bpSeqString));
+
+    final BpSeq bpSeqFromString = BpSeq.fromString(bpSeqString);
+    assertThat(bpSeqFromModel, is(bpSeqFromString));
+  }
+
   @Test
   public final void testFrabaseExport() throws Exception {
     final String pdbFrabaseExport = ResourcesHelper.loadResource("FrabaseExport.pdb");
@@ -388,10 +391,12 @@ public class StructureModelTest {
     assertThat(models.size(), is(1));
     final PdbModel model = models.get(0);
 
-    final PdbResidue residueE164 = model.findResidue(ImmutablePdbResidueIdentifier.of("E", 164, " "));
+    final PdbResidue residueE164 =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("E", 164, " "));
     assertThat(residueE164.isMissing(), is(true));
 
-    final PdbResidue residueS169 = model.findResidue(ImmutablePdbResidueIdentifier.of("S", 169, " "));
+    final PdbResidue residueS169 =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("S", 169, " "));
     assertThat(residueS169.standardResidueName(), is("API"));
     assertThat(residueS169.modifiedResidueName(), is("LYS"));
   }
@@ -421,5 +426,58 @@ public class StructureModelTest {
         assertThat(cifResidue, is(pdbResidue));
       }
     }
+  }
+
+  @Test
+  public final void test3P49pdb() throws Exception {
+    final String pdb3P49 = ResourcesHelper.loadResource("3P49.pdb");
+    final PdbParser parser = new PdbParser();
+    final List<PdbModel> models = parser.parse(pdb3P49);
+    assertThat(models.size(), is(1));
+
+    final PdbModel model = models.get(0);
+    assertThat(model.chains().size(), is(6));
+
+    // five A strands and one B strand
+    assertThat(model.chains().get(0).identifier(), is("A"));
+    assertThat(model.chains().get(1).identifier(), is("A"));
+    assertThat(model.chains().get(2).identifier(), is("A"));
+    assertThat(model.chains().get(3).identifier(), is("A"));
+    assertThat(model.chains().get(4).identifier(), is("A"));
+    assertThat(model.chains().get(5).identifier(), is("B"));
+
+    // three RNA strands and three protein strands
+    assertThat(model.chains().get(0).moleculeType(), is(MoleculeType.RNA));
+    assertThat(model.chains().get(1).moleculeType(), is(MoleculeType.RNA));
+    assertThat(model.chains().get(2).moleculeType(), is(MoleculeType.RNA));
+    assertThat(model.chains().get(3).moleculeType(), is(MoleculeType.PROTEIN));
+    assertThat(model.chains().get(4).moleculeType(), is(MoleculeType.PROTEIN));
+    assertThat(model.chains().get(5).moleculeType(), is(MoleculeType.PROTEIN));
+  }
+
+  @Test
+  public final void test3P49cif() throws Exception {
+    final String cif3P49 = ResourcesHelper.loadResource("3P49.cif");
+    final List<CifModel> models = CifParser.parse(cif3P49);
+    assertThat(models.size(), is(1));
+
+    final CifModel model = models.get(0);
+    assertThat(model.chains().size(), is(6));
+
+    // five A strands and one B strand
+    assertThat(model.chains().get(0).identifier(), is("A"));
+    assertThat(model.chains().get(1).identifier(), is("A"));
+    assertThat(model.chains().get(2).identifier(), is("A"));
+    assertThat(model.chains().get(3).identifier(), is("A"));
+    assertThat(model.chains().get(4).identifier(), is("A"));
+    assertThat(model.chains().get(5).identifier(), is("B"));
+
+    // three RNA strands and three protein strands
+    assertThat(model.chains().get(0).moleculeType(), is(MoleculeType.RNA));
+    assertThat(model.chains().get(1).moleculeType(), is(MoleculeType.RNA));
+    assertThat(model.chains().get(2).moleculeType(), is(MoleculeType.RNA));
+    assertThat(model.chains().get(3).moleculeType(), is(MoleculeType.PROTEIN));
+    assertThat(model.chains().get(4).moleculeType(), is(MoleculeType.PROTEIN));
+    assertThat(model.chains().get(5).moleculeType(), is(MoleculeType.PROTEIN));
   }
 }
