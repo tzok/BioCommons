@@ -13,7 +13,7 @@ You can use BioCommons by adding the following to your `pom.xml`:
 <dependency>
   <groupId>pl.poznan.put</groupId>
   <artifactId>BioCommons</artifactId>
-  <version>3.0.6</version>
+  <version>3.0.7</version>
 </dependency>
 ```
 
@@ -196,13 +196,15 @@ doi:[10.1017/S1355838201002515](https://doi.org/10.1017/S1355838201002515)
 
 <div id="ref-Fisher1993" class="csl-entry">
 
-Statistical Analysis of Circular Data. N.I. Fisher.
+[Statistical Analysis of Circular
+Data](https://doi.org/10.1017/CBO9780511564345). N.I. Fisher.
 
 </div>
 
 <div id="ref-Saenger1984" class="csl-entry">
 
-Principles of Nucleic Acid Structure. W. Saenger.
+[Principles of Nucleic Acid
+Structure](https://doi.org/10.1007/978-1-4612-5190-3). W. Saenger.
 
 </div>
 
