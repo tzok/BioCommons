@@ -29,12 +29,6 @@ public abstract class PdbTitleLine implements Serializable {
    * @return An instance of this class.
    */
   public static PdbTitleLine parse(final String line) {
-    if (line.length() < 80) {
-      throw new PdbParsingException(
-          String.format(
-              "PDB %s line is not shorter than %d characters", PdbTitleLine.RECORD_NAME, 80));
-    }
-
     final String recordName = line.substring(0, 6).trim();
 
     if (!Objects.equals(PdbTitleLine.RECORD_NAME, recordName)) {
