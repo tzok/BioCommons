@@ -8,17 +8,15 @@ import org.apache.fop.svg.PDFTranscoder;
 
 /** An image format which can be used to export SVG images to. */
 public enum Format {
-  SVG("svg", "--export-plain-svg"),
-  EPS("eps", "--export-eps"),
-  PDF("pdf", "--export-pdf"),
-  PNG("png", "--export-png");
+  SVG("svg"),
+  EPS("eps"),
+  PDF("pdf"),
+  PNG("png");
 
   private final String extension;
-  private final String inkscapeArgument;
 
-  Format(final String extension, final String inkscapeArgument) {
+  Format(final String extension) {
     this.extension = extension;
-    this.inkscapeArgument = inkscapeArgument;
   }
 
   /** @return An instance of batik transcoder for this output image format. */
@@ -39,10 +37,5 @@ public enum Format {
   /** @return The default extension for this image format. */
   public String getExtension() {
     return extension;
-  }
-
-  /** @return The switch used by Inkscape to export to this image format. */
-  public String getInkscapeArgument() {
-    return inkscapeArgument;
   }
 }

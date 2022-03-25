@@ -29,7 +29,7 @@ import pl.poznan.put.utility.ImmutableExecHelper;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
@@ -127,10 +127,7 @@ public final class SVGHelper {
       ImmutableExecHelper.builder()
           .command("inkscape")
           .addArguments(
-              "--without-gui",
-              format.getInkscapeArgument(),
-              outputFile.getAbsolutePath(),
-              inputFile.getAbsolutePath())
+              "--export-filename", outputFile.getAbsolutePath(), inputFile.getAbsolutePath())
           .build()
           .execute();
 
