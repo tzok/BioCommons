@@ -1,12 +1,12 @@
 package pl.poznan.put.pdb;
 
-import org.immutables.value.Value;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
+import org.immutables.value.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** A representation of MODRES line in PDB format. */
 @Value.Immutable
@@ -59,7 +59,7 @@ public abstract class PdbModresLine implements ChainNumberICode, Serializable {
           residueName,
           chainIdentifier,
           residueNumber,
-          insertionCode,
+          " ".equals(insertionCode) ? Optional.empty() : Optional.of(insertionCode),
           standardResidueName,
           comment);
     } catch (final NumberFormatException e) {
@@ -67,34 +67,48 @@ public abstract class PdbModresLine implements ChainNumberICode, Serializable {
     }
   }
 
-  /** @return The value of the {@code idCode} attribute */
+  /**
+   * @return The value of the {@code idCode} attribute
+   */
   @Value.Parameter(order = 1)
   public abstract String idCode();
 
-  /** @return The value of the {@code residueName} attribute */
+  /**
+   * @return The value of the {@code residueName} attribute
+   */
   @Value.Parameter(order = 2)
   public abstract String residueName();
 
-  /** @return The value of the {@code chainIdentifier} attribute */
+  /**
+   * @return The value of the {@code chainIdentifier} attribute
+   */
   @Override
   @Value.Parameter(order = 3)
   public abstract String chainIdentifier();
 
-  /** @return The value of the {@code residueNumber} attribute */
+  /**
+   * @return The value of the {@code residueNumber} attribute
+   */
   @Override
   @Value.Parameter(order = 4)
   public abstract int residueNumber();
 
-  /** @return The value of the {@code insertionCode} attribute */
+  /**
+   * @return The value of the {@code insertionCode} attribute
+   */
   @Override
   @Value.Parameter(order = 5)
-  public abstract String insertionCode();
+  public abstract Optional<String> insertionCode();
 
-  /** @return The value of the {@code standardResidueName} attribute */
+  /**
+   * @return The value of the {@code standardResidueName} attribute
+   */
   @Value.Parameter(order = 6)
   public abstract String standardResidueName();
 
-  /** @return The value of the {@code comment} attribute */
+  /**
+   * @return The value of the {@code comment} attribute
+   */
   @Value.Parameter(order = 7)
   public abstract String comment();
 
@@ -103,13 +117,15 @@ public abstract class PdbModresLine implements ChainNumberICode, Serializable {
     return toPdb();
   }
 
-  /** @return A line in PDB format. */
+  /**
+   * @return A line in PDB format.
+   */
   public final String toPdb() {
     if (chainIdentifier().length() != 1) {
       PdbModresLine.LOGGER.error(
           "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
     }
-    if (insertionCode().length() != 1) {
+    if (insertionCode().orElse(" ").length() != 1) {
       PdbModresLine.LOGGER.error(
           "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
     }
@@ -120,7 +136,7 @@ public abstract class PdbModresLine implements ChainNumberICode, Serializable {
         residueName(),
         chainIdentifier().charAt(0),
         residueNumber(),
-        insertionCode().charAt(0),
+        insertionCode().orElse(" ").charAt(0),
         standardResidueName(),
         comment());
   }

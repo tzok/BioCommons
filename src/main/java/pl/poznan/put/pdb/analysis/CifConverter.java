@@ -1,5 +1,18 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bidimap.TreeBidiMap;
@@ -14,20 +27,6 @@ import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.structure.BasePair;
 import pl.poznan.put.structure.QuantifiedBasePair;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A converter from mmCIF to one or more PDB files. It takes care of formats' mismatches (e.g.
@@ -60,7 +59,7 @@ public final class CifConverter {
    */
   public static ModelContainer convert(final File cifFile) throws IOException {
     final String cifContents = FileUtils.readFileToString(cifFile, Charset.defaultCharset());
-    final List<CifModel> models = CifParser.parse(cifContents);
+    final List<CifModel> models = new CifParser().parse(cifContents);
     return CifConverter.convert(cifFile, models);
   }
 

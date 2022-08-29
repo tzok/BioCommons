@@ -1,10 +1,5 @@
 package pl.poznan.put.structure.formats;
 
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.tuple.Pair;
-import org.immutables.value.Value;
-import pl.poznan.put.structure.DotBracketSymbol;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +9,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.Pair;
+import org.immutables.value.Value;
+import pl.poznan.put.structure.DotBracketSymbol;
 
 /** A default implementation of a dot-bracket. */
 @Value.Immutable

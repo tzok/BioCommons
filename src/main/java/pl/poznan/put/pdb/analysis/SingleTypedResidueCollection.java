@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 /** A collection of residues with a common molecule type (RNA or protein). */
 @FunctionalInterface
 public interface SingleTypedResidueCollection extends ResidueCollection {
-  /** @return A detected type of the chain (RNA or protein). */
+  /**
+   * @return A detected type of the chain (RNA or protein).
+   */
   default MoleculeType moleculeType() {
     final Map<MoleculeType, Integer> typeCount =
         residues().stream()

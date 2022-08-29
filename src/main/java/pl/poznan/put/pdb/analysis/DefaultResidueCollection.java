@@ -1,8 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.immutables.value.Value;
-
 import java.util.List;
+import org.immutables.value.Value;
 
 /** A container for a list of residues. */
 @Value.Immutable

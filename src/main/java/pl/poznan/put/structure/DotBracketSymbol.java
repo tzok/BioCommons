@@ -1,11 +1,9 @@
 package pl.poznan.put.structure;
 
-import org.immutables.value.Value;
-
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import org.immutables.value.Value;
 
 /** A single symbol in a dot-bracket structure. */
 @Value.Immutable
@@ -69,44 +67,60 @@ public abstract class DotBracketSymbol implements Comparable<DotBracketSymbol>, 
     return result == -1 ? 0 : result;
   }
 
-  /** @return The sequence character. */
+  /**
+   * @return The sequence character.
+   */
   @Value.Parameter(order = 1)
   public abstract char sequence();
 
-  /** @return The structure character (dot or bracket). */
+  /**
+   * @return The structure character (dot or bracket).
+   */
   @Value.Parameter(order = 2)
   public abstract char structure();
 
-  /** @return The index of this symbol. */
+  /**
+   * @return The index of this symbol.
+   */
   @Value.Parameter(order = 3)
   public abstract int index();
 
-  /** @return True if this symbol is a minus '-'. */
+  /**
+   * @return True if this symbol is a minus '-'.
+   */
   public final boolean isMissing() {
     return structure() == '-';
   }
 
-  /** @return True if this symbol is either opening or closing. */
+  /**
+   * @return True if this symbol is either opening or closing.
+   */
   public final boolean isPairing() {
     return isOpening() || isClosing();
   }
 
-  /** @return True if this symbol is opening (see {@link DotBracketSymbol#isOpening(char)}). */
+  /**
+   * @return True if this symbol is opening (see {@link DotBracketSymbol#isOpening(char)}).
+   */
   public final boolean isOpening() {
     return DotBracketSymbol.isOpening(structure());
   }
 
-  /** @return True if this symbol is closing (see {@link DotBracketSymbol#isClosing(char)}). */
+  /**
+   * @return True if this symbol is closing (see {@link DotBracketSymbol#isClosing(char)}).
+   */
   public final boolean isClosing() {
     return DotBracketSymbol.isClosing(structure());
   }
 
-  /** @return The pseudoknot order of this symbol. */
+  /**
+   * @return The pseudoknot order of this symbol.
+   */
   public final int order() {
     return DotBracketSymbol.order(structure());
   }
 
-    @Override
+  @Override
   public final String toString() {
     return index() + " " + sequence() + ' ' + structure();
   }

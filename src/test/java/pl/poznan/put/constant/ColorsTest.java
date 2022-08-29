@@ -1,11 +1,10 @@
 package pl.poznan.put.constant;
 
-import org.junit.Test;
-
-import java.awt.*;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.awt.*;
+import org.junit.Test;
 
 public class ColorsTest {
   @Test

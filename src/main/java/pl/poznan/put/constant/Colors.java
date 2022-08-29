@@ -1,9 +1,8 @@
 package pl.poznan.put.constant;
 
-import org.apache.commons.math3.util.FastMath;
-
 import java.awt.*;
 import java.util.Arrays;
+import org.apache.commons.math3.util.FastMath;
 
 /** A set of utility functions to work with palettes and color interpolation. */
 public final class Colors {
@@ -57,7 +56,9 @@ public final class Colors {
     super();
   }
 
-  /** @return An array of 33 distinct colors. */
+  /**
+   * @return An array of 33 distinct colors.
+   */
   public static Color[] getDistinctColors() {
     return Arrays.stream(Colors.DISTINCT_COLORS_HEX).map(Color::decode).toArray(Color[]::new);
   }

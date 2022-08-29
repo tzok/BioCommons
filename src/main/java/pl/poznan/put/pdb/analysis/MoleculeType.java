@@ -1,5 +1,10 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.AtomType;
 import pl.poznan.put.atom.Bond;
@@ -8,12 +13,6 @@ import pl.poznan.put.protein.AminoAcidTorsionAngle;
 import pl.poznan.put.rna.NucleotideTorsionAngle;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /** A type of molecule (RNA or protein). */
 public enum MoleculeType {

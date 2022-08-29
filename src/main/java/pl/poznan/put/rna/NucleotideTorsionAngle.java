@@ -1,5 +1,8 @@
 package pl.poznan.put.rna;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.constant.Unicode;
@@ -11,10 +14,6 @@ import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.RangeProvider;
 import pl.poznan.put.torsion.range.TorsionRange;
 import pl.poznan.put.types.ImmutableQuadruple;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /** A torsion angle defined in a nucleotide. */
 public enum NucleotideTorsionAngle implements MasterTorsionAngleType {

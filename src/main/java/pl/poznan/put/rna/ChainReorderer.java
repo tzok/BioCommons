@@ -1,20 +1,5 @@
 package pl.poznan.put.rna;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
-import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
-import pl.poznan.put.pdb.analysis.ImmutableDefaultPdbModel;
-import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.pdb.analysis.ResidueCollection;
-import pl.poznan.put.structure.CanonicalStructureExtractor;
-import pl.poznan.put.structure.ClassifiedBasePair;
-import pl.poznan.put.structure.formats.BpSeq;
-import pl.poznan.put.structure.formats.Converter;
-import pl.poznan.put.structure.formats.ImmutableDefaultConverter;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,6 +14,20 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.analysis.ImmutableDefaultPdbModel;
+import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.ResidueCollection;
+import pl.poznan.put.structure.CanonicalStructureExtractor;
+import pl.poznan.put.structure.ClassifiedBasePair;
+import pl.poznan.put.structure.formats.BpSeq;
+import pl.poznan.put.structure.formats.Converter;
+import pl.poznan.put.structure.formats.ImmutableDefaultConverter;
 
 /**
  * A set of methods to reorder chains in an RNA structure. The order is derived from base pairing

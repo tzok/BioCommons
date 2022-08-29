@@ -14,7 +14,9 @@ public final class NumberFormatUtils {
     super();
   }
 
-  /** @return An instance of {@link NumberFormat} with three decimal digits. */
+  /**
+   * @return An instance of {@link NumberFormat} with three decimal digits.
+   */
   public static NumberFormat threeDecimalDigits() {
     return NumberFormatUtils.THREE_DECIMAL_DIGITS;
   }

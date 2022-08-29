@@ -1,21 +1,19 @@
 package pl.poznan.put.protein;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.torsion.TorsionAngleType;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 @Value.Immutable(singleton = true)
 abstract class Histidine implements Sidechain {
   @Override
   public final List<ResidueComponent> moleculeComponents() {
-    return Stream.of(ImmutableBackbone.of(), ImmutableHistidine.of())
-        .collect(Collectors.toList());
+    return Stream.of(ImmutableBackbone.of(), ImmutableHistidine.of()).collect(Collectors.toList());
   }
 
   @Override

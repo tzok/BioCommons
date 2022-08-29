@@ -1,5 +1,10 @@
 package pl.poznan.put.rna;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -10,11 +15,6 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
-
-import java.util.Arrays;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /** A nucleobase (adenine, cytosine, guanine, uracil or thymine). */
 public interface Nucleobase extends NucleicAcidResidueComponent, ResidueInformationProvider {
@@ -30,11 +30,11 @@ public interface Nucleobase extends NucleicAcidResidueComponent, ResidueInformat
                 ImmutablePdbAtomLine.of(
                     Integer.parseInt(fields[1]),
                     fields[2],
-                    " ",
+                    Optional.empty(),
                     fields[4],
                     "A",
                     1,
-                    " ",
+                    Optional.empty(),
                     Double.parseDouble(fields[4]),
                     Double.parseDouble(fields[5]),
                     Double.parseDouble(fields[6]),

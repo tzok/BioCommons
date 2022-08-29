@@ -1,26 +1,25 @@
 package pl.poznan.put.torsion;
 
-import org.apache.commons.math3.util.FastMath;
-import org.junit.Test;
-import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.ImmutableAngle;
-import pl.poznan.put.pdb.analysis.PdbParser;
-import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.rna.Nucleotide;
-import pl.poznan.put.rna.Chi;
-import pl.poznan.put.rna.NucleotideTorsionAngle;
-import pl.poznan.put.utility.ResourcesHelper;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.apache.commons.math3.util.FastMath;
+import org.junit.Test;
+import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.ImmutableAngle;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbParser;
+import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
+import pl.poznan.put.rna.Chi;
+import pl.poznan.put.rna.Nucleotide;
+import pl.poznan.put.rna.NucleotideTorsionAngle;
+import pl.poznan.put.utility.ResourcesHelper;
 
 public class AverageNucleotideTorsionAngleTypeTest {
   private final AverageTorsionAngleType averageTorsionAngleType =

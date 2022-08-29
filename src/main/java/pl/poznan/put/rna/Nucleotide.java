@@ -1,11 +1,10 @@
 package pl.poznan.put.rna;
 
+import java.util.List;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.torsion.TorsionAngleType;
-
-import java.util.List;
 
 /** A nucleotide (A, C, G, U or T) with all details regarding atoms, torsion angles, etc. */
 public enum Nucleotide implements ResidueInformationProvider {
@@ -21,7 +20,9 @@ public enum Nucleotide implements ResidueInformationProvider {
     this.nucleobase = nucleobase;
   }
 
-  /** @return An instance of nucleobase in this nucleotide. */
+  /**
+   * @return An instance of nucleobase in this nucleotide.
+   */
   public Nucleobase nucleobase() {
     return nucleobase;
   }

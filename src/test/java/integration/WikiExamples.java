@@ -1,5 +1,10 @@
 package integration;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Locale;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import pl.poznan.put.pdb.analysis.PdbChain;
@@ -13,12 +18,6 @@ import pl.poznan.put.structure.formats.DotBracket;
 import pl.poznan.put.structure.formats.ImmutableDefaultConverter;
 import pl.poznan.put.structure.pseudoknots.Region;
 import pl.poznan.put.utility.ResourcesHelper;
-
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Locale;
 
 public class WikiExamples {
   @Test

@@ -1,10 +1,9 @@
 package pl.poznan.put.pdb;
 
-import org.immutables.value.Value;
-
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
+import org.immutables.value.Value;
 
 /** A representation of TITLE line in PDB format. */
 @Value.Immutable
@@ -41,11 +40,15 @@ public abstract class PdbTitleLine implements Serializable {
     return ImmutablePdbTitleLine.of(continuation, title);
   }
 
-  /** @return The value of the {@code continuation} attribute */
+  /**
+   * @return The value of the {@code continuation} attribute
+   */
   @Value.Parameter(order = 1)
   public abstract String continuation();
 
-  /** @return The value of the {@code title} attribute */
+  /**
+   * @return The value of the {@code title} attribute
+   */
   @Value.Parameter(order = 2)
   public abstract String title();
 
@@ -54,7 +57,9 @@ public abstract class PdbTitleLine implements Serializable {
     return toPdb();
   }
 
-  /** @return A line in PDB format. */
+  /**
+   * @return A line in PDB format.
+   */
   public final String toPdb() {
     return String.format(Locale.US, PdbTitleLine.FORMAT, continuation(), title());
   }

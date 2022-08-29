@@ -1,12 +1,5 @@
 package pl.poznan.put.structure.pseudoknots;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.math3.util.CombinatoricsUtils;
-import org.immutables.value.Value;
-import pl.poznan.put.structure.pseudoknots.dp.ConflictClique;
-import pl.poznan.put.structure.pseudoknots.dp.ImmutableConflictClique;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +11,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.math3.util.CombinatoricsUtils;
+import org.immutables.value.Value;
+import pl.poznan.put.structure.pseudoknots.dp.ConflictClique;
+import pl.poznan.put.structure.pseudoknots.dp.ImmutableConflictClique;
 
 /**
  * A graph of conflicts between regions. A conflict is when one region starts/end in the middle of
@@ -95,7 +94,9 @@ public abstract class ConflictGraph {
     return Collections.unmodifiableSet(conflicts().keySet());
   }
 
-  /** @return True if at least one region has at least one conflict. */
+  /**
+   * @return True if at least one region has at least one conflict.
+   */
   public final boolean hasConflicts() {
     return !conflicts().isEmpty();
   }

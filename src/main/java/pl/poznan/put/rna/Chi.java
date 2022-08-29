@@ -32,7 +32,9 @@ public enum Chi {
     this.angleType = angleType;
   }
 
-  /** @return The torsion angle type for this instance of chi. */
+  /**
+   * @return The torsion angle type for this instance of chi.
+   */
   public TorsionAngleType angleType() {
     return angleType;
   }

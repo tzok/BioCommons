@@ -1,5 +1,22 @@
 package pl.poznan.put.utility.svg;
 
+import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.bridge.BridgeContext;
@@ -26,24 +43,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
 import pl.poznan.put.utility.ImmutableExecHelper;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
-import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
-import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /** A collection of methods to work with SVG images. */
 public final class SVGHelper {
@@ -93,7 +92,9 @@ public final class SVGHelper {
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", renderContext);
   }
 
-  /** @return A singleton instance of SVG namespace. */
+  /**
+   * @return A singleton instance of SVG namespace.
+   */
   public static NamespaceContext svgNamespaceContext() {
     return SVGHelper.SVG_NAMESPACE;
   }
@@ -207,7 +208,9 @@ public final class SVGHelper {
     return mergedSvg;
   }
 
-  /** @return An empty SVG image. */
+  /**
+   * @return An empty SVG image.
+   */
   public static SVGDocument emptyDocument() {
     return (SVGDocument)
         SVGHelper.DOM_IMPLEMENTATION.createDocument(
