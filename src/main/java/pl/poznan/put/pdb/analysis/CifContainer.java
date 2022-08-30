@@ -1,14 +1,13 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.io.FileUtils;
-import org.immutables.value.Value;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.io.FileUtils;
+import org.immutables.value.Value;
 
 /** A container of one or more PDB files converted from a single mmCIF file. */
 @Value.Immutable
@@ -23,11 +22,15 @@ public abstract class CifContainer implements ModelContainer {
     return ImmutableCifContainer.of(cifFile, Collections.emptyMap());
   }
 
-  /** @return The mapping of chain name in PDB and mmCIF for a specific file. */
+  /**
+   * @return The mapping of chain name in PDB and mmCIF for a specific file.
+   */
   @Value.Parameter(order = 2)
   public abstract Map<File, BidiMap<String, String>> fileChainMap();
 
-  /** @return The value of the {@code cifFile} attribute, */
+  /**
+   * @return The value of the {@code cifFile} attribute,
+   */
   @Value.Parameter(order = 1)
   public abstract File cifFile();
 

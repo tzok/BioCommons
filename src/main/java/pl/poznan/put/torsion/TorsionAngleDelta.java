@@ -41,19 +41,27 @@ public abstract class TorsionAngleDelta implements DisplayableExportable {
     return ImmutableTorsionAngleDelta.of(masterType, state, delta, rangeDifference);
   }
 
-  /** @return The type of torsion angle. */
+  /**
+   * @return The type of torsion angle.
+   */
   @Value.Parameter(order = 1)
   public abstract MasterTorsionAngleType angleType();
 
-  /** @return The state of comparison depending on whether the inputs were valid or not. */
+  /**
+   * @return The state of comparison depending on whether the inputs were valid or not.
+   */
   @Value.Parameter(order = 2)
   public abstract State state();
 
-  /** @return The actual result of subtraction. */
+  /**
+   * @return The actual result of subtraction.
+   */
   @Value.Parameter(order = 3)
   public abstract Angle delta();
 
-  /** @return The difference in terms of ranges the angles belong to. */
+  /**
+   * @return The difference in terms of ranges the angles belong to.
+   */
   @Value.Parameter(order = 4)
   public abstract RangeDifference rangeDifference();
 

@@ -1,15 +1,14 @@
 package pl.poznan.put.structure.pseudoknots;
 
-import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.immutables.value.Value;
-import pl.poznan.put.structure.formats.BpSeq;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.immutables.value.Value;
+import pl.poznan.put.structure.formats.BpSeq;
 
 /** A collection of pairs (BPSEQ entries) which are consecutive in sequence. */
 @Value.Immutable
@@ -66,28 +65,38 @@ public abstract class Region implements Comparable<Region> {
     return ImmutableRegion.of(entries).withBegin(begin).withEnd(end);
   }
 
-  /** @return The list of BPSEQ entries in this region. */
+  /**
+   * @return The list of BPSEQ entries in this region.
+   */
   @Value.Parameter(order = 1)
   public abstract List<BpSeq.Entry> entries();
 
-  /** @return The number of BPSEQ entries in this region. */
+  /**
+   * @return The number of BPSEQ entries in this region.
+   */
   public final int length() {
     return entries().size();
   }
 
-  /** @return The first index of a region. */
+  /**
+   * @return The first index of a region.
+   */
   @Value.Default
   public int begin() {
     return entries().get(0).index();
   }
 
-  /** @return The last index of a region. */
+  /**
+   * @return The last index of a region.
+   */
   @Value.Default
   public int end() {
     return entries().get(0).pair();
   }
 
-  /** @return True if this region was removed. */
+  /**
+   * @return True if this region was removed.
+   */
   @Value.Default
   @Value.Auxiliary
   public boolean isRemoved() {

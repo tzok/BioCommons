@@ -1,11 +1,11 @@
 package pl.poznan.put.circular;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AngleTest {
   private static final Angle DEGREES_0 = ImmutableAngle.of(FastMath.toRadians(0));

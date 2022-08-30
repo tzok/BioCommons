@@ -1,8 +1,7 @@
 package pl.poznan.put.structure.pseudoknots;
 
-import pl.poznan.put.structure.formats.BpSeq;
-
 import java.util.List;
+import pl.poznan.put.structure.formats.BpSeq;
 
 /** A finder of pseudoknots in RNA secondary structure. */
 @FunctionalInterface

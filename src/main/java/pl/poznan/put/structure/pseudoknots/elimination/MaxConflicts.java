@@ -1,9 +1,5 @@
 package pl.poznan.put.structure.pseudoknots.elimination;
 
-import org.immutables.value.Value;
-import pl.poznan.put.structure.pseudoknots.ConflictGraph;
-import pl.poznan.put.structure.pseudoknots.Region;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -11,6 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.immutables.value.Value;
+import pl.poznan.put.structure.pseudoknots.ConflictGraph;
+import pl.poznan.put.structure.pseudoknots.Region;
 
 /**
  * Java implementation of Elimination Conflicts algorithm as presented in: Smit, S. et al., 2008.

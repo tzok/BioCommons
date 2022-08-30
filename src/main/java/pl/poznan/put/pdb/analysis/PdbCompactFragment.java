@@ -1,16 +1,15 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.immutables.value.Value;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.torsion.TorsionAngleType;
-import pl.poznan.put.torsion.TorsionAngleValue;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.immutables.value.Value;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.torsion.TorsionAngleType;
+import pl.poznan.put.torsion.TorsionAngleValue;
 
 /** A collection of residues such that (i, i+1) are connected. */
 @Value.Immutable
@@ -19,7 +18,9 @@ public abstract class PdbCompactFragment implements SingleTypedResidueCollection
   @Value.Parameter(order = 1)
   public abstract List<PdbResidue> residues();
 
-  /** @return The name of this compact fragment. */
+  /**
+   * @return The name of this compact fragment.
+   */
   @Value.Default
   public String name() {
     if (residues().isEmpty()) {

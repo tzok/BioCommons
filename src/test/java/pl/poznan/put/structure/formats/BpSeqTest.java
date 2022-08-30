@@ -1,5 +1,10 @@
 package pl.poznan.put.structure.formats;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.io.IOException;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.pdb.analysis.MoleculeType;
@@ -7,12 +12,6 @@ import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.utility.ResourcesHelper;
-
-import java.io.IOException;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class BpSeqTest {
   // @formatter:off
@@ -121,7 +120,7 @@ public class BpSeqTest {
 
     assertThat(
         model.residues().stream().filter(PdbResidue::isMissing).count(),
-        is((long)model.missingResidues().size()));
+        is((long) model.missingResidues().size()));
 
     final PdbModel rna = model.filteredNewInstance(MoleculeType.RNA);
     assertThat(model.missingResidues().size(), is(103));

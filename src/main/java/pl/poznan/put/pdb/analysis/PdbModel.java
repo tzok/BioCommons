@@ -1,5 +1,8 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.ImmutablePdbRemark465Line;
 import pl.poznan.put.pdb.PdbAtomLine;
@@ -10,40 +13,56 @@ import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /** A structure parsed from a PDB file. */
 public interface PdbModel extends ResidueCollection {
-  /** @return The structure header. */
+  /**
+   * @return The structure header.
+   */
   PdbHeaderLine header();
 
-  /** @return Details about experiment used to solve the structure. */
+  /**
+   * @return Details about experiment used to solve the structure.
+   */
   PdbExpdtaLine experimentalData();
 
-  /** @return Information about the experimental resolution. */
+  /**
+   * @return Information about the experimental resolution.
+   */
   PdbRemark2Line resolution();
 
-  /** @return Model number as stated in the PDB or mmCIF file. */
+  /**
+   * @return Model number as stated in the PDB or mmCIF file.
+   */
   int modelNumber();
 
-  /** @return The list of atoms present in the structure. */
+  /**
+   * @return The list of atoms present in the structure.
+   */
   List<PdbAtomLine> atoms();
 
-  /** @return The list of modified residues as parsed from the PDB or mmCIF file. */
+  /**
+   * @return The list of modified residues as parsed from the PDB or mmCIF file.
+   */
   List<PdbModresLine> modifiedResidues();
 
-  /** @return The list of missing residues as parsed from the PDB or mmCIF file. */
+  /**
+   * @return The list of missing residues as parsed from the PDB or mmCIF file.
+   */
   List<PdbRemark465Line> missingResidues();
 
-  /** @return Structure title. */
+  /**
+   * @return Structure title.
+   */
   String title();
 
-  /** @return The set of residues, after which the chain was terminated. */
+  /**
+   * @return The set of residues, after which the chain was terminated.
+   */
   Set<PdbResidueIdentifier> chainTerminatedAfter();
 
-  /** @return The list of chains in the structure. */
+  /**
+   * @return The list of chains in the structure.
+   */
   List<PdbChain> chains();
 
   /**
@@ -55,7 +74,9 @@ public interface PdbModel extends ResidueCollection {
    */
   PdbModel filteredNewInstance(MoleculeType moleculeType);
 
-  /** @return PDB id of the structure. */
+  /**
+   * @return PDB id of the structure.
+   */
   default String idCode() {
     return header().idCode();
   }

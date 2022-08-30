@@ -39,7 +39,9 @@ public enum BR {
         .orElse(BR.UNKNOWN);
   }
 
-  /** @return The default display name. */
+  /**
+   * @return The default display name.
+   */
   public String displayName() {
     return displayNames[0];
   }

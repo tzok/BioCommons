@@ -1,12 +1,11 @@
 package pl.poznan.put.structure.formats;
 
-import pl.poznan.put.structure.DotBracketSymbol;
-import pl.poznan.put.structure.ImmutableDotBracketSymbol;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import pl.poznan.put.structure.DotBracketSymbol;
+import pl.poznan.put.structure.ImmutableDotBracketSymbol;
 
 abstract class AbstractDotBracket implements DotBracket {
   @Override

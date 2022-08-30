@@ -1,26 +1,20 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.apache.commons.io.IOUtils;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
-import org.biojava.nbio.structure.Structure;
-import org.biojava.nbio.structure.io.PDBFileParser;
 import org.junit.Test;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ImmutablePdbResidueIdentifier;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.structure.CanonicalStructureExtractor;
 import pl.poznan.put.structure.formats.BpSeq;
-import pl.poznan.put.structure.formats.DotBracket;
-import pl.poznan.put.structure.formats.ImmutableDefaultConverter;
 import pl.poznan.put.utility.ResourcesHelper;
-
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class StructureModelTest {
   @Test
@@ -57,7 +51,8 @@ public class StructureModelTest {
     final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
-    final PdbResidue residue = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 10, " "));
+    final PdbResidue residue =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("A", 10, Optional.empty()));
     assertThat(residue.standardResidueName(), is("2MG"));
     assertThat(residue.modifiedResidueName(), is("G"));
     assertThat(residue.residueInformationProvider().defaultName(), is("G"));
@@ -70,7 +65,8 @@ public class StructureModelTest {
     final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb1EHZ);
     final PdbModel model = models.get(0);
-    final PdbResidue residue = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 74, " "));
+    final PdbResidue residue =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("A", 74, Optional.empty()));
     assertThat(residue.standardResidueName(), is("C"));
     assertThat(residue.modifiedResidueName(), is("C"));
     assertThat(residue.residueInformationProvider().defaultName(), is("C"));
@@ -100,18 +96,21 @@ public class StructureModelTest {
 
     // the H2U (dihydrouridine) is modified by two additional hydrogens
     // which is undetectable in a non-hydrogen PDB file
-    final PdbResidue residueA16 = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 16, " "));
+    final PdbResidue residueA16 =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("A", 16, Optional.empty()));
     assertThat(residueA16.isModified(), is(true));
     assertThat(residueA16.hasAllHeavyAtoms(), is(true));
 
     // the PSU (pseudouridine) contains the same atoms, but it is an isomer
     // and therefore a modified residue
-    final PdbResidue residueA39 = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 39, " "));
+    final PdbResidue residueA39 =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("A", 39, Optional.empty()));
     assertThat(residueA39.isModified(), is(true));
     assertThat(residueA39.hasAllHeavyAtoms(), is(true));
 
     // the 5MU (methyluridine) is the RNA counterpart of thymine
-    final PdbResidue residueA54 = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 54, " "));
+    final PdbResidue residueA54 =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("A", 54, Optional.empty()));
     assertThat(residueA54.standardResidueName(), is("5MU"));
     assertThat(residueA54.modifiedResidueName(), is("U"));
     assertThat(residueA54.residueInformationProvider().defaultName(), is("U"));
@@ -129,7 +128,8 @@ public class StructureModelTest {
     // the PSU (dihydrouridine) is modified by two additional hydrogens
     // which is undetectable in a non-hydrogen PDB file; there can be a
     // mismatch between MODRES entry and hasAllAtoms() call
-    final PdbResidue residue = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 39, " "));
+    final PdbResidue residue =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("A", 39, Optional.empty()));
     assertThat(residue.hasAllHeavyAtoms(), is(residue.isModified()));
   }
 
@@ -187,9 +187,11 @@ public class StructureModelTest {
     final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb2Z74);
     final PdbModel model = models.get(0);
-    final PdbResidue residueA21 = model.findResidue(ImmutablePdbResidueIdentifier.of("A", 21, " "));
+    final PdbResidue residueA21 =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("A", 21, Optional.empty()));
     assertThat(residueA21.isMissing(), is(true));
-    final PdbResidue residueB21 = model.findResidue(ImmutablePdbResidueIdentifier.of("B", 21, " "));
+    final PdbResidue residueB21 =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("B", 21, Optional.empty()));
     assertThat(residueB21.isMissing(), is(true));
   }
 
@@ -209,24 +211,6 @@ public class StructureModelTest {
 
     assertThat(models.get(0).chains().get(0).residues().size(), is(76));
     assertThat(parsed.get(0).chains().get(0).residues().size(), is(76));
-  }
-
-  @Test
-  public final void testOutputParsableByBioJava() throws Exception {
-    final String pdb1EHZ = ResourcesHelper.loadResource("1EHZ.pdb");
-    final PdbParser parser = new PdbParser();
-    final List<PdbModel> models = parser.parse(pdb1EHZ);
-    final PdbModel model = models.get(0);
-
-    final PDBFileParser fileParser = new PDBFileParser();
-    final Structure structure =
-        fileParser.parsePDBFile(IOUtils.toInputStream(model.toPdb(), Charset.defaultCharset()));
-
-    assertThat(structure.getChains().size(), is(1));
-    assertThat(model.chains().size(), is(1));
-
-    assertThat(structure.getChain("A").getAtomGroups().size(), is(76));
-    assertThat(model.chains().get(0).residues().size(), is(76));
   }
 
   @Test
@@ -379,7 +363,7 @@ public class StructureModelTest {
     assertThat(models.size(), is(1));
 
     final PdbModel model = models.get(0);
-    assertThat(model.chains().size(), is(24));
+    assertThat(model.chains().size(), is(23));
 
     final PdbModel rna = model.filteredNewInstance(MoleculeType.RNA);
     assertThat(rna.chains().size(), is(4));
@@ -394,11 +378,11 @@ public class StructureModelTest {
     final PdbModel model = models.get(0);
 
     final PdbResidue residueE164 =
-        model.findResidue(ImmutablePdbResidueIdentifier.of("E", 164, " "));
+        model.findResidue(ImmutablePdbResidueIdentifier.of("E", 164, Optional.empty()));
     assertThat(residueE164.isMissing(), is(true));
 
     final PdbResidue residueS169 =
-        model.findResidue(ImmutablePdbResidueIdentifier.of("S", 169, " "));
+        model.findResidue(ImmutablePdbResidueIdentifier.of("S", 169, Optional.empty()));
     assertThat(residueS169.standardResidueName(), is("API"));
     assertThat(residueS169.modifiedResidueName(), is("LYS"));
   }
@@ -413,7 +397,7 @@ public class StructureModelTest {
 
     final String cif1EHZ = structureModel.toCif();
 
-    final List<CifModel> cifModels = CifParser.parse(cif1EHZ);
+    final List<CifModel> cifModels = new CifParser().parse(cif1EHZ);
     assertThat(cifModels.size(), is(1));
     final PdbModel cifModel = cifModels.get(0);
 
@@ -460,7 +444,7 @@ public class StructureModelTest {
   @Test
   public final void test3P49cif() throws Exception {
     final String cif3P49 = ResourcesHelper.loadResource("3P49.cif");
-    final List<CifModel> models = CifParser.parse(cif3P49);
+    final List<CifModel> models = new CifParser().parse(cif3P49);
     assertThat(models.size(), is(1));
 
     final CifModel model = models.get(0);

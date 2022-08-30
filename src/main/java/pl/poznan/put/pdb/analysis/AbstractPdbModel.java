@@ -1,10 +1,5 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.apache.commons.lang3.StringUtils;
-import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.PdbRemark465Line;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,6 +8,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.PdbRemark465Line;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 
 /** A structure which detects residues from atoms alone and then chains from residues. */
 public abstract class AbstractPdbModel implements PdbModel {
@@ -51,8 +49,7 @@ public abstract class AbstractPdbModel implements PdbModel {
         isNewChain =
             isNewChain
                 || ((current.residueNumber() - previous.residueNumber() != 1)
-                    && StringUtils.isBlank(previous.insertionCode())
-                    && StringUtils.isBlank(current.insertionCode()));
+                    && !previous.insertionCode().equals(current.insertionCode()));
       } else {
         // otherwise, check the distance between connecting atoms
         isNewChain = isNewChain || !previous.isConnectedTo(current);

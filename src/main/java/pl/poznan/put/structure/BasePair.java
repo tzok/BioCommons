@@ -1,5 +1,7 @@
 package pl.poznan.put.structure;
 
+import java.io.Serializable;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.immutables.value.Value;
@@ -7,9 +9,6 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-
-import java.io.Serializable;
-import java.util.stream.Stream;
 
 /** A pairing between two nucleotides' bases. */
 @Value.Immutable
@@ -129,11 +128,15 @@ public abstract class BasePair implements Serializable, Comparable<BasePair> {
     return dotProduct < 0.0;
   }
 
-  /** @return The first residue. */
+  /**
+   * @return The first residue.
+   */
   @Value.Parameter(order = 1)
   public abstract PdbNamedResidueIdentifier left();
 
-  /** @return The second residue. */
+  /**
+   * @return The second residue.
+   */
   @Value.Parameter(order = 2)
   public abstract PdbNamedResidueIdentifier right();
 
@@ -141,7 +144,9 @@ public abstract class BasePair implements Serializable, Comparable<BasePair> {
     return ImmutableBasePair.of(right(), left());
   }
 
-  /** @return True if the first residue is before the second one in 5'-3' order. */
+  /**
+   * @return True if the first residue is before the second one in 5'-3' order.
+   */
   public final boolean is5to3() {
     return left().compareTo(right()) < 0;
   }

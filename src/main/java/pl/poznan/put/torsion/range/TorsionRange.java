@@ -1,10 +1,9 @@
 package pl.poznan.put.torsion.range;
 
+import java.util.Arrays;
 import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
-
-import java.util.Arrays;
 
 /** A default torsion angle range as defined in Saenger's "Principles...". */
 public enum TorsionRange implements Range {

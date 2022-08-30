@@ -1,8 +1,7 @@
 package pl.poznan.put.notation;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Arrays;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A classification of RNA base pairs described in: Geometric Nomenclature and Classification of RNA
@@ -204,17 +203,23 @@ public enum LeontisWesthof {
     return LeontisWesthof.fromString(new String(chars));
   }
 
-  /** @return Stericity i.e. cis, trans or unknown. */
+  /**
+   * @return Stericity i.e. cis, trans or unknown.
+   */
   public Stericity stericity() {
     return stericity;
   }
 
-  /** @return Edge of the 5' partner i.e. Watson-Crick, Hoogsteen, sugar or unknown. */
+  /**
+   * @return Edge of the 5' partner i.e. Watson-Crick, Hoogsteen, sugar or unknown.
+   */
   public NucleobaseEdge edge5() {
     return edge5;
   }
 
-  /** @return Edge of the 3' partner i.e. Watson-Crick, Hoogsteen, sugar or unknown. */
+  /**
+   * @return Edge of the 3' partner i.e. Watson-Crick, Hoogsteen, sugar or unknown.
+   */
   public NucleobaseEdge edge3() {
     return edge3;
   }

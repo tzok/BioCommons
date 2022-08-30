@@ -1,15 +1,14 @@
 package pl.poznan.put.circular.enums;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
-
-import java.util.stream.Stream;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class AngleTransformationTest {
   private static final Angle ZERO = ImmutableAngle.of(FastMath.toRadians(0.0));

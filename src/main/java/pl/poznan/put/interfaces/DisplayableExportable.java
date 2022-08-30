@@ -5,12 +5,18 @@ package pl.poznan.put.interfaces;
  * to output file.
  */
 public interface DisplayableExportable {
-  /** @return A short name to be shown in UI summary. */
+  /**
+   * @return A short name to be shown in UI summary.
+   */
   String shortDisplayName();
 
-  /** @return A long name to be shown in UI, may contain Unicode. */
+  /**
+   * @return A long name to be shown in UI, may contain Unicode.
+   */
   String longDisplayName();
 
-  /** @return A name to be used during export to output file, should be ASCII only. */
+  /**
+   * @return A name to be used during export to output file, should be ASCII only.
+   */
   String exportName();
 }

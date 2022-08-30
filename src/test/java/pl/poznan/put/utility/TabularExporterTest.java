@@ -1,15 +1,14 @@
 package pl.poznan.put.utility;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.junit.Test;
-
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import java.io.IOException;
-import java.nio.charset.Charset;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.junit.Test;
 
 public class TabularExporterTest {
   @Test

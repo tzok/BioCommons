@@ -1,12 +1,11 @@
 package pl.poznan.put.atom;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** A unified atom name found in PDB and mmCIF files with a list of alternative names. */
 public enum AtomName {

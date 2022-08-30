@@ -1,13 +1,11 @@
 package pl.poznan.put.torsion.range;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
 import pl.poznan.put.circular.ImmutableAngle;
-import pl.poznan.put.torsion.range.RangeDifference;
-import pl.poznan.put.torsion.range.TorsionRange;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TorsionRangeTest {
   @Test

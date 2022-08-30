@@ -8,11 +8,15 @@ import pl.poznan.put.utility.AngleFormat;
 /** A torsion angle with its value calculated. */
 @Value.Immutable
 public abstract class TorsionAngleValue implements DisplayableExportable {
-  /** @return The type of this torsion angle. */
+  /**
+   * @return The type of this torsion angle.
+   */
   @Value.Parameter(order = 1)
   public abstract TorsionAngleType angleType();
 
-  /** @return The value of this torsion angle. */
+  /**
+   * @return The value of this torsion angle.
+   */
   @Value.Parameter(order = 2)
   public abstract Angle value();
 

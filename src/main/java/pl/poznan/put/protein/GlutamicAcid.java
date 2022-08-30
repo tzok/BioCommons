@@ -1,15 +1,14 @@
 package pl.poznan.put.protein;
 
-import org.immutables.value.Value;
-import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.pdb.analysis.ResidueComponent;
-import pl.poznan.put.torsion.TorsionAngleType;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.immutables.value.Value;
+import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.pdb.analysis.ResidueComponent;
+import pl.poznan.put.torsion.TorsionAngleType;
 
 @Value.Immutable(singleton = true)
 abstract class GlutamicAcid implements Sidechain {

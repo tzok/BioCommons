@@ -1,9 +1,8 @@
 package pl.poznan.put.structure.formats;
 
+import java.util.List;
 import org.immutables.value.Value;
 import pl.poznan.put.structure.DotBracketSymbol;
-
-import java.util.List;
 
 /** A default implementation of a strand. */
 @Value.Immutable
