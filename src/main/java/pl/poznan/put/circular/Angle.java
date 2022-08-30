@@ -1,5 +1,8 @@
 package pl.poznan.put.circular;
 
+import java.util.Locale;
+import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
@@ -8,10 +11,6 @@ import org.apache.commons.math3.util.Precision;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
-
-import javax.annotation.Nullable;
-import java.util.Locale;
-import java.util.regex.Pattern;
 
 /** A measurement for which one can distinguish a direction (i.e. [0..360) degrees) */
 @Value.Immutable
@@ -157,26 +156,36 @@ public abstract class Angle implements Comparable<Angle> {
     return FastMath.PI - FastMath.abs(FastMath.PI - FastMath.abs(left - right));
   }
 
-  /** @return Value in radians in range (-pi; pi]. */
+  /**
+   * @return Value in radians in range (-pi; pi].
+   */
   @Value.Parameter(order = 1)
   public abstract double radians();
 
-  /** @return Value in degrees in range (-180; 180]. */
+  /**
+   * @return Value in degrees in range (-180; 180].
+   */
   public final double degrees() {
     return FastMath.toDegrees(radians());
   }
 
-  /** @return Value in degrees in range [0; 360). */
+  /**
+   * @return Value in degrees in range [0; 360).
+   */
   public final double degrees360() {
     return FastMath.toDegrees(radians2PI());
   }
 
-  /** @return Value in radians in range [0; 2pi). */
+  /**
+   * @return Value in radians in range [0; 2pi).
+   */
   public final double radians2PI() {
     return (radians() < 0.0) ? (radians() + MathUtils.TWO_PI) : radians();
   }
 
-  /** @return True if value is not NaN. */
+  /**
+   * @return True if value is not NaN.
+   */
   public final boolean isValid() {
     return !Double.isNaN(radians());
   }

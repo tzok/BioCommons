@@ -19,7 +19,9 @@ public enum HelixOrigin {
     }
   }
 
-  /** @return A one letter representation of this instance. */
+  /**
+   * @return A one letter representation of this instance.
+   */
   public String toOneLetter() {
     switch (this) {
       case FALSE:

@@ -1,12 +1,11 @@
 package pl.poznan.put.structure;
 
-import org.junit.Test;
-import pl.poznan.put.structure.formats.MultiLineDotBracket;
-
-import java.util.Collection;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.Collection;
+import org.junit.Test;
+import pl.poznan.put.structure.formats.MultiLineDotBracket;
 
 public class MultiLineDotBracketTest {
   // @formatter:on

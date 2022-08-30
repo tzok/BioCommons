@@ -1,10 +1,10 @@
 package pl.poznan.put.structure.formats;
 
-import org.junit.Test;
-import pl.poznan.put.utility.ResourcesHelper;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.junit.Test;
+import pl.poznan.put.utility.ResourcesHelper;
 
 public class DefaultDotBracketTest {
   public static final String FROM_2Z74 =

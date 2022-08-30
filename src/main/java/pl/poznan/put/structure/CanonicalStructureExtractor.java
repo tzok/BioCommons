@@ -1,17 +1,16 @@
 package pl.poznan.put.structure;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.ImmutableDefaultResidueCollection;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.pdb.analysis.ResidueCollection;
 import pl.poznan.put.structure.formats.BpSeq;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /** A set of methods to analyze 3D data to extract the canonical 2D structure. */
 public final class CanonicalStructureExtractor {

@@ -1,12 +1,11 @@
 package pl.poznan.put.pdb;
 
-import org.immutables.value.Value;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import org.immutables.value.Value;
 
 /** A representation of EXPDTA line in PDB files. */
 @Value.Immutable
@@ -48,7 +47,9 @@ public abstract class PdbExpdtaLine implements Serializable {
     return ImmutablePdbExpdtaLine.of(experimentalTechniques);
   }
 
-  /** @return The value of the {@code experimentalTechniques} attribute */
+  /**
+   * @return The value of the {@code experimentalTechniques} attribute
+   */
   @Value.Parameter(order = 1)
   public abstract List<ExperimentalTechnique> experimentalTechniques();
 
@@ -57,7 +58,9 @@ public abstract class PdbExpdtaLine implements Serializable {
     return toPdb();
   }
 
-  /** @return A line in PDB format. */
+  /**
+   * @return A line in PDB format.
+   */
   public final String toPdb() {
     final StringBuilder builder = new StringBuilder();
 

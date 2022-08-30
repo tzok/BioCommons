@@ -1,15 +1,20 @@
 package pl.poznan.put.structure.formats;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import pl.poznan.put.structure.DotBracketSymbol;
 import pl.poznan.put.structure.ImmutableDotBracketSymbol;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public abstract class AbstractCombinedStrand implements DotBracket {
   protected abstract List<Strand> inputStrands();
+
+  @Override
+  public List<DotBracket> combineStrands() {
+    return Collections.singletonList(this);
+  }
 
   @Override
   public List<DotBracketSymbol> symbols() {

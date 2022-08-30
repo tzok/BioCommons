@@ -1,15 +1,14 @@
 package pl.poznan.put.structure.formats;
 
-import org.junit.Test;
-import pl.poznan.put.structure.DotBracketSymbol;
-import pl.poznan.put.structure.ImmutableDotBracketSymbol;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.Test;
+import pl.poznan.put.structure.DotBracketSymbol;
+import pl.poznan.put.structure.ImmutableDotBracketSymbol;
 
 public class CombinedStrandTest {
   @Test

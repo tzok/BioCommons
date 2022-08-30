@@ -1,7 +1,5 @@
 package pl.poznan.put.pdb;
 
-import org.immutables.value.Value;
-
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -9,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+import org.immutables.value.Value;
 
 /** A representation of HEADER file in PDB format. */
 @Value.Immutable
@@ -55,15 +54,21 @@ public abstract class PdbHeaderLine implements Serializable {
     }
   }
 
-  /** @return The value of the {@code classification} attribute */
+  /**
+   * @return The value of the {@code classification} attribute
+   */
   @Value.Parameter(order = 1)
   public abstract String classification();
 
-  /** @return The value of the {@code depositionDate} attribute */
+  /**
+   * @return The value of the {@code depositionDate} attribute
+   */
   @Value.Parameter(order = 2)
   public abstract Date depositionDate();
 
-  /** @return The value of the {@code idCode} attribute */
+  /**
+   * @return The value of the {@code idCode} attribute
+   */
   @Value.Parameter(order = 3)
   public abstract String idCode();
 
@@ -72,7 +77,9 @@ public abstract class PdbHeaderLine implements Serializable {
     return toPdb();
   }
 
-  /** @return A line in PDB format. */
+  /**
+   * @return A line in PDB format.
+   */
   public final String toPdb() {
     return String.format(
         Locale.US,

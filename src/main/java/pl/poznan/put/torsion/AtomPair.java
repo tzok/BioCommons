@@ -1,5 +1,6 @@
 package pl.poznan.put.torsion;
 
+import java.util.Locale;
 import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.AtomType;
@@ -8,16 +9,18 @@ import pl.poznan.put.atom.BondLength;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 
-import java.util.Locale;
-
 /** A pair of atoms. */
 @Value.Immutable
 public abstract class AtomPair implements Comparable<AtomPair> {
-  /** @return The first atom. */
+  /**
+   * @return The first atom.
+   */
   @Value.Parameter(order = 1)
   abstract PdbAtomLine leftAtom();
 
-  /** @return The second atom. */
+  /**
+   * @return The second atom.
+   */
   @Value.Parameter(order = 2)
   abstract PdbAtomLine rightAtom();
 

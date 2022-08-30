@@ -1,10 +1,10 @@
 package pl.poznan.put.utility;
 
-import org.junit.Test;
-import pl.poznan.put.constant.Unicode;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.junit.Test;
+import pl.poznan.put.constant.Unicode;
 
 public class AngleFormatTest {
   @Test

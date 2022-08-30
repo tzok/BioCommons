@@ -1,9 +1,8 @@
 package pl.poznan.put.notation;
 
-import pl.poznan.put.structure.BasePair;
-
 import java.util.Arrays;
 import java.util.Objects;
+import pl.poznan.put.structure.BasePair;
 
 /**
  * A classification of RNA base pairs described in Principles of Nucleic Acid Structure. W. Saenger.
@@ -110,7 +109,9 @@ public enum Saenger {
     return name();
   }
 
-  /** @return True if this instance is either XIX, XX or XXVIII. */
+  /**
+   * @return True if this instance is either XIX, XX or XXVIII.
+   */
   public boolean isCanonical() {
     return Saenger.isCanonical(this);
   }

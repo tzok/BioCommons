@@ -1,11 +1,10 @@
 package pl.poznan.put.circular.samples;
 
+import java.util.Collection;
 import org.apache.commons.math3.util.FastMath;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
-
-import java.util.Collection;
 
 /** A quantitative measure of a trigonometric sample shape. */
 @Value.Immutable
@@ -55,11 +54,15 @@ public abstract class TrigonometricMoment {
     return ImmutableTrigonometricMoment.of(ImmutableAngle.of(mi), rho);
   }
 
-  /** @return The mean direction. */
+  /**
+   * @return The mean direction.
+   */
   @Value.Parameter(order = 1)
   public abstract Angle meanDirection();
 
-  /** @return The length of the vector representing the mean direction. */
+  /**
+   * @return The length of the vector representing the mean direction.
+   */
   @Value.Parameter(order = 2)
   public abstract double meanResultantLength();
 }

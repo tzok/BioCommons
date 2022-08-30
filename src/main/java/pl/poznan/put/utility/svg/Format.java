@@ -19,7 +19,9 @@ public enum Format {
     this.extension = extension;
   }
 
-  /** @return An instance of batik transcoder for this output image format. */
+  /**
+   * @return An instance of batik transcoder for this output image format.
+   */
   public Transcoder getTranscoder() {
     switch (this) {
       case EPS:
@@ -34,7 +36,9 @@ public enum Format {
     }
   }
 
-  /** @return The default extension for this image format. */
+  /**
+   * @return The default extension for this image format.
+   */
   public String getExtension() {
     return extension;
   }

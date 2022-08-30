@@ -1,5 +1,13 @@
 package pl.poznan.put.utility;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteStreamHandler;
@@ -10,15 +18,6 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 
 /** An executor of external processes. */
 @Value.Immutable
@@ -46,10 +45,14 @@ public abstract class ExecHelper {
     }
   }
 
-  /** @return The working directory where to run the command in. */
+  /**
+   * @return The working directory where to run the command in.
+   */
   public abstract Optional<File> workingDirectory();
 
-  /** @return The command to run. */
+  /**
+   * @return The command to run.
+   */
   public abstract String command();
 
   /**
@@ -116,7 +119,9 @@ public abstract class ExecHelper {
     return Collections.emptyMap();
   }
 
-  /** @return The list of arguments to the command (default: empty). */
+  /**
+   * @return The list of arguments to the command (default: empty).
+   */
   @Value.Default
   public List<String> arguments() {
     return Collections.emptyList();
@@ -125,15 +130,21 @@ public abstract class ExecHelper {
   /** A result of running external command. */
   @Value.Immutable
   public interface ExecutionResult {
-    /** @return The exit code (0 means success). */
+    /**
+     * @return The exit code (0 means success).
+     */
     @Value.Parameter(order = 1)
     int exitCode();
 
-    /** @return The contents of standard output stream. */
+    /**
+     * @return The contents of standard output stream.
+     */
     @Value.Parameter(order = 2)
     String standardOutput();
 
-    /** @return The contents of standard error stream. */
+    /**
+     * @return The contents of standard error stream.
+     */
     @Value.Parameter(order = 3)
     String standardError();
   }

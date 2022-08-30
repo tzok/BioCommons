@@ -1,5 +1,10 @@
 package pl.poznan.put.pdb;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
@@ -7,11 +12,6 @@ import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.analysis.DefaultPdbResidue;
 import pl.poznan.put.pdb.analysis.ImmutableDefaultPdbResidue;
 import pl.poznan.put.pdb.analysis.PdbResidue;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Objects;
 
 /** A representation of REMARK 465 in PDB format which describes missing residues. */
 @Value.Immutable
@@ -112,54 +112,70 @@ public abstract class PdbRemark465Line implements ChainNumberICode {
       final String insertionCode =
           (remarkContent.length() == 15) ? " " : Character.toString(remarkContent.charAt(15));
       return ImmutablePdbRemark465Line.of(
-          modelNumber, residueName, chainIdentifier, residueNumber, insertionCode);
+          modelNumber,
+          residueName,
+          chainIdentifier,
+          residueNumber,
+          " ".equals(insertionCode) ? Optional.empty() : Optional.of(insertionCode));
     } catch (final NumberFormatException e) {
       throw new PdbParsingException("Failed to parse PDB REMARK 465 line", e);
     }
   }
 
-  /** @return The value of the {@code modelNumber} attribute */
+  /**
+   * @return The value of the {@code modelNumber} attribute
+   */
   @Value.Parameter(order = 1)
   public abstract int modelNumber();
 
-  /** @return The value of the {@code residueName} attribute */
+  /**
+   * @return The value of the {@code residueName} attribute
+   */
   @Value.Parameter(order = 2)
   public abstract String residueName();
 
-  /** @return The value of the {@code chainIdentifier} attribute */
+  /**
+   * @return The value of the {@code chainIdentifier} attribute
+   */
   @Override
   @Value.Parameter(order = 3)
   public abstract String chainIdentifier();
 
-  /** @return The value of the {@code residueNumber} attribute */
+  /**
+   * @return The value of the {@code residueNumber} attribute
+   */
   @Override
   @Value.Parameter(order = 4)
   public abstract int residueNumber();
 
-  /** @return The value of the {@code insertionCode} attribute */
+  /**
+   * @return The value of the {@code insertionCode} attribute
+   */
   @Override
   @Value.Parameter(order = 5)
-  public abstract String insertionCode();
+  public abstract Optional<String> insertionCode();
 
   @Override
   public final String toString() {
     return toPdb();
   }
 
-  /** @return A line in PDB format. */
+  /**
+   * @return A line in PDB format.
+   */
   public final String toPdb() {
     if (chainIdentifier().length() != 1) {
       PdbRemark465Line.LOGGER.error(
           "Field 'chainIdentifier' is longer than 1 char. Only first letter will be taken");
     }
-    if (insertionCode().length() != 1) {
+    if (insertionCode().orElse(" ").length() != 1) {
       PdbRemark465Line.LOGGER.error(
           "Field 'insertionCode' is longer than 1 char. Only first letter will be taken");
     }
 
     final String modelNumberString = (modelNumber() == 0) ? " " : String.valueOf(modelNumber());
     final char chain = chainIdentifier().charAt(0);
-    final char icode = insertionCode().charAt(0);
+    final char icode = insertionCode().orElse(" ").charAt(0);
 
     return String.format(
         Locale.US,

@@ -1,14 +1,14 @@
 package pl.poznan.put.circular.conversion;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.Precision;
 import org.junit.Test;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class CartesianUtilitiesTest {
   private static final double[] ATOM_OP3 = {50.193, 51.190, 50.534};

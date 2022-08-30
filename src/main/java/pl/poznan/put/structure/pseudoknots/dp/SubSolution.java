@@ -1,11 +1,10 @@
 package pl.poznan.put.structure.pseudoknots.dp;
 
-import org.immutables.value.Value;
-import pl.poznan.put.structure.pseudoknots.Region;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.immutables.value.Value;
+import pl.poznan.put.structure.pseudoknots.Region;
 
 /**
  * An entry in the dynamic programming matrix representing one possible solution of regions

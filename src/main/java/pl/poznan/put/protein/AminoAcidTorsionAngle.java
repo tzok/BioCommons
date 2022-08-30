@@ -1,5 +1,10 @@
 package pl.poznan.put.protein;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.constant.Unicode;
@@ -10,12 +15,6 @@ import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.TorsionRange;
 import pl.poznan.put.types.ImmutableQuadruple;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /** A torsion angle defined for proteins. */
 public enum AminoAcidTorsionAngle implements MasterTorsionAngleType {

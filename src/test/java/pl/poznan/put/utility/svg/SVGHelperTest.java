@@ -1,15 +1,14 @@
 package pl.poznan.put.utility.svg;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.io.File;
+import java.net.URI;
+import javax.xml.XMLConstants;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.junit.Test;
 import pl.poznan.put.utility.ResourcesHelper;
-
-import javax.xml.XMLConstants;
-import java.io.File;
-import java.net.URI;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SVGHelperTest {
   @Test

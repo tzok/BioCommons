@@ -1,14 +1,15 @@
 package pl.poznan.put.torsion;
 
+import java.util.List;
 import pl.poznan.put.interfaces.DisplayableExportable;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 
-import java.util.List;
-
 /** A torsion angle. */
 public interface TorsionAngleType extends DisplayableExportable {
-  /** @return The molecule this torsion angle is defined for. */
+  /**
+   * @return The molecule this torsion angle is defined for.
+   */
   MoleculeType moleculeType();
 
   /**

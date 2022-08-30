@@ -1,11 +1,10 @@
 package pl.poznan.put.structure.formats;
 
+import java.util.List;
+import java.util.Set;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.DotBracketSymbol;
-
-import java.util.List;
-import java.util.Set;
 
 /** A dot-bracket structure with correspondence to a 3D structure. */
 public interface DotBracketFromPdb extends DotBracket {
@@ -41,6 +40,8 @@ public interface DotBracketFromPdb extends DotBracket {
    */
   List<DotBracketFromPdb> combineStrands(List<ClassifiedBasePair> nonCanonical);
 
-  /** @return The set of residue identifiers used in this structure. */
+  /**
+   * @return The set of residue identifiers used in this structure.
+   */
   Set<PdbResidueIdentifier> identifierSet();
 }

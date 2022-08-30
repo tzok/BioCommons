@@ -1,24 +1,27 @@
 package pl.poznan.put.circular;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
 import org.immutables.value.Value;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 /** A collection of angular observations put into bins of specified width. */
 @Value.Immutable
 public abstract class Histogram {
-  /** @return A collection of angular data. */
+  /**
+   * @return A collection of angular data.
+   */
   @Value.Parameter(order = 1)
   public abstract Collection<Angle> data();
 
-  /** @return The width of bin in range [0, pi). */
+  /**
+   * @return The width of bin in range [0, pi).
+   */
   @Value.Parameter(order = 2)
   public abstract double binWidth();
 

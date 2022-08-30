@@ -1,10 +1,9 @@
 package pl.poznan.put.pdb.analysis;
 
-import org.immutables.value.Value;
-import pl.poznan.put.torsion.TorsionAngleType;
-
 import java.util.Collections;
 import java.util.List;
+import org.immutables.value.Value;
+import pl.poznan.put.torsion.TorsionAngleType;
 
 @Value.Immutable
 abstract class InvalidResidueInformationProvider implements ResidueInformationProvider {

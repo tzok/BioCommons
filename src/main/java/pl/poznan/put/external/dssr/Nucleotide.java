@@ -3,6 +3,7 @@ package pl.poznan.put.external.dssr;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.util.Optional;
 import org.immutables.value.Value;
 import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
@@ -28,7 +29,7 @@ public interface Nucleotide {
     return ImmutablePdbNamedResidueIdentifier.of(
         chainName(),
         residueNumber(),
-        split.length == 1 ? " " : split[1],
+        split.length == 1 ? Optional.empty() : Optional.of(split[1]),
         oneLetterName().charAt(0));
   }
 }

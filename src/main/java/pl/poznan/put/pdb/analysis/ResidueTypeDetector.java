@@ -1,17 +1,16 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.collections4.SetUtils;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.protein.AminoAcid;
 import pl.poznan.put.protein.ImmutableBackbone;
 import pl.poznan.put.rna.ImmutableRibose;
 import pl.poznan.put.rna.Nucleotide;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /** A detector of residue type based on its name and atom content. */
 public final class ResidueTypeDetector {

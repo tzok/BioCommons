@@ -38,7 +38,9 @@ public enum ExperimentalTechnique {
         .orElse(ExperimentalTechnique.UNKNOWN);
   }
 
-  /** @return The name as used in PDB files. */
+  /**
+   * @return The name as used in PDB files.
+   */
   public String getPdbName() {
     return pdbName;
   }

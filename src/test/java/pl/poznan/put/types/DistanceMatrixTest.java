@@ -1,13 +1,12 @@
 package pl.poznan.put.types;
 
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
 
 public class DistanceMatrixTest {
   private final List<String> names = Arrays.asList("A", "B", "C");
