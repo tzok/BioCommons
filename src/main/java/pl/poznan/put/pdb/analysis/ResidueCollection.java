@@ -1,5 +1,15 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ChainNumberICode;
@@ -11,21 +21,12 @@ import pl.poznan.put.rna.NucleotideTorsionAngle;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.AtomPair;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 /** A collection of residues. */
 @FunctionalInterface
 public interface ResidueCollection extends Serializable {
-  /** @return The list of residues. */
+  /**
+   * @return The list of residues.
+   */
   List<PdbResidue> residues();
 
   /**
@@ -161,12 +162,16 @@ public interface ResidueCollection extends Serializable {
         .collect(Collectors.toList());
   }
 
-  /** @return A list of residue identifiers. */
+  /**
+   * @return A list of residue identifiers.
+   */
   default List<PdbResidueIdentifier> residueIdentifiers() {
     return residues().stream().map(PdbResidueIdentifier::from).collect(Collectors.toList());
   }
 
-  /** @return A list of named residue identifiers. */
+  /**
+   * @return A list of named residue identifiers.
+   */
   default List<PdbNamedResidueIdentifier> namedResidueIdentifiers() {
     return residues().stream().map(PdbResidue::namedResidueIdentifier).collect(Collectors.toList());
   }

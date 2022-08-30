@@ -1,10 +1,9 @@
 package pl.poznan.put.structure.formats;
 
+import java.util.List;
 import org.immutables.value.Value;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.structure.DotBracketSymbol;
-
-import java.util.List;
 
 /** A strand which is defined as a fragment of a dot-bracket structure. */
 @Value.Immutable
@@ -34,7 +33,9 @@ public abstract class StrandView implements Strand {
   @Value.Parameter(order = 4)
   public abstract int end();
 
-  /** @return The parent dot-bracket structure of this strand. */
+  /**
+   * @return The parent dot-bracket structure of this strand.
+   */
   @Value.Parameter(order = 2)
   public abstract DotBracket parent();
 

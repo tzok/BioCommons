@@ -1,13 +1,12 @@
 package pl.poznan.put.rna;
 
-import org.immutables.value.Value;
-import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.pdb.analysis.ResidueComponent;
-
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.immutables.value.Value;
+import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.pdb.analysis.ResidueComponent;
 
 @Value.Immutable(singleton = true)
 abstract class Adenine implements Purine {

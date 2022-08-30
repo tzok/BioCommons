@@ -4,13 +4,19 @@ import pl.poznan.put.circular.Angle;
 
 /** A named range of torsion angle values. */
 public interface Range {
-  /** @return The name of this torsion angle range. */
+  /**
+   * @return The name of this torsion angle range.
+   */
   String displayName();
 
-  /** @return The beginning value of the range. */
+  /**
+   * @return The beginning value of the range.
+   */
   Angle begin();
 
-  /** @return The ending value of the range. */
+  /**
+   * @return The ending value of the range.
+   */
   Angle end();
 
   /**

@@ -1,18 +1,17 @@
 package pl.poznan.put.circular.samples;
 
-import org.apache.commons.math3.util.FastMath;
-import org.junit.Before;
-import org.junit.Test;
-import pl.poznan.put.circular.Angle;
-import pl.poznan.put.circular.ImmutableAngle;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.apache.commons.math3.util.FastMath;
+import org.junit.Before;
+import org.junit.Test;
+import pl.poznan.put.circular.Angle;
+import pl.poznan.put.circular.ImmutableAngle;
 
 public class AngleSampleTest {
   private AngleSample angleSample;

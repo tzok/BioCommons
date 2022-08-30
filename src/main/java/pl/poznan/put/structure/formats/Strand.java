@@ -1,18 +1,21 @@
 package pl.poznan.put.structure.formats;
 
-import pl.poznan.put.structure.DotBracketSymbol;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import pl.poznan.put.structure.DotBracketSymbol;
 
 /** A continuous segment of residues. It might span the whole chain in PDB or just its fragments. */
 public interface Strand extends DotBracket {
-  /** @return The name of the strand. */
+  /**
+   * @return The name of the strand.
+   */
   String name();
 
-  /** @return The missing residues at 5' end. */
+  /**
+   * @return The missing residues at 5' end.
+   */
   default TerminalMissing missingBegin() {
     final List<DotBracketSymbol> missing = new ArrayList<>();
     for (final DotBracketSymbol symbol : symbols()) {
@@ -24,7 +27,9 @@ public interface Strand extends DotBracket {
     return ImmutableTerminalMissing.of(missing);
   }
 
-  /** @return The missing residues at 3' end. */
+  /**
+   * @return The missing residues at 3' end.
+   */
   default TerminalMissing missingEnd() {
     final List<DotBracketSymbol> missing = new ArrayList<>();
     for (int i = symbols().size() - 1; i >= 0; i--) {
@@ -53,12 +58,16 @@ public interface Strand extends DotBracket {
         sequenceRY());
   }
 
-  /** @return The index of the first residue in this strand. */
+  /**
+   * @return The index of the first residue in this strand.
+   */
   default int begin() {
     return symbols().isEmpty() ? 1 : symbols().get(0).index();
   }
 
-  /** @return The index of the last residue in this strand. */
+  /**
+   * @return The index of the last residue in this strand.
+   */
   default int end() {
     return symbols().isEmpty() ? 1 : symbols().get(symbols().size() - 1).index();
   }
@@ -78,7 +87,9 @@ public interface Strand extends DotBracket {
         .noneMatch(symbol -> symbols().contains(symbol));
   }
 
-  /** @return A sequence of R (instead of A and G) and Y (instead of C, U or T). */
+  /**
+   * @return A sequence of R (instead of A and G) and Y (instead of C, U or T).
+   */
   default String sequenceRY() {
     return sequence()
         .chars()

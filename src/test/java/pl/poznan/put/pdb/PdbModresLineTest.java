@@ -1,10 +1,10 @@
 package pl.poznan.put.pdb;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
 
 public class PdbModresLineTest {
   // @formatter:off

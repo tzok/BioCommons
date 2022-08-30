@@ -1,9 +1,9 @@
 package pl.poznan.put.pdb;
 
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.junit.Test;
 
 public class PdbRemark2ResolutionLineTest {
   // @formatter:off

@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb;
 
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
 import pl.poznan.put.pdb.analysis.DefaultPdbResidue;
@@ -30,12 +31,12 @@ public abstract class PdbResidueIdentifier implements ChainNumberICode {
   public abstract int residueNumber();
 
   @Value.Parameter(order = 3)
-  public abstract String insertionCode();
+  public abstract Optional<String> insertionCode();
 
   @Override
   public final String toString() {
     final String chain = StringUtils.isBlank(chainIdentifier()) ? "" : (chainIdentifier() + '.');
-    final String icode = StringUtils.isBlank(insertionCode()) ? "" : insertionCode();
+    final String icode = insertionCode().orElse("");
     return chain + residueNumber() + icode;
   }
 }

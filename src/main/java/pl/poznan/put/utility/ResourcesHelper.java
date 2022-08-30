@@ -1,7 +1,5 @@
 package pl.poznan.put.utility;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import org.apache.commons.io.IOUtils;
 
 /** A collection of methods to work with resources (src/main/resources/). */
 public final class ResourcesHelper {

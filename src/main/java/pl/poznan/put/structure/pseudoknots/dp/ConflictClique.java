@@ -1,13 +1,12 @@
 package pl.poznan.put.structure.pseudoknots.dp;
 
-import org.immutables.value.Value;
-import pl.poznan.put.structure.pseudoknots.Region;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.immutables.value.Value;
+import pl.poznan.put.structure.pseudoknots.Region;
 
 /**
  * A collection of regions conflicting with each other. Precisely, this is not a real clique. Each
@@ -16,7 +15,9 @@ import java.util.stream.Stream;
  */
 @Value.Immutable
 public abstract class ConflictClique {
-  /** @return The set of regions in this conflict clique. */
+  /**
+   * @return The set of regions in this conflict clique.
+   */
   @Value.Parameter(order = 1)
   public abstract Set<Region> regions();
 
@@ -45,7 +46,9 @@ public abstract class ConflictClique {
     return sortedEndpoints().get(index);
   }
 
-  /** @return The number of endpoints (should be equal to the number of regions times two). */
+  /**
+   * @return The number of endpoints (should be equal to the number of regions times two).
+   */
   public final int endpointCount() {
     return sortedEndpoints().size();
   }
@@ -60,7 +63,9 @@ public abstract class ConflictClique {
     return sortedEndpoints().indexOf(endpoint);
   }
 
-  /** @return The number of regions. */
+  /**
+   * @return The number of regions.
+   */
   public final int size() {
     return regions().size();
   }

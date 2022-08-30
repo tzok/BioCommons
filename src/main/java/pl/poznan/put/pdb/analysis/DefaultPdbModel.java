@@ -1,5 +1,10 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.Validate;
 import org.immutables.value.Value;
 import pl.poznan.put.pdb.ImmutablePdbExpdtaLine;
@@ -12,12 +17,6 @@ import pl.poznan.put.pdb.PdbModresLine;
 import pl.poznan.put.pdb.PdbRemark2Line;
 import pl.poznan.put.pdb.PdbRemark465Line;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /** A default implementation of a structure parsed from a PDB file. */
 @Value.Immutable

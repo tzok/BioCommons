@@ -52,32 +52,44 @@ public abstract class QuantifiedBasePair implements ClassifiedBasePair {
         .withLeontisWesthof(leontisWesthof().invert());
   }
 
-  /** @return The value of shear parameter. */
+  /**
+   * @return The value of shear parameter.
+   */
   @Value.Parameter(order = 2)
   @Value.Auxiliary
   public abstract double shear();
 
-  /** @return The value of stretch parameter. */
+  /**
+   * @return The value of stretch parameter.
+   */
   @Value.Parameter(order = 3)
   @Value.Auxiliary
   public abstract double stretch();
 
-  /** @return The value of stagger parameter. */
+  /**
+   * @return The value of stagger parameter.
+   */
   @Value.Parameter(order = 4)
   @Value.Auxiliary
   public abstract double stagger();
 
-  /** @return The value of buckle parameter. */
+  /**
+   * @return The value of buckle parameter.
+   */
   @Value.Parameter(order = 5)
   @Value.Auxiliary
   public abstract double buckle();
 
-  /** @return The value of propeller parameter. */
+  /**
+   * @return The value of propeller parameter.
+   */
   @Value.Parameter(order = 6)
   @Value.Auxiliary
   public abstract double propeller();
 
-  /** @return The value of opening parameter. */
+  /**
+   * @return The value of opening parameter.
+   */
   @Value.Parameter(order = 7)
   @Value.Auxiliary
   public abstract double opening();

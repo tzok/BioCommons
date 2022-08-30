@@ -36,7 +36,9 @@ public enum RangeDifference {
     }
   }
 
-  /** @return 0 for EQUAL, 1 for SIMILAR, 2 for DIFFERENT, 3 for OPPOSITE and -1 for INVALID. */
+  /**
+   * @return 0 for EQUAL, 1 for SIMILAR, 2 for DIFFERENT, 3 for OPPOSITE and -1 for INVALID.
+   */
   public int getValue() {
     return value;
   }

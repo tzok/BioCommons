@@ -1,5 +1,17 @@
 package pl.poznan.put.structure.formats;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Stack;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
 import pl.poznan.put.notation.LeontisWesthof;
@@ -11,18 +23,6 @@ import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.DotBracketSymbol;
 import pl.poznan.put.structure.ImmutableAnalyzedBasePair;
 import pl.poznan.put.structure.ImmutableBasePair;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.stream.Collectors;
 
 /** An extended secondary structure, which contains also non-canonical base pairs. */
 @Value.Immutable
@@ -98,7 +98,8 @@ public abstract class MultiLineDotBracket {
           if (!stackMap.containsKey(opening)) {
             throw new IllegalArgumentException(
                 String.format(
-                    "Invalid dot-bracket structure. Closing bracket '%s' at position %d occurred when unexpected",
+                    "Invalid dot-bracket structure. Closing bracket '%s' at position %d occurred"
+                        + " when unexpected",
                     c, i + 1));
           }
 
@@ -106,7 +107,8 @@ public abstract class MultiLineDotBracket {
           if (stack.empty()) {
             throw new IllegalArgumentException(
                 String.format(
-                    "Invalid dot-bracket structure. Closing bracket '%s' at position %d occurred when unexpected",
+                    "Invalid dot-bracket structure. Closing bracket '%s' at position %d occurred"
+                        + " when unexpected",
                     c, i + 1));
           }
 
@@ -115,11 +117,11 @@ public abstract class MultiLineDotBracket {
               ImmutablePdbNamedResidueIdentifier.of(
                   "A",
                   openingIndex + 1,
-                  " ",
+                  Optional.empty(),
                   sequence.length() > openingIndex ? sequence.charAt(openingIndex) : 'N');
           final PdbNamedResidueIdentifier right =
               ImmutablePdbNamedResidueIdentifier.of(
-                  "A", i + 1, " ", sequence.length() > i ? sequence.charAt(i) : 'N');
+                  "A", i + 1, Optional.empty(), sequence.length() > i ? sequence.charAt(i) : 'N');
           final BasePair basePair = ImmutableBasePair.of(left, right);
           final ClassifiedBasePair classifiedBasePair =
               ImmutableAnalyzedBasePair.of(basePair).withLeontisWesthof(leontisWesthof);
@@ -150,11 +152,15 @@ public abstract class MultiLineDotBracket {
     return ImmutableMultiLineDotBracket.of(sequence, basePairs);
   }
 
-  /** @return The sequence of nucleotides. */
+  /**
+   * @return The sequence of nucleotides.
+   */
   @Value.Parameter(order = 1)
   public abstract String sequence();
 
-  /** @return The list of base pairs. */
+  /**
+   * @return The list of base pairs.
+   */
   @Value.Parameter(order = 2)
   public abstract Collection<? extends ClassifiedBasePair> basePairs();
 
@@ -229,7 +235,7 @@ public abstract class MultiLineDotBracket {
 
     for (int i = 0; i < array.length; i++) {
       final PdbNamedResidueIdentifier identifier =
-          ImmutablePdbNamedResidueIdentifier.of("A", i + 1, " ", array[i]);
+          ImmutablePdbNamedResidueIdentifier.of("A", i + 1, Optional.empty(), array[i]);
       identifiers.add(identifier);
     }
 

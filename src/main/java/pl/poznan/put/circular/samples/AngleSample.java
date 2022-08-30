@@ -1,5 +1,9 @@
 package pl.poznan.put.circular.samples;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
@@ -9,19 +13,18 @@ import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.circular.exception.InvalidCircularOperationException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /** A sample of angular values and computed statistics. */
 @Value.Immutable
 public abstract class AngleSample {
-  /** @return The collection of values in the sample. */
+  /**
+   * @return The collection of values in the sample.
+   */
   @Value.Parameter(order = 1)
   public abstract Collection<Angle> data();
 
-  /** @return A mean angular value of the sample. */
+  /**
+   * @return A mean angular value of the sample.
+   */
   @Value.Lazy
   public Angle meanDirection() {
     return um1().meanDirection();
@@ -36,7 +39,9 @@ public abstract class AngleSample {
     return um1().meanResultantLength();
   }
 
-  /** @return A measure of variance of the data on the circle, taking values in range [0; 1]. */
+  /**
+   * @return A measure of variance of the data on the circle, taking values in range [0; 1].
+   */
   @Value.Lazy
   public double circularVariance() {
     return 1.0 - meanResultantLength();
@@ -59,7 +64,9 @@ public abstract class AngleSample {
     return (1.0 - cm2().meanResultantLength()) / (2.0 * FastMath.pow(meanResultantLength(), 2));
   }
 
-  /** @return Another measure of variance of the data. */
+  /**
+   * @return Another measure of variance of the data.
+   */
   @Value.Lazy
   public double skewness() {
     return (cm2().meanResultantLength()
@@ -67,7 +74,9 @@ public abstract class AngleSample {
         / FastMath.sqrt(circularVariance());
   }
 
-  /** @return Another measure of variance of the data. */
+  /**
+   * @return Another measure of variance of the data.
+   */
   @Value.Lazy
   public double kurtosis() {
     return ((cm2().meanResultantLength()
@@ -86,7 +95,9 @@ public abstract class AngleSample {
     return medianAndMeanDeviation().getKey();
   }
 
-  /** @return The mean of distances of the observations from the samples' median. */
+  /**
+   * @return The mean of distances of the observations from the samples' median.
+   */
   @Value.Lazy
   public double meanDeviation() {
     return medianAndMeanDeviation().getValue();

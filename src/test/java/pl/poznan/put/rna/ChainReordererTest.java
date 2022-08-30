@@ -1,5 +1,13 @@
 package pl.poznan.put.rna;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,17 +20,7 @@ import pl.poznan.put.structure.CanonicalStructureExtractor;
 import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.formats.Converter;
 import pl.poznan.put.structure.formats.ImmutableDefaultConverter;
-import pl.poznan.put.structure.pseudoknots.elimination.MinGain;
 import pl.poznan.put.utility.ResourcesHelper;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ChainReordererTest {
   private Converter converter;
@@ -71,7 +69,8 @@ public class ChainReordererTest {
   @Test
   public final void test1A73() throws IOException {
     final PdbModel originalModel =
-        CifParser.parse(ResourcesHelper.loadResource("1a73-assembly-1.cif"))
+        new CifParser()
+            .parse(ResourcesHelper.loadResource("1a73-assembly-1.cif"))
             .get(0)
             .filteredNewInstance(MoleculeType.RNA);
     final List<String> originalChains =

@@ -1,15 +1,14 @@
 package pl.poznan.put.atom;
 
-import org.junit.Test;
-import pl.poznan.put.atom.AtomName;
-import pl.poznan.put.pdb.PdbAtomLine;
-import pl.poznan.put.pdb.analysis.PdbParser;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.utility.ResourcesHelper;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.junit.Test;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbParser;
+import pl.poznan.put.utility.ResourcesHelper;
 
 public class AtomNameTest {
   @Test

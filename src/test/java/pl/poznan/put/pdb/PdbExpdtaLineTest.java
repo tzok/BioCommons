@@ -1,12 +1,11 @@
 package pl.poznan.put.pdb;
 
-import org.junit.Test;
-
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static pl.poznan.put.pdb.PdbExpdtaLine.parse;
+
+import java.util.List;
+import org.junit.Test;
 
 public class PdbExpdtaLineTest {
   // @formatter:off

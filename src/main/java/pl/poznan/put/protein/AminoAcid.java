@@ -1,11 +1,10 @@
 package pl.poznan.put.protein;
 
+import java.util.List;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.pdb.analysis.ResidueInformationProvider;
 import pl.poznan.put.torsion.TorsionAngleType;
-
-import java.util.List;
 
 /** An amino acid with all details regarding its atoms, torsion angles, etc. */
 public enum AminoAcid implements ResidueInformationProvider {
@@ -36,7 +35,9 @@ public enum AminoAcid implements ResidueInformationProvider {
     this.sidechain = sidechain;
   }
 
-  /** @return The sidechain instance. */
+  /**
+   * @return The sidechain instance.
+   */
   public Sidechain sidechain() {
     return sidechain;
   }

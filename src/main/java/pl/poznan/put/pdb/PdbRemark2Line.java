@@ -1,10 +1,9 @@
 package pl.poznan.put.pdb;
 
-import org.immutables.value.Value;
-
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
+import org.immutables.value.Value;
 
 /** A representation of REMARK 2 line which describes experimental resolution. */
 @Value.Immutable
@@ -60,7 +59,9 @@ public abstract class PdbRemark2Line implements Serializable {
     }
   }
 
-  /** @return The value of the {@code resolution} attribute */
+  /**
+   * @return The value of the {@code resolution} attribute
+   */
   @Value.Parameter(order = 1)
   public abstract double resolution();
 
@@ -69,7 +70,9 @@ public abstract class PdbRemark2Line implements Serializable {
     return toPdb();
   }
 
-  /** @return A line in PDB format. */
+  /**
+   * @return A line in PDB format.
+   */
   public final String toPdb() {
     return Double.isNaN(resolution())
         ? PdbRemark2Line.NOT_APPLICABLE

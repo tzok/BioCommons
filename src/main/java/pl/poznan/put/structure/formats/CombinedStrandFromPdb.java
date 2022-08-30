@@ -1,12 +1,5 @@
 package pl.poznan.put.structure.formats;
 
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import org.immutables.value.Value;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.structure.ClassifiedBasePair;
-import pl.poznan.put.structure.DotBracketSymbol;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +8,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.immutables.value.Value;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.structure.ClassifiedBasePair;
+import pl.poznan.put.structure.DotBracketSymbol;
 
 /**
  * A dot-bracket encoded structure made from combining one or more strands. This structure has
@@ -23,7 +22,9 @@ import java.util.stream.IntStream;
 @Value.Immutable
 public abstract class CombinedStrandFromPdb extends AbstractCombinedStrand
     implements DotBracketFromPdb {
-  /** @return The list of input strands. */
+  /**
+   * @return The list of input strands.
+   */
   @Override
   @Value.Parameter(order = 1)
   protected abstract List<Strand> inputStrands();
@@ -40,7 +41,9 @@ public abstract class CombinedStrandFromPdb extends AbstractCombinedStrand
     return super.strands();
   }
 
-  /** @return The mapping of dot-bracket symbols with corresponding PDB identifiers. */
+  /**
+   * @return The mapping of dot-bracket symbols with corresponding PDB identifiers.
+   */
   @Value.Parameter(order = 2)
   protected abstract Map<DotBracketSymbol, PdbResidueIdentifier> inputSymbolToResidue();
 

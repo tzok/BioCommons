@@ -1,5 +1,6 @@
 package pl.poznan.put.rna;
 
+import java.util.Arrays;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
@@ -7,8 +8,6 @@ import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.torsion.range.RangeProvider;
-
-import java.util.Arrays;
 
 /** A range description for chi torsion angle type as defined in Saenger's "Principles...". */
 public enum ChiRange implements Range {

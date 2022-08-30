@@ -1,16 +1,17 @@
 package pl.poznan.put.structure.formats;
 
-import org.immutables.value.Value;
-import pl.poznan.put.structure.DotBracketSymbol;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.immutables.value.Value;
+import pl.poznan.put.structure.DotBracketSymbol;
 
 /** A dot-bracket encoded structure made from combining one or more strands. */
 @Value.Immutable
 public abstract class CombinedStrand extends AbstractCombinedStrand {
-  /** @return The list of input strands. */
+  /**
+   * @return The list of input strands.
+   */
   @Override
   @Value.Parameter(order = 1)
   protected abstract List<Strand> inputStrands();

@@ -1,14 +1,5 @@
 package pl.poznan.put.structure.formats;
 
-import org.apache.commons.lang3.Validate;
-import org.immutables.value.Value;
-import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
-import pl.poznan.put.pdb.PdbResidueIdentifier;
-import pl.poznan.put.pdb.analysis.PdbChain;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.structure.ClassifiedBasePair;
-import pl.poznan.put.structure.DotBracketSymbol;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,6 +12,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.lang3.Validate;
+import org.immutables.value.Value;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
+import pl.poznan.put.pdb.analysis.PdbChain;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.structure.ClassifiedBasePair;
+import pl.poznan.put.structure.DotBracketSymbol;
 
 /**
  * A default implementation of a dot-bracket structure which is mapped to data from 3D coordinates.

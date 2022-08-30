@@ -1,8 +1,7 @@
 package pl.poznan.put.structure.pseudoknots.dp;
 
-import pl.poznan.put.structure.pseudoknots.PseudoknotFinder;
-
 import java.util.List;
+import pl.poznan.put.structure.pseudoknots.PseudoknotFinder;
 
 /** A pseudoknot finder which works on a dynamic programming basis. */
 interface DynamicProgramming extends PseudoknotFinder {

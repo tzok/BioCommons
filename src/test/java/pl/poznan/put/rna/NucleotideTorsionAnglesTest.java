@@ -1,5 +1,8 @@
 package pl.poznan.put.rna;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import org.apache.commons.math3.geometry.Vector;
 import org.apache.commons.math3.geometry.euclidean.threed.Euclidean3D;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -8,9 +11,6 @@ import org.junit.Test;
 import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.torsion.AtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class NucleotideTorsionAnglesTest {
   // @formatter:off

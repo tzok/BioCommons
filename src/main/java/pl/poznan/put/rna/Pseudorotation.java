@@ -1,13 +1,12 @@
 package pl.poznan.put.rna;
 
+import java.util.Arrays;
 import org.apache.commons.math3.util.FastMath;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.RangeDifference;
 import pl.poznan.put.torsion.range.RangeProvider;
-
-import java.util.Arrays;
 
 /** A range of pseudorotation values with their descriptions. */
 public enum Pseudorotation implements Range {
