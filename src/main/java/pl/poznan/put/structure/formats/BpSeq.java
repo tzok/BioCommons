@@ -1,21 +1,15 @@
 package pl.poznan.put.structure.formats;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.immutables.value.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.ResidueTypeDetector;
 import pl.poznan.put.structure.BasePair;
@@ -26,6 +20,8 @@ import pl.poznan.put.structure.pseudoknots.Region;
 /** RNA secondary structure in BPSEQ format. */
 @Value.Immutable
 public abstract class BpSeq implements Serializable {
+  private static Logger LOGGER = LoggerFactory.getLogger(BpSeq.class);
+
   /**
    * Parses string into an instance of this class.
    *
@@ -100,6 +96,30 @@ public abstract class BpSeq implements Serializable {
   private static Collection<Entry> generateEntriesForPaired(
       final List<PdbNamedResidueIdentifier> residues,
       final Collection<? extends ClassifiedBasePair> basePairs) {
+    final var identifiers =
+        basePairs.stream()
+            .flatMap(
+                classifiedBasePair -> Stream.of(classifiedBasePair, classifiedBasePair.invert()))
+            .map(ClassifiedBasePair::basePair)
+            .flatMap(basePair -> Stream.of(basePair.left(), basePair.right()))
+            .collect(Collectors.toSet());
+
+    final var invalidIdentifiers =
+        identifiers.stream()
+            .filter(identifier -> !residues.contains(identifier))
+            .collect(Collectors.toList());
+
+    if (!invalidIdentifiers.isEmpty()) {
+      BpSeq.LOGGER.debug("All residues passed directly to the method: {}", residues);
+      BpSeq.LOGGER.debug(
+          "All residues passed as base pairs to the method: {}",
+          identifiers.stream().sorted().collect(Collectors.toList()));
+      throw new IllegalArgumentException(
+          "Invalid argument. The following residues were passed as parts of base pairs, but they"
+              + " are not listed among residues: "
+              + invalidIdentifiers);
+    }
+
     final Map<BasePair, String> comments =
         basePairs.stream()
             .filter(basePair -> !basePair.isCanonical())
