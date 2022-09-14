@@ -150,7 +150,7 @@ public class BpSeqTest {
     assertThat(nonIsolated.withoutIsolatedPairs(), is(nonIsolated));
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public final void testFromBasePairsWithInvalidData() {
     final var nt1 = ImmutablePdbNamedResidueIdentifier.of("A", 1, Optional.empty(), 'G');
     final var nt2 = ImmutablePdbNamedResidueIdentifier.of("A", 2, Optional.empty(), 'A');
