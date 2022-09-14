@@ -5,12 +5,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
+import pl.poznan.put.notation.LeontisWesthof;
+import pl.poznan.put.notation.Saenger;
+import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbModel;
 import pl.poznan.put.pdb.analysis.PdbParser;
 import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.structure.ImmutableAnalyzedBasePair;
+import pl.poznan.put.structure.ImmutableBasePair;
 import pl.poznan.put.utility.ResourcesHelper;
 
 public class BpSeqTest {
@@ -141,5 +148,19 @@ public class BpSeqTest {
   public final void testUnsucessfulRemovalOfIsolatedBasePairs() {
     final BpSeq nonIsolated = BpSeq.fromString(bpseq1DDYnonisolated);
     assertThat(nonIsolated.withoutIsolatedPairs(), is(nonIsolated));
+  }
+
+  @Test
+  public final void testFromBasePairsWithInvalidData() {
+    final var nt1 = ImmutablePdbNamedResidueIdentifier.of("A", 1, Optional.empty(), 'G');
+    final var nt2 = ImmutablePdbNamedResidueIdentifier.of("A", 2, Optional.empty(), 'A');
+    final var nt3 = ImmutablePdbNamedResidueIdentifier.of("A", 3, Optional.empty(), 'U');
+    final List<PdbNamedResidueIdentifier> residues = List.of(nt1, nt2);
+    final var basePairs =
+        List.of(
+            ImmutableAnalyzedBasePair.of(ImmutableBasePair.of(nt1, nt3))
+                .withSaenger(Saenger.XXVIII)
+                .withLeontisWesthof(LeontisWesthof.CWW));
+    BpSeq.fromBasePairs(residues, basePairs);
   }
 }
