@@ -1,21 +1,15 @@
 package pl.poznan.put.structure.formats;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.immutables.value.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.ResidueTypeDetector;
 import pl.poznan.put.structure.BasePair;
@@ -26,6 +20,8 @@ import pl.poznan.put.structure.pseudoknots.Region;
 /** RNA secondary structure in BPSEQ format. */
 @Value.Immutable
 public abstract class BpSeq implements Serializable {
+  private static Logger LOGGER = LoggerFactory.getLogger(BpSeq.class);
+
   /**
    * Parses string into an instance of this class.
    *
@@ -100,6 +96,23 @@ public abstract class BpSeq implements Serializable {
   private static Collection<Entry> generateEntriesForPaired(
       final List<PdbNamedResidueIdentifier> residues,
       final Collection<? extends ClassifiedBasePair> basePairs) {
+    final var invalidBasePairs =
+        basePairs.stream()
+            .filter(
+                cbp ->
+                    !residues.contains(cbp.basePair().left())
+                        || !residues.contains(cbp.basePair().right()))
+            .collect(Collectors.toList());
+
+    if (!invalidBasePairs.isEmpty()) {
+      throw new IllegalArgumentException(
+          "Failed to create a BpSeq object, because the list of base pairs contains invalid"
+              + " entries. Base pairs with invalid residues: "
+              + invalidBasePairs
+              + ". The list of valid residues: "
+              + residues);
+    }
+
     final Map<BasePair, String> comments =
         basePairs.stream()
             .filter(basePair -> !basePair.isCanonical())
