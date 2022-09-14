@@ -96,28 +96,21 @@ public abstract class BpSeq implements Serializable {
   private static Collection<Entry> generateEntriesForPaired(
       final List<PdbNamedResidueIdentifier> residues,
       final Collection<? extends ClassifiedBasePair> basePairs) {
-    final var identifiers =
+    final var invalidBasePairs =
         basePairs.stream()
-            .flatMap(
-                classifiedBasePair -> Stream.of(classifiedBasePair, classifiedBasePair.invert()))
-            .map(ClassifiedBasePair::basePair)
-            .flatMap(basePair -> Stream.of(basePair.left(), basePair.right()))
-            .collect(Collectors.toSet());
-
-    final var invalidIdentifiers =
-        identifiers.stream()
-            .filter(identifier -> !residues.contains(identifier))
+            .filter(
+                cbp ->
+                    !residues.contains(cbp.basePair().left())
+                        || !residues.contains(cbp.basePair().right()))
             .collect(Collectors.toList());
 
-    if (!invalidIdentifiers.isEmpty()) {
-      BpSeq.LOGGER.debug("All residues passed directly to the method: {}", residues);
-      BpSeq.LOGGER.debug(
-          "All residues passed as base pairs to the method: {}",
-          identifiers.stream().sorted().collect(Collectors.toList()));
+    if (!invalidBasePairs.isEmpty()) {
       throw new IllegalArgumentException(
-          "Invalid argument. The following residues were passed as parts of base pairs, but they"
-              + " are not listed among residues: "
-              + invalidIdentifiers);
+          "Failed to create a BpSeq object, because the list of base pairs contains invalid"
+              + " entries. Base pairs with invalid residues: "
+              + invalidBasePairs
+              + ". The list of valid residues: "
+              + residues);
     }
 
     final Map<BasePair, String> comments =
