@@ -1,5 +1,12 @@
 package pl.poznan.put.torsion;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.samples.AngleSample;
@@ -8,14 +15,6 @@ import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.torsion.range.Range;
 import pl.poznan.put.torsion.range.TorsionRange;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /** An average of one or more basic angle types. */
 @Value.Immutable
@@ -70,7 +69,9 @@ public abstract class AverageTorsionAngleType implements TorsionAngleType, Maste
     return ImmutableTorsionAngleValue.of(this, angleSample.meanDirection());
   }
 
-  /** @return The list of angle types to calculate average from. */
+  /**
+   * @return The list of angle types to calculate average from.
+   */
   @Value.Parameter(order = 2)
   public abstract List<MasterTorsionAngleType> consideredAngles();
 

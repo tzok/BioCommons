@@ -1,5 +1,7 @@
 package pl.poznan.put.rna;
 
+import java.util.List;
+import java.util.stream.Stream;
 import org.apache.commons.math3.util.FastMath;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.ImmutableAngle;
@@ -8,9 +10,6 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.torsion.ImmutableTorsionAngleValue;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 /** An angle describing the pseudophase pucker. */
 @Value.Immutable(singleton = true)

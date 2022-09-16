@@ -1,5 +1,8 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
@@ -7,10 +10,6 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.torsion.MasterTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleValue;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /** A collection of torsion angles values for a single residue. */
 @Value.Immutable
@@ -31,11 +30,15 @@ public abstract class ResidueTorsionAngles {
             .collect(Collectors.toList()));
   }
 
-  /** @return The residue identifier. */
+  /**
+   * @return The residue identifier.
+   */
   @Value.Parameter(order = 1)
   public abstract PdbResidueIdentifier identifier();
 
-  /** @return The list of torsion angles' values. */
+  /**
+   * @return The list of torsion angles' values.
+   */
   @Value.Parameter(order = 2)
   protected abstract List<TorsionAngleValue> values();
 

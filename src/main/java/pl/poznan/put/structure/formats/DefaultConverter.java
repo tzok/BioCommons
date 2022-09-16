@@ -1,16 +1,15 @@
 package pl.poznan.put.structure.formats;
 
-import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.immutables.value.Value;
-import pl.poznan.put.structure.pseudoknots.PseudoknotFinder;
-import pl.poznan.put.structure.pseudoknots.elimination.ImmutableMinGain;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.immutables.value.Value;
+import pl.poznan.put.structure.pseudoknots.PseudoknotFinder;
+import pl.poznan.put.structure.pseudoknots.elimination.ImmutableMinGain;
 
 /**
  * A default converter from BPSEQ to dot-bracket which iteratively (1) finds non-pseudoknots and
@@ -62,7 +61,9 @@ public abstract class DefaultConverter implements Converter {
     return ImmutableMinGain.of();
   }
 
-  /** @return The number of solutions to return (1 by default). */
+  /**
+   * @return The number of solutions to return (1 by default).
+   */
   @Value.Default
   public int maxSolutions() {
     return 1;

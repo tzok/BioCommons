@@ -9,11 +9,14 @@ import java.util.List;
  * mapping.
  */
 public interface ModelContainer extends Closeable {
-  /** @return A list of PDB files corresponding to this container. */
+  /**
+   * @return A list of PDB files corresponding to this container.
+   */
   List<File> pdbFiles();
 
   /**
-   * Checks mapping of chains to get the original mmCIF chain name from the generated PDB chain name.
+   * Checks mapping of chains to get the original mmCIF chain name from the generated PDB chain
+   * name.
    *
    * @param pdbFile A PDB file.
    * @param pdbChain Chain name in the PDB file.
@@ -22,7 +25,8 @@ public interface ModelContainer extends Closeable {
   String originalCifChainName(final File pdbFile, final String pdbChain);
 
   /**
-   * Checks mapping of chains to get the generated PDB chain name from the original mmCIF chain name.
+   * Checks mapping of chains to get the generated PDB chain name from the original mmCIF chain
+   * name.
    *
    * @param pdbFile A PDB file.
    * @param cifChain Chain name in the mmCif file.

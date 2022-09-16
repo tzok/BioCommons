@@ -1,8 +1,15 @@
 package pl.poznan.put.structure.formats;
 
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.immutables.value.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.analysis.ResidueTypeDetector;
 import pl.poznan.put.structure.BasePair;
@@ -10,23 +17,11 @@ import pl.poznan.put.structure.ClassifiedBasePair;
 import pl.poznan.put.structure.DotBracketSymbol;
 import pl.poznan.put.structure.pseudoknots.Region;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 /** RNA secondary structure in BPSEQ format. */
 @Value.Immutable
 public abstract class BpSeq implements Serializable {
+  private static Logger LOGGER = LoggerFactory.getLogger(BpSeq.class);
+
   /**
    * Parses string into an instance of this class.
    *
@@ -101,6 +96,23 @@ public abstract class BpSeq implements Serializable {
   private static Collection<Entry> generateEntriesForPaired(
       final List<PdbNamedResidueIdentifier> residues,
       final Collection<? extends ClassifiedBasePair> basePairs) {
+    final var invalidBasePairs =
+        basePairs.stream()
+            .filter(
+                cbp ->
+                    !residues.contains(cbp.basePair().left())
+                        || !residues.contains(cbp.basePair().right()))
+            .collect(Collectors.toList());
+
+    if (!invalidBasePairs.isEmpty()) {
+      throw new IllegalArgumentException(
+          "Failed to create a BpSeq object, because the list of base pairs contains invalid"
+              + " entries. Base pairs with invalid residues: "
+              + invalidBasePairs
+              + ". The list of valid residues: "
+              + residues);
+    }
+
     final Map<BasePair, String> comments =
         basePairs.stream()
             .filter(basePair -> !basePair.isCanonical())
@@ -136,12 +148,16 @@ public abstract class BpSeq implements Serializable {
         .collect(Collectors.toList());
   }
 
-  /** @return The list of BPSEQ entries. */
+  /**
+   * @return The list of BPSEQ entries.
+   */
   @Value.Parameter(order = 1)
   @Value.NaturalOrder
   public abstract SortedSet<Entry> entries();
 
-  /** @return The sequence of nucleotides stored in this object. */
+  /**
+   * @return The sequence of nucleotides stored in this object.
+   */
   public final String sequence() {
     return entries().stream().map(e -> String.valueOf(e.seq())).collect(Collectors.joining());
   }
@@ -156,12 +172,16 @@ public abstract class BpSeq implements Serializable {
         .collect(Collectors.toCollection(TreeSet::new));
   }
 
-  /** @return The number of BPSEQ entries. */
+  /**
+   * @return The number of BPSEQ entries.
+   */
   public final int size() {
     return entries().size();
   }
 
-  /** @return True if at least one BPSEQ entry stands for a pair. */
+  /**
+   * @return True if at least one BPSEQ entry stands for a pair.
+   */
   public final boolean hasAnyPair() {
     return entries().stream().anyMatch(Entry::isPaired);
   }
@@ -279,25 +299,35 @@ public abstract class BpSeq implements Serializable {
       }
     }
 
-    /** @return The value of index column. */
+    /**
+     * @return The value of index column.
+     */
     @Value.Parameter(order = 1)
     public abstract int index();
 
-    /** @return The value of sequence column. */
+    /**
+     * @return The value of sequence column.
+     */
     @Value.Parameter(order = 2)
     public abstract char seq();
 
-    /** @return The value of pair column. */
+    /**
+     * @return The value of pair column.
+     */
     @Value.Parameter(order = 3)
     public abstract int pair();
 
-    /** @return The optional comment. */
+    /**
+     * @return The optional comment.
+     */
     @Value.Default
     public String comment() {
       return "";
     }
 
-    /** @return True if pair column is non-zero. */
+    /**
+     * @return True if pair column is non-zero.
+     */
     public boolean isPaired() {
       return pair() != 0;
     }
@@ -312,7 +342,9 @@ public abstract class BpSeq implements Serializable {
       return (index > index()) && (index < pair());
     }
 
-    /** @return The difference between pair column and index column or 0 for unpaired entries. */
+    /**
+     * @return The difference between pair column and index column or 0 for unpaired entries.
+     */
     public final int length() {
       return (pair() == 0) ? 0 : (pair() - index());
     }

@@ -1,10 +1,9 @@
 package pl.poznan.put.rna;
 
-import org.apache.commons.lang3.StringUtils;
-import org.immutables.value.Value;
-
 import java.io.Serializable;
 import java.util.Locale;
+import org.apache.commons.lang3.StringUtils;
+import org.immutables.value.Value;
 
 /** A type of interaction between two nucleotides. */
 @Value.Immutable
@@ -76,10 +75,14 @@ public abstract class InteractionType implements Serializable, Comparable<Intera
     }
   }
 
-  /** @return The first interacting partner. */
+  /**
+   * @return The first interacting partner.
+   */
   public abstract NucleotideComponentType left();
 
-  /** @return The second interacting partner. */
+  /**
+   * @return The second interacting partner.
+   */
   public abstract NucleotideComponentType right();
 
   /**
@@ -89,7 +92,9 @@ public abstract class InteractionType implements Serializable, Comparable<Intera
    */
   public abstract boolean isPairing();
 
-  /** @return The description of this interaction type. */
+  /**
+   * @return The description of this interaction type.
+   */
   @Value.Default
   public String description() {
     return StringUtils.lowerCase(String.format("%s - %s", right(), left()), Locale.US);
@@ -105,7 +110,9 @@ public abstract class InteractionType implements Serializable, Comparable<Intera
     return Integer.compare(internalValue(), t.internalValue());
   }
 
-  /** @return An instance where first and second interacting partners are inverted. */
+  /**
+   * @return An instance where first and second interacting partners are inverted.
+   */
   public final InteractionType invert() {
     return ImmutableInteractionType.builder()
         .left(right())

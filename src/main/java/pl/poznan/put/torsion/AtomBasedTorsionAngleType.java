@@ -1,5 +1,10 @@
 package pl.poznan.put.torsion;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
@@ -9,12 +14,6 @@ import pl.poznan.put.pdb.PdbAtomLine;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbResidue;
 import pl.poznan.put.types.Quadruple;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /** A torsion angle which is defined upon four atomic coordinates. */
 @Value.Immutable
@@ -63,7 +62,9 @@ public interface AtomBasedTorsionAngleType extends TorsionAngleType {
   @Value.Parameter(order = 3)
   String exportName();
 
-  /** @return The quadruple of atoms defining this torsion angle type. */
+  /**
+   * @return The quadruple of atoms defining this torsion angle type.
+   */
   @Value.Parameter(order = 4)
   Quadruple<AtomName> atoms();
 

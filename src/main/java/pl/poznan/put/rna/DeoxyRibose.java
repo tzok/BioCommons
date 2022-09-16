@@ -1,11 +1,10 @@
 package pl.poznan.put.rna;
 
-import org.immutables.value.Value;
-import pl.poznan.put.atom.AtomName;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.immutables.value.Value;
+import pl.poznan.put.atom.AtomName;
 
 /** A deoxyribose. */
 @Value.Immutable(singleton = true)

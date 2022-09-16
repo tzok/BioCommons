@@ -1,5 +1,11 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import pl.poznan.put.atom.AtomName;
@@ -10,15 +16,11 @@ import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.rna.Nucleotide;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /** A residue (nucleotide or amino acid). */
 public interface PdbResidue extends ChainNumberICode {
-  /** @return The identifier of a residue. */
+  /**
+   * @return The identifier of a residue.
+   */
   PdbResidueIdentifier identifier();
 
   /**
@@ -27,23 +29,33 @@ public interface PdbResidue extends ChainNumberICode {
    */
   String standardResidueName();
 
-  /** @return The name of the residue as read from PDB or mmCIF file. */
+  /**
+   * @return The name of the residue as read from PDB or mmCIF file.
+   */
   String modifiedResidueName();
 
-  /** @return The list of atoms. */
+  /**
+   * @return The list of atoms.
+   */
   List<PdbAtomLine> atoms();
 
-  /** @return A text representation of this residue in PDB format. */
+  /**
+   * @return A text representation of this residue in PDB format.
+   */
   default String toPdb() {
     return atoms().stream().map(String::valueOf).collect(Collectors.joining("\n"));
   }
 
-  /** @return A text representation of this residue in mmCIF format. */
+  /**
+   * @return A text representation of this residue in mmCIF format.
+   */
   default String toCif() {
     return atoms().stream().map(PdbAtomLine::toCif).collect(Collectors.joining("\n"));
   }
 
-  /** @return True if the list of atoms is empty. */
+  /**
+   * @return True if the list of atoms is empty.
+   */
   default boolean isMissing() {
     return atoms().isEmpty();
   }
@@ -57,7 +69,9 @@ public interface PdbResidue extends ChainNumberICode {
     return ResidueTypeDetector.detectResidueType(modifiedResidueName(), atomNames());
   }
 
-  /** @return A one letter name which is lowercase for modified residues and uppercase otherwise. */
+  /**
+   * @return A one letter name which is lowercase for modified residues and uppercase otherwise.
+   */
   default char oneLetterName() {
     return isModified()
         ? Character.toLowerCase(residueInformationProvider().oneLetterName())
@@ -86,7 +100,7 @@ public interface PdbResidue extends ChainNumberICode {
   }
 
   @Override
-  default String insertionCode() {
+  default Optional<String> insertionCode() {
     return identifier().insertionCode();
   }
 
@@ -136,7 +150,9 @@ public interface PdbResidue extends ChainNumberICode {
         "Cannot compute base plane for not a nucleotide: " + identifier());
   }
 
-  /** @return The instance of named identifier. */
+  /**
+   * @return The instance of named identifier.
+   */
   default PdbNamedResidueIdentifier namedResidueIdentifier() {
     return ImmutablePdbNamedResidueIdentifier.of(
         identifier().chainIdentifier(),
@@ -145,7 +161,9 @@ public interface PdbResidue extends ChainNumberICode {
         isModified() ? Character.toLowerCase(oneLetterName()) : oneLetterName());
   }
 
-  /** @return The set of all atom names available in this residue. */
+  /**
+   * @return The set of all atom names available in this residue.
+   */
   default Set<AtomName> atomNames() {
     return atoms().stream().map(PdbAtomLine::detectAtomName).collect(Collectors.toSet());
   }
@@ -160,7 +178,9 @@ public interface PdbResidue extends ChainNumberICode {
     return atomNames().contains(atomName);
   }
 
-  /** @return True if there is any hydrogen atom available in this residue. */
+  /**
+   * @return True if there is any hydrogen atom available in this residue.
+   */
   default boolean hasAnyHydrogen() {
     return atomNames().stream().anyMatch(atomName -> !atomName.isHeavy());
   }

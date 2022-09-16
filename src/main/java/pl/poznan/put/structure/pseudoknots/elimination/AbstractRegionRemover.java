@@ -1,17 +1,15 @@
 package pl.poznan.put.structure.pseudoknots.elimination;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 import pl.poznan.put.structure.formats.BpSeq;
 import pl.poznan.put.structure.formats.ImmutableBpSeq;
 import pl.poznan.put.structure.pseudoknots.ConflictGraph;
 import pl.poznan.put.structure.pseudoknots.ImmutableConflictGraph;
 import pl.poznan.put.structure.pseudoknots.Region;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Java implementation of region removal algorithm as presented in: Smit, S. et al., 2008. From

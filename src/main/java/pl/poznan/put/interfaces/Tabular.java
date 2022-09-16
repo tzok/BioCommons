@@ -13,8 +13,8 @@ public interface Tabular {
   TableModel asExportableTableModel();
 
   /**
-   * Generates tabular data to be exported to output file i.e. raw numbers with maximum precision and
-   * ASCII only.
+   * Generates tabular data to be exported to output file i.e. raw numbers with maximum precision
+   * and ASCII only.
    *
    * @return An instance of {@link TableModel} with the data.
    */

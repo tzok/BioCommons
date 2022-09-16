@@ -1,13 +1,12 @@
 package pl.poznan.put.rna;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.notation.NucleobaseEdge;
 import pl.poznan.put.torsion.TorsionAngleType;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /** A pyrimidine (cytosine, uracil or thymine). */
 public interface Pyrimidine extends Nucleobase {

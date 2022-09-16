@@ -1,17 +1,5 @@
 package pl.poznan.put.structure.formats;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-import org.immutables.value.Value;
-import pl.poznan.put.pdb.ChainNumberICode;
-import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.pdb.analysis.PdbChain;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.pdb.analysis.PdbResidue;
-import pl.poznan.put.pdb.analysis.SingleTypedResidueCollection;
-import pl.poznan.put.structure.DotBracketSymbol;
-import pl.poznan.put.structure.pseudoknots.Region;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +11,17 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.immutables.value.Value;
+import pl.poznan.put.pdb.ChainNumberICode;
+import pl.poznan.put.pdb.analysis.MoleculeType;
+import pl.poznan.put.pdb.analysis.PdbChain;
+import pl.poznan.put.pdb.analysis.PdbModel;
+import pl.poznan.put.pdb.analysis.PdbResidue;
+import pl.poznan.put.pdb.analysis.SingleTypedResidueCollection;
+import pl.poznan.put.structure.DotBracketSymbol;
+import pl.poznan.put.structure.pseudoknots.Region;
 
 /** An RNA secondary structure encoded in CT (connect) format. */
 @Value.Immutable
@@ -77,7 +76,8 @@ public abstract class Ct implements Serializable {
     if (residues.size() != entries.size()) {
       throw new IllegalArgumentException(
           String.format(
-              "Failed to create CT from BPSEQ and PDB data, because there are %d BPSEQ entries and %d residues",
+              "Failed to create CT from BPSEQ and PDB data, because there are %d BPSEQ entries and"
+                  + " %d residues",
               entries.size(), residues.size()));
     }
 
@@ -107,12 +107,16 @@ public abstract class Ct implements Serializable {
     return ImmutableCt.of(entries);
   }
 
-  /** @return The list of CT entries. */
+  /**
+   * @return The list of CT entries.
+   */
   @Value.Parameter(order = 1)
   @Value.NaturalOrder
   public abstract SortedSet<ExtendedEntry> entries();
 
-  /** @return The number of strands. */
+  /**
+   * @return The number of strands.
+   */
   public final int strandCount() {
     return (int) entries().stream().filter(entry -> entry.after() == 0).count();
   }
@@ -226,7 +230,8 @@ public abstract class Ct implements Serializable {
         // check on `after` column for new strands
         Validate.isTrue(
             current.after() == 0 || current.after() == 2,
-            "Invalid `after` column (expected 2 for new strand or 0 for a 1nt long strand):%n  %s%n  %s",
+            "Invalid `after` column (expected 2 for new strand or 0 for a 1nt long strand):%n  %s%n"
+                + "  %s",
             previous,
             current);
       } else {
@@ -368,37 +373,53 @@ public abstract class Ct implements Serializable {
           dotBracket.originalIndex(symbol));
     }
 
-    /** @return The value of `index` column. */
+    /**
+     * @return The value of `index` column.
+     */
     @Value.Parameter(order = 1)
     public abstract int index();
 
-    /** @return The value of `seq` column. */
+    /**
+     * @return The value of `seq` column.
+     */
     @Value.Parameter(order = 2)
     public abstract char seq();
 
-    /** @return The value of `before` column. */
+    /**
+     * @return The value of `before` column.
+     */
     @Value.Parameter(order = 3)
     public abstract int before();
 
-    /** @return The value of `after` column. */
+    /**
+     * @return The value of `after` column.
+     */
     @Value.Parameter(order = 4)
     public abstract int after();
 
-    /** @return The value of `pair` column. */
+    /**
+     * @return The value of `pair` column.
+     */
     @Value.Parameter(order = 5)
     public abstract int pair();
 
-    /** @return The value of `original` column. */
+    /**
+     * @return The value of `original` column.
+     */
     @Value.Parameter(order = 6)
     public abstract int original();
 
-    /** @return An optional comment. */
+    /**
+     * @return An optional comment.
+     */
     @Value.Default
     public String comment() {
       return "";
     }
 
-    /** @return True if `pair` column is non-zero. */
+    /**
+     * @return True if `pair` column is non-zero.
+     */
     public boolean isPaired() {
       return pair() != 0;
     }

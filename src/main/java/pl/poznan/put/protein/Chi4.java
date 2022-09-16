@@ -1,5 +1,10 @@
 package pl.poznan.put.protein;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.constant.Unicode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
@@ -7,12 +12,6 @@ import pl.poznan.put.torsion.ImmutableAtomBasedTorsionAngleType;
 import pl.poznan.put.torsion.TorsionAngleType;
 import pl.poznan.put.types.ImmutableQuadruple;
 import pl.poznan.put.types.Quadruple;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 final class Chi4 {
   public static final Quadruple<AtomName> ARGININE_ATOMS =
