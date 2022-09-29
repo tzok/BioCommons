@@ -16,6 +16,15 @@ public class DefaultDotBracketTest {
           + "--)))))))))))..[[[...((((((...]]]......]]]]]...))))))[[[[[.((((((]]]]].....((((((......((((((....)))))).......))))))..)))))).";
   // @formatter:off
   private static final String WITH_WINDOWS_NEWLINE = ">strand_A\r\n" + "ACAAGU\r\n" + "((..))";
+  private static final String WITH_ISOLATED_BASE_PAIR_AT_ENDS =
+      ">strand_A\nGUGGAAGUUCCUC\n(.(((...))).)";
+  private static final String WITH_ISOLATED_BASE_PAIR_IN_THE_MIDDLE =
+      ">strand_A\nGGCUGAGACCGCC\n(((...(.).)))";
+  private static final String WITH_ISOLATED_BASE_PAIR_PSEUDOKNOT =
+      ">strand_A\nGUCCCUGACGAG\n(((.[.))).].";
+  private static final String WITH_ISOLATED_BASE_PAIR_MULTI_STRAND =
+      ">strand_A\nGGUGUAGCC\n(((.[.)))\n>strand_B\nCCCGACGGG\n(((.].)))";
+
   private static final String BPSEQ =
       "1 C 11\n"
           + "2 C 9\n"
@@ -68,5 +77,41 @@ public class DefaultDotBracketTest {
         DefaultDotBracket.fromString(DefaultDotBracketTest.WITH_WINDOWS_NEWLINE);
     assertThat(dotBracket.sequence(), is("ACAAGU"));
     assertThat(dotBracket.structure(), is("((..))"));
+  }
+
+  @Test
+  public final void testWithoutIsolatedBasePaisAtEnds() {
+    final DefaultDotBracket dotBracket =
+        DefaultDotBracket.fromString(DefaultDotBracketTest.WITH_ISOLATED_BASE_PAIR_AT_ENDS);
+    assertThat(
+        DefaultDotBracket.copyWithoutIsolatedBasePairs(dotBracket).structure(),
+        is("..(((...))).."));
+  }
+
+  @Test
+  public final void testWithoutIsolatedBasePaisInTheMiddle() {
+    final DefaultDotBracket dotBracket =
+        DefaultDotBracket.fromString(DefaultDotBracketTest.WITH_ISOLATED_BASE_PAIR_IN_THE_MIDDLE);
+    assertThat(
+        DefaultDotBracket.copyWithoutIsolatedBasePairs(dotBracket).structure(),
+        is("(((.......)))"));
+  }
+
+  @Test
+  public final void testWithoutIsolatedBasePaisPseudoknot() {
+    final DefaultDotBracket dotBracket =
+        DefaultDotBracket.fromString(DefaultDotBracketTest.WITH_ISOLATED_BASE_PAIR_PSEUDOKNOT);
+    assertThat(
+        DefaultDotBracket.copyWithoutIsolatedBasePairs(dotBracket).structure(), is("(((...)))..."));
+  }
+
+  @Test
+  public final void testWithoutIsolatedBasePaisMultiStrand() {
+    final DefaultDotBracket dotBracket =
+        DefaultDotBracket.fromString(DefaultDotBracketTest.WITH_ISOLATED_BASE_PAIR_MULTI_STRAND);
+    final DotBracket dotBracketAltered = DefaultDotBracket.copyWithoutIsolatedBasePairs(dotBracket);
+    assertThat(dotBracketAltered.strands().size(), is(2));
+    assertThat(dotBracketAltered.strands().get(0).structure(), is("(((...)))"));
+    assertThat(dotBracketAltered.strands().get(1).structure(), is("(((...)))"));
   }
 }
