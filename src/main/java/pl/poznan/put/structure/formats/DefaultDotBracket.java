@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -60,6 +61,40 @@ public abstract class DefaultDotBracket extends AbstractDotBracket implements Se
     strands.add(0, ImmutableStrandView.of("", dotBracket, 0, ends.get(0) + 1));
 
     return ImmutableDefaultDotBracket.copyOf(dotBracket).withStrands(strands);
+  }
+
+  /**
+   * Creates a copy of existing instance, but removes isolated base pairs from it.
+   *
+   * @param input The input dot-bracket structure.
+   * @return An instance of this class.
+   */
+  public static DotBracket copyWithoutIsolatedBasePairs(final DotBracket input) {
+    final Set<DotBracketSymbol> isolatedSymbols = input.isolatedSymbols();
+
+    if (isolatedSymbols.isEmpty()) {
+      return input;
+    }
+
+    final StringBuilder builder = new StringBuilder();
+
+    for (final Strand strand : input.strands()) {
+      builder.append(">strand_").append(strand.name()).append('\n');
+      builder.append(strand.sequence()).append('\n');
+      builder
+          .append(
+              strand.symbols().stream()
+                  .map(
+                      dotBracketSymbol ->
+                          isolatedSymbols.contains(dotBracketSymbol)
+                              ? '.'
+                              : dotBracketSymbol.structure())
+                  .map(Object::toString)
+                  .collect(Collectors.joining()))
+          .append('\n');
+    }
+
+    return DefaultDotBracket.fromString(builder.toString());
   }
 
   /**

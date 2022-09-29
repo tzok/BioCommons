@@ -8,6 +8,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -32,6 +33,41 @@ public interface DotBracket {
    *     other.
    */
   List<DotBracket> combineStrands();
+
+  /**
+   * @return A set of isolated symbols, i.e., those which are pairing but are surrounded by unpaired
+   *     residues.
+   */
+  default Set<DotBracketSymbol> isolatedSymbols() {
+    return symbols().stream().filter(this::isIsolated).collect(Collectors.toSet());
+  }
+
+  /**
+   * Checks if a symbol is isolated, i.e., if it is a pairing symbol and both it and its pair are
+   * surrounded by unpaired residues.
+   *
+   * @param symbol A dot-bracket symbol to check.
+   * @return True if the symbol is isolated.
+   */
+  default boolean isIsolated(final DotBracketSymbol symbol) {
+    if (!symbol.isPairing()) {
+      return false;
+    }
+
+    final int i = symbols().indexOf(symbol);
+
+    if (i == -1) {
+      throw new IllegalArgumentException("Failed to find symbol " + symbol);
+    }
+
+    final Optional<DotBracketSymbol> previous =
+        i > 0 ? Optional.of(symbols().get(i - 1)) : Optional.empty();
+    final Optional<DotBracketSymbol> next =
+        i < symbols().size() - 1 ? Optional.of(symbols().get(i + 1)) : Optional.empty();
+
+    return (previous.isEmpty() || !previous.get().isPairing())
+        && (next.isEmpty() || !next.get().isPairing());
+  }
 
   /**
    * Returns the index of a dot-bracket symbol according to some external source like PDB numbering.
