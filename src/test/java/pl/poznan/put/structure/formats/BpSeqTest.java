@@ -163,4 +163,19 @@ public class BpSeqTest {
                 .withLeontisWesthof(LeontisWesthof.CWW));
     BpSeq.fromBasePairs(residues, basePairs);
   }
+
+  @Test
+  public final void testFromBasePairsWithModifiedResidues() {
+    final var nt1Lower = ImmutablePdbNamedResidueIdentifier.of("A", 1, Optional.empty(), 'g');
+    final var nt1Upper = ImmutablePdbNamedResidueIdentifier.of("A", 1, Optional.empty(), 'G');
+    final var nt2 = ImmutablePdbNamedResidueIdentifier.of("A", 2, Optional.empty(), 'C');
+    final List<PdbNamedResidueIdentifier> residues = List.of(nt1Lower, nt2);
+    final var basePairs =
+        List.of(
+            ImmutableAnalyzedBasePair.of(ImmutableBasePair.of(nt1Upper, nt2))
+                .withSaenger(Saenger.XIX)
+                .withLeontisWesthof(LeontisWesthof.CWW));
+    final var bpSeq = BpSeq.fromBasePairs(residues, basePairs);
+    assertThat(bpSeq.toString(), is("1 g 2\n2 C 1\n"));
+  }
 }

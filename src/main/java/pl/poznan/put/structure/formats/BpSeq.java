@@ -11,6 +11,7 @@ import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.pdb.PdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.PdbResidueIdentifier;
 import pl.poznan.put.pdb.analysis.ResidueTypeDetector;
 import pl.poznan.put.structure.BasePair;
 import pl.poznan.put.structure.ClassifiedBasePair;
@@ -96,12 +97,18 @@ public abstract class BpSeq implements Serializable {
   private static Collection<Entry> generateEntriesForPaired(
       final List<PdbNamedResidueIdentifier> residues,
       final Collection<? extends ClassifiedBasePair> basePairs) {
+    final var residueIdentifiers =
+        residues.stream()
+            .map(PdbNamedResidueIdentifier::toResidueIdentifier)
+            .collect(Collectors.toList());
+
     final var invalidBasePairs =
         basePairs.stream()
             .filter(
                 cbp ->
-                    !residues.contains(cbp.basePair().left())
-                        || !residues.contains(cbp.basePair().right()))
+                    !residueIdentifiers.contains(cbp.basePair().left().toResidueIdentifier())
+                        || !residueIdentifiers.contains(
+                            cbp.basePair().right().toResidueIdentifier()))
             .collect(Collectors.toList());
 
     if (!invalidBasePairs.isEmpty()) {
@@ -110,7 +117,7 @@ public abstract class BpSeq implements Serializable {
               + " entries. Base pairs with invalid residues: "
               + invalidBasePairs
               + ". The list of valid residues: "
-              + residues);
+              + residueIdentifiers);
     }
 
     final Map<BasePair, String> comments =
@@ -127,9 +134,11 @@ public abstract class BpSeq implements Serializable {
         .map(
             basePair ->
                 ImmutableEntry.of(
-                        residues.indexOf(basePair.left()) + 1,
-                        basePair.left().oneLetterName(),
-                        residues.indexOf(basePair.right()) + 1)
+                        residueIdentifiers.indexOf(basePair.left().toResidueIdentifier()) + 1,
+                        residues
+                            .get(residueIdentifiers.indexOf(basePair.left().toResidueIdentifier()))
+                            .oneLetterName(),
+                        residueIdentifiers.indexOf(basePair.right().toResidueIdentifier()) + 1)
                     .withComment(comments.getOrDefault(basePair, "")))
         .collect(Collectors.toList());
   }
@@ -137,13 +146,14 @@ public abstract class BpSeq implements Serializable {
   private static Collection<Entry> generateEntriesForUnpaired(
       final List<PdbNamedResidueIdentifier> residues,
       final Collection<? extends ClassifiedBasePair> basePairs) {
-    final Set<PdbNamedResidueIdentifier> paired =
+    final Set<PdbResidueIdentifier> paired =
         basePairs.stream()
             .map(ClassifiedBasePair::basePair)
             .flatMap(basePair -> Stream.of(basePair.left(), basePair.right()))
+            .map(PdbNamedResidueIdentifier::toResidueIdentifier)
             .collect(Collectors.toSet());
     return IntStream.range(0, residues.size())
-        .filter(i -> !paired.contains(residues.get(i)))
+        .filter(i -> !paired.contains(residues.get(i).toResidueIdentifier()))
         .mapToObj(i -> ImmutableEntry.of(i + 1, residues.get(i).oneLetterName(), 0))
         .collect(Collectors.toList());
   }
