@@ -26,6 +26,13 @@ public abstract class PdbNamedResidueIdentifier implements ChainNumberICode, Ser
   @Value.Parameter(order = 4)
   public abstract char oneLetterName();
 
+  /**
+   * @return An instance of identifier without the oneLetterName field.
+   */
+  public final PdbResidueIdentifier toResidueIdentifier() {
+    return ImmutablePdbResidueIdentifier.from(this);
+  }
+
   @Override
   public final String toString() {
     final String chain = StringUtils.isBlank(chainIdentifier()) ? "" : (chainIdentifier() + '.');
