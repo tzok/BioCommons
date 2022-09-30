@@ -97,12 +97,12 @@ public abstract class BpSeq implements Serializable {
   private static Collection<Entry> generateEntriesForPaired(
       final List<PdbNamedResidueIdentifier> residues,
       final Collection<? extends ClassifiedBasePair> basePairs) {
-    final var residueIdentifiers =
+    final List<PdbResidueIdentifier> residueIdentifiers =
         residues.stream()
             .map(PdbNamedResidueIdentifier::toResidueIdentifier)
             .collect(Collectors.toList());
 
-    final var invalidBasePairs =
+    final List<? extends ClassifiedBasePair> invalidBasePairs =
         basePairs.stream()
             .filter(
                 cbp ->
