@@ -13,7 +13,7 @@ You can use BioCommons by adding the following to your `pom.xml`:
 <dependency>
   <groupId>pl.poznan.put</groupId>
   <artifactId>BioCommons</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1</version>
 </dependency>
 ```
 
@@ -29,36 +29,36 @@ You can find examples and HOWTOs in the
 
 # Functionality
 
--   Full analysis of PDB and mmCIF files, including missing and modified
-    residues, experimental data, etc.
--   An enumeration of atom types, names and aliases used in PDB and
-    mmCIF files
--   Atomic bond lengths’ validation
--   Notations from the literature (Zirbel *et al.* 2009, Leontis *et
-    al.* 2001, Saenger 1984)
--   Torsion angle analysis for proteins, including varying number of chi
-    angle types for different amino acids
--   Torsion angle analysis for nucleic acids, including pseudo-torsion
-    angles (Keating *et al.* 2011) and pseudo-phase pucker of the sugar
-    ring (Saenger 1984)
--   Analysis of circular data (Fisher 1993), including correct averaging
-    of angles
--   Advanced analysis of RNA secondary structure in BPSEQ, CT or
-    dot-bracket formats
--   Handling of pseudoknots of any order (Smit *et al.* 2008)
--   General-purpose constants and utility classes (e.g. handling of SVG
-    images)
+- Full analysis of PDB and mmCIF files, including missing and modified
+  residues, experimental data, etc.
+- An enumeration of atom types, names and aliases used in PDB and mmCIF
+  files
+- Atomic bond lengths’ validation
+- Notations from the literature (Zirbel *et al.* 2009, Leontis *et al.*
+  2001, Saenger 1984)
+- Torsion angle analysis for proteins, including varying number of chi
+  angle types for different amino acids
+- Torsion angle analysis for nucleic acids, including pseudo-torsion
+  angles (Keating *et al.* 2011) and pseudo-phase pucker of the sugar
+  ring (Saenger 1984)
+- Analysis of circular data (Fisher 1993), including correct averaging
+  of angles
+- Advanced analysis of RNA secondary structure in BPSEQ, CT or
+  dot-bracket formats
+- Handling of pseudoknots of any order (Smit *et al.* 2008)
+- General-purpose constants and utility classes (e.g. handling of SVG
+  images)
 
 # Used in
 
--   [MCQ4Structures](https://github.com/tzok/mcq4structures) (Magnus *et
-    al.* 2020, Wiedemann *et al.* 2017, Zok *et al.* 2014)
--   [RNApdbee](http://rnapdbee.cs.put.poznan.pl/) (Zok *et al.* 2018,
-    Antczak *et al.* 2018, Antczak *et al.* 2014)
--   [RNAvista](http://rnavista.cs.put.poznan.pl/) (Antczak *et al.*
-    2019, Rybarczyk *et al.* 2015)
--   [RNAfitme](http://rnafitme.cs.put.poznan.pl/) (Antczak *et al.*
-    2018, Zok *et al.* 2015)
+- [MCQ4Structures](https://github.com/tzok/mcq4structures) (Magnus *et
+  al.* 2020, Wiedemann *et al.* 2017, Zok *et al.* 2014)
+- [RNApdbee](http://rnapdbee.cs.put.poznan.pl/) (Zok *et al.* 2018,
+  Antczak *et al.* 2018, Antczak *et al.* 2014)
+- [RNAvista](http://rnavista.cs.put.poznan.pl/) (Antczak *et al.* 2019,
+  Rybarczyk *et al.* 2015)
+- [RNAfitme](http://rnafitme.cs.put.poznan.pl/) (Antczak *et al.* 2018,
+  Zok *et al.* 2015)
 
 # Bibliography
 
@@ -66,7 +66,7 @@ You can find examples and HOWTOs in the
 
 <div id="ref-Magnus2020" class="csl-entry">
 
-RNA-Puzzles Toolkit: A Computational Resource of RNA 3d Structure
+RNA-Puzzles Toolkit: A Computational Resource of RNA 3D Structure
 Benchmark Datasets, Structure Manipulation and Evaluation Tools. M.
 Magnus, M. Antczak, T. Zok, J. Wiedemann, P. Lukasiak, Y. Cao, J.M.
 Bujnicki, E. Westhof, M. Szachniuk, Z. Miao. *Nucleic Acids Research*.
@@ -114,7 +114,7 @@ doi:[10.1093/bioinformatics/btx783](https://doi.org/10.1093/bioinformatics/btx78
 
 <div id="ref-Wiedemann2017" class="csl-entry">
 
-LCS-TA to Identify Similar Fragments in RNA 3d Structures. J. Wiedemann,
+LCS-TA to Identify Similar Fragments in RNA 3D Structures. J. Wiedemann,
 T. Zok, M. Milostan, M. Szachniuk. *BMC Bioinformatics*. 2017.
 18(1):456.
 doi:[10.1186/s12859-017-1867-6](https://doi.org/10.1186/s12859-017-1867-6)
@@ -133,7 +133,7 @@ doi:[10.1186/s12859-015-0718-6](https://doi.org/10.1186/s12859-015-0718-6)
 
 <div id="ref-Zok2015" class="csl-entry">
 
-Building the Library of RNA 3d Nucleotide Conformations Using Clustering
+Building the Library of RNA 3D Nucleotide Conformations Using Clustering
 Approach. T. Zok, M. Antczak, M. Riedel, D. Nebel, T. Villmann, P.
 Lukasiak, J. Blazewicz, M. Szachniuk. *International Journal of Applied
 Mathematics and Computer Science*. 2015. 25(3):689–700.
