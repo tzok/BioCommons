@@ -30,7 +30,7 @@ public interface ChainNumberICode extends Comparable<ChainNumberICode>, Serializ
     return new CompareToBuilder()
         .append(chainIdentifier(), t.chainIdentifier())
         .append(residueNumber(), t.residueNumber())
-        .append(insertionCode(), t.insertionCode())
+        .append(insertionCode().orElse(""), t.insertionCode().orElse(""))
         .build();
   }
 }
