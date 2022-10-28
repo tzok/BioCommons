@@ -5,6 +5,7 @@ import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
+import pl.poznan.put.notation.StackingTopology;
 import pl.poznan.put.rna.InteractionType;
 
 /** A pair of residues with metadata taken from analysis tool. */
@@ -38,6 +39,11 @@ public abstract class AnalyzedBasePair implements ClassifiedBasePair {
     return ClassifiedBasePair.super.br();
   }
 
+  @Value.Default
+  public StackingTopology stackingTopology() {
+    return ClassifiedBasePair.super.stackingTopology();
+  }
+
   @Value.Auxiliary
   @Value.Default
   public boolean isRepresented() {
@@ -49,7 +55,8 @@ public abstract class AnalyzedBasePair implements ClassifiedBasePair {
     return ImmutableAnalyzedBasePair.copyOf(this)
         .withBasePair(basePair().invert())
         .withInteractionType(interactionType().invert())
-        .withLeontisWesthof(leontisWesthof().invert());
+        .withLeontisWesthof(leontisWesthof().invert())
+        .withStackingTopology(stackingTopology().invert());
   }
 
   /**
