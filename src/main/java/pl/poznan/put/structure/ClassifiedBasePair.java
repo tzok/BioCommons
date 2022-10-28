@@ -7,6 +7,7 @@ import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
+import pl.poznan.put.notation.StackingTopology;
 import pl.poznan.put.rna.InteractionType;
 
 /** A pair of interacting nucleotides with classification info. */
@@ -49,6 +50,13 @@ public interface ClassifiedBasePair extends Serializable, Comparable<ClassifiedB
    */
   default BR br() {
     return BR.UNKNOWN;
+  }
+
+  /**
+   * @return The classification of stacking interaction (if applicable).
+   */
+  default StackingTopology stackingTopology() {
+    return StackingTopology.UNKNOWN;
   }
 
   /**

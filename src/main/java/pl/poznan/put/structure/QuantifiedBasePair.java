@@ -5,6 +5,7 @@ import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.notation.Saenger;
+import pl.poznan.put.notation.StackingTopology;
 import pl.poznan.put.rna.InteractionType;
 
 /** A base pair which is classified and quantified with numerical parameters. */
@@ -36,6 +37,11 @@ public abstract class QuantifiedBasePair implements ClassifiedBasePair {
   @Value.Default
   public BR br() {
     return ClassifiedBasePair.super.br();
+  }
+
+  @Value.Default
+  public StackingTopology stackingTopology() {
+    return ClassifiedBasePair.super.stackingTopology();
   }
 
   @Value.Default
