@@ -15,8 +15,8 @@ public class CtTest {
       "4 inputGood\n"
           + "1 A 0 2 3 12313\n"
           + "2 C 1 0 0 12313\n"
-          + "3 U 0 2 1 12314\n"
-          + "4 C 1 0 0 12315\n";
+          + "3 U 0 4 1 12314\n"
+          + "4 C 3 0 0 12315\n";
   private static final String INPUT_BAD_TOO_FEW =
       "4 inputBad\n"
           + "1 A 0 2 3\n"
@@ -41,10 +41,17 @@ public class CtTest {
           + "2 C 1 3 0 12313\n"
           + "3 U 2 4 1 12314\n"
           + "4 C 3 0 0 12315\n";
+
+  private static final String INPUT_BAD_INDEX_3 =
+      "4 inputBad\n"
+          + "1 A 0 2 3 12313\n"
+          + "3 C 1 3 0 12313\n"
+          + "3 U 2 4 1 12314\n"
+          + "4 C 3 0 0 12315\n";
   private static final String INPUT_BAD_BEFORE_1 =
       "4 inputBad\n"
-          + "1 A -1 2 3 12313\n"
-          + "2 C 1 3 0 12313\n"
+          + "1 A 0 2 3 12313\n"
+          + "2 C 1 0 0 12313\n"
           + "3 U 2 4 1 12314\n"
           + "4 C 3 0 0 12315\n";
   private static final String INPUT_BAD_BEFORE_2 =
@@ -126,9 +133,8 @@ public class CtTest {
   }
 
   @Test
-  public final void testRnaStrand() throws Exception {
-    final String data = ResourcesHelper.loadResource("CRW_00528.ct");
-    Ct.fromString(data);
+  public final void testCRW00528() throws Exception {
+    Ct.fromString(ResourcesHelper.loadResource("CRW_00528.ct"));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -149,6 +155,11 @@ public class CtTest {
   @Test(expected = IllegalArgumentException.class)
   public final void testInvalidBadIndex2() {
     Ct.fromString(CtTest.INPUT_BAD_INDEX_2);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public final void testInvalidBadIndex3() {
+    Ct.fromString(CtTest.INPUT_BAD_INDEX_3);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -221,5 +232,16 @@ public class CtTest {
     final String dbn4UG0 = ResourcesHelper.loadResource("4UG0-dotbracket.txt");
     final DefaultDotBracket dotBracket = DefaultDotBracket.fromString(dbn4UG0);
     Ct.fromDotBracket(dotBracket);
+  }
+
+  @Test
+  public final void test2Z74() throws Exception {
+    final String ct2Z74 = ResourcesHelper.loadResource("2Z74.ct");
+    Ct.fromString(ct2Z74);
+  }
+
+  @Test
+  public final void testNDB00001() throws Exception {
+    Ct.fromString(ResourcesHelper.loadResource("NDB_00001.ct"));
   }
 }

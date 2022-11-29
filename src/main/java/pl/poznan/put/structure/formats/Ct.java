@@ -10,11 +10,9 @@ import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.immutables.value.Value;
-import pl.poznan.put.pdb.ChainNumberICode;
 import pl.poznan.put.pdb.analysis.MoleculeType;
 import pl.poznan.put.pdb.analysis.PdbChain;
 import pl.poznan.put.pdb.analysis.PdbModel;
@@ -81,11 +79,21 @@ public abstract class Ct implements Serializable {
               entries.size(), residues.size()));
     }
 
-    final List<ExtendedEntry> extendedEntries =
-        IntStream.range(0, entries.size())
-            .mapToObj(
-                i -> ExtendedEntry.fromEntryAndPdbResidue(entries.get(i), residues.get(i), model))
-            .collect(Collectors.toList());
+    final List<ExtendedEntry> extendedEntries = new ArrayList<>();
+
+    for (int i = 0; i < residues.size(); i++) {
+      final PdbResidue residue = residues.get(i);
+      final BpSeq.Entry entry = entries.get(i);
+      final SingleTypedResidueCollection chain = model.findChainContainingResidue(residue);
+      final int before = chain.indexOf(residue) == 0 ? 0 : entry.index() - 1;
+      final int after =
+          chain.indexOf(residue) == chain.residues().size() - 1 ? 0 : entry.index() + 1;
+      extendedEntries.add(
+          ImmutableExtendedEntry.of(
+                  entry.index(), entry.seq(), before, after, entry.pair(), residue.residueNumber())
+              .withComment(entry.comment()));
+    }
+
     return ImmutableCt.of(extendedEntries);
   }
 
@@ -96,14 +104,31 @@ public abstract class Ct implements Serializable {
    * @return An instance of this class with converted data.
    */
   public static Ct fromDotBracket(final DotBracket dotBracket) {
-    final List<ExtendedEntry> entries =
-        dotBracket.strands().stream()
-            .map(Strand::symbols)
-            .flatMap(
-                symbols ->
-                    IntStream.range(0, symbols.size())
-                        .mapToObj(i -> ExtendedEntry.fromDotBracketSymbol(dotBracket, symbols, i)))
-            .collect(Collectors.toList());
+    final Map<DotBracketSymbol, DotBracketSymbol> pairs = dotBracket.pairs();
+    final List<ExtendedEntry> entries = new ArrayList<>();
+    int index = 1;
+
+    for (final Strand strand : dotBracket.strands()) {
+      final List<DotBracketSymbol> symbols = strand.symbols();
+
+      for (int i = 0; i < symbols.size(); i++) {
+        final boolean first = i == 0;
+        final boolean last = i == symbols.size() - 1;
+
+        final DotBracketSymbol symbol = symbols.get(i);
+        final int pair =
+            pairs.containsKey(symbol) ? dotBracket.symbols().indexOf(pairs.get(symbol)) + 1 : 0;
+        entries.add(
+            ImmutableExtendedEntry.of(
+                index,
+                symbol.sequence(),
+                first ? 0 : index - 1,
+                last ? 0 : index + 1,
+                pair,
+                dotBracket.originalIndex(symbol)));
+        index++;
+      }
+    }
     return ImmutableCt.of(entries);
   }
 
@@ -184,7 +209,17 @@ public abstract class Ct implements Serializable {
 
   @Value.Check
   protected Ct validate() {
+    Validate.isTrue(!entries().isEmpty(), "Invalid CT (empty entries list)");
+
     final List<ExtendedEntry> list = new ArrayList<>(entries());
+
+    // fix the first entry if required
+    final ExtendedEntry firstEntry = list.get(0);
+    if (firstEntry.before() != 0) {
+      list.remove(0);
+      list.add(0, ImmutableExtendedEntry.copyOf(firstEntry).withBefore(0));
+      return ImmutableCt.of(list);
+    }
 
     // fix the last entry if required
     final ExtendedEntry lastEntry = list.get(list.size() - 1);
@@ -194,32 +229,60 @@ public abstract class Ct implements Serializable {
       return ImmutableCt.of(list);
     }
 
-    // check on the first entry
+    // sanity check
     Validate.isTrue(
-        list.get(0).before() == 0,
-        "Invalid `before` column (expected value is 0 for the first entry):%n  %s",
-        list.get(0));
+        firstEntry.index() == 1,
+        "Invalid `index` column in the first entry (not equal to one):%n  %s",
+        firstEntry);
+    Validate.isTrue(
+        firstEntry.before() == 0,
+        "Invalid `before` column in the first entry (not zero):%n  %s",
+        firstEntry);
+    Validate.isTrue(
+        firstEntry.after() >= 0,
+        "Invalid `after` column in the first entry (negative):%n  %s",
+        firstEntry);
 
     for (int i = 1; i < list.size(); i++) {
       final ExtendedEntry previous = list.get(i - 1);
       final ExtendedEntry current = list.get(i);
 
-      // sequential check on `index` column
+      // sanity check
+      Validate.isTrue(current.index() > 0, "Invalid `index` column (non-positive):%n  %s", current);
+      Validate.isTrue(current.before() >= 0, "Invalid `before` column (negative):%n  %s", current);
+      Validate.isTrue(current.after() >= 0, "Invalid `after` column (negative):%n  %s", current);
+
+      // check correctness of `index` column
       Validate.isTrue(
           current.index() - previous.index() == 1,
           "Invalid `index` column (expected next value than its predecessor):%n  %s%n  %s",
           previous,
           current);
 
-      if (current.before() != 0) {
-        // sequential check on `before` column
+      // check correctness of `before` column
+      if (current.before() == 0) {
         Validate.isTrue(
-            current.before() - previous.before() == 1,
-            "Invalid `before` column (expected next value than its predecessor):%n  %s%n  %s",
+            previous.after() == 0,
+            "Invalid `before` column (expected 0 for new strand):%n  %s%n  %s",
             previous,
             current);
+      } else {
+        Validate.isTrue(
+            current.index() - current.before() == 1,
+            "Invalid `before` column (`before` is not one less than `index`):%n  %s%n  %s",
+            previous,
+            current);
+        if (previous.before() != 0) {
+          Validate.isTrue(
+              current.before() - previous.before() == 1,
+              "Invalid `before` column (two sequential `before` columns do not differ by one):%n "
+                  + " %s%n  %s",
+              previous,
+              current);
+        }
       }
 
+      // check correctness of `after` column
       if (previous.after() == 0) {
         // check on `before` column for new strands
         Validate.isTrue(
@@ -227,20 +290,20 @@ public abstract class Ct implements Serializable {
             "Invalid `before` column (expected 0 for new strand):%n  %s%n  %s",
             previous,
             current);
-        // check on `after` column for new strands
-        Validate.isTrue(
-            current.after() == 0 || current.after() == 2,
-            "Invalid `after` column (expected 2 for new strand or 0 for a 1nt long strand):%n  %s%n"
-                + "  %s",
-            previous,
-            current);
       } else {
-        // sequential check on `after` column
         Validate.isTrue(
-            current.after() == 0 || current.after() - previous.after() == 1,
-            "Invalid `after` column (expected next value than its predecessor):%n  %s%n  %s",
+            previous.after() == current.index(),
+            "Invalid `after` column (previous `after` does not equal current `index`):%n  %s%n  %s",
             previous,
             current);
+        if (current.after() != 0) {
+          Validate.isTrue(
+              current.after() - previous.after() == 1,
+              "Invalid `after` column (two sequential `after` columns do not differ by one):%n "
+                  + " %s%n  %s",
+              previous,
+              current);
+        }
       }
     }
 
@@ -264,26 +327,6 @@ public abstract class Ct implements Serializable {
             entry,
             map.get(entry.pair()));
       }
-
-      // checks on `before` column
-      Validate.isTrue(
-          entry.before() >= 0, "Invalid `before` column (expected positive value):%n  %s", entry);
-      Validate.isTrue(
-          entry.before() < lastIndex,
-          "Invalid `before` column (expected value less than %d):%n  %s",
-          lastIndex,
-          entry);
-
-      // checks on `after` columns
-      Validate.isTrue(
-          entry.after() == 0 || entry.after() >= 2,
-          "Invalid `after` column (expected value at least 2):%n  %s",
-          entry);
-      Validate.isTrue(
-          entry.after() <= lastIndex,
-          "Invalid `after` column (expected value at most %d):%n  %s",
-          lastIndex,
-          entry);
     }
 
     return this;
@@ -331,46 +374,6 @@ public abstract class Ct implements Serializable {
           entry.index() + 1,
           entry.pair(),
           entry.index());
-    }
-
-    /**
-     * Converts a BPSEQ entry into an instance of this class using information from a parsed 3D
-     * data.
-     *
-     * @param entry A BPSEQ entry to convert.
-     * @param residue A PDB residue mapped to the BPSEQ entry.
-     * @param model The PDB model that contains the residue.
-     * @return An instance of this class.
-     */
-    public static ExtendedEntry fromEntryAndPdbResidue(
-        final BpSeq.Entry entry, final ChainNumberICode residue, final PdbModel model) {
-      final SingleTypedResidueCollection chain = model.findChainContainingResidue(residue);
-      final int before = chain.indexOf(residue);
-      final int after = (before + 2) % (chain.residues().size() + 1);
-      return ImmutableExtendedEntry.of(
-              entry.index(), entry.seq(), before, after, entry.pair(), residue.residueNumber())
-          .withComment(entry.comment());
-    }
-
-    /**
-     * Converts a dot-bracket symbol into an instance of this class.
-     *
-     * @param dotBracket The whole dot-bracket structure.
-     * @param symbols The list of symbols in the current strand.
-     * @param i The index of the current symbol.
-     * @return An instance of this class.
-     */
-    public static ExtendedEntry fromDotBracketSymbol(
-        final DotBracket dotBracket, final List<DotBracketSymbol> symbols, final int i) {
-      final Map<DotBracketSymbol, DotBracketSymbol> pairs = dotBracket.pairs();
-      final DotBracketSymbol symbol = symbols.get(i);
-      return ImmutableExtendedEntry.of(
-          symbol.index() + 1,
-          symbol.sequence(),
-          i,
-          i == symbols.size() - 1 ? 0 : i + 2,
-          pairs.containsKey(symbol) ? pairs.get(symbol).index() + 1 : 0,
-          dotBracket.originalIndex(symbol));
     }
 
     /**
