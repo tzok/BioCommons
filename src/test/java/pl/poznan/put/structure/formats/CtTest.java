@@ -62,29 +62,17 @@ public class CtTest {
           + "4 C 3 0 0 12315\n";
   private static final String INPUT_BAD_BEFORE_3 =
       "4 inputBad\n"
-          + "1 A 1 2 3 12313\n"
-          + "2 C 1 0 0 12313\n"
-          + "3 U 0 2 1 12314\n"
-          + "4 C 1 0 0 12315\n";
-  private static final String INPUT_BAD_BEFORE_4 =
-      "4 inputBad\n"
           + "1 A 0 2 3 12313\n"
           + "2 C 1 0 0 12313\n"
           + "3 U 1 2 1 12314\n"
           + "4 C 1 0 0 12315\n";
   private static final String INPUT_BAD_AFTER_1 =
       "4 inputBad\n"
-          + "1 A 0 -1 3 12313\n"
-          + "2 C 1 3 0 12313\n"
-          + "3 U 2 4 1 12314\n"
-          + "4 C 3 0 0 12315\n";
-  private static final String INPUT_BAD_AFTER_2 =
-      "4 inputBad\n"
           + "1 A 0 xyz 3 12313\n"
           + "2 C 1 3 0 12313\n"
           + "3 U 2 4 1 12314\n"
           + "4 C 3 0 0 12315\n";
-  private static final String INPUT_BAD_AFTER_3 =
+  private static final String INPUT_BAD_AFTER_2 =
       "4 inputBad\n"
           + "1 A 0 2 3 12313\n"
           + "2 C 1 3 0 12313\n"
@@ -178,11 +166,6 @@ public class CtTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public final void testInvalidBadBefore4() {
-    Ct.fromString(CtTest.INPUT_BAD_BEFORE_4);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
   public final void testInvalidBadAfter1() {
     Ct.fromString(CtTest.INPUT_BAD_AFTER_1);
   }
@@ -190,11 +173,6 @@ public class CtTest {
   @Test(expected = IllegalArgumentException.class)
   public final void testInvalidBadAfter2() {
     Ct.fromString(CtTest.INPUT_BAD_AFTER_2);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public final void testInvalidBadAfter3() {
-    Ct.fromString(CtTest.INPUT_BAD_AFTER_3);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -243,5 +221,10 @@ public class CtTest {
   @Test
   public final void testNDB00001() throws Exception {
     Ct.fromString(ResourcesHelper.loadResource("NDB_00001.ct"));
+  }
+
+  @Test
+  public final void test3G78() throws Exception {
+    Ct.fromString(ResourcesHelper.loadResource("3G78.ct"));
   }
 }

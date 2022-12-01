@@ -229,6 +229,19 @@ public abstract class Ct implements Serializable {
       return ImmutableCt.of(list);
     }
 
+    // fix the `before` and `after` columns if required
+    final var toRecreate =
+        list.stream().filter(ExtendedEntry::hasInvalidBeforeOrAfter).collect(Collectors.toList());
+    if (!toRecreate.isEmpty()) {
+      for (final var entry : toRecreate) {
+        final var before = entry.before() == 0 ? 0 : entry.index() - 1;
+        final var after = entry.after() == 0 ? 0 : entry.index() + 1;
+        list.remove(entry);
+        list.add(ImmutableExtendedEntry.copyOf(entry).withBefore(before).withAfter(after));
+      }
+      return ImmutableCt.of(list);
+    }
+
     // sanity check
     Validate.isTrue(
         firstEntry.index() == 1,
@@ -266,44 +279,15 @@ public abstract class Ct implements Serializable {
             "Invalid `before` column (expected 0 for new strand):%n  %s%n  %s",
             previous,
             current);
-      } else {
-        Validate.isTrue(
-            current.index() - current.before() == 1,
-            "Invalid `before` column (`before` is not one less than `index`):%n  %s%n  %s",
-            previous,
-            current);
-        if (previous.before() != 0) {
-          Validate.isTrue(
-              current.before() - previous.before() == 1,
-              "Invalid `before` column (two sequential `before` columns do not differ by one):%n "
-                  + " %s%n  %s",
-              previous,
-              current);
-        }
       }
 
       // check correctness of `after` column
       if (previous.after() == 0) {
-        // check on `before` column for new strands
         Validate.isTrue(
             current.before() == 0,
             "Invalid `before` column (expected 0 for new strand):%n  %s%n  %s",
             previous,
             current);
-      } else {
-        Validate.isTrue(
-            previous.after() == current.index(),
-            "Invalid `after` column (previous `after` does not equal current `index`):%n  %s%n  %s",
-            previous,
-            current);
-        if (current.after() != 0) {
-          Validate.isTrue(
-              current.after() - previous.after() == 1,
-              "Invalid `after` column (two sequential `after` columns do not differ by one):%n "
-                  + " %s%n  %s",
-              previous,
-              current);
-        }
       }
     }
 
@@ -425,6 +409,13 @@ public abstract class Ct implements Serializable {
      */
     public boolean isPaired() {
       return pair() != 0;
+    }
+
+    /**
+     * @return True if `before` or `after` column are not correct.
+     */
+    public boolean hasInvalidBeforeOrAfter() {
+      return (before() != 0 && before() != index() - 1) || (after() != 0 && after() != index() + 1);
     }
 
     @Override
