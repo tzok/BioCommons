@@ -105,7 +105,11 @@ public final class ChainReorderer {
       if (!visited.contains(chain)) {
         final List<String> component = new ArrayList<>();
         ChainReorderer.depthFirstSearch(chain, graph, visited, component);
-        order.addAll(ChainReorderer.componentOrder(component, distinct, residues, basePairs));
+        if (component.size() >= 2) {
+          order.addAll(ChainReorderer.componentOrder(component, distinct, residues, basePairs));
+        } else {
+          order.addAll(component);
+        }
       }
     }
 
