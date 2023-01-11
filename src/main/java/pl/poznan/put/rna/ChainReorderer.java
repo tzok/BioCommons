@@ -92,7 +92,7 @@ public final class ChainReorderer {
             .distinct()
             .collect(Collectors.toList());
 
-    // 1 or 2 chains do not reordering
+    // 1 or 2 chains -> do not reorder
     if (distinct.size() <= 2) {
       return distinct;
     }
