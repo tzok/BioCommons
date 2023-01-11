@@ -7,17 +7,20 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
-import pl.poznan.put.pdb.analysis.CifParser;
-import pl.poznan.put.pdb.analysis.MoleculeType;
-import pl.poznan.put.pdb.analysis.PdbChain;
-import pl.poznan.put.pdb.analysis.PdbModel;
-import pl.poznan.put.pdb.analysis.PdbParser;
+import pl.poznan.put.pdb.ImmutablePdbAtomLine;
+import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
+import pl.poznan.put.pdb.PdbAtomLine;
+import pl.poznan.put.pdb.analysis.*;
 import pl.poznan.put.structure.CanonicalStructureExtractor;
 import pl.poznan.put.structure.ClassifiedBasePair;
+import pl.poznan.put.structure.ImmutableAnalyzedBasePair;
+import pl.poznan.put.structure.ImmutableBasePair;
 import pl.poznan.put.structure.formats.Converter;
 import pl.poznan.put.structure.formats.ImmutableDefaultConverter;
 import pl.poznan.put.utility.ResourcesHelper;
@@ -93,5 +96,42 @@ public class ChainReordererTest {
     final Collection<ClassifiedBasePair> reorderedBasePairs =
         CanonicalStructureExtractor.basePairs(reorderedModel);
     assertThat(CollectionUtils.isEqualCollection(originalBasePairs, reorderedBasePairs), is(true));
+  }
+
+  @Test
+  public void testGraphComponentOfSizeOne() throws IOException {
+    // create three chains: A, B, C
+    final Iterable<PdbAtomLine> atoms =
+        Stream.of("A", "B", "C")
+            .map(
+                chainName ->
+                    ImmutablePdbAtomLine.of(
+                        1,
+                        "P",
+                        Optional.empty(),
+                        "A",
+                        chainName,
+                        1,
+                        Optional.empty(),
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0,
+                        0.0,
+                        "P",
+                        ""))
+            .collect(Collectors.toList());
+    final var model = ImmutableDefaultPdbModel.of(atoms);
+
+    // create base pairs only between A and B chains
+    Collection<? extends ClassifiedBasePair> basePairs =
+        List.of(
+            ImmutableAnalyzedBasePair.of(
+                ImmutableBasePair.of(
+                    ImmutablePdbNamedResidueIdentifier.of("A", 1, Optional.empty(), 'A'),
+                    ImmutablePdbNamedResidueIdentifier.of("B", 1, Optional.empty(), 'A'))));
+
+    // the line below used to throw MathIllegalArgumentException
+    ChainReorderer.reorderAtoms(model, basePairs);
   }
 }
