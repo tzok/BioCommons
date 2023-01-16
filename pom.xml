@@ -226,7 +226,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.29.0</version>
+        <version>2.30.0</version>
         <configuration>
           <java>
             <importOrder></importOrder>
@@ -234,6 +234,7 @@
             <googleJavaFormat>
               <reflowLongStrings>true</reflowLongStrings>
             </googleJavaFormat>
+            <formatAnnotations></formatAnnotations>
           </java>
         </configuration>
         <executions>
