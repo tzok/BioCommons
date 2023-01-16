@@ -234,6 +234,7 @@
             <googleJavaFormat>
               <reflowLongStrings>true</reflowLongStrings>
             </googleJavaFormat>
+            <formatAnnotations></formatAnnotations>
           </java>
         </configuration>
         <executions>
