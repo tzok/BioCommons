@@ -4,7 +4,7 @@
 
   <groupId>pl.poznan.put</groupId>
   <artifactId>BioCommons</artifactId>
-  <version>3.1.5</version>
+  <version>3.1.6</version>
   <packaging>jar</packaging>
 
   <name>BioCommons</name>
@@ -54,13 +54,13 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.14.1</version>
+      <version>2.14.2</version>
     </dependency>
 
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.14.1</version>
+      <version>2.14.2</version>
     </dependency>
 
     <dependency>
@@ -162,7 +162,7 @@
     <dependency>
       <groupId>org.rcsb</groupId>
       <artifactId>ciftools-java</artifactId>
-      <version>4.0.5</version>
+      <version>5.0.0</version>
     </dependency>
 
     <dependency>
@@ -226,7 +226,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.29.0</version>
+        <version>2.31.0</version>
         <configuration>
           <java>
             <importOrder></importOrder>
@@ -234,6 +234,7 @@
             <googleJavaFormat>
               <reflowLongStrings>true</reflowLongStrings>
             </googleJavaFormat>
+            <formatAnnotations></formatAnnotations>
           </java>
         </configuration>
         <executions>
@@ -249,7 +250,7 @@
       <plugin>
         <groupId>com.github.ekryd.sortpom</groupId>
         <artifactId>sortpom-maven-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.2.1</version>
         <configuration>
           <lineSeparator>\n</lineSeparator>
           <encoding>${project.build.sourceEncoding}</encoding>
@@ -281,7 +282,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>3.5.0</version>
         <configuration>
           <usedDependencies>
             <dependency>org.apache.xmlgraphics:batik-codec</dependency>
