@@ -186,14 +186,7 @@ public interface ResidueCollection extends Serializable {
    * @return A representation of this residue collection in PDB format.
    */
   default String toPdb() {
-    final StringBuilder builder = new StringBuilder();
-
-    for (final PdbResidue residue : residues()) {
-      builder.append(residue.toPdb());
-      builder.append('\n');
-    }
-
-    return builder.toString();
+    return new PdbBuilder().add(this, "").build();
   }
 
   /**
@@ -212,100 +205,127 @@ public interface ResidueCollection extends Serializable {
    * @return A representation of this residue collection in mmCIF format.
    */
   default String toCif(final String name) throws IOException {
-    final var fileBuilder = new MmCifFileBuilder();
-    final var blockBuilder = fileBuilder.enterBlock(name);
-    final var atomSiteBuilder = blockBuilder.enterAtomSite();
+    return new CifBuilder().add(this, name).build();
+  }
 
-    final var groupPDB = atomSiteBuilder.enterGroupPDB();
-    final var id = atomSiteBuilder.enterId();
-    final var typeSymbol = atomSiteBuilder.enterTypeSymbol();
-    final var labelAtomId = atomSiteBuilder.enterLabelAtomId();
-    final var labelAltId = atomSiteBuilder.enterLabelAltId();
-    final var labelCompId = atomSiteBuilder.enterLabelCompId();
-    final var labelAsymId = atomSiteBuilder.enterLabelAsymId();
-    final var labelEntityId = atomSiteBuilder.enterLabelEntityId();
-    final var labelSeqId = atomSiteBuilder.enterLabelSeqId();
-    final var pdbxPDBInsCode = atomSiteBuilder.enterPdbxPDBInsCode();
-    final var cartnX = atomSiteBuilder.enterCartnX();
-    final var cartnY = atomSiteBuilder.enterCartnY();
-    final var cartnZ = atomSiteBuilder.enterCartnZ();
-    final var occupancy = atomSiteBuilder.enterOccupancy();
-    final var bIsoOrEquiv = atomSiteBuilder.enterBIsoOrEquiv();
-    final var pdbxFormalCharge = atomSiteBuilder.enterPdbxFormalCharge();
-    final var authSeqId = atomSiteBuilder.enterAuthSeqId();
-    final var authCompId = atomSiteBuilder.enterAuthCompId();
-    final var authAsymId = atomSiteBuilder.enterAuthAsymId();
-    final var authAtomId = atomSiteBuilder.enterAuthAtomId();
-    final var pdbxPDBModelNum = atomSiteBuilder.enterPdbxPDBModelNum();
+  final class PdbBuilder {
+    final StringBuilder stringBuilder = new StringBuilder();
 
-    for (int i = 0; i < residues().size(); i++) {
-      final PdbResidue residue = residues().get(i);
-
-      for (final PdbAtomLine atom : residue.atoms()) {
-        groupPDB.add(residue.isModified() ? "HETATM" : "ATOM");
-        id.add(atom.serialNumber()).leaveColumn();
-        typeSymbol.add(atom.elementSymbol());
-        labelAtomId.add(atom.atomName());
-        labelAltId.markNextNotPresent();
-        labelCompId.add(atom.residueName());
-        labelAsymId.add(atom.chainIdentifier());
-        labelEntityId.markNextUnknown();
-        labelSeqId.add(i + 1);
-
-        if (atom.insertionCode().isPresent()) {
-          pdbxPDBInsCode.add(atom.insertionCode().get());
-        } else {
-          pdbxPDBInsCode.markNextNotPresent();
-        }
-
-        cartnX.add(atom.x());
-        cartnY.add(atom.y());
-        cartnZ.add(atom.z());
-        occupancy.add(atom.occupancy());
-        bIsoOrEquiv.add(atom.temperatureFactor());
-
-        if (StringUtils.isBlank(atom.charge())) {
-          pdbxFormalCharge.markNextUnknown();
-        } else {
-          try {
-            pdbxFormalCharge.add(Integer.parseInt(atom.charge()));
-          } catch (NumberFormatException e) {
-            pdbxFormalCharge.markNextUnknown();
-          }
-        }
-
-        authSeqId.add(atom.residueNumber());
-        authCompId.add(atom.residueName());
-        authAsymId.add(atom.chainIdentifier());
-        authAtomId.add(atom.atomName());
-        pdbxPDBModelNum.markNextUnknown();
+    public PdbBuilder add(final ResidueCollection residueCollection, final String name) {
+      if (StringUtils.isNotBlank(name)) {
+        stringBuilder.append(name).append('\n');
       }
+      for (final PdbResidue residue : residueCollection.residues()) {
+        stringBuilder.append(residue.toPdb()).append('\n');
+      }
+      return this;
     }
 
-    groupPDB.leaveColumn();
-    id.leaveColumn();
-    typeSymbol.leaveColumn();
-    labelAtomId.leaveColumn();
-    labelAltId.leaveColumn();
-    labelCompId.leaveColumn();
-    labelAsymId.leaveColumn();
-    labelEntityId.leaveColumn();
-    labelSeqId.leaveColumn();
-    pdbxPDBInsCode.leaveColumn();
-    cartnX.leaveColumn();
-    cartnY.leaveColumn();
-    cartnZ.leaveColumn();
-    occupancy.leaveColumn();
-    bIsoOrEquiv.leaveColumn();
-    pdbxFormalCharge.leaveColumn();
-    authSeqId.leaveColumn();
-    authCompId.leaveColumn();
-    authAsymId.leaveColumn();
-    authAtomId.leaveColumn();
-    pdbxPDBModelNum.leaveColumn();
+    public String build() {
+      return stringBuilder.toString();
+    }
+  }
 
-    final var mmCifFile = atomSiteBuilder.leaveCategory().leaveBlock().leaveFile();
-    final var bytes = CifIO.writeText(mmCifFile);
-    return new String(bytes, StandardCharsets.UTF_8);
+  final class CifBuilder {
+    final MmCifFileBuilder fileBuilder = new MmCifFileBuilder();
+
+    public CifBuilder add(final ResidueCollection residueCollection, final String name) {
+      final var atomSiteBuilder = fileBuilder.enterBlock(name).enterAtomSite();
+      final var groupPDB = atomSiteBuilder.enterGroupPDB();
+      final var id = atomSiteBuilder.enterId();
+      final var typeSymbol = atomSiteBuilder.enterTypeSymbol();
+      final var labelAtomId = atomSiteBuilder.enterLabelAtomId();
+      final var labelAltId = atomSiteBuilder.enterLabelAltId();
+      final var labelCompId = atomSiteBuilder.enterLabelCompId();
+      final var labelAsymId = atomSiteBuilder.enterLabelAsymId();
+      final var labelEntityId = atomSiteBuilder.enterLabelEntityId();
+      final var labelSeqId = atomSiteBuilder.enterLabelSeqId();
+      final var pdbxPDBInsCode = atomSiteBuilder.enterPdbxPDBInsCode();
+      final var cartnX = atomSiteBuilder.enterCartnX();
+      final var cartnY = atomSiteBuilder.enterCartnY();
+      final var cartnZ = atomSiteBuilder.enterCartnZ();
+      final var occupancy = atomSiteBuilder.enterOccupancy();
+      final var bIsoOrEquiv = atomSiteBuilder.enterBIsoOrEquiv();
+      final var pdbxFormalCharge = atomSiteBuilder.enterPdbxFormalCharge();
+      final var authSeqId = atomSiteBuilder.enterAuthSeqId();
+      final var authCompId = atomSiteBuilder.enterAuthCompId();
+      final var authAsymId = atomSiteBuilder.enterAuthAsymId();
+      final var authAtomId = atomSiteBuilder.enterAuthAtomId();
+      final var pdbxPDBModelNum = atomSiteBuilder.enterPdbxPDBModelNum();
+
+      for (int i = 0; i < residueCollection.residues().size(); i++) {
+        final PdbResidue residue = residueCollection.residues().get(i);
+
+        for (final PdbAtomLine atom : residue.atoms()) {
+          groupPDB.add(residue.isModified() ? "HETATM" : "ATOM");
+          id.add(atom.serialNumber()).leaveColumn();
+          typeSymbol.add(atom.elementSymbol());
+          labelAtomId.add(atom.atomName());
+          labelAltId.markNextNotPresent();
+          labelCompId.add(atom.residueName());
+          labelAsymId.add(atom.chainIdentifier());
+          labelEntityId.markNextUnknown();
+          labelSeqId.add(i + 1);
+
+          if (atom.insertionCode().isPresent()) {
+            pdbxPDBInsCode.add(atom.insertionCode().get());
+          } else {
+            pdbxPDBInsCode.markNextNotPresent();
+          }
+
+          cartnX.add(atom.x());
+          cartnY.add(atom.y());
+          cartnZ.add(atom.z());
+          occupancy.add(atom.occupancy());
+          bIsoOrEquiv.add(atom.temperatureFactor());
+
+          if (StringUtils.isBlank(atom.charge())) {
+            pdbxFormalCharge.markNextUnknown();
+          } else {
+            try {
+              pdbxFormalCharge.add(Integer.parseInt(atom.charge()));
+            } catch (NumberFormatException e) {
+              pdbxFormalCharge.markNextUnknown();
+            }
+          }
+
+          authSeqId.add(atom.residueNumber());
+          authCompId.add(atom.residueName());
+          authAsymId.add(atom.chainIdentifier());
+          authAtomId.add(atom.atomName());
+          pdbxPDBModelNum.markNextUnknown();
+        }
+      }
+
+      groupPDB.leaveColumn();
+      id.leaveColumn();
+      typeSymbol.leaveColumn();
+      labelAtomId.leaveColumn();
+      labelAltId.leaveColumn();
+      labelCompId.leaveColumn();
+      labelAsymId.leaveColumn();
+      labelEntityId.leaveColumn();
+      labelSeqId.leaveColumn();
+      pdbxPDBInsCode.leaveColumn();
+      cartnX.leaveColumn();
+      cartnY.leaveColumn();
+      cartnZ.leaveColumn();
+      occupancy.leaveColumn();
+      bIsoOrEquiv.leaveColumn();
+      pdbxFormalCharge.leaveColumn();
+      authSeqId.leaveColumn();
+      authCompId.leaveColumn();
+      authAsymId.leaveColumn();
+      authAtomId.leaveColumn();
+      pdbxPDBModelNum.leaveColumn();
+      atomSiteBuilder.leaveCategory().leaveBlock();
+      return this;
+    }
+
+    public String build() throws IOException {
+      final var mmCifFile = fileBuilder.leaveFile();
+      final var bytes = CifIO.writeText(mmCifFile);
+      return new String(bytes, StandardCharsets.UTF_8);
+    }
   }
 }
