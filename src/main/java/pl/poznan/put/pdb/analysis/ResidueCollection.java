@@ -3,6 +3,8 @@ package pl.poznan.put.pdb.analysis;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -323,9 +325,48 @@ public interface ResidueCollection extends Serializable {
     }
 
     public String build() throws IOException {
+      addHeader();
       final var mmCifFile = fileBuilder.leaveFile();
       final var bytes = CifIO.writeText(mmCifFile);
       return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    private void addHeader() {
+      final var blockBuilder = fileBuilder.enterBlock("");
+
+      final var auditBuilder = blockBuilder.enterAudit();
+      auditBuilder.enterRevisionId().add("1").build();
+      auditBuilder
+          .enterCreationDate()
+          .add(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+          .build();
+      auditBuilder.enterCreationMethod().add("BioCommons").build();
+      auditBuilder.leaveCategory();
+
+      final var citationBuilder = blockBuilder.enterCitation();
+      citationBuilder.enterId().add("1").build();
+      citationBuilder
+          .enterTitle()
+          .add("BioCommons: a robust Java library for RNA structural bioinformatics")
+          .build();
+      citationBuilder.enterJournalAbbrev().add("Bioinformatics").build();
+      citationBuilder.enterYear().add(2021).build();
+      citationBuilder.enterJournalVolume().add("37").build();
+      citationBuilder.enterJournalIssue().add("17").build();
+      citationBuilder.enterPageFirst().add("2766").build();
+      citationBuilder.enterPageLast().add("2767").build();
+      citationBuilder.enterPdbxDatabaseIdDOI().add("10.1093/bioinformatics/btab069").build();
+      citationBuilder.enterPdbxDatabaseIdPubMed().add(33532837).build();
+      citationBuilder.leaveCategory();
+
+      final var citationAuthorBuilder = blockBuilder.enterCitationAuthor();
+      citationAuthorBuilder.enterCitationId().add("1").build();
+      citationAuthorBuilder.enterOrdinal().add(1).build();
+      citationAuthorBuilder.enterName().add("Zok, T.").build();
+      citationAuthorBuilder.enterIdentifierORCID().add("0000-0003-4103-9238").build();
+      citationAuthorBuilder.leaveCategory();
+
+      blockBuilder.leaveBlock();
     }
   }
 }

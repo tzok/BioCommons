@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.utility.ResourcesHelper;
@@ -44,13 +45,13 @@ public class ResidueCollectionTest {
 
     final var strings =
         cifBuilder.build().lines().filter(s -> s.startsWith("data_")).collect(Collectors.toSet());
-    assertEquals(2, strings.size());
+    assertEquals(3, strings.size());
     assertTrue(strings.contains("data_D1"));
     assertTrue(strings.contains("data_S1"));
   }
 
   @Test
-  public void testPdbBuilder() throws IOException {
+  public void testPdbBuilder() {
     final var pdbBuilder = new ResidueCollection.PdbBuilder();
     pdbBuilder.add(stem, "D1");
     pdbBuilder.add(single, "S1");
@@ -73,6 +74,9 @@ public class ResidueCollectionTest {
 
   @Test
   public void testCifBuilderEmpty() throws IOException {
-    assertEquals("", new ResidueCollection.CifBuilder().build());
+    System.err.println(new ResidueCollection.CifBuilder().build());
+    assertTrue(
+        StringUtils.contains(
+            new ResidueCollection.CifBuilder().build(), "10.1093/bioinformatics/btab069"));
   }
 }
