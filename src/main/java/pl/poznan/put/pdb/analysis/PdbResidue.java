@@ -1,5 +1,6 @@
 package pl.poznan.put.pdb.analysis;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -49,8 +50,8 @@ public interface PdbResidue extends ChainNumberICode {
   /**
    * @return A text representation of this residue in mmCIF format.
    */
-  default String toCif() {
-    return atoms().stream().map(PdbAtomLine::toCif).collect(Collectors.joining("\n"));
+  default String toCif() throws IOException {
+    return ImmutableDefaultResidueCollection.builder().addResidues(this).build().toCif();
   }
 
   /**
