@@ -40,14 +40,13 @@ public class ResidueCollectionTest {
   @Test
   public void testCifBuilder() throws IOException {
     final var cifBuilder = new ResidueCollection.CifBuilder();
-    cifBuilder.add(stem, "D1");
-    cifBuilder.add(single, "S1");
+    cifBuilder.add(stem, "D1", "A.1 A.7 gCGGAUU ((((((( YYRRRYY A.66 A.72 AAUUCGC ))))))) RRYYYRY");
+    cifBuilder.add(single, "S1", "A.7 A.11 UUAgC (...( YYRYY");
 
-    final var strings =
-        cifBuilder.build().lines().filter(s -> s.startsWith("data_")).collect(Collectors.toSet());
-    assertEquals(3, strings.size());
-    assertTrue(strings.contains("data_D1"));
-    assertTrue(strings.contains("data_S1"));
+    final var strings = cifBuilder.build().lines().map(String::trim).collect(Collectors.toList());
+    assertTrue(
+        strings.contains("D1 'A.1 A.7 gCGGAUU ((((((( YYRRRYY A.66 A.72 AAUUCGC ))))))) RRYYYRY'"));
+    assertTrue(strings.contains("S1 'A.7 A.11 UUAgC (...( YYRYY'"));
   }
 
   @Test
@@ -74,9 +73,20 @@ public class ResidueCollectionTest {
 
   @Test
   public void testCifBuilderEmpty() throws IOException {
-    System.err.println(new ResidueCollection.CifBuilder().build());
     assertTrue(
         StringUtils.contains(
             new ResidueCollection.CifBuilder().build(), "10.1093/bioinformatics/btab069"));
+  }
+
+  @Test
+  public void testPdbBuilderTwice() {
+    final var builder = new ResidueCollection.PdbBuilder();
+    assertEquals(builder.build(), builder.build());
+  }
+
+  @Test
+  public void testCifBuilderTwice() throws IOException {
+    final var builder = new ResidueCollection.CifBuilder();
+    assertEquals(builder.build(), builder.build());
   }
 }

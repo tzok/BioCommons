@@ -5,17 +5,16 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
 import org.rcsb.cif.CifIO;
+import org.rcsb.cif.model.FloatColumnBuilder;
+import org.rcsb.cif.model.IntColumnBuilder;
+import org.rcsb.cif.model.StrColumnBuilder;
+import org.rcsb.cif.schema.mm.MmCifBlockBuilder;
+import org.rcsb.cif.schema.mm.MmCifCategoryBuilder;
 import org.rcsb.cif.schema.mm.MmCifFileBuilder;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.ChainNumberICode;
@@ -207,7 +206,19 @@ public interface ResidueCollection extends Serializable {
    * @return A representation of this residue collection in mmCIF format.
    */
   default String toCif(final String name) throws IOException {
-    return new CifBuilder().add(this, name).build();
+    return new CifBuilder().add(this, name, "").build();
+  }
+
+  /**
+   * Generates a list of ATOM lines in mmCIF format from this instance.
+   *
+   * @param name A name of the data block in the mmCIF file.
+   * @param description A description of the residue collection. For example, its dot-bracket
+   *     representation.
+   * @return A representation of this residue collection in mmCIF format.
+   */
+  default String toCif(final String name, final String description) throws IOException {
+    return new CifBuilder().add(this, name, description).build();
   }
 
   final class PdbBuilder {
@@ -229,31 +240,130 @@ public interface ResidueCollection extends Serializable {
   }
 
   final class CifBuilder {
-    final MmCifFileBuilder fileBuilder = new MmCifFileBuilder();
+    private MmCifBlockBuilder blockBuilder;
+    private MmCifCategoryBuilder.EntityBuilder entityBuilder;
+    private MmCifCategoryBuilder.AtomSiteBuilder atomSiteBuilder;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.EntityBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        entityId;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.EntityBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        details;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        groupPDB;
+    private IntColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        id;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        typeSymbol;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        labelAtomId;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        labelAltId;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        labelCompId;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        labelAsymId;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        labelEntityId;
+    private IntColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        labelSeqId;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        pdbxPDBInsCode;
+    private FloatColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        cartnX;
+    private FloatColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        cartnY;
+    private FloatColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        cartnZ;
+    private FloatColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        occupancy;
+    private FloatColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        bIsoOrEquiv;
+    private IntColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        pdbxFormalCharge;
+    private IntColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        authSeqId;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        authCompId;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        authAsymId;
+    private StrColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        authAtomId;
+    private IntColumnBuilder<
+            MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
+        pdbxPDBModelNum;
+    private String result;
 
-    public CifBuilder add(final ResidueCollection residueCollection, final String name) {
-      final var atomSiteBuilder = fileBuilder.enterBlock(name).enterAtomSite();
-      final var groupPDB = atomSiteBuilder.enterGroupPDB();
-      final var id = atomSiteBuilder.enterId();
-      final var typeSymbol = atomSiteBuilder.enterTypeSymbol();
-      final var labelAtomId = atomSiteBuilder.enterLabelAtomId();
-      final var labelAltId = atomSiteBuilder.enterLabelAltId();
-      final var labelCompId = atomSiteBuilder.enterLabelCompId();
-      final var labelAsymId = atomSiteBuilder.enterLabelAsymId();
-      final var labelEntityId = atomSiteBuilder.enterLabelEntityId();
-      final var labelSeqId = atomSiteBuilder.enterLabelSeqId();
-      final var pdbxPDBInsCode = atomSiteBuilder.enterPdbxPDBInsCode();
-      final var cartnX = atomSiteBuilder.enterCartnX();
-      final var cartnY = atomSiteBuilder.enterCartnY();
-      final var cartnZ = atomSiteBuilder.enterCartnZ();
-      final var occupancy = atomSiteBuilder.enterOccupancy();
-      final var bIsoOrEquiv = atomSiteBuilder.enterBIsoOrEquiv();
-      final var pdbxFormalCharge = atomSiteBuilder.enterPdbxFormalCharge();
-      final var authSeqId = atomSiteBuilder.enterAuthSeqId();
-      final var authCompId = atomSiteBuilder.enterAuthCompId();
-      final var authAsymId = atomSiteBuilder.enterAuthAsymId();
-      final var authAtomId = atomSiteBuilder.enterAuthAtomId();
-      final var pdbxPDBModelNum = atomSiteBuilder.enterPdbxPDBModelNum();
+    public CifBuilder() {
+      reset();
+    }
+
+    public CifBuilder reset() {
+      blockBuilder = new MmCifFileBuilder().enterBlock("");
+      setupEntity();
+      setupAtomSite();
+      setupAudit();
+      setupCitation();
+      setupCitationAuthor();
+      result = null;
+      return this;
+    }
+
+    private void setupAtomSite() {
+      atomSiteBuilder = blockBuilder.enterAtomSite();
+      groupPDB = atomSiteBuilder.enterGroupPDB();
+      id = atomSiteBuilder.enterId();
+      typeSymbol = atomSiteBuilder.enterTypeSymbol();
+      labelAtomId = atomSiteBuilder.enterLabelAtomId();
+      labelAltId = atomSiteBuilder.enterLabelAltId();
+      labelCompId = atomSiteBuilder.enterLabelCompId();
+      labelAsymId = atomSiteBuilder.enterLabelAsymId();
+      labelEntityId = atomSiteBuilder.enterLabelEntityId();
+      labelSeqId = atomSiteBuilder.enterLabelSeqId();
+      pdbxPDBInsCode = atomSiteBuilder.enterPdbxPDBInsCode();
+      cartnX = atomSiteBuilder.enterCartnX();
+      cartnY = atomSiteBuilder.enterCartnY();
+      cartnZ = atomSiteBuilder.enterCartnZ();
+      occupancy = atomSiteBuilder.enterOccupancy();
+      bIsoOrEquiv = atomSiteBuilder.enterBIsoOrEquiv();
+      pdbxFormalCharge = atomSiteBuilder.enterPdbxFormalCharge();
+      authSeqId = atomSiteBuilder.enterAuthSeqId();
+      authCompId = atomSiteBuilder.enterAuthCompId();
+      authAsymId = atomSiteBuilder.enterAuthAsymId();
+      authAtomId = atomSiteBuilder.enterAuthAtomId();
+      pdbxPDBModelNum = atomSiteBuilder.enterPdbxPDBModelNum();
+    }
+
+    private void setupEntity() {
+      entityBuilder = blockBuilder.enterEntity();
+      entityId = entityBuilder.enterId();
+      details = entityBuilder.enterDetails();
+    }
+
+    public CifBuilder add(
+        final ResidueCollection residueCollection, final String name, final String description) {
+      entityId.add(name);
+      details.add(description);
 
       for (int i = 0; i < residueCollection.residues().size(); i++) {
         final PdbResidue residue = residueCollection.residues().get(i);
@@ -266,7 +376,7 @@ public interface ResidueCollection extends Serializable {
           labelAltId.markNextNotPresent();
           labelCompId.add(atom.residueName());
           labelAsymId.add(atom.chainIdentifier());
-          labelEntityId.markNextUnknown();
+          labelEntityId.add(name);
           labelSeqId.add(i + 1);
 
           if (atom.insertionCode().isPresent()) {
@@ -299,50 +409,55 @@ public interface ResidueCollection extends Serializable {
         }
       }
 
-      groupPDB.leaveColumn();
-      id.leaveColumn();
-      typeSymbol.leaveColumn();
-      labelAtomId.leaveColumn();
-      labelAltId.leaveColumn();
-      labelCompId.leaveColumn();
-      labelAsymId.leaveColumn();
-      labelEntityId.leaveColumn();
-      labelSeqId.leaveColumn();
-      pdbxPDBInsCode.leaveColumn();
-      cartnX.leaveColumn();
-      cartnY.leaveColumn();
-      cartnZ.leaveColumn();
-      occupancy.leaveColumn();
-      bIsoOrEquiv.leaveColumn();
-      pdbxFormalCharge.leaveColumn();
-      authSeqId.leaveColumn();
-      authCompId.leaveColumn();
-      authAsymId.leaveColumn();
-      authAtomId.leaveColumn();
-      pdbxPDBModelNum.leaveColumn();
-      atomSiteBuilder.leaveCategory().leaveBlock();
       return this;
     }
 
     public String build() throws IOException {
-      addHeader();
-      final var mmCifFile = fileBuilder.leaveFile();
-      final var bytes = CifIO.writeText(mmCifFile);
-      return new String(bytes, StandardCharsets.UTF_8);
+      if (result == null) {
+        entityId.leaveColumn();
+        details.leaveColumn();
+        entityBuilder.leaveCategory();
+
+        groupPDB.leaveColumn();
+        id.leaveColumn();
+        typeSymbol.leaveColumn();
+        labelAtomId.leaveColumn();
+        labelAltId.leaveColumn();
+        labelCompId.leaveColumn();
+        labelAsymId.leaveColumn();
+        labelEntityId.leaveColumn();
+        labelSeqId.leaveColumn();
+        pdbxPDBInsCode.leaveColumn();
+        cartnX.leaveColumn();
+        cartnY.leaveColumn();
+        cartnZ.leaveColumn();
+        occupancy.leaveColumn();
+        bIsoOrEquiv.leaveColumn();
+        pdbxFormalCharge.leaveColumn();
+        authSeqId.leaveColumn();
+        authCompId.leaveColumn();
+        authAsymId.leaveColumn();
+        authAtomId.leaveColumn();
+        pdbxPDBModelNum.leaveColumn();
+        atomSiteBuilder.leaveCategory();
+
+        final var mmCifFile = blockBuilder.leaveBlock().leaveFile();
+        final var bytes = CifIO.writeText(mmCifFile);
+        result = new String(bytes, StandardCharsets.UTF_8);
+      }
+      return result;
     }
 
-    private void addHeader() {
-      final var blockBuilder = fileBuilder.enterBlock("");
+    private void setupCitationAuthor() {
+      final var citationAuthorBuilder = blockBuilder.enterCitationAuthor();
+      citationAuthorBuilder.enterCitationId().add("1").build();
+      citationAuthorBuilder.enterOrdinal().add(1).build();
+      citationAuthorBuilder.enterName().add("Zok, T.").build();
+      citationAuthorBuilder.enterIdentifierORCID().add("0000-0003-4103-9238").build();
+      citationAuthorBuilder.leaveCategory();
+    }
 
-      final var auditBuilder = blockBuilder.enterAudit();
-      auditBuilder.enterRevisionId().add("1").build();
-      auditBuilder
-          .enterCreationDate()
-          .add(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
-          .build();
-      auditBuilder.enterCreationMethod().add("BioCommons").build();
-      auditBuilder.leaveCategory();
-
+    private void setupCitation() {
       final var citationBuilder = blockBuilder.enterCitation();
       citationBuilder.enterId().add("1").build();
       citationBuilder
@@ -358,15 +473,17 @@ public interface ResidueCollection extends Serializable {
       citationBuilder.enterPdbxDatabaseIdDOI().add("10.1093/bioinformatics/btab069").build();
       citationBuilder.enterPdbxDatabaseIdPubMed().add(33532837).build();
       citationBuilder.leaveCategory();
+    }
 
-      final var citationAuthorBuilder = blockBuilder.enterCitationAuthor();
-      citationAuthorBuilder.enterCitationId().add("1").build();
-      citationAuthorBuilder.enterOrdinal().add(1).build();
-      citationAuthorBuilder.enterName().add("Zok, T.").build();
-      citationAuthorBuilder.enterIdentifierORCID().add("0000-0003-4103-9238").build();
-      citationAuthorBuilder.leaveCategory();
-
-      blockBuilder.leaveBlock();
+    private void setupAudit() {
+      final var auditBuilder = blockBuilder.enterAudit();
+      auditBuilder.enterRevisionId().add("1").build();
+      auditBuilder
+          .enterCreationDate()
+          .add(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+          .build();
+      auditBuilder.enterCreationMethod().add("BioCommons").build();
+      auditBuilder.leaveCategory();
     }
   }
 }
