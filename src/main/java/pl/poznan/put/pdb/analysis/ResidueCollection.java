@@ -187,7 +187,7 @@ public interface ResidueCollection extends Serializable {
    * @return A representation of this residue collection in PDB format.
    */
   default String toPdb() {
-    return new PdbBuilder().add(this, "").build();
+    return new PdbBuilder().add(this).build();
   }
 
   /**
@@ -196,34 +196,24 @@ public interface ResidueCollection extends Serializable {
    * @return A representation of this residue collection in mmCIF format.
    */
   default String toCif() throws IOException {
-    return toCif("");
+    return new CifBuilder().add(this).build();
   }
 
-  /**
-   * Generates a list of ATOM lines in mmCIF format from this instance.
-   *
-   * @param name A name of the data block in the mmCIF file.
-   * @return A representation of this residue collection in mmCIF format.
-   */
-  default String toCif(final String name) throws IOException {
-    return new CifBuilder().add(this, name, "").build();
-  }
-
-  /**
-   * Generates a list of ATOM lines in mmCIF format from this instance.
-   *
-   * @param name A name of the data block in the mmCIF file.
-   * @param description A description of the residue collection. For example, its dot-bracket
-   *     representation.
-   * @return A representation of this residue collection in mmCIF format.
-   */
-  default String toCif(final String name, final String description) throws IOException {
-    return new CifBuilder().add(this, name, description).build();
-  }
-
+  /** A builder that can merge many residue collections in one PDB file. */
   final class PdbBuilder {
     final StringBuilder stringBuilder = new StringBuilder();
 
+    public PdbBuilder add(final ResidueCollection residueCollection) {
+      return add(residueCollection, "");
+    }
+
+    /**
+     * Add a new residue collection to the builder
+     *
+     * @param residueCollection The residue collection to build.
+     * @param name Name of the collection, which will be prepended to ATOM lines if not empty.
+     * @return This builder instance.
+     */
     public PdbBuilder add(final ResidueCollection residueCollection, final String name) {
       if (StringUtils.isNotBlank(name)) {
         stringBuilder.append(name).append('\n');
@@ -234,11 +224,15 @@ public interface ResidueCollection extends Serializable {
       return this;
     }
 
+    /**
+     * @return The string content in PDB format.
+     */
     public String build() {
       return stringBuilder.toString();
     }
   }
 
+  /** A builder that can merge many residue collections in one mmCIF file. */
   final class CifBuilder {
     private MmCifBlockBuilder blockBuilder;
     private MmCifCategoryBuilder.EntityBuilder entityBuilder;
@@ -312,21 +306,14 @@ public interface ResidueCollection extends Serializable {
     private IntColumnBuilder<
             MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
         pdbxPDBModelNum;
-    private String result;
 
     public CifBuilder() {
-      reset();
-    }
-
-    public CifBuilder reset() {
       blockBuilder = new MmCifFileBuilder().enterBlock("");
       setupEntity();
       setupAtomSite();
       setupAudit();
       setupCitation();
       setupCitationAuthor();
-      result = null;
-      return this;
     }
 
     private void setupAtomSite() {
@@ -360,23 +347,51 @@ public interface ResidueCollection extends Serializable {
       details = entityBuilder.enterDetails();
     }
 
+    public CifBuilder add(final ResidueCollection residueCollection) {
+      return add(residueCollection, "", "");
+    }
+
+    public CifBuilder add(final ResidueCollection residueCollection, String name) {
+      return add(residueCollection, name, "");
+    }
+
+    /**
+     * Add a residue collection to be serialized into mmCIF format.
+     *
+     * @param residueCollection The residue collection to store.
+     * @param name The name of the residue collection.
+     * @param description An optional description (for example, the dot-bracket representation of
+     *     the entity).
+     * @return This instance of builder.
+     */
     public CifBuilder add(
         final ResidueCollection residueCollection, final String name, final String description) {
-      entityId.add(name);
-      details.add(description);
+      if (StringUtils.isNotBlank(name)) {
+        entityId.add(name);
+
+        if (StringUtils.isNotBlank(description)) {
+          details.add(description);
+        } else {
+          details.markNextUnknown();
+        }
+      }
 
       for (int i = 0; i < residueCollection.residues().size(); i++) {
         final PdbResidue residue = residueCollection.residues().get(i);
 
         for (final PdbAtomLine atom : residue.atoms()) {
           groupPDB.add(residue.isModified() ? "HETATM" : "ATOM");
-          id.add(atom.serialNumber()).leaveColumn();
+          id.add(atom.serialNumber());
           typeSymbol.add(atom.elementSymbol());
           labelAtomId.add(atom.atomName());
           labelAltId.markNextNotPresent();
           labelCompId.add(atom.residueName());
           labelAsymId.add(atom.chainIdentifier());
-          labelEntityId.add(name);
+          if (StringUtils.isNotBlank(name)) {
+            labelEntityId.add(name);
+          } else {
+            labelEntityId.markNextUnknown();
+          }
           labelSeqId.add(i + 1);
 
           if (atom.insertionCode().isPresent()) {
@@ -413,76 +428,78 @@ public interface ResidueCollection extends Serializable {
     }
 
     public String build() throws IOException {
-      if (result == null) {
-        entityId.leaveColumn();
-        details.leaveColumn();
-        entityBuilder.leaveCategory();
+      entityId.leaveColumn();
+      details.leaveColumn();
+      entityBuilder.leaveCategory();
 
-        groupPDB.leaveColumn();
-        id.leaveColumn();
-        typeSymbol.leaveColumn();
-        labelAtomId.leaveColumn();
-        labelAltId.leaveColumn();
-        labelCompId.leaveColumn();
-        labelAsymId.leaveColumn();
-        labelEntityId.leaveColumn();
-        labelSeqId.leaveColumn();
-        pdbxPDBInsCode.leaveColumn();
-        cartnX.leaveColumn();
-        cartnY.leaveColumn();
-        cartnZ.leaveColumn();
-        occupancy.leaveColumn();
-        bIsoOrEquiv.leaveColumn();
-        pdbxFormalCharge.leaveColumn();
-        authSeqId.leaveColumn();
-        authCompId.leaveColumn();
-        authAsymId.leaveColumn();
-        authAtomId.leaveColumn();
-        pdbxPDBModelNum.leaveColumn();
-        atomSiteBuilder.leaveCategory();
+      groupPDB.leaveColumn();
+      id.leaveColumn();
+      typeSymbol.leaveColumn();
+      labelAtomId.leaveColumn();
+      labelAltId.leaveColumn();
+      labelCompId.leaveColumn();
+      labelAsymId.leaveColumn();
+      labelEntityId.leaveColumn();
+      labelSeqId.leaveColumn();
+      pdbxPDBInsCode.leaveColumn();
+      cartnX.leaveColumn();
+      cartnY.leaveColumn();
+      cartnZ.leaveColumn();
+      occupancy.leaveColumn();
+      bIsoOrEquiv.leaveColumn();
+      pdbxFormalCharge.leaveColumn();
+      authSeqId.leaveColumn();
+      authCompId.leaveColumn();
+      authAsymId.leaveColumn();
+      authAtomId.leaveColumn();
+      pdbxPDBModelNum.leaveColumn();
+      atomSiteBuilder.leaveCategory();
 
-        final var mmCifFile = blockBuilder.leaveBlock().leaveFile();
-        final var bytes = CifIO.writeText(mmCifFile);
-        result = new String(bytes, StandardCharsets.UTF_8);
+      final var mmCifFile = blockBuilder.leaveBlock().leaveFile();
+      blockBuilder = new MmCifFileBuilder().enterBlock("");
+      for (final var category : mmCifFile.getFirstBlock().getCategories().values()) {
+        blockBuilder.addCategory(category);
       }
-      return result;
+
+      final var bytes = CifIO.writeText(mmCifFile);
+      return new String(bytes, StandardCharsets.UTF_8);
     }
 
     private void setupCitationAuthor() {
       final var citationAuthorBuilder = blockBuilder.enterCitationAuthor();
-      citationAuthorBuilder.enterCitationId().add("1").build();
-      citationAuthorBuilder.enterOrdinal().add(1).build();
-      citationAuthorBuilder.enterName().add("Zok, T.").build();
-      citationAuthorBuilder.enterIdentifierORCID().add("0000-0003-4103-9238").build();
+      citationAuthorBuilder.enterCitationId().add("1").leaveColumn();
+      citationAuthorBuilder.enterOrdinal().add(1).leaveColumn();
+      citationAuthorBuilder.enterName().add("Zok, T.").leaveColumn();
+      citationAuthorBuilder.enterIdentifierORCID().add("0000-0003-4103-9238").leaveColumn();
       citationAuthorBuilder.leaveCategory();
     }
 
     private void setupCitation() {
       final var citationBuilder = blockBuilder.enterCitation();
-      citationBuilder.enterId().add("1").build();
+      citationBuilder.enterId().add("1").leaveColumn();
       citationBuilder
           .enterTitle()
           .add("BioCommons: a robust Java library for RNA structural bioinformatics")
-          .build();
-      citationBuilder.enterJournalAbbrev().add("Bioinformatics").build();
-      citationBuilder.enterYear().add(2021).build();
-      citationBuilder.enterJournalVolume().add("37").build();
-      citationBuilder.enterJournalIssue().add("17").build();
-      citationBuilder.enterPageFirst().add("2766").build();
-      citationBuilder.enterPageLast().add("2767").build();
-      citationBuilder.enterPdbxDatabaseIdDOI().add("10.1093/bioinformatics/btab069").build();
-      citationBuilder.enterPdbxDatabaseIdPubMed().add(33532837).build();
+          .leaveColumn();
+      citationBuilder.enterJournalAbbrev().add("Bioinformatics").leaveColumn();
+      citationBuilder.enterYear().add(2021).leaveColumn();
+      citationBuilder.enterJournalVolume().add("37").leaveColumn();
+      citationBuilder.enterJournalIssue().add("17").leaveColumn();
+      citationBuilder.enterPageFirst().add("2766").leaveColumn();
+      citationBuilder.enterPageLast().add("2767").leaveColumn();
+      citationBuilder.enterPdbxDatabaseIdDOI().add("10.1093/bioinformatics/btab069").leaveColumn();
+      citationBuilder.enterPdbxDatabaseIdPubMed().add(33532837).leaveColumn();
       citationBuilder.leaveCategory();
     }
 
     private void setupAudit() {
       final var auditBuilder = blockBuilder.enterAudit();
-      auditBuilder.enterRevisionId().add("1").build();
+      auditBuilder.enterRevisionId().add("1").leaveColumn();
       auditBuilder
           .enterCreationDate()
           .add(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
-          .build();
-      auditBuilder.enterCreationMethod().add("BioCommons").build();
+          .leaveColumn();
+      auditBuilder.enterCreationMethod().add("BioCommons").leaveColumn();
       auditBuilder.leaveCategory();
     }
   }

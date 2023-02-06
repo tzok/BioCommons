@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
@@ -9,32 +11,13 @@ import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.poznan.put.atom.AtomName;
+import pl.poznan.put.pdb.analysis.ImmutableDefaultPdbResidue;
+import pl.poznan.put.pdb.analysis.ImmutableDefaultResidueCollection;
+import pl.poznan.put.pdb.analysis.ResidueCollection;
 
 /** Representation of ATOM and HETATM lines in both PDB and mmCIF files. */
 @Value.Immutable
 public abstract class PdbAtomLine implements ChainNumberICode {
-  /**
-   * A constant required by mmCIF format which also documents the order of fields that {@link
-   * PdbAtomLine#toCif()} follows.
-   */
-  public static final String CIF_LOOP =
-      "loop_\n"
-          + "_atom_site.group_PDB\n"
-          + "_atom_site.id\n"
-          + "_atom_site.auth_atom_id\n"
-          + "_atom_site.label_alt_id\n"
-          + "_atom_site.auth_comp_id\n"
-          + "_atom_site.auth_asym_id\n"
-          + "_atom_site.auth_seq_id\n"
-          + "_atom_site.pdbx_PDB_ins_code\n"
-          + "_atom_site.Cartn_x\n"
-          + "_atom_site.Cartn_y\n"
-          + "_atom_site.Cartn_z\n"
-          + "_atom_site.occupancy\n"
-          + "_atom_site.B_iso_or_equiv\n"
-          + "_atom_site.type_symbol\n"
-          + "_atom_site.pdbx_formal_charge";
-
   // @formatter:off
   /*
      COLUMNS        DATA  TYPE    FIELD        DEFINITION
@@ -255,39 +238,6 @@ public abstract class PdbAtomLine implements ChainNumberICode {
   }
 
   /**
-   * Creates an ATOM line in mmCIF format (according to format: {@link PdbAtomLine#CIF_LOOP}).
-   *
-   * @return A string representation of the ATOM line in mmCIF format.
-   */
-  public final String toCif() {
-    final StringBuilder builder = new StringBuilder();
-    builder.append("ATOM ");
-    builder.append(serialNumber()).append(' ');
-    if (atomName().contains("'")) {
-      builder.append('"').append(atomName()).append("\" ");
-    } else {
-      builder.append(atomName()).append(' ');
-    }
-    builder.append(alternateLocation().orElse("?")).append(' ');
-    builder.append(residueName()).append(' ');
-    builder.append(chainIdentifier()).append(' ');
-    builder.append(residueNumber()).append(' ');
-    builder.append(insertionCode().orElse("?")).append(' ');
-    builder.append(x()).append(' ');
-    builder.append(y()).append(' ');
-    builder.append(z()).append(' ');
-    builder.append(occupancy()).append(' ');
-    builder.append(temperatureFactor()).append(' ');
-    builder.append(elementSymbol()).append(' ');
-    if (StringUtils.isNotBlank(charge())) {
-      builder.append(charge()).append(' ');
-    } else {
-      builder.append('?');
-    }
-    return builder.toString();
-  }
-
-  /**
    * Creates an ATOM line in PDB format.
    *
    * @return A string representation of the ATOM line in PDB format.
@@ -325,6 +275,25 @@ public abstract class PdbAtomLine implements ChainNumberICode {
         temperatureFactor(),
         elementSymbol(),
         charge());
+  }
+
+  /**
+   * Creates an ATOM line in mmCIF format.
+   *
+   * @return A string representation of the ATOM line in mmCIF format.
+   */
+  public final String toCif() throws IOException {
+    return new ResidueCollection.CifBuilder()
+        .add(
+            ImmutableDefaultResidueCollection.builder()
+                .addResidues(
+                    ImmutableDefaultPdbResidue.of(
+                        PdbResidueIdentifier.from(this),
+                        residueName(),
+                        residueName(),
+                        Collections.singletonList(this)))
+                .build())
+        .build();
   }
 
   /**

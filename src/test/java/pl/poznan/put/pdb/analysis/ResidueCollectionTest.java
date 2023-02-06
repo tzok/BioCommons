@@ -54,13 +54,9 @@ public class ResidueCollectionTest {
     final var pdbBuilder = new ResidueCollection.PdbBuilder();
     pdbBuilder.add(stem, "D1");
     pdbBuilder.add(single, "S1");
-
+    final var pdbString = pdbBuilder.build();
     final var strings =
-        pdbBuilder
-            .build()
-            .lines()
-            .filter(s -> s.equals("D1") || s.equals("S1"))
-            .collect(Collectors.toSet());
+        pdbString.lines().filter(s -> s.equals("D1") || s.equals("S1")).collect(Collectors.toSet());
     assertEquals(2, strings.size());
     assertTrue(strings.contains("D1"));
     assertTrue(strings.contains("S1"));
@@ -81,12 +77,28 @@ public class ResidueCollectionTest {
   @Test
   public void testPdbBuilderTwice() {
     final var builder = new ResidueCollection.PdbBuilder();
-    assertEquals(builder.build(), builder.build());
+    builder.add(stem, "D1");
+    var first = builder.build();
+    var second = builder.build();
+    assertEquals(first, second);
+
+    builder.add(single, "S1");
+    first = builder.build();
+    second = builder.build();
+    assertEquals(first, second);
   }
 
   @Test
   public void testCifBuilderTwice() throws IOException {
     final var builder = new ResidueCollection.CifBuilder();
-    assertEquals(builder.build(), builder.build());
+    builder.add(stem, "D1");
+    var first = builder.build();
+    var second = builder.build();
+    assertEquals(first, second);
+
+    builder.add(single, "S1");
+    first = builder.build();
+    second = builder.build();
+    assertEquals(first, second);
   }
 }
