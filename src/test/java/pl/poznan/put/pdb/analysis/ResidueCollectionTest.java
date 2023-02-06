@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import pl.poznan.put.utility.ResourcesHelper;
@@ -39,30 +40,76 @@ public class ResidueCollectionTest {
   @Test
   public void testCifBuilder() throws IOException {
     final var cifBuilder = new ResidueCollection.CifBuilder();
-    cifBuilder.add(stem, "D1");
-    cifBuilder.add(single, "S1");
+    cifBuilder.add(stem, "D1", "A.1 A.7 gCGGAUU ((((((( YYRRRYY A.66 A.72 AAUUCGC ))))))) RRYYYRY");
+    cifBuilder.add(single, "S1", "A.7 A.11 UUAgC (...( YYRYY");
 
-    final var strings =
-        cifBuilder.build().lines().filter(s -> s.startsWith("data_")).collect(Collectors.toSet());
-    assertEquals(2, strings.size());
-    assertTrue(strings.contains("data_D1"));
-    assertTrue(strings.contains("data_S1"));
+    final var strings = cifBuilder.build().lines().map(String::trim).collect(Collectors.toList());
+    assertTrue(
+        strings.contains("D1 'A.1 A.7 gCGGAUU ((((((( YYRRRYY A.66 A.72 AAUUCGC ))))))) RRYYYRY'"));
+    assertTrue(strings.contains("S1 'A.7 A.11 UUAgC (...( YYRYY'"));
   }
 
   @Test
-  public void testPdbBuilder() throws IOException {
+  public void testPdbBuilder() {
     final var pdbBuilder = new ResidueCollection.PdbBuilder();
     pdbBuilder.add(stem, "D1");
     pdbBuilder.add(single, "S1");
-
+    final var pdbString = pdbBuilder.build();
     final var strings =
-        pdbBuilder
-            .build()
-            .lines()
-            .filter(s -> s.equals("D1") || s.equals("S1"))
-            .collect(Collectors.toSet());
+        pdbString.lines().filter(s -> s.equals("D1") || s.equals("S1")).collect(Collectors.toSet());
     assertEquals(2, strings.size());
     assertTrue(strings.contains("D1"));
     assertTrue(strings.contains("S1"));
+  }
+
+  @Test
+  public void testPdbBuilderEmpty() {
+    assertEquals("", new ResidueCollection.PdbBuilder().build());
+  }
+
+  @Test
+  public void testCifBuilderEmpty() throws IOException {
+    assertTrue(
+        StringUtils.contains(
+            new ResidueCollection.CifBuilder().build(), "10.1093/bioinformatics/btab069"));
+  }
+
+  @Test
+  public void testPdbBuilderTwice() {
+    final var builder = new ResidueCollection.PdbBuilder();
+    builder.add(stem, "D1");
+    var first = builder.build();
+    var second = builder.build();
+    assertEquals(first, second);
+
+    builder.add(single, "S1");
+    first = builder.build();
+    second = builder.build();
+    assertEquals(first, second);
+  }
+
+  @Test
+  public void testCifBuilderTwice() throws IOException {
+    final var builder = new ResidueCollection.CifBuilder();
+    builder.add(stem, "D1");
+    var first = builder.build();
+    var second = builder.build();
+    assertEquals(first, second);
+
+    builder.add(single, "S1");
+    first = builder.build();
+    second = builder.build();
+    assertEquals(first, second);
+  }
+
+  @Test
+  public void testCifBuilderModel() throws IOException {
+    final var builder = new ResidueCollection.CifBuilder();
+    builder.add(stem, "D1");
+    builder.add(single, "S1");
+
+    final var models = new CifParser().parse(builder.build());
+    assertEquals(1, models.size());
+    assertEquals(1, models.get(0).modelNumber());
   }
 }
