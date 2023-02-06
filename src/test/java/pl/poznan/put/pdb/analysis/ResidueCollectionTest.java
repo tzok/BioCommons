@@ -65,4 +65,14 @@ public class ResidueCollectionTest {
     assertTrue(strings.contains("D1"));
     assertTrue(strings.contains("S1"));
   }
+
+  @Test
+  public void testPdbBuilderEmpty() {
+    assertEquals("", new ResidueCollection.PdbBuilder().build());
+  }
+
+  @Test
+  public void testCifBuilderEmpty() throws IOException {
+    assertEquals("", new ResidueCollection.CifBuilder().build());
+  }
 }
