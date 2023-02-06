@@ -101,4 +101,15 @@ public class ResidueCollectionTest {
     second = builder.build();
     assertEquals(first, second);
   }
+
+  @Test
+  public void testCifBuilderModel() throws IOException {
+    final var builder = new ResidueCollection.CifBuilder();
+    builder.add(stem, "D1");
+    builder.add(single, "S1");
+
+    final var models = new CifParser().parse(builder.build());
+    assertEquals(1, models.size());
+    assertEquals(1, models.get(0).modelNumber());
+  }
 }

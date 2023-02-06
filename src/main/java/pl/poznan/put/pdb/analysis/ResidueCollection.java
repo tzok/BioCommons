@@ -348,11 +348,16 @@ public interface ResidueCollection extends Serializable {
     }
 
     public CifBuilder add(final ResidueCollection residueCollection) {
-      return add(residueCollection, "", "");
+      return add(residueCollection, "", "", 1);
     }
 
-    public CifBuilder add(final ResidueCollection residueCollection, String name) {
-      return add(residueCollection, name, "");
+    public CifBuilder add(final ResidueCollection residueCollection, final String name) {
+      return add(residueCollection, name, "", 1);
+    }
+
+    public CifBuilder add(
+        final ResidueCollection residueCollection, final String name, final String description) {
+      return add(residueCollection, name, description, 1);
     }
 
     /**
@@ -365,7 +370,10 @@ public interface ResidueCollection extends Serializable {
      * @return This instance of builder.
      */
     public CifBuilder add(
-        final ResidueCollection residueCollection, final String name, final String description) {
+        final ResidueCollection residueCollection,
+        final String name,
+        final String description,
+        final int modelNumber) {
       if (StringUtils.isNotBlank(name)) {
         entityId.add(name);
 
@@ -420,7 +428,7 @@ public interface ResidueCollection extends Serializable {
           authCompId.add(atom.residueName());
           authAsymId.add(atom.chainIdentifier());
           authAtomId.add(atom.atomName());
-          pdbxPDBModelNum.markNextUnknown();
+          pdbxPDBModelNum.add(modelNumber);
         }
       }
 
