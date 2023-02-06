@@ -201,14 +201,21 @@ public interface ResidueCollection extends Serializable {
 
   /** A builder that can merge many residue collections in one PDB file. */
   final class PdbBuilder {
-    final StringBuilder stringBuilder = new StringBuilder();
+    private final StringBuilder stringBuilder = new StringBuilder();
 
+    /**
+     * Add a new residue collection to the builder.
+     *
+     * @param residueCollection The residue collection to build.
+     * @return This builder instance.
+     */
     public PdbBuilder add(final ResidueCollection residueCollection) {
       return add(residueCollection, "");
     }
 
     /**
-     * Add a new residue collection to the builder
+     * Add a new named residue collection to the builder. A line with name of the collection is
+     * prepended to the ATOM lines.
      *
      * @param residueCollection The residue collection to build.
      * @param name Name of the collection, which will be prepended to ATOM lines if not empty.
@@ -307,6 +314,10 @@ public interface ResidueCollection extends Serializable {
             MmCifCategoryBuilder.AtomSiteBuilder, MmCifBlockBuilder, MmCifFileBuilder>
         pdbxPDBModelNum;
 
+    /**
+     * Creates an instance of this build and initializes it with an audit, citation and
+     * citation_author headers.
+     */
     public CifBuilder() {
       blockBuilder = new MmCifFileBuilder().enterBlock("");
       setupEntity();
@@ -347,14 +358,38 @@ public interface ResidueCollection extends Serializable {
       details = entityBuilder.enterDetails();
     }
 
+    /**
+     * Add a residue collection to be serialized into mmCIF format. Model number defaults to 1 and
+     * entity block is omitted entirely.
+     *
+     * @param residueCollection The residue collection to store.
+     * @return This instance of builder.
+     */
     public CifBuilder add(final ResidueCollection residueCollection) {
       return add(residueCollection, "", "", 1);
     }
 
+    /**
+     * Add a residue collection to be serialized into mmCIF format. Model number defaults to 1 and
+     * description is empty.
+     *
+     * @param residueCollection The residue collection to store.
+     * @param name The name of the residue collection.
+     * @return This instance of builder.
+     */
     public CifBuilder add(final ResidueCollection residueCollection, final String name) {
       return add(residueCollection, name, "", 1);
     }
 
+    /**
+     * Add a residue collection to be serialized into mmCIF format. Model number defaults to 1.
+     *
+     * @param residueCollection The residue collection to store.
+     * @param name The name of the residue collection.
+     * @param description An optional description (for example, the dot-bracket representation of
+     *     the entity).
+     * @return This instance of builder.
+     */
     public CifBuilder add(
         final ResidueCollection residueCollection, final String name, final String description) {
       return add(residueCollection, name, description, 1);
@@ -367,6 +402,7 @@ public interface ResidueCollection extends Serializable {
      * @param name The name of the residue collection.
      * @param description An optional description (for example, the dot-bracket representation of
      *     the entity).
+     * @param modelNumber The model number to store together with the coordinates.
      * @return This instance of builder.
      */
     public CifBuilder add(
@@ -435,6 +471,10 @@ public interface ResidueCollection extends Serializable {
       return this;
     }
 
+    /**
+     * @return The string content in PDBx/mmCIF format.
+     * @throws IOException When serializing the mmCIF to string fails.
+     */
     public String build() throws IOException {
       entityId.leaveColumn();
       details.leaveColumn();
