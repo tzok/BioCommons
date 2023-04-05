@@ -200,7 +200,7 @@ public interface ResidueCollection extends Serializable {
   }
 
   /** A builder that can merge many residue collections in one PDB file. */
-  final class PdbBuilder {
+  class PdbBuilder {
     private final StringBuilder stringBuilder = new StringBuilder();
 
     /**
@@ -240,7 +240,7 @@ public interface ResidueCollection extends Serializable {
   }
 
   /** A builder that can merge many residue collections in one mmCIF file. */
-  final class CifBuilder {
+  class CifBuilder {
     private MmCifBlockBuilder blockBuilder;
     private MmCifCategoryBuilder.EntityBuilder entityBuilder;
     private MmCifCategoryBuilder.AtomSiteBuilder atomSiteBuilder;
