@@ -3,6 +3,7 @@ package pl.poznan.put.pdb.analysis;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -93,5 +94,25 @@ public class CifParserTest {
     final Set<PdbResidueIdentifier> unique =
         model.residues().stream().map(PdbResidueIdentifier::from).collect(Collectors.toSet());
     assertThat(model.residues().size(), is(unique.size()));
+  }
+
+  @Test
+  public final void test430D() throws IOException {
+    final String cif430D = ResourcesHelper.loadResource("430D.cif");
+    final List<CifModel> models = new CifParser().parse(cif430D);
+    assertThat(models.size(), is(1));
+
+    final CifModel model = models.get(0);
+    final PdbResidue residue =
+        model.findResidue(ImmutablePdbResidueIdentifier.of("A", 27, Optional.empty()));
+    assertThat(residue.isModified(), is(true));
+
+    final List<CifModel> reparsed = new CifParser().parse(model.toCif());
+    assertThat(reparsed.size(), is(1));
+
+    final CifModel reparsedModel = reparsed.get(0);
+    final PdbResidue reparsedResidue =
+        reparsedModel.findResidue(ImmutablePdbResidueIdentifier.of("A", 27, Optional.empty()));
+    assertThat(reparsedResidue.isModified(), is(true));
   }
 }
