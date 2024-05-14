@@ -94,4 +94,14 @@ public class CifParserTest {
         model.residues().stream().map(PdbResidueIdentifier::from).collect(Collectors.toSet());
     assertThat(model.residues().size(), is(unique.size()));
   }
+
+  @Test
+  public final void testAlphaFold() throws Exception {
+    final String cifAlphaFold = ResourcesHelper.loadResource("alpha-fold.cif");
+    final List<CifModel> models = new CifParser().parse(cifAlphaFold);
+    assertThat(models.size(), is(1));
+
+    final CifModel model = models.get(0);
+    assertThat(model.residues().size(), is(1));
+  }
 }

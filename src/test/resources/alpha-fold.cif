@@ -1,0 +1,47 @@
+# By using this file you agree to the legally binding terms of use found at alphafoldserver.com/output-terms
+data_fold
+#
+loop_
+_atom_site.group_PDB
+_atom_site.id
+_atom_site.type_symbol
+_atom_site.label_atom_id
+_atom_site.label_alt_id
+_atom_site.label_comp_id
+_atom_site.label_asym_id
+_atom_site.label_entity_id
+_atom_site.label_seq_id
+_atom_site.pdbx_PDB_ins_code
+_atom_site.Cartn_x
+_atom_site.Cartn_y
+_atom_site.Cartn_z
+_atom_site.occupancy
+_atom_site.B_iso_or_equiv
+_atom_site.auth_seq_id
+_atom_site.auth_asym_id
+_atom_site.pdbx_PDB_model_num
+ATOM   2   O  OP3   . G  B 2 1  ? -14.327 -4.749  -3.324  1.00 71.87 1  B 1
+ATOM   3   P  P     . G  B 2 1  ? -14.189 -4.349  -2.111  1.00 74.50 1  B 1 
+ATOM   4   O  OP1   . G  B 2 1  ? -13.316 -3.191  -2.269  1.00 70.81 1  B 1 
+ATOM   5   O  OP2   . G  B 2 1  ? -15.478 -4.203  -1.545  1.00 72.25 1  B 1 
+ATOM   6   O  "O5'" . G  B 2 1  ? -13.426 -5.503  -1.293  1.00 73.71 1  B 1 
+ATOM   7   C  "C5'" . G  B 2 1  ? -13.964 -6.228  -0.191  1.00 76.78 1  B 1 
+ATOM   8   C  "C4'" . G  B 2 1  ? -13.003 -7.289  0.282   1.00 79.44 1  B 1 
+ATOM   9   O  "O4'" . G  B 2 1  ? -12.767 -8.236  -0.783  1.00 79.87 1  B 1 
+ATOM   10  C  "C3'" . G  B 2 1  ? -11.615 -6.794  0.651   1.00 81.29 1  B 1 
+ATOM   11  O  "O3'" . G  B 2 1  ? -11.566 -6.261  1.969   1.00 79.80 1  B 1 
+ATOM   12  C  "C2'" . G  B 2 1  ? -10.768 -8.041  0.477   1.00 80.41 1  B 1 
+ATOM   13  O  "O2'" . G  B 2 1  ? -10.909 -8.929  1.573   1.00 79.05 1  B 1 
+ATOM   14  C  "C1'" . G  B 2 1  ? -11.411 -8.655  -0.757  1.00 80.73 1  B 1 
+ATOM   15  N  N9    . G  B 2 1  ? -10.773 -8.219  -2.007  1.00 81.43 1  B 1 
+ATOM   16  C  C8    . G  B 2 1  ? -11.274 -7.345  -2.930  1.00 80.31 1  B 1 
+ATOM   17  N  N7    . G  B 2 1  ? -10.471 -7.158  -3.933  1.00 80.48 1  B 1 
+ATOM   18  C  C5    . G  B 2 1  ? -9.377  -7.961  -3.657  1.00 81.09 1  B 1 
+ATOM   19  C  C6    . G  B 2 1  ? -8.172  -8.178  -4.399  1.00 80.49 1  B 1 
+ATOM   20  O  O6    . G  B 2 1  ? -7.835  -7.681  -5.467  1.00 79.45 1  B 1 
+ATOM   21  N  N1    . G  B 2 1  ? -7.332  -9.069  -3.739  1.00 80.16 1  B 1 
+ATOM   22  C  C2    . G  B 2 1  ? -7.600  -9.673  -2.549  1.00 80.33 1  B 1 
+ATOM   23  N  N2    . G  B 2 1  ? -6.661  -10.504 -2.072  1.00 79.64 1  B 1 
+ATOM   24  N  N3    . G  B 2 1  ? -8.711  -9.487  -1.854  1.00 81.16 1  B 1 
+ATOM   25  C  C4    . G  B 2 1  ? -9.552  -8.620  -2.464  1.00 81.70 1  B 1 
+#
