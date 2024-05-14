@@ -283,10 +283,15 @@ public final class CifParser {
 
     final IntColumn id = atomSite.getId();
     final StrColumn authAtomId = atomSite.getAuthAtomId();
+    final StrColumn labelAtomId = atomSite.getLabelAtomId();
     final StrColumn pdbxAuthAltId = atomSite.getPdbxAuthAltId();
+    final StrColumn labelAltId = atomSite.getLabelAltId();
     final StrColumn authCompId = atomSite.getAuthCompId();
+    final StrColumn labelCompId = atomSite.getLabelCompId();
     final StrColumn authAsymId = atomSite.getAuthAsymId();
+    final StrColumn labelAsymId = atomSite.getLabelAsymId();
     final IntColumn authSeqId = atomSite.getAuthSeqId();
+    final IntColumn labelSeqId = atomSite.getLabelSeqId();
     final StrColumn pdbxPDBInsCode = atomSite.getPdbxPDBInsCode();
     final FloatColumn cartnX = atomSite.getCartnX();
     final FloatColumn cartnY = atomSite.getCartnY();
@@ -299,19 +304,19 @@ public final class CifParser {
 
     for (int i = 0; i < atomSite.getRowCount(); i++) {
       final int serialNumber = id.get(i);
-      final String atomName = authAtomId.get(i);
-      final String alternateLocation = pdbxAuthAltId.isDefined() ? pdbxAuthAltId.get(i) : "?";
-      final String residueName = authCompId.get(i);
-      final String chainIdentifier = authAsymId.get(i);
-      final int residueNumber = authSeqId.get(i);
-      final String insertionCode = pdbxPDBInsCode.get(i);
+      final String atomName = authAtomId.isDefined() ? authAtomId.get(i) : labelAtomId.get(i);
+      final String alternateLocation = pdbxAuthAltId.isDefined() ? pdbxAuthAltId.get(i) : labelAltId.get(i);
+      final String residueName = authCompId.isDefined() ? authCompId.get(i) : labelCompId.get(i);
+      final String chainIdentifier = authAsymId.isDefined() ? authAsymId.get(i) : labelAsymId.get(i);
+      final int residueNumber = authSeqId.isDefined() ? authSeqId.get(i) : labelSeqId.get(i);
+      final String insertionCode = pdbxPDBInsCode.isDefined() ? pdbxPDBInsCode.get(i) : "?";
       final double x = cartnX.get(i);
       final double y = cartnY.get(i);
       final double z = cartnZ.get(i);
-      final double occupancy = occupancyColumn.get(i);
-      final double temperatureFactor = bIsoOrEquiv.get(i);
+      final double occupancy = occupancyColumn.isDefined() ? occupancyColumn.get(i) : 1.0;
+      final double temperatureFactor = bIsoOrEquiv.isDefined() ? bIsoOrEquiv.get(i) : 0.0;
       final String elementSymbol = typeSymbol.get(i);
-      final String charge = Integer.toString(pdbxFormalCharge.get(i));
+      final String charge = pdbxFormalCharge.isDefined() ? Integer.toString(pdbxFormalCharge.get(i)) : "";
       final int model = pdbxPDBModelNum.isDefined() ? pdbxPDBModelNum.get(i) : 1;
 
       final ImmutablePdbAtomLine atomLine =
