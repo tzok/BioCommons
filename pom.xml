@@ -108,7 +108,7 @@
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-awt-util</artifactId>
-      <version>1.17</version>
+      <version>1.18</version>
     </dependency>
 
     <dependency>
