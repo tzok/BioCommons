@@ -1,5 +1,7 @@
 package pl.poznan.put.circular;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -8,8 +10,6 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;

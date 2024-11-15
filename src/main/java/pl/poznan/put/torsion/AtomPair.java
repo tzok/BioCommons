@@ -1,8 +1,8 @@
 package pl.poznan.put.torsion;
 
-import java.util.Locale;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.util.Locale;
 import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.AtomType;

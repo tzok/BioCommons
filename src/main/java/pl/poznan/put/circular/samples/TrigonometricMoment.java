@@ -1,9 +1,9 @@
 package pl.poznan.put.circular.samples;
 
-import java.util.Collection;
-import org.apache.commons.math3.util.FastMath;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.util.Collection;
+import org.apache.commons.math3.util.FastMath;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;

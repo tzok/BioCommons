@@ -108,6 +108,7 @@ public class CtTest {
           + "2 C 1 3 0 12313\n"
           + "3 U 2 4 1 12314\n"
           + "4 C 3 0 0 12315\n";
+
   // @formatter:on
 
   @Test

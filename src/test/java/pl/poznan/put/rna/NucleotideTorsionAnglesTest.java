@@ -31,6 +31,7 @@ public class NucleotideTorsionAnglesTest {
       new Vector3D(-0.6692346816, -0.8548933352, 2.0868608351);
   private static final double RADIANS = -2.2349490129;
   private static final double DEGREES = -128.0531458665;
+
   // @formatter:on
 
   private static boolean isBelowEpsilon(final double value) {

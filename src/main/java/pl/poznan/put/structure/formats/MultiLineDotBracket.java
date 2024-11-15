@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.formats;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -13,8 +15,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;

@@ -40,6 +40,7 @@ public class DefaultDotBracketTest {
           + "12 C 7\n"
           + "13 C 4";
   private static final String DOTBRACKET = ">strand_1\n" + "CCCCCCCCCCCCC\n" + "((.[[.{.)])}]";
+
   // @formatter:on
 
   @Test
