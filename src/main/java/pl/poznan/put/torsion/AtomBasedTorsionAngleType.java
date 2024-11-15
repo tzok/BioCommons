@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.circular.Angle;
@@ -17,6 +19,8 @@ import pl.poznan.put.types.Quadruple;
 
 /** A torsion angle which is defined upon four atomic coordinates. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableAtomBasedTorsionAngleType.class)
+@JsonDeserialize(as = ImmutableAtomBasedTorsionAngleType.class)
 public interface AtomBasedTorsionAngleType extends TorsionAngleType {
   @Override
   @Value.Parameter(order = 1)

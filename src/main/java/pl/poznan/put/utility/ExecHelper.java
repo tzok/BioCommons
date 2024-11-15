@@ -15,12 +15,16 @@ import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** An executor of external processes. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableExecHelper.class)
+@JsonDeserialize(as = ImmutableExecHelper.class)
 public abstract class ExecHelper {
   private static final Logger LOGGER = LoggerFactory.getLogger(ExecHelper.class);
 
@@ -129,6 +133,8 @@ public abstract class ExecHelper {
 
   /** A result of running external command. */
   @Value.Immutable
+  @JsonSerialize(as = ImmutableExecutionResult.class)
+  @JsonDeserialize(as = ImmutableExecutionResult.class)
   public interface ExecutionResult {
     /**
      * @return The exit code (0 means success).

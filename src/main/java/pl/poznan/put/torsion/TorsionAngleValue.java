@@ -1,5 +1,7 @@
 package pl.poznan.put.torsion;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.interfaces.DisplayableExportable;
@@ -7,6 +9,8 @@ import pl.poznan.put.utility.AngleFormat;
 
 /** A torsion angle with its value calculated. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableTorsionAngleValue.class)
+@JsonDeserialize(as = ImmutableTorsionAngleValue.class)
 public abstract class TorsionAngleValue implements DisplayableExportable {
   /**
    * @return The type of this torsion angle.

@@ -1,6 +1,8 @@
 package pl.poznan.put.torsion;
 
 import java.util.Locale;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.atom.AtomType;
@@ -11,6 +13,8 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 
 /** A pair of atoms. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableAtomPair.class)
+@JsonDeserialize(as = ImmutableAtomPair.class)
 public abstract class AtomPair implements Comparable<AtomPair> {
   /**
    * @return The first atom.

@@ -1,5 +1,7 @@
 package pl.poznan.put.torsion;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
@@ -9,6 +11,8 @@ import pl.poznan.put.utility.AngleFormat;
 
 /** A result of subtracting of two torsion angles. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableTorsionAngleDelta.class)
+@JsonDeserialize(as = ImmutableTorsionAngleDelta.class)
 public abstract class TorsionAngleDelta implements DisplayableExportable {
   /**
    * Creates an instance of torsion angle delta, where both input angles were invalid.

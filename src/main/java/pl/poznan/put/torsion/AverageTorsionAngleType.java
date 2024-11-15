@@ -7,6 +7,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.samples.AngleSample;
@@ -18,6 +20,8 @@ import pl.poznan.put.torsion.range.TorsionRange;
 
 /** An average of one or more basic angle types. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableAverageTorsionAngleType.class)
+@JsonDeserialize(as = ImmutableAverageTorsionAngleType.class)
 public abstract class AverageTorsionAngleType implements TorsionAngleType, MasterTorsionAngleType {
   /**
    * @return The default instance for proteins based on {@link
