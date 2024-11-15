@@ -7,6 +7,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,8 @@ import pl.poznan.put.structure.pseudoknots.Region;
 
 /** RNA secondary structure in BPSEQ format. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableBpSeq.class)
+@JsonDeserialize(as = ImmutableBpSeq.class)
 public abstract class BpSeq implements Serializable {
   private static Logger LOGGER = LoggerFactory.getLogger(BpSeq.class);
 
@@ -285,6 +289,8 @@ public abstract class BpSeq implements Serializable {
 
   /** An entry of a BPSEQ data. */
   @Value.Immutable
+  @JsonSerialize(as = ImmutableEntry.class)
+  @JsonDeserialize(as = ImmutableEntry.class)
   public abstract static class Entry implements Comparable<Entry>, Serializable {
     /**
      * Parses a string into a BPSEQ entry. Expected format: int char int

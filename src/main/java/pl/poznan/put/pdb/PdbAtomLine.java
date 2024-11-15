@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,8 @@ import pl.poznan.put.pdb.analysis.ResidueCollection;
 
 /** Representation of ATOM and HETATM lines in both PDB and mmCIF files. */
 @Value.Immutable
+@JsonSerialize(as = ImmutablePdbAtomLine.class)
+@JsonDeserialize(as = ImmutablePdbAtomLine.class)
 public abstract class PdbAtomLine implements ChainNumberICode {
   // @formatter:off
   /*

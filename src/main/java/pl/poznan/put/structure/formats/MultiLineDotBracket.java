@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.notation.LeontisWesthof;
 import pl.poznan.put.pdb.ImmutablePdbNamedResidueIdentifier;
@@ -26,6 +28,8 @@ import pl.poznan.put.structure.ImmutableBasePair;
 
 /** An extended secondary structure, which contains also non-canonical base pairs. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableMultiLineDotBracket.class)
+@JsonDeserialize(as = ImmutableMultiLineDotBracket.class)
 public abstract class MultiLineDotBracket {
   /**
    * Creates an instance by reading a set of lines in dot-bracket notation. Each line begins with a
