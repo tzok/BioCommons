@@ -8,6 +8,8 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
@@ -15,6 +17,8 @@ import pl.poznan.put.circular.exception.InvalidCircularOperationException;
 
 /** A sample of angular values and computed statistics. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableAngleSample.class)
+@JsonDeserialize(as = ImmutableAngleSample.class)
 public abstract class AngleSample {
   /**
    * @return The collection of values in the sample.

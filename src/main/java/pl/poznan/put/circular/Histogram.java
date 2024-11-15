@@ -8,10 +8,14 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 
 /** A collection of angular observations put into bins of specified width. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableHistogram.class)
+@JsonDeserialize(as = ImmutableHistogram.class)
 public abstract class Histogram {
   /**
    * @return A collection of angular data.
@@ -79,6 +83,8 @@ public abstract class Histogram {
   }
 
   @Value.Immutable
+  @JsonSerialize(as = ImmutableBin.class)
+  @JsonDeserialize(as = ImmutableBin.class)
   interface Bin {
     @Value.Parameter(order = 1)
     double radiansStart();

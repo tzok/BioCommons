@@ -2,12 +2,16 @@ package pl.poznan.put.circular.samples;
 
 import java.util.Collection;
 import org.apache.commons.math3.util.FastMath;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.Angle;
 import pl.poznan.put.circular.ImmutableAngle;
 
 /** A quantitative measure of a trigonometric sample shape. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableTrigonometricMoment.class)
+@JsonDeserialize(as = ImmutableTrigonometricMoment.class)
 public abstract class TrigonometricMoment {
   /**
    * Computes an uncentered moment i.e. from the data points not relative to any specific point.

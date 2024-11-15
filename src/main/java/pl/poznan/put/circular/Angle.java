@@ -8,12 +8,16 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.apache.commons.math3.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.circular.exception.InvalidCircularValueException;
 import pl.poznan.put.circular.exception.InvalidVectorFormatException;
 
 /** A measurement for which one can distinguish a direction (i.e. [0..360) degrees) */
 @Value.Immutable
+@JsonSerialize(as = ImmutableAngle.class)
+@JsonDeserialize(as = ImmutableAngle.class)
 public abstract class Angle implements Comparable<Angle> {
   private static final Pattern DOT = Pattern.compile("[.]");
   private static final int MINUTES_IN_DAY = 24 * 60;
