@@ -1,5 +1,7 @@
 package pl.poznan.put.structure;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,6 +9,8 @@ import org.immutables.value.Value;
 
 /** A single symbol in a dot-bracket structure. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableDotBracketSymbol.class)
+@JsonDeserialize(as = ImmutableDotBracketSymbol.class)
 public abstract class DotBracketSymbol implements Comparable<DotBracketSymbol>, Serializable {
   private static final List<Character> OPENING =
       "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars().mapToObj(c -> (char) c).collect(Collectors.toList());

@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.formats;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +22,8 @@ import pl.poznan.put.structure.DotBracketSymbol;
  * one-to-one correspondence with a 3D structure.
  */
 @Value.Immutable
+@JsonSerialize(as = ImmutableCombinedStrandFromPdb.class)
+@JsonDeserialize(as = ImmutableCombinedStrandFromPdb.class)
 public abstract class CombinedStrandFromPdb extends AbstractCombinedStrand
     implements DotBracketFromPdb {
   /**

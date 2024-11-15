@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.formats;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import org.immutables.value.Value;
 import pl.poznan.put.pdb.PdbResidueIdentifier;
@@ -7,6 +9,8 @@ import pl.poznan.put.structure.DotBracketSymbol;
 
 /** A strand which is defined as a fragment of a dot-bracket structure. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableStrandView.class)
+@JsonDeserialize(as = ImmutableStrandView.class)
 public abstract class StrandView implements Strand {
   @Override
   @Value.Parameter(order = 1)
