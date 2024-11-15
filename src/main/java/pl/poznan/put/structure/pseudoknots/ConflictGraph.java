@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.pseudoknots;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +25,8 @@ import pl.poznan.put.structure.pseudoknots.dp.ImmutableConflictClique;
  * another region.d
  */
 @Value.Immutable
+@JsonSerialize(as = ImmutableConflictGraph.class)
+@JsonDeserialize(as = ImmutableConflictGraph.class)
 public abstract class ConflictGraph {
   /**
    * Checks if given regions are conflicting. A conflict is when one region starts/ends in the

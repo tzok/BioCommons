@@ -1,5 +1,7 @@
 package pl.poznan.put.rna;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import java.util.stream.Stream;
 import org.apache.commons.math3.util.FastMath;
@@ -13,6 +15,8 @@ import pl.poznan.put.torsion.TorsionAngleValue;
 
 /** An angle describing the pseudophase pucker. */
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutablePseudophasePuckerType.class)
+@JsonDeserialize(as = ImmutablePseudophasePuckerType.class)
 public abstract class PseudophasePuckerType implements TorsionAngleType {
   @Override
   public final String shortDisplayName() {

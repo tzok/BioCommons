@@ -1,5 +1,7 @@
 package pl.poznan.put.protein;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -10,6 +12,8 @@ import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.torsion.TorsionAngleType;
 
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutableHistidine.class)
+@JsonDeserialize(as = ImmutableHistidine.class)
 abstract class Histidine implements Sidechain {
   @Override
   public final List<ResidueComponent> moleculeComponents() {

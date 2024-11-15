@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +15,8 @@ import pl.poznan.put.torsion.TorsionAngleValue;
 
 /** A collection of residues such that (i, i+1) are connected. */
 @Value.Immutable
+@JsonSerialize(as = ImmutablePdbCompactFragment.class)
+@JsonDeserialize(as = ImmutablePdbCompactFragment.class)
 public abstract class PdbCompactFragment implements SingleTypedResidueCollection {
   @Override
   @Value.Parameter(order = 1)

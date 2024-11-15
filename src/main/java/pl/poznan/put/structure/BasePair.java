@@ -1,5 +1,7 @@
 package pl.poznan.put.structure;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -12,6 +14,8 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 
 /** A pairing between two nucleotides' bases. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableBasePair.class)
+@JsonDeserialize(as = ImmutableBasePair.class)
 public abstract class BasePair implements Serializable, Comparable<BasePair> {
   private static final double GU_DISTANCE_O6_N3 = 2.83 + (0.13 * 3.0);
   private static final double GU_DISTANCE_N1_O2 = 2.79 + (0.13 * 3.0);

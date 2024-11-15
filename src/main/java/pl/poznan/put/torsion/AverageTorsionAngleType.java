@@ -1,5 +1,7 @@
 package pl.poznan.put.torsion;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,6 +20,8 @@ import pl.poznan.put.torsion.range.TorsionRange;
 
 /** An average of one or more basic angle types. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableAverageTorsionAngleType.class)
+@JsonDeserialize(as = ImmutableAverageTorsionAngleType.class)
 public abstract class AverageTorsionAngleType implements TorsionAngleType, MasterTorsionAngleType {
   /**
    * @return The default instance for proteins based on {@link

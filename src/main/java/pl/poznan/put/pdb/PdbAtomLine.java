@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Locale;
@@ -17,6 +19,8 @@ import pl.poznan.put.pdb.analysis.ResidueCollection;
 
 /** Representation of ATOM and HETATM lines in both PDB and mmCIF files. */
 @Value.Immutable
+@JsonSerialize(as = ImmutablePdbAtomLine.class)
+@JsonDeserialize(as = ImmutablePdbAtomLine.class)
 public abstract class PdbAtomLine implements ChainNumberICode {
   // @formatter:off
   /*

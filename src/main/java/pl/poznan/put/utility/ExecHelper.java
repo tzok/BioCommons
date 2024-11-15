@@ -1,5 +1,7 @@
 package pl.poznan.put.utility;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -21,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 /** An executor of external processes. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableExecHelper.class)
+@JsonDeserialize(as = ImmutableExecHelper.class)
 public abstract class ExecHelper {
   private static final Logger LOGGER = LoggerFactory.getLogger(ExecHelper.class);
 
@@ -129,6 +133,8 @@ public abstract class ExecHelper {
 
   /** A result of running external command. */
   @Value.Immutable
+  @JsonSerialize(as = ImmutableExecutionResult.class)
+  @JsonDeserialize(as = ImmutableExecutionResult.class)
   public interface ExecutionResult {
     /**
      * @return The exit code (0 means success).

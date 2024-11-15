@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.formats;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,6 +19,8 @@ import pl.poznan.put.structure.pseudoknots.elimination.ImmutableMinGain;
  * input to (1) until there are base pairs without level assigned.
  */
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutableDefaultConverter.class)
+@JsonDeserialize(as = ImmutableDefaultConverter.class)
 public abstract class DefaultConverter implements Converter {
   private static final char[] BRACKETS_OPENING = "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
   private static final char[] BRACKETS_CLOSING = ")]}>abcdefghijklmnopqrstuvwxyz".toCharArray();
@@ -106,6 +110,8 @@ public abstract class DefaultConverter implements Converter {
   }
 
   @Value.Immutable
+  @JsonSerialize(as = ImmutableState.class)
+  @JsonDeserialize(as = ImmutableState.class)
   abstract static class State implements Comparable<State> {
     @Value.Parameter(order = 1)
     public abstract Optional<State> parent();

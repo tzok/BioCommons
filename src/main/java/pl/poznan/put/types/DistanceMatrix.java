@@ -1,9 +1,13 @@
 package pl.poznan.put.types;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import org.immutables.value.Value;
 
 @Value.Immutable
+@JsonSerialize(as = ImmutableDistanceMatrix.class)
+@JsonDeserialize(as = ImmutableDistanceMatrix.class)
 public interface DistanceMatrix {
   @Value.Parameter(order = 1)
   List<String> names();

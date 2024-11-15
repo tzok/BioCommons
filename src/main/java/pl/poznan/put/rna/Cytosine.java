@@ -1,5 +1,7 @@
 package pl.poznan.put.rna;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,6 +11,8 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutableCytosine.class)
+@JsonDeserialize(as = ImmutableCytosine.class)
 abstract class Cytosine implements Pyrimidine {
   @Override
   public final String standardReferenceFrameString() {

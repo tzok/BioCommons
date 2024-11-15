@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.pseudoknots.dp;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,6 +25,8 @@ import pl.poznan.put.structure.pseudoknots.elimination.RegionRemover;
  * pp.410–416.
  */
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutableDynamicProgrammingAll.class)
+@JsonDeserialize(as = ImmutableDynamicProgrammingAll.class)
 public abstract class DynamicProgrammingAll implements DynamicProgramming {
   private static SubSolution[] solveSingleCase(
       final SubSolution[][][] matrix,

@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.formats;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -26,6 +28,8 @@ import pl.poznan.put.structure.ImmutableBasePair;
 
 /** An extended secondary structure, which contains also non-canonical base pairs. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableMultiLineDotBracket.class)
+@JsonDeserialize(as = ImmutableMultiLineDotBracket.class)
 public abstract class MultiLineDotBracket {
   /**
    * Creates an instance by reading a set of lines in dot-bracket notation. Each line begins with a

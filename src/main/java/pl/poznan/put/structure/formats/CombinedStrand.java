@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.formats;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,8 @@ import pl.poznan.put.structure.DotBracketSymbol;
 
 /** A dot-bracket encoded structure made from combining one or more strands. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableCombinedStrand.class)
+@JsonDeserialize(as = ImmutableCombinedStrand.class)
 public abstract class CombinedStrand extends AbstractCombinedStrand {
   /**
    * @return The list of input strands.

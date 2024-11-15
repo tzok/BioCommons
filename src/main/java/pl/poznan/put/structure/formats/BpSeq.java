@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.formats;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,6 +22,8 @@ import pl.poznan.put.structure.pseudoknots.Region;
 
 /** RNA secondary structure in BPSEQ format. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableBpSeq.class)
+@JsonDeserialize(as = ImmutableBpSeq.class)
 public abstract class BpSeq implements Serializable {
   private static Logger LOGGER = LoggerFactory.getLogger(BpSeq.class);
 
@@ -285,6 +289,8 @@ public abstract class BpSeq implements Serializable {
 
   /** An entry of a BPSEQ data. */
   @Value.Immutable
+  @JsonSerialize(as = ImmutableEntry.class)
+  @JsonDeserialize(as = ImmutableEntry.class)
   public abstract static class Entry implements Comparable<Entry>, Serializable {
     /**
      * Parses a string into a BPSEQ entry. Expected format: int char int

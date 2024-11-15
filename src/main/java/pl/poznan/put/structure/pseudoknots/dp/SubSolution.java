@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.pseudoknots.dp;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -11,6 +13,8 @@ import pl.poznan.put.structure.pseudoknots.Region;
  * assignment for keeping/removal.
  */
 @Value.Immutable
+@JsonSerialize(as = ImmutableSubSolution.class)
+@JsonDeserialize(as = ImmutableSubSolution.class)
 abstract class SubSolution {
   public static SubSolution merge(final SubSolution left, final SubSolution below) {
     return ImmutableSubSolution.of(

@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
@@ -7,6 +9,8 @@ import org.immutables.value.Value;
 
 /** A representation of REMARK 2 line which describes experimental resolution. */
 @Value.Immutable
+@JsonSerialize(as = ImmutablePdbRemark2Line.class)
+@JsonDeserialize(as = ImmutablePdbRemark2Line.class)
 public abstract class PdbRemark2Line implements Serializable {
   // @formatter:off
   // COLUMNS        DATA TYPE     FIELD          DEFINITION

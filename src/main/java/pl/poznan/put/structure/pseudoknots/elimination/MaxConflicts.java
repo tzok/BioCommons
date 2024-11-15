@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.pseudoknots.elimination;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -17,6 +19,8 @@ import pl.poznan.put.structure.pseudoknots.Region;
  * RNA, 14, pp.410–416.
  */
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutableMaxConflicts.class)
+@JsonDeserialize(as = ImmutableMaxConflicts.class)
 public abstract class MaxConflicts extends AbstractRegionRemover {
   static List<Region> maxConflictRegions(
       final ConflictGraph conflictGraph, final Collection<Region> regions) {

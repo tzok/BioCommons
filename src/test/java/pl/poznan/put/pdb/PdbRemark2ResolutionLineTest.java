@@ -11,6 +11,7 @@ public class PdbRemark2ResolutionLineTest {
       "REMARK   2 RESOLUTION.    1.89 ANGSTROMS.                                       ";
   private static final String VALID_NMR_LINE =
       "REMARK   2 RESOLUTION. NOT APPLICABLE.                                          ";
+
   // @formatter:on
 
   @Test

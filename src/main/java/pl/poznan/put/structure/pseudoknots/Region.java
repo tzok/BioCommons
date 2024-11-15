@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.pseudoknots;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,6 +14,8 @@ import pl.poznan.put.structure.formats.BpSeq;
 
 /** A collection of pairs (BPSEQ entries) which are consecutive in sequence. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableRegion.class)
+@JsonDeserialize(as = ImmutableRegion.class)
 public abstract class Region implements Comparable<Region> {
   /**
    * Creates a list of regions from a secondary structure in BPSEQ format.

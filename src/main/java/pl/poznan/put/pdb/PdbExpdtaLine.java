@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,8 @@ import org.immutables.value.Value;
 
 /** A representation of EXPDTA line in PDB files. */
 @Value.Immutable
+@JsonSerialize(as = ImmutablePdbExpdtaLine.class)
+@JsonDeserialize(as = ImmutablePdbExpdtaLine.class)
 public abstract class PdbExpdtaLine implements Serializable {
   // @formatter:off
   //  COLUMNS       DATA TYPE      FIELD         DEFINITION

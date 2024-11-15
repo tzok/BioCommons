@@ -305,9 +305,11 @@ public final class CifParser {
     for (int i = 0; i < atomSite.getRowCount(); i++) {
       final int serialNumber = id.get(i);
       final String atomName = authAtomId.isDefined() ? authAtomId.get(i) : labelAtomId.get(i);
-      final String alternateLocation = pdbxAuthAltId.isDefined() ? pdbxAuthAltId.get(i) : labelAltId.get(i);
+      final String alternateLocation =
+          pdbxAuthAltId.isDefined() ? pdbxAuthAltId.get(i) : labelAltId.get(i);
       final String residueName = authCompId.isDefined() ? authCompId.get(i) : labelCompId.get(i);
-      final String chainIdentifier = authAsymId.isDefined() ? authAsymId.get(i) : labelAsymId.get(i);
+      final String chainIdentifier =
+          authAsymId.isDefined() ? authAsymId.get(i) : labelAsymId.get(i);
       final int residueNumber = authSeqId.isDefined() ? authSeqId.get(i) : labelSeqId.get(i);
       final String insertionCode = pdbxPDBInsCode.isDefined() ? pdbxPDBInsCode.get(i) : "?";
       final double x = cartnX.get(i);
@@ -316,7 +318,8 @@ public final class CifParser {
       final double occupancy = occupancyColumn.isDefined() ? occupancyColumn.get(i) : 1.0;
       final double temperatureFactor = bIsoOrEquiv.isDefined() ? bIsoOrEquiv.get(i) : 0.0;
       final String elementSymbol = typeSymbol.get(i);
-      final String charge = pdbxFormalCharge.isDefined() ? Integer.toString(pdbxFormalCharge.get(i)) : "";
+      final String charge =
+          pdbxFormalCharge.isDefined() ? Integer.toString(pdbxFormalCharge.get(i)) : "";
       final int model = pdbxPDBModelNum.isDefined() ? pdbxPDBModelNum.get(i) : 1;
 
       final ImmutablePdbAtomLine atomLine =

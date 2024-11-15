@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.formats;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +27,8 @@ import pl.poznan.put.structure.DotBracketSymbol;
  * A default implementation of a dot-bracket structure which is mapped to data from 3D coordinates.
  */
 @Value.Immutable
+@JsonSerialize(as = ImmutableDefaultDotBracketFromPdb.class)
+@JsonDeserialize(as = ImmutableDefaultDotBracketFromPdb.class)
 public abstract class DefaultDotBracketFromPdb extends AbstractDotBracket
     implements DotBracketFromPdb {
   private static void depthFirstSearch(

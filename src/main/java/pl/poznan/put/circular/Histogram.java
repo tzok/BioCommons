@@ -1,5 +1,7 @@
 package pl.poznan.put.circular;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +14,8 @@ import org.immutables.value.Value;
 
 /** A collection of angular observations put into bins of specified width. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableHistogram.class)
+@JsonDeserialize(as = ImmutableHistogram.class)
 public abstract class Histogram {
   /**
    * @return A collection of angular data.
@@ -79,6 +83,8 @@ public abstract class Histogram {
   }
 
   @Value.Immutable
+  @JsonSerialize(as = ImmutableBin.class)
+  @JsonDeserialize(as = ImmutableBin.class)
   interface Bin {
     @Value.Parameter(order = 1)
     double radiansStart();

@@ -1,5 +1,7 @@
 package pl.poznan.put.circular.samples;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,6 +17,8 @@ import pl.poznan.put.circular.exception.InvalidCircularOperationException;
 
 /** A sample of angular values and computed statistics. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableAngleSample.class)
+@JsonDeserialize(as = ImmutableAngleSample.class)
 public abstract class AngleSample {
   /**
    * @return The collection of values in the sample.

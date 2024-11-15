@@ -1,8 +1,12 @@
 package pl.poznan.put.types;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 
 @Value.Immutable
+@JsonSerialize(as = ImmutableQuadruple.class)
+@JsonDeserialize(as = ImmutableQuadruple.class)
 public interface Quadruple<T> {
   @Value.Parameter(order = 1)
   T a();

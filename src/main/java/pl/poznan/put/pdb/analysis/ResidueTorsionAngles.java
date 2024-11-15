@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -13,6 +15,8 @@ import pl.poznan.put.torsion.TorsionAngleValue;
 
 /** A collection of torsion angles values for a single residue. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableResidueTorsionAngles.class)
+@JsonDeserialize(as = ImmutableResidueTorsionAngles.class)
 public abstract class ResidueTorsionAngles {
   /**
    * Calculates all torsion angles' values in the given residue.

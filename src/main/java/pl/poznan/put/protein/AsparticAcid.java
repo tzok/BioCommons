@@ -1,5 +1,7 @@
 package pl.poznan.put.protein;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +13,8 @@ import pl.poznan.put.pdb.analysis.ResidueComponent;
 import pl.poznan.put.torsion.TorsionAngleType;
 
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutableAsparticAcid.class)
+@JsonDeserialize(as = ImmutableAsparticAcid.class)
 abstract class AsparticAcid implements Sidechain {
   @Override
   public final List<ResidueComponent> moleculeComponents() {

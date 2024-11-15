@@ -1,5 +1,7 @@
 package pl.poznan.put.structure;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.notation.BPh;
 import pl.poznan.put.notation.BR;
@@ -10,6 +12,8 @@ import pl.poznan.put.rna.InteractionType;
 
 /** A base pair which is classified and quantified with numerical parameters. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableQuantifiedBasePair.class)
+@JsonDeserialize(as = ImmutableQuantifiedBasePair.class)
 public abstract class QuantifiedBasePair implements ClassifiedBasePair {
   @Value.Parameter(order = 1)
   public abstract BasePair basePair();

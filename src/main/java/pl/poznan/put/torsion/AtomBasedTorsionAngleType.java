@@ -1,5 +1,7 @@
 package pl.poznan.put.torsion;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +19,8 @@ import pl.poznan.put.types.Quadruple;
 
 /** A torsion angle which is defined upon four atomic coordinates. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableAtomBasedTorsionAngleType.class)
+@JsonDeserialize(as = ImmutableAtomBasedTorsionAngleType.class)
 public interface AtomBasedTorsionAngleType extends TorsionAngleType {
   @Override
   @Value.Parameter(order = 1)

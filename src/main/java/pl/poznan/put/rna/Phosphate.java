@@ -1,5 +1,7 @@
 package pl.poznan.put.rna;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -8,6 +10,8 @@ import pl.poznan.put.atom.AtomName;
 
 /** A phosphate, part of RNA backbone. */
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutablePhosphate.class)
+@JsonDeserialize(as = ImmutablePhosphate.class)
 public abstract class Phosphate implements NucleicAcidResidueComponent {
   @Override
   public final NucleotideComponentType nucleotideComponentType() {

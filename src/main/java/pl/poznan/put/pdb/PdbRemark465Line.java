@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
@@ -15,6 +17,8 @@ import pl.poznan.put.pdb.analysis.PdbResidue;
 
 /** A representation of REMARK 465 in PDB format which describes missing residues. */
 @Value.Immutable
+@JsonSerialize(as = ImmutablePdbRemark465Line.class)
+@JsonDeserialize(as = ImmutablePdbRemark465Line.class)
 public abstract class PdbRemark465Line implements ChainNumberICode {
   // @formatter:off
   /*

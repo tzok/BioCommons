@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.formats;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +19,8 @@ import pl.poznan.put.structure.DotBracketSymbol;
 
 /** A default implementation of a dot-bracket. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableDefaultDotBracket.class)
+@JsonDeserialize(as = ImmutableDefaultDotBracket.class)
 public abstract class DefaultDotBracket extends AbstractDotBracket implements Serializable {
   static final String SEQUENCE_PATTERN = "[ACGUTRYNacgutryn]+";
   static final String STRUCTURE_PATTERN = "[-.()\\[\\]{}<>A-Za-z]+";

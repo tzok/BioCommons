@@ -1,11 +1,15 @@
 package pl.poznan.put.pdb.analysis;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Collections;
 import java.util.List;
 import org.immutables.value.Value;
 import pl.poznan.put.torsion.TorsionAngleType;
 
 @Value.Immutable
+@JsonSerialize(as = ImmutableInvalidResidueInformationProvider.class)
+@JsonDeserialize(as = ImmutableInvalidResidueInformationProvider.class)
 abstract class InvalidResidueInformationProvider implements ResidueInformationProvider {
   @Value.Parameter(order = 1)
   public abstract String residueName();

@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.pseudoknots.elimination;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -17,6 +19,8 @@ import pl.poznan.put.structure.pseudoknots.Region;
  * 14, pp.410–416.
  */
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutableMinGain.class)
+@JsonDeserialize(as = ImmutableMinGain.class)
 public abstract class MinGain extends AbstractRegionRemover {
   static List<Region> minGainRegions(
       final ConflictGraph conflictGraph, final Collection<Region> regions) {

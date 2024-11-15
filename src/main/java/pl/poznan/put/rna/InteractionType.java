@@ -1,5 +1,7 @@
 package pl.poznan.put.rna;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
@@ -7,6 +9,8 @@ import org.immutables.value.Value;
 
 /** A type of interaction between two nucleotides. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableInteractionType.class)
+@JsonDeserialize(as = ImmutableInteractionType.class)
 public abstract class InteractionType implements Serializable, Comparable<InteractionType> {
   /** A base-base interaction, base pair. */
   public static final InteractionType BASE_BASE =
@@ -15,6 +19,7 @@ public abstract class InteractionType implements Serializable, Comparable<Intera
           .right(NucleotideComponentType.BASE)
           .isPairing(true)
           .build();
+
   /** A weak base-base interaction, based on a single hydrogen bond only. */
   public static final InteractionType BASE_BASE_1H =
       ImmutableInteractionType.builder()
@@ -23,6 +28,7 @@ public abstract class InteractionType implements Serializable, Comparable<Intera
           .isPairing(false)
           .description("base - base (1H)")
           .build();
+
   /** A base-phosphate interaction (see {@link pl.poznan.put.notation.BPh}). */
   public static final InteractionType BASE_PHOSPHATE =
       ImmutableInteractionType.builder()
@@ -30,6 +36,7 @@ public abstract class InteractionType implements Serializable, Comparable<Intera
           .right(NucleotideComponentType.PHOSPHATE)
           .isPairing(false)
           .build();
+
   /** A base-ribose interaction (see {@link pl.poznan.put.notation.BR}). */
   public static final InteractionType BASE_RIBOSE =
       ImmutableInteractionType.builder()
@@ -37,6 +44,7 @@ public abstract class InteractionType implements Serializable, Comparable<Intera
           .right(NucleotideComponentType.RIBOSE)
           .isPairing(false)
           .build();
+
   /** A ribose-ribose interaction. */
   public static final InteractionType SUGAR_SUGAR =
       ImmutableInteractionType.builder()
@@ -44,6 +52,7 @@ public abstract class InteractionType implements Serializable, Comparable<Intera
           .right(NucleotideComponentType.RIBOSE)
           .isPairing(false)
           .build();
+
   /** A stacking interaction. */
   public static final InteractionType STACKING =
       ImmutableInteractionType.builder()
@@ -52,6 +61,7 @@ public abstract class InteractionType implements Serializable, Comparable<Intera
           .isPairing(false)
           .description("stacking")
           .build();
+
   /** Another interaction type. */
   public static final InteractionType OTHER =
       ImmutableInteractionType.builder()

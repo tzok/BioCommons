@@ -1,5 +1,7 @@
 package pl.poznan.put.structure.formats;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +25,8 @@ import pl.poznan.put.structure.pseudoknots.Region;
 
 /** An RNA secondary structure encoded in CT (connect) format. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableCt.class)
+@JsonDeserialize(as = ImmutableCt.class)
 public abstract class Ct implements Serializable {
   /**
    * Parses string into an instance of this class.
@@ -318,6 +322,8 @@ public abstract class Ct implements Serializable {
 
   /** A single entry in the CT formatted structure. */
   @Value.Immutable
+  @JsonSerialize(as = ImmutableExtendedEntry.class)
+  @JsonDeserialize(as = ImmutableExtendedEntry.class)
   public abstract static class ExtendedEntry implements Comparable<ExtendedEntry> {
     /**
      * Creates an instance from a string in format: int string int int int int.

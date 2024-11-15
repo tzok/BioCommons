@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +22,8 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 
 /** A default implementation of a structure parsed from a PDB file. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableDefaultPdbModel.class)
+@JsonDeserialize(as = ImmutableDefaultPdbModel.class)
 public abstract class DefaultPdbModel extends AbstractPdbModel {
   /**
    * Creates an instance of this class with just a list of atoms and all other fields set to default

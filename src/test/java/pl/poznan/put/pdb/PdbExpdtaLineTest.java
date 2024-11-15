@@ -19,6 +19,7 @@ public class PdbExpdtaLineTest {
       "EXPDTA    SOLUTION NMR ; THEORETICAL MODEL                                      ";
   private static final String INVALID_LINE =
       "EXPDTA    SOLUTION XYZ                                                          ";
+
   // @formatter:on
 
   @Test

@@ -1,5 +1,7 @@
 package pl.poznan.put.rna;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,6 +11,8 @@ import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutableGuanine.class)
+@JsonDeserialize(as = ImmutableGuanine.class)
 abstract class Guanine implements Purine {
   @Override
   public final String standardReferenceFrameString() {
