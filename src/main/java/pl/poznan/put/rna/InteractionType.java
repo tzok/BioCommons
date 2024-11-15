@@ -1,5 +1,7 @@
 package pl.poznan.put.rna;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
@@ -7,6 +9,8 @@ import org.immutables.value.Value;
 
 /** A type of interaction between two nucleotides. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableInteractionType.class)
+@JsonDeserialize(as = ImmutableInteractionType.class)
 public abstract class InteractionType implements Serializable, Comparable<InteractionType> {
   /** A base-base interaction, base pair. */
   public static final InteractionType BASE_BASE =

@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.atom.AtomName;
 import pl.poznan.put.pdb.analysis.ResidueComponent;
 
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutableUracil.class)
+@JsonDeserialize(as = ImmutableUracil.class)
 abstract class Uracil implements Pyrimidine {
   @Override
   public final String standardReferenceFrameString() {
