@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.structure.formats.BpSeq;
 import pl.poznan.put.structure.formats.ImmutableBpSeq;
@@ -23,6 +25,8 @@ import pl.poznan.put.structure.pseudoknots.elimination.RegionRemover;
  * pp.410–416.
  */
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutableDynamicProgrammingAll.class)
+@JsonDeserialize(as = ImmutableDynamicProgrammingAll.class)
 public abstract class DynamicProgrammingAll implements DynamicProgramming {
   private static SubSolution[] solveSingleCase(
       final SubSolution[][][] matrix,

@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.structure.pseudoknots.Region;
 
@@ -14,6 +16,8 @@ import pl.poznan.put.structure.pseudoknots.Region;
  * not mean that every region conflicts with every other.
  */
 @Value.Immutable
+@JsonSerialize(as = ImmutableConflictClique.class)
+@JsonDeserialize(as = ImmutableConflictClique.class)
 public abstract class ConflictClique {
   /**
    * @return The set of regions in this conflict clique.

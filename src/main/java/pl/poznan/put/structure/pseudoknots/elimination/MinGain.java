@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.structure.pseudoknots.ConflictGraph;
 import pl.poznan.put.structure.pseudoknots.Region;
@@ -17,6 +19,8 @@ import pl.poznan.put.structure.pseudoknots.Region;
  * 14, pp.410–416.
  */
 @Value.Immutable(singleton = true)
+@JsonSerialize(as = ImmutableMinGain.class)
+@JsonDeserialize(as = ImmutableMinGain.class)
 public abstract class MinGain extends AbstractRegionRemover {
   static List<Region> minGainRegions(
       final ConflictGraph conflictGraph, final Collection<Region> regions) {

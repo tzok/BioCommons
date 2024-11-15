@@ -7,11 +7,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.structure.formats.BpSeq;
 
 /** A collection of pairs (BPSEQ entries) which are consecutive in sequence. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableRegion.class)
+@JsonDeserialize(as = ImmutableRegion.class)
 public abstract class Region implements Comparable<Region> {
   /**
    * Creates a list of regions from a secondary structure in BPSEQ format.

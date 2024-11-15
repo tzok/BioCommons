@@ -14,6 +14,8 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.CombinatoricsUtils;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 import pl.poznan.put.structure.pseudoknots.dp.ConflictClique;
 import pl.poznan.put.structure.pseudoknots.dp.ImmutableConflictClique;
@@ -23,6 +25,8 @@ import pl.poznan.put.structure.pseudoknots.dp.ImmutableConflictClique;
  * another region.d
  */
 @Value.Immutable
+@JsonSerialize(as = ImmutableConflictGraph.class)
+@JsonDeserialize(as = ImmutableConflictGraph.class)
 public abstract class ConflictGraph {
   /**
    * Checks if given regions are conflicting. A conflict is when one region starts/ends in the
