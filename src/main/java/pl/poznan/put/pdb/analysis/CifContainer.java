@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +13,8 @@ import org.immutables.value.Value;
 
 /** A container of one or more PDB files converted from a single mmCIF file. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableCifContainer.class)
+@JsonDeserialize(as = ImmutableCifContainer.class)
 public abstract class CifContainer implements ModelContainer {
   /**
    * Creates an empty instance (without any chain mapping).

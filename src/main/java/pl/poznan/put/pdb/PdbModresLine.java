@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
@@ -10,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 /** A representation of MODRES line in PDB format. */
 @Value.Immutable
+@JsonSerialize(as = ImmutablePdbModresLine.class)
+@JsonDeserialize(as = ImmutablePdbModresLine.class)
 public abstract class PdbModresLine implements ChainNumberICode, Serializable {
   // @formatter:off
   /*

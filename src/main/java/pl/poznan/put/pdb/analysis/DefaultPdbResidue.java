@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import java.util.Set;
 import org.immutables.value.Value;
@@ -9,6 +11,8 @@ import pl.poznan.put.pdb.PdbResidueIdentifier;
 
 /** A default implementation of a residue (nucleotide or amino acid). */
 @Value.Immutable
+@JsonSerialize(as = ImmutableDefaultPdbResidue.class)
+@JsonDeserialize(as = ImmutableDefaultPdbResidue.class)
 public abstract class DefaultPdbResidue implements PdbResidue {
   @Override
   @Value.Parameter(order = 1)

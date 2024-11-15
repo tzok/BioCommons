@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb.analysis;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,6 +18,8 @@ import pl.poznan.put.structure.QuantifiedBasePair;
 
 /** A default implementation of a structure parsed from an mmCIF file. */
 @Value.Immutable
+@JsonSerialize(as = ImmutableDefaultCifModel.class)
+@JsonDeserialize(as = ImmutableDefaultCifModel.class)
 public abstract class DefaultCifModel extends AbstractPdbModel implements CifModel {
   @Override
   @Value.Parameter(order = 1)

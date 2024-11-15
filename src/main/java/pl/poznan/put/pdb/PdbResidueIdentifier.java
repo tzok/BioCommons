@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
@@ -10,6 +12,8 @@ import pl.poznan.put.pdb.analysis.DefaultPdbResidue;
  * content, see {@link DefaultPdbResidue}.
  */
 @Value.Immutable
+@JsonSerialize(as = ImmutablePdbResidueIdentifier.class)
+@JsonDeserialize(as = ImmutablePdbResidueIdentifier.class)
 public abstract class PdbResidueIdentifier implements ChainNumberICode {
   /**
    * Creates an instance of this class from any implementation of {@link ChainNumberICode}.

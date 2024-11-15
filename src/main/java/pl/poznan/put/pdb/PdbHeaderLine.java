@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -11,6 +13,8 @@ import org.immutables.value.Value;
 
 /** A representation of HEADER file in PDB format. */
 @Value.Immutable
+@JsonSerialize(as = ImmutablePdbHeaderLine.class)
+@JsonDeserialize(as = ImmutablePdbHeaderLine.class)
 public abstract class PdbHeaderLine implements Serializable {
   // @formatter:off
   /*

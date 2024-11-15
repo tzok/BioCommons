@@ -1,5 +1,7 @@
 package pl.poznan.put.pdb;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
@@ -7,6 +9,8 @@ import org.immutables.value.Value;
 
 /** A representation of TITLE line in PDB format. */
 @Value.Immutable
+@JsonSerialize(as = ImmutablePdbTitleLine.class)
+@JsonDeserialize(as = ImmutablePdbTitleLine.class)
 public abstract class PdbTitleLine implements Serializable {
   // @formatter:off
   /*
