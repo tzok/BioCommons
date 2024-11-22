@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.Locale;
-import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.immutables.value.Value;
 
 /** A representation of REMARK 2 line which describes experimental resolution. */
@@ -49,18 +50,9 @@ public abstract class PdbRemark2Line implements Serializable {
       throw new PdbParsingException("Failed to parse REMARK   2 RESOLUTION. line: " + line);
     }
 
-    try {
-      final String resolutionString = line.substring(23).trim();
-      double resolution = Double.NaN;
-
-      if (!Objects.equals("NOT APPLICABLE.", resolutionString)) {
-        resolution = Double.parseDouble(line.substring(23, 30).trim());
-      }
-
-      return ImmutablePdbRemark2Line.of(resolution);
-    } catch (final NumberFormatException e) {
-      throw new PdbParsingException("Failed to parse REMARK   2 RESOLUTION. line", e);
-    }
+    final String resolutionString = StringUtils.trimToEmpty(StringUtils.substring(line, 23, 30));
+    final double resolution = NumberUtils.toDouble(resolutionString, Double.NaN);
+    return ImmutablePdbRemark2Line.of(resolution);
   }
 
   /**

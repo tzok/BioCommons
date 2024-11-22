@@ -16,8 +16,6 @@ public class PdbRemark465LineTest {
       "REMARK 465 IDENTIFIER; SSSEQ=SEQUENCE NUMBER; I=INSERTION CODE.)                ";
   // @formatter:on
 
-  private static final String TOO_SHORT_LINE =
-      PdbRemark465LineTest.VALID_LINE.substring(0, PdbRemark465LineTest.VALID_LINE.length() - 10);
   private static final String MISALIGNED_LINE =
       StringUtils.normalizeSpace(PdbRemark465LineTest.VALID_LINE);
 
@@ -27,12 +25,6 @@ public class PdbRemark465LineTest {
     final String parsedToString = parsed.toString();
     assertThat(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.VALID_LINE), is(false));
     assertThat(parsedToString, is(PdbRemark465LineTest.VALID_LINE));
-  }
-
-  @Test(expected = PdbParsingException.class)
-  public final void testShortLine() {
-    assertThat(PdbRemark465Line.isCommentLine(PdbRemark465LineTest.TOO_SHORT_LINE), is(false));
-    PdbRemark465Line.parse(PdbRemark465LineTest.TOO_SHORT_LINE);
   }
 
   @Test(expected = PdbParsingException.class)

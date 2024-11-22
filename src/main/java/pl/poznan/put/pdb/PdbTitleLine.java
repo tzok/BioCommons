@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
 
 /** A representation of TITLE line in PDB format. */
@@ -32,15 +33,14 @@ public abstract class PdbTitleLine implements Serializable {
    * @return An instance of this class.
    */
   public static PdbTitleLine parse(final String line) {
-    final String recordName = line.substring(0, 6).trim();
-
+    final String recordName = StringUtils.trimToEmpty(StringUtils.substring(line, 0, 6));
     if (!Objects.equals(PdbTitleLine.RECORD_NAME, recordName)) {
       throw new PdbParsingException(
           String.format("PDB line does not start with %s", PdbTitleLine.RECORD_NAME));
     }
 
-    final String continuation = line.substring(8, 10).trim();
-    final String title = line.substring(10, 80).trim();
+    final String continuation = StringUtils.trimToEmpty(StringUtils.substring(line, 8, 10));
+    final String title = StringUtils.trimToEmpty(StringUtils.substring(line, 10, 80));
     return ImmutablePdbTitleLine.of(continuation, title);
   }
 

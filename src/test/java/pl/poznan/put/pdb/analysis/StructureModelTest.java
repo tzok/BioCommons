@@ -256,7 +256,7 @@ public class StructureModelTest {
   @Test
   public final void test79CharLongAtomLines() throws Exception {
     final String pdbPKB300 = ResourcesHelper.loadResource("PKB300.pdb");
-    final PdbParser parser = new PdbParser(false);
+    final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdbPKB300);
     assertThat(models.size(), is(1));
     final PdbModel model = models.get(0);
@@ -272,7 +272,7 @@ public class StructureModelTest {
   @Test
   public final void testAmberModel() throws Exception {
     final String pdbAmber = ResourcesHelper.loadResource("amber.pdb");
-    final PdbParser parser = new PdbParser(false);
+    final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdbAmber);
     assertThat(models.size(), is(1));
     final PdbModel model = models.get(0);
@@ -288,7 +288,7 @@ public class StructureModelTest {
   @Test
   public final void testNMRModelsWithHydrogenAtoms() throws Exception {
     final String pdb2MIY = ResourcesHelper.loadResource("2MIY.pdb");
-    final PdbParser parser = new PdbParser(false);
+    final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb2MIY);
     assertThat(models.size(), is(18));
 
@@ -320,7 +320,7 @@ public class StructureModelTest {
   }
 
   private static void assertBpSeqEquals(final String pdbString, final String bpSeqString) {
-    final PdbParser parser = new PdbParser(false);
+    final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdbString);
     final PdbModel model = models.get(0);
 
@@ -334,7 +334,7 @@ public class StructureModelTest {
   @Test
   public final void testFrabaseExport() throws Exception {
     final String pdbFrabaseExport = ResourcesHelper.loadResource("FrabaseExport.pdb");
-    final PdbParser parser = new PdbParser(false);
+    final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdbFrabaseExport);
     assertThat(models.size(), is(2));
 
@@ -358,7 +358,7 @@ public class StructureModelTest {
   @Test
   public final void testModelWithResiduesUNK() throws Exception {
     final String pdb3KFU = ResourcesHelper.loadResource("3KFU.pdb");
-    final PdbParser parser = new PdbParser(false);
+    final PdbParser parser = new PdbParser();
     final List<PdbModel> models = parser.parse(pdb3KFU);
     assertThat(models.size(), is(1));
 

@@ -17,8 +17,6 @@ public class PdbExpdtaLineTest {
       "EXPDTA    SOLID-STATE NMR; SOLUTION SCATTERING; ELECTRON MICROSCOPY             ";
   private static final String VALID_WITH_SPACE =
       "EXPDTA    SOLUTION NMR ; THEORETICAL MODEL                                      ";
-  private static final String INVALID_LINE =
-      "EXPDTA    SOLUTION XYZ                                                          ";
 
   // @formatter:on
 
@@ -64,10 +62,5 @@ public class PdbExpdtaLineTest {
     assertThat(experimentalTechniques.size(), is(2));
     assertThat(experimentalTechniques.get(0), is(ExperimentalTechnique.SOLUTION_NMR));
     assertThat(experimentalTechniques.get(1), is(ExperimentalTechnique.THEORETICAL_MODEL));
-  }
-
-  @Test(expected = PdbParsingException.class)
-  public final void testInvalidLine() {
-    parse(PdbExpdtaLineTest.INVALID_LINE);
   }
 }

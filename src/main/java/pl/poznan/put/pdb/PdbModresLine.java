@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public abstract class PdbModresLine implements ChainNumberICode, Serializable {
      30 - 70        String        comment     Description of the residue modification.
   */
   // @formatter:on
-  private static final String FORMAT = "MODRES %4s %3s %c %4d%c %3s  %41s          ";
+  private static final String FORMAT = "MODRES %4s %3s %c %4d%c %3s  %-41s          ";
   private static final String RECORD_NAME = "MODRES";
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbModresLine.class);
 
@@ -40,30 +41,27 @@ public abstract class PdbModresLine implements ChainNumberICode, Serializable {
    * @return An instance of this class with fields set to parsed values.
    */
   public static PdbModresLine parse(final String line) {
-    if (line.length() < 70) {
-      throw new PdbParsingException("PDB MODRES line is not at least 70 character long");
-    }
-
     try {
-      final String recordName = line.substring(0, 6).trim();
-
+      final String recordName = StringUtils.trimToEmpty(StringUtils.substring(line, 0, 6));
       if (!Objects.equals(PdbModresLine.RECORD_NAME, recordName)) {
         throw new PdbParsingException("PDB line does not start with MODRES");
       }
 
-      final String idCode = line.substring(7, 11).trim();
-      final String residueName = line.substring(12, 15).trim();
-      final String chainIdentifier = Character.toString(line.charAt(16));
-      final int residueNumber = Integer.parseInt(line.substring(18, 22).trim());
-      final String insertionCode = Character.toString(line.charAt(22));
-      final String standardResidueName = line.substring(24, 27).trim();
-      final String comment = line.substring(29, 70);
+      final String idCode = StringUtils.trimToEmpty(StringUtils.substring(line, 7, 11));
+      final String residueName = StringUtils.trimToEmpty(StringUtils.substring(line, 12, 15));
+      final String chainIdentifier = StringUtils.trimToEmpty(StringUtils.substring(line, 16, 17));
+      final int residueNumber =
+          Integer.parseInt(StringUtils.trimToEmpty(StringUtils.substring(line, 18, 22)));
+      final String insertionCode = StringUtils.trimToEmpty(StringUtils.substring(line, 22, 23));
+      final String standardResidueName =
+          StringUtils.trimToEmpty(StringUtils.substring(line, 24, 27));
+      final String comment = StringUtils.trimToEmpty(StringUtils.substring(line, 29, 70));
       return ImmutablePdbModresLine.of(
           idCode,
           residueName,
           chainIdentifier,
           residueNumber,
-          " ".equals(insertionCode) ? Optional.empty() : Optional.of(insertionCode),
+          "".equals(insertionCode) ? Optional.empty() : Optional.of(insertionCode),
           standardResidueName,
           comment);
     } catch (final NumberFormatException e) {
