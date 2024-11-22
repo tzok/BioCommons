@@ -41,28 +41,15 @@ public class PdbParser {
   private final Map<Integer, List<PdbAtomLine>> modelAtoms = new TreeMap<>();
   private final Collection<PdbTitleLine> titleLines = new ArrayList<>();
 
-  private final boolean strictMode;
-
   private Optional<PdbHeaderLine> headerLine = Optional.empty();
   private Optional<PdbExpdtaLine> experimentalDataLine = Optional.empty();
   private Optional<PdbRemark2Line> resolutionLine = Optional.empty();
   private Optional<PdbResidueIdentifier> currentIdentifier = Optional.empty();
   private int currentModelNumber;
 
-  /**
-   * Creates an instance with the possibility to set {@code strictMode}.
-   *
-   * @param strictMode If false, then some of the checks on PDB format conformity are relaxed.
-   */
-  public PdbParser(final boolean strictMode) {
-    super();
-    this.strictMode = strictMode;
-  }
-
   /** Creates an instance with {@code strictMode} set to true. */
   public PdbParser() {
     super();
-    strictMode = true;
   }
 
   /**
@@ -157,7 +144,7 @@ public class PdbParser {
 
   private void handleAtomLine(final String line) {
     try {
-      final PdbAtomLine atomLine = PdbAtomLine.parse(line, strictMode);
+      final PdbAtomLine atomLine = PdbAtomLine.parse(line);
       final PdbResidueIdentifier identifier = PdbResidueIdentifier.from(atomLine);
 
       if (processedIdentifiers.contains(identifier)) {

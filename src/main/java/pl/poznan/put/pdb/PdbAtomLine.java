@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
@@ -51,111 +52,49 @@ public abstract class PdbAtomLine implements ChainNumberICode {
   private static final Logger LOGGER = LoggerFactory.getLogger(PdbAtomLine.class);
 
   /**
-   * Parses text as ATOM or HETATM line in strict mode (all 80 characters in the line are required).
+   * Parses text as ATOM or HETATM line.
    *
    * @param line A text in PDB format (ATOM or HETATM).
    * @return An instance of this class with fields containing values parsed from the text.
    */
   public static PdbAtomLine parse(final String line) {
-    return PdbAtomLine.parse(line, true);
-  }
-
-  /**
-   * Parses text as ATOM or HETATM line in a strict or non-strict mode.
-   *
-   * @param line A text in PDB format (ATOM or HETATM).
-   * @param strictMode If true, then all 80 characters are required, otherwise the "bare minimum" of
-   *     54 characters.
-   * @return An instance of this class with fields containing values parsed from the text.
-   */
-  public static PdbAtomLine parse(final String line, final boolean strictMode) {
-    // in non-strict mode, only up to X, Y, Z fields are required, rest is
-    // optional
-    final int minLineLenth = strictMode ? 80 : 54;
-    if (line.length() < minLineLenth) {
-      throw new PdbParsingException("PDB ATOM line is too short");
-    }
-
     try {
-      // Check record name (columns 1-6)
-      if (line.length() < 6) {
-        throw new PdbParsingException("Line too short for record name field (needs 6 characters)");
-      }
-      final String recordName = line.substring(0, 6).trim();
+      final String recordName = StringUtils.trimToEmpty(StringUtils.substring(line, 0, 6));
       if (!Objects.equals(PdbAtomLine.RECORD_NAME, recordName)
           && !Objects.equals("HETATM", recordName)) {
         throw new PdbParsingException("PDB line does not start with ATOM or HETATM");
       }
 
-      // Check serial number (columns 7-11)
-      if (line.length() < 11) {
-        throw new PdbParsingException("Line too short for serial number field (needs 11 characters)");
-      }
-      final int serialNumber = Integer.parseInt(line.substring(6, 11).trim());
-
-      // Check atom name (columns 13-16)
-      if (line.length() < 16) {
-        throw new PdbParsingException("Line too short for atom name field (needs 16 characters)");
-      }
-      final String atomName = line.substring(12, 16).trim();
-
-      // Check alternate location (column 17)
-      if (line.length() < 17) {
-        throw new PdbParsingException("Line too short for alternate location field (needs 17 characters)");
-      }
-      final String alternateLocation = Character.toString(line.charAt(16));
-
-      // Check residue name (columns 18-20)
-      if (line.length() < 20) {
-        throw new PdbParsingException("Line too short for residue name field (needs 20 characters)");
-      }
-      final String residueName = line.substring(17, 20).trim();
-
-      // Check chain identifier (column 22)
-      if (line.length() < 22) {
-        throw new PdbParsingException("Line too short for chain identifier field (needs 22 characters)");
-      }
-      final String chainIdentifier = Character.toString(line.charAt(21));
-
-      // Check residue number (columns 23-26)
-      if (line.length() < 26) {
-        throw new PdbParsingException("Line too short for residue number field (needs 26 characters)");
-      }
-      final int residueNumber = Integer.parseInt(line.substring(22, 26).trim());
-
-      // Check insertion code (column 27)
-      if (line.length() < 27) {
-        throw new PdbParsingException("Line too short for insertion code field (needs 27 characters)");
-      }
-      final String insertionCode = Character.toString(line.charAt(26));
-
-      // Check coordinates (columns 31-54)
-      if (line.length() < 54) {
-        throw new PdbParsingException("Line too short for coordinate fields (needs 54 characters)");
-      }
-      final double x = Double.parseDouble(line.substring(30, 38).trim());
-      final double y = Double.parseDouble(line.substring(38, 46).trim());
-      final double z = Double.parseDouble(line.substring(46, 54).trim());
-
+      final int serialNumber =
+          NumberUtils.toInt(StringUtils.trimToEmpty(StringUtils.substring(line, 6, 11)), 1);
+      final String atomName = StringUtils.trimToEmpty(StringUtils.substring(line, 12, 16));
+      final String alternateLocation = StringUtils.trimToEmpty(StringUtils.substring(line, 16, 17));
+      final String residueName = StringUtils.trimToEmpty(StringUtils.substring(line, 17, 20));
+      final String chainIdentifier = StringUtils.trimToEmpty(StringUtils.substring(line, 21, 22));
+      final int residueNumber =
+          Integer.parseInt(StringUtils.trimToEmpty(StringUtils.substring(line, 22, 26)));
+      final String insertionCode = StringUtils.trimToEmpty(StringUtils.substring(line, 26, 27));
+      final double x =
+          Double.parseDouble(StringUtils.trimToEmpty(StringUtils.substring(line, 30, 38)));
+      final double y =
+          Double.parseDouble(StringUtils.trimToEmpty(StringUtils.substring(line, 38, 46)));
+      final double z =
+          Double.parseDouble(StringUtils.trimToEmpty(StringUtils.substring(line, 46, 54)));
       final double occupancy =
-          ((line.length() >= 60) && StringUtils.isNotBlank(line.substring(54, 60)))
-              ? Double.parseDouble(line.substring(54, 60).trim())
-              : 0;
+          NumberUtils.toDouble(StringUtils.trimToEmpty(StringUtils.substring(line, 54, 60)), 0.0);
       final double temperatureFactor =
-          ((line.length() >= 66) && StringUtils.isNotBlank(line.substring(60, 66)))
-              ? Double.parseDouble(line.substring(60, 66).trim())
-              : 0;
-      final String elementSymbol = (line.length() >= 78) ? line.substring(76, 78).trim() : "";
-      final String charge = (line.length() >= 80) ? line.substring(78, 80).trim() : "";
+          NumberUtils.toDouble(StringUtils.trimToEmpty(StringUtils.substring(line, 60, 66)), 0.0);
+      final String elementSymbol = StringUtils.trimToEmpty(StringUtils.substring(line, 76, 78));
+      final String charge = StringUtils.trimToEmpty(StringUtils.substring(line, 78, 80));
 
       return ImmutablePdbAtomLine.of(
           serialNumber,
           atomName,
-          " ".equals(alternateLocation) ? Optional.empty() : Optional.of(alternateLocation),
+          "".equals(alternateLocation) ? Optional.empty() : Optional.of(alternateLocation),
           residueName,
           chainIdentifier,
           residueNumber,
-          " ".equals(insertionCode) ? Optional.empty() : Optional.of(insertionCode),
+          "".equals(insertionCode) ? Optional.empty() : Optional.of(insertionCode),
           x,
           y,
           z,

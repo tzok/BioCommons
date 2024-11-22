@@ -12,8 +12,6 @@ public class PdbHeaderLineTest {
       "HEADER    RNA                                     23-FEB-00   1EHZ              ";
   // @formatter:on
 
-  private static final String TOO_SHORT_LINE =
-      PdbHeaderLineTest.VALID_LINE.substring(0, PdbHeaderLineTest.VALID_LINE.length() - 20);
   private static final String MISALIGNED_LINE =
       StringUtils.normalizeSpace(PdbHeaderLineTest.VALID_LINE);
 
@@ -22,11 +20,6 @@ public class PdbHeaderLineTest {
     final PdbHeaderLine parsed = PdbHeaderLine.parse(PdbHeaderLineTest.VALID_LINE);
     final String parsedToString = parsed.toString();
     assertThat(parsedToString, is(PdbHeaderLineTest.VALID_LINE));
-  }
-
-  @Test(expected = PdbParsingException.class)
-  public final void testShortLine() {
-    PdbHeaderLine.parse(PdbHeaderLineTest.TOO_SHORT_LINE);
   }
 
   @Test(expected = PdbParsingException.class)

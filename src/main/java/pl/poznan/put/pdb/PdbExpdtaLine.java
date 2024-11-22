@@ -7,13 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** A representation of EXPDTA line in PDB files. */
 @Value.Immutable
 @JsonSerialize(as = ImmutablePdbExpdtaLine.class)
 @JsonDeserialize(as = ImmutablePdbExpdtaLine.class)
 public abstract class PdbExpdtaLine implements Serializable {
+  private static final Logger LOGGER = LoggerFactory.getLogger(PdbExpdtaLine.class);
+
   // @formatter:off
   //  COLUMNS       DATA TYPE      FIELD         DEFINITION
   //  ------------------------------------------------------------------------------------
@@ -33,18 +38,19 @@ public abstract class PdbExpdtaLine implements Serializable {
    * @return An instance of this class.
    */
   public static PdbExpdtaLine parse(final String line) {
-    final String recordName = line.substring(0, 6).trim();
-
+    final String recordName = StringUtils.trimToEmpty(StringUtils.substring(line, 0, 6));
     if (!Objects.equals(PdbExpdtaLine.RECORD_NAME, recordName)) {
       throw new PdbParsingException("PDB line does not start with EXPDTA");
     }
 
     final List<ExperimentalTechnique> experimentalTechniques = new ArrayList<>();
-    for (final String techniqueFullName : line.substring(10).trim().split(";")) {
+    for (final String techniqueFullName :
+        StringUtils.trimToEmpty(StringUtils.substring(line, 10)).split(";")) {
       final ExperimentalTechnique technique =
-          ExperimentalTechnique.fromFullName(techniqueFullName.trim());
+          ExperimentalTechnique.fromFullName(StringUtils.trimToEmpty(techniqueFullName));
       if (technique == ExperimentalTechnique.UNKNOWN) {
-        throw new PdbParsingException("Failed to parse line: " + line);
+        PdbExpdtaLine.LOGGER.warn("Unknown experimental technique: {}", techniqueFullName);
+        continue;
       }
       experimentalTechniques.add(technique);
     }

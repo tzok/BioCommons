@@ -14,12 +14,8 @@ public class PdbAtomLineTest {
       "ATOM      2  P     G A   1      50.626  49.730  50.573  1.00100.19           P  ";
   private static final String VALID_LINE_WITH_FOUR_LETTER_ATOM =
       "ATOM      5 H5''   G A   1       1.706  -1.125  -0.755  1.00  0.00           H  ";
-  private static final String MISSING_TEMP_FACTOR =
-      "ATOM      1  N   GLU     1      42.189  22.849  47.437  1.00    N  ";
   // @formatter:on
 
-  private static final String TOO_SHORT_LINE =
-      PdbAtomLineTest.VALID_LINE.substring(0, PdbAtomLineTest.VALID_LINE.length() - 10);
   private static final String MISALIGNED_LINE =
       StringUtils.normalizeSpace(PdbAtomLineTest.VALID_LINE);
 
@@ -38,18 +34,8 @@ public class PdbAtomLineTest {
   }
 
   @Test(expected = PdbParsingException.class)
-  public final void testShortLine() {
-    PdbAtomLine.parse(PdbAtomLineTest.TOO_SHORT_LINE);
-  }
-
-  @Test(expected = PdbParsingException.class)
   public final void testMisalignedLine() {
     PdbAtomLine.parse(PdbAtomLineTest.MISALIGNED_LINE);
-  }
-
-  @Test(expected = PdbParsingException.class)
-  public final void testMissingTempFactor() {
-    PdbAtomLine.parse(PdbAtomLineTest.MISSING_TEMP_FACTOR);
   }
 
   @Test

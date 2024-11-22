@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,35 +93,35 @@ public abstract class PdbRemark465Line implements ChainNumberICode {
    * @return An instance of this class
    */
   public static PdbRemark465Line parse(final String line) {
-    if (line.length() < 79) {
-      throw new PdbParsingException("PDB REMARK line is not at least 79 character long");
-    }
-
     try {
-      final String recordName = line.substring(0, 6).trim();
-
+      final String recordName = StringUtils.trimToEmpty(StringUtils.substring(line, 0, 6));
       if (!Objects.equals("REMARK", recordName)) {
         throw new PdbParsingException("PDB line does not start with REMARK");
       }
-      final int remarkNumber = Integer.parseInt(line.substring(7, 10).trim());
+
+      final int remarkNumber =
+          NumberUtils.toInt(StringUtils.trimToEmpty(StringUtils.substring(line, 7, 10)), -1);
       if (remarkNumber != 465) {
         throw new PdbParsingException("Unsupported REMARK line occurred");
       }
 
-      final String remarkContent = StringUtils.stripEnd(line.substring(11, 79), null);
+      final String remarkContent = StringUtils.stripEnd(StringUtils.substring(line, 11, 79), null);
       final int modelNumber =
-          (remarkContent.charAt(2) == ' ') ? 0 : Integer.parseInt(remarkContent.substring(2, 3));
-      final String residueName = remarkContent.substring(4, 7).trim();
-      final String chainIdentifier = Character.toString(remarkContent.charAt(8));
-      final int residueNumber = Integer.parseInt(remarkContent.substring(10, 15).trim());
+          NumberUtils.toInt(StringUtils.trimToEmpty(StringUtils.substring(remarkContent, 2, 3)), 0);
+      final String residueName =
+          StringUtils.trimToEmpty(StringUtils.substring(remarkContent, 4, 7));
+      final String chainIdentifier =
+          StringUtils.trimToEmpty(StringUtils.substring(remarkContent, 8, 9));
+      final int residueNumber =
+          Integer.parseInt(StringUtils.trimToEmpty(StringUtils.substring(remarkContent, 10, 15)));
       final String insertionCode =
-          (remarkContent.length() == 15) ? " " : Character.toString(remarkContent.charAt(15));
+          StringUtils.trimToEmpty(StringUtils.substring(remarkContent, 15, 16));
       return ImmutablePdbRemark465Line.of(
           modelNumber,
           residueName,
           chainIdentifier,
           residueNumber,
-          " ".equals(insertionCode) ? Optional.empty() : Optional.of(insertionCode));
+          "".equals(insertionCode) ? Optional.empty() : Optional.of(insertionCode));
     } catch (final NumberFormatException e) {
       throw new PdbParsingException("Failed to parse PDB REMARK 465 line", e);
     }

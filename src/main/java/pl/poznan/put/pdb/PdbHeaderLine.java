@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.immutables.value.Value;
 
 /** A representation of HEADER file in PDB format. */
@@ -38,20 +39,17 @@ public abstract class PdbHeaderLine implements Serializable {
    * @return An instance of this class with fields set to values parsed from the {@code line}.
    */
   public static PdbHeaderLine parse(final String line) {
-    if (line.length() < 66) {
-      throw new PdbParsingException("PDB HEADER line is not at least 66 characters long");
-    }
-
-    final String recordName = line.substring(0, 6).trim();
-
+    final String recordName = StringUtils.trimToEmpty(StringUtils.substring(line, 0, 6));
     if (!Objects.equals(PdbHeaderLine.RECORD_NAME, recordName)) {
       throw new PdbParsingException("PDB line does not start with HEADER");
     }
 
     try {
-      final String classification = line.substring(10, 50).trim();
-      final Date depositionDate = PdbHeaderLine.DATE_FORMAT.parse(line.substring(50, 59).trim());
-      final String idCode = line.substring(62, 66).trim();
+      final String classification = StringUtils.trimToEmpty(StringUtils.substring(line, 10, 50));
+      final Date depositionDate =
+          PdbHeaderLine.DATE_FORMAT.parse(
+              StringUtils.trimToEmpty(StringUtils.substring(line, 50, 59)));
+      final String idCode = StringUtils.trimToEmpty(StringUtils.substring(line, 62, 66));
       return ImmutablePdbHeaderLine.of(classification, depositionDate, idCode);
     } catch (final ParseException e) {
       throw new PdbParsingException("Failed to parse date in line: " + line, e);
