@@ -77,20 +77,62 @@ public abstract class PdbAtomLine implements ChainNumberICode {
     }
 
     try {
+      // Check record name (columns 1-6)
+      if (line.length() < 6) {
+        throw new PdbParsingException("Line too short for record name field (needs 6 characters)");
+      }
       final String recordName = line.substring(0, 6).trim();
-
       if (!Objects.equals(PdbAtomLine.RECORD_NAME, recordName)
           && !Objects.equals("HETATM", recordName)) {
         throw new PdbParsingException("PDB line does not start with ATOM or HETATM");
       }
 
+      // Check serial number (columns 7-11)
+      if (line.length() < 11) {
+        throw new PdbParsingException("Line too short for serial number field (needs 11 characters)");
+      }
       final int serialNumber = Integer.parseInt(line.substring(6, 11).trim());
+
+      // Check atom name (columns 13-16)
+      if (line.length() < 16) {
+        throw new PdbParsingException("Line too short for atom name field (needs 16 characters)");
+      }
       final String atomName = line.substring(12, 16).trim();
+
+      // Check alternate location (column 17)
+      if (line.length() < 17) {
+        throw new PdbParsingException("Line too short for alternate location field (needs 17 characters)");
+      }
       final String alternateLocation = Character.toString(line.charAt(16));
+
+      // Check residue name (columns 18-20)
+      if (line.length() < 20) {
+        throw new PdbParsingException("Line too short for residue name field (needs 20 characters)");
+      }
       final String residueName = line.substring(17, 20).trim();
+
+      // Check chain identifier (column 22)
+      if (line.length() < 22) {
+        throw new PdbParsingException("Line too short for chain identifier field (needs 22 characters)");
+      }
       final String chainIdentifier = Character.toString(line.charAt(21));
+
+      // Check residue number (columns 23-26)
+      if (line.length() < 26) {
+        throw new PdbParsingException("Line too short for residue number field (needs 26 characters)");
+      }
       final int residueNumber = Integer.parseInt(line.substring(22, 26).trim());
+
+      // Check insertion code (column 27)
+      if (line.length() < 27) {
+        throw new PdbParsingException("Line too short for insertion code field (needs 27 characters)");
+      }
       final String insertionCode = Character.toString(line.charAt(26));
+
+      // Check coordinates (columns 31-54)
+      if (line.length() < 54) {
+        throw new PdbParsingException("Line too short for coordinate fields (needs 54 characters)");
+      }
       final double x = Double.parseDouble(line.substring(30, 38).trim());
       final double y = Double.parseDouble(line.substring(38, 46).trim());
       final double z = Double.parseDouble(line.substring(46, 54).trim());
