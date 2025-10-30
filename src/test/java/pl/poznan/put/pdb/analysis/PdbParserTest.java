@@ -44,9 +44,7 @@ public class PdbParserTest {
 
     PdbModel model = models.get(0);
     List<String> chainNames =
-        model
-            .residues()
-            .stream()
+        model.residues().stream()
             .map(PdbResidue::chainIdentifier)
             .distinct()
             .collect(Collectors.toList());
