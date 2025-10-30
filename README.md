@@ -19,7 +19,7 @@ You can use BioCommons by adding the following to your `pom.xml`:
 <dependency>
   <groupId>pl.poznan.put</groupId>
   <artifactId>BioCommons</artifactId>
-  <version>3.2.0</version>
+  <version>3.2.1</version>
 </dependency>
 ```
 

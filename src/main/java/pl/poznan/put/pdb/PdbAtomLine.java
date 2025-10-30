@@ -70,7 +70,7 @@ public abstract class PdbAtomLine implements ChainNumberICode {
       final String atomName = StringUtils.trimToEmpty(StringUtils.substring(line, 12, 16));
       final String alternateLocation = StringUtils.trimToEmpty(StringUtils.substring(line, 16, 17));
       final String residueName = StringUtils.trimToEmpty(StringUtils.substring(line, 17, 20));
-      final String chainIdentifier = StringUtils.trimToEmpty(StringUtils.substring(line, 21, 22));
+      final String chainIdentifier = StringUtils.trimToEmpty(StringUtils.substring(line, 20, 22));
       final int residueNumber =
           Integer.parseInt(StringUtils.trimToEmpty(StringUtils.substring(line, 22, 26)));
       final String insertionCode = StringUtils.trimToEmpty(StringUtils.substring(line, 26, 27));

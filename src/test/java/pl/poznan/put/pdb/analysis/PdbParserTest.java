@@ -2,11 +2,13 @@ package pl.poznan.put.pdb.analysis;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Test;
 
 public class PdbParserTest {
@@ -24,5 +26,28 @@ public class PdbParserTest {
     // Then
     assertNotNull("Parsed models should not be null", models);
     assertFalse("Should parse at least one model", models.isEmpty());
+  }
+
+  @Test
+  public void testParse5jupFileWithTwoLetterChainName() throws IOException {
+    // Given
+    String pdbContent =
+        new String(Files.readAllBytes(Paths.get("src/test/resources/5JUP_IRES_chain_EC.pdb")));
+    PdbParser parser = new PdbParser();
+
+    // When
+    List<PdbModel> models = parser.parse(pdbContent);
+
+    // Then
+    assertNotNull("Parsed models should not be null", models);
+    assertFalse("Should parse at least one model", models.isEmpty());
+
+    PdbModel model = models.get(0);
+    List<String> chainNames =
+        model.residues().stream()
+            .map(PdbResidue::chainIdentifier)
+            .distinct()
+            .collect(Collectors.toList());
+    assertTrue("Failed to find chain EC", chainNames.contains("EC"));
   }
 }
