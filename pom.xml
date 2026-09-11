@@ -145,7 +145,7 @@
     <dependency>
       <groupId>org.jumpmind.symmetric</groupId>
       <artifactId>symmetric-csv</artifactId>
-      <version>3.17.7</version>
+      <version>3.18.0</version>
     </dependency>
 
     <dependency>
