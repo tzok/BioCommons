@@ -23,11 +23,12 @@ jobs:
   auto-merge-dependabot-non-major-updates:
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    # The PR author stays dependabot[bot] even when a re-run is triggered by a
+    # maintainer, unlike github.actor.
+    if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
     permissions:
       pull-requests: write
       contents: write
-      checks: write
     steps:
       - name: Dependabot metadata
         id: metadata
@@ -35,9 +36,40 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Enable auto-merge for Dependabot PRs
+      - name: Merge Dependabot non-major PRs
         if: ${{ steps.metadata.outputs.update-type != 'version-update:semver-major' }}
-        run: gh pr merge --auto --squash "$PR_URL"
+        run: |
+          # `gh pr merge --auto` only works while the PR is BLOCKED, i.e. held
+          # back by an unmet requirement. This branch requires no status checks,
+          # so as soon as anything is running or failing -- including this very
+          # job's own check run -- the PR is UNSTABLE and GitHub rejects the
+          # mutation with "Pull request is in unstable status". `build` has
+          # already succeeded here (needs: build), so the PR is in fact
+          # mergeable at this point; only the flag below changes what gh does
+          # with that state.
+          merge_now() {
+            gh pr merge --squash --match-head-commit "$HEAD_SHA" "$PR_URL"
+          }
+          enable_auto() {
+            gh pr merge --auto --squash --match-head-commit "$HEAD_SHA" "$PR_URL"
+          }
+
+          # mergeStateStatus is computed asynchronously, so gh can see BLOCKED
+          # and pick enablePullRequestAutoMerge just as the state flips to
+          # UNSTABLE. Try both paths, with retries, instead of failing on the race.
+          for attempt in 1 2 3; do
+            state=$(gh pr view "$PR_URL" --json mergeStateStatus --jq .mergeStateStatus 2>/dev/null || echo UNKNOWN)
+            echo "attempt $attempt: mergeStateStatus=$state"
+            merge_now && exit 0
+            echo "::warning::direct merge failed, falling back to auto-merge"
+            enable_auto && exit 0
+            echo "::warning::auto-merge failed, retrying in 10s"
+            sleep 10
+          done
+
+          echo "::error::could not merge or enable auto-merge for $PR_URL"
+          exit 1
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
