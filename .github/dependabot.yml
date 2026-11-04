@@ -7,6 +7,12 @@ updates:
     open-pull-requests-limit: 10
     commit-message:
       prefix: "build"
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -15,3 +21,9 @@ updates:
     open-pull-requests-limit: 10
     commit-message:
       prefix: "build"
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
